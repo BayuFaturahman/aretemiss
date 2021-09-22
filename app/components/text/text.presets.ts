@@ -7,7 +7,7 @@ import {Colors, Spacing} from "@styles";
  */
 const BASE: TextStyle = {
   fontFamily: typography.primary,
-  color: Colors.MAIN_BLUE,
+  color: Colors.UNDERTONE_BLUE,
   fontSize: Spacing[14],
 }
 

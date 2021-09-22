@@ -4,5 +4,5 @@ export * from "./demo/demo-list-screen"
 export * from "./error/error-boundary"
 
 
-export * from "./login/login-screen"
+export * from "./auth/"
 // export other screens here

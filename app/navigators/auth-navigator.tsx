@@ -5,7 +5,7 @@
  * and a "main" flow which the user will use once logged in.
  */
 import {AppRoute} from "@navigators/navigation-type";
-import {LoginScreen} from "@screens";
+import {login, verifyPhone} from "@screens";
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -24,12 +24,17 @@ import {LoginScreen} from "@screens";
 const screens: AppRoute[] = [
   {
     name: 'login',
-    component: LoginScreen,
+    component: login,
+  },
+  {
+    name: 'verifyPhone',
+    component: verifyPhone,
   },
 ];
 
 export type NavigatorParamList = {
   login: undefined;
+  verifyPhone: undefined;
 };
 
 export default screens

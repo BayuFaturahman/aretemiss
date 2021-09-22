@@ -55,7 +55,7 @@ const AuthStack: React.FC = () => {
       screenOptions={{
         headerShown: false,
       }}
-      initialRouteName="login"
+      initialRouteName="verifyPhone"
     >
       {authScreens.map((route)=>{
         return(

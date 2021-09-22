@@ -25,7 +25,7 @@ export function Text(props: TextProps) {
   if(props.type === 'header'){
     return(
       <VStack style={Layout.widthFull}>
-        <ReactNativeText {...rest} style={[style, {fontSize: Spacing[20], textAlign: 'center'} ,styleOverride ]}>
+        <ReactNativeText {...rest} style={[style, {fontSize: Spacing[24], textAlign: 'center'} ,styleOverride ]}>
           {content}
         </ReactNativeText>
         <View style={{height: Spacing[6], backgroundColor: Colors.MAIN_RED, maxWidth: 144, width: '100%', marginLeft: 'auto', marginRight: 'auto'}}></View>
@@ -35,7 +35,23 @@ export function Text(props: TextProps) {
 
   if(props.type === 'warning'){
     return(
-      <ReactNativeText {...rest} style={[style, {color: Colors.MAIN_RED, textAlign: 'center'} ,styleOverride ]}>
+      <ReactNativeText {...rest} style={[style, {color: Colors.MAIN_RED} ,styleOverride ]}>
+        {content}
+      </ReactNativeText>
+    )
+  }
+
+  if(props.type === 'body'){
+    return(
+      <ReactNativeText {...rest} style={[style, {fontSize: Spacing[14]} ,styleOverride ]}>
+        {content}
+      </ReactNativeText>
+    )
+  }
+
+  if(props.type === 'label'){
+    return(
+      <ReactNativeText {...rest} style={[style, {fontSize: Spacing[14]} ,styleOverride ]}>
         {content}
       </ReactNativeText>
     )

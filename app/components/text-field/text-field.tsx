@@ -98,7 +98,7 @@ export function TextField(props: TextFieldProps) {
   }
 
   const LABEL_STYLE = {
-    color: isError ? Colors.MAIN_RED : Colors.MAIN_BLUE,
+    color: isError ? Colors.MAIN_RED : Colors.UNDERTONE_BLUE,
   }
 
   const containerStyles = [CONTAINER, PRESETS[preset], styleOverride]
