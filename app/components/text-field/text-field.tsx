@@ -91,7 +91,7 @@ export function TextField(props: TextFieldProps) {
   // the base styling for the TextInput
   const INPUT: TextStyle = {
     fontFamily: typography.primary,
-    color: Colors.MAIN_BLUE,
+    color: Colors.UNDERTONE_BLUE,
     minHeight: 44,
     fontSize: Spacing[16],
     backgroundColor: color.palette.white,

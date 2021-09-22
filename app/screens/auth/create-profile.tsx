@@ -1,9 +1,9 @@
-import React, { FC } from "react"
-import {Dimensions, KeyboardAvoidingView, SafeAreaView, ScrollView, StyleSheet} from "react-native"
+import React, {FC} from "react"
+import {Dimensions, KeyboardAvoidingView, ScrollView, StyleSheet} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {
-  Button,
+  Button, DropDownPicker,
   Text,
   TextField,
 } from "@components"
@@ -55,30 +55,43 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
               style={{ paddingTop: 0}}
               isError={false}
             />
-            <TextField
-              label="Alamat e-mail:"
-              style={{ paddingTop: 0}}
-              isError={true}
+
+            <DropDownPicker
+              isRequired={true} label="Pilih team:"
+              onValueChange={(value)=>console.log('testt '+ value)}
+              placeholder={'Pilih salah satu'}
+              containerStyle={{marginTop: Spacing[4]}}
+              zIndex={3000}
+              zIndexInverse={1000}
+              dropDownDirection={"BOTTOM"}
             />
-            <TextField
-              label="Alamat e-mail:"
-              style={{ paddingTop: 0}}
-              isError={false}
+            <DropDownPicker
+              isRequired={false}
+              label="Pilih team kedua (jika ada):"
+              onValueChange={(value)=>console.log('testt '+ value)}
+              placeholder={'Pilih salah satu'}
+              containerStyle={{marginTop: Spacing[4]}}
+              zIndex={2000}
+              zIndexInverse={2000}
+              dropDownDirection={"BOTTOM"}
             />
-            <TextField
-              label="Alamat e-mail:"
-              style={{ paddingTop: 0}}
-              isError={false}
+            <DropDownPicker
+              isRequired={false}
+              label="Pilih team kedua (jika ada):"
+              onValueChange={(value)=>console.log('testt '+ value)}
+              placeholder={'Pilih salah satu'}
+              containerStyle={{marginTop: Spacing[4]}}
+              zIndex={1000}
+              zIndexInverse={3000}
+              dropDownDirection={"BOTTOM"}
             />
-            {/* <TextField */}
-            {/*  // value={'089123123123'} */}
-            {/*  label="Password baru:" */}
-            {/*  style={{ paddingTop: 0}} */}
-            {/*  secureTextEntry={true} */}
-            {/*  isRequired={true} */}
-            {/* /> */}
+            <VStack top={Spacing[8]}>
+              <Text type={'body'} style={{textAlign: 'right'}}>
+                * = Wajib diisi
+              </Text>
+            </VStack>
           </VStack>
-          <VStack top={Spacing[32]} horizontal={Spacing[96]}>
+          <VStack top={Spacing[32]} horizontal={Spacing[96]} style={{zIndex: -10}}>
             <Button
               type={"primary"}
               text={"Simpan"}
