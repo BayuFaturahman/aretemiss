@@ -8,7 +8,6 @@ import React, {FunctionComponent} from "react"
 import {StatusBar, useColorScheme} from "react-native"
 import { NavigationContainer, DefaultTheme, DarkTheme } from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
-import { WelcomeScreen, DemoScreen, DemoListScreen } from "@screens"
 import { navigationRef } from "./navigation-utilities"
 
 import authScreens, { NavigatorParamList } from "@navigators/auth-navigator";
@@ -25,27 +24,6 @@ import authScreens, { NavigatorParamList } from "@navigators/auth-navigator";
  *   https://reactnavigation.org/docs/params/
  *   https://reactnavigation.org/docs/typescript#type-checking-the-navigator
  */
-// export type NavigatorParamList = {
-//   welcome: undefined
-//   demo: undefined
-//   demoList: undefined
-// }
-//
-//
-// const AppStack = () => {
-//   return (
-//     <Stack.Navigator
-//       screenOptions={{
-//         headerShown: false,
-//       }}
-//       initialRouteName="welcome"
-//     >
-//       <Stack.Screen name="welcome" component={WelcomeScreen} />
-//       <Stack.Screen name="demo" component={DemoScreen} />
-//       <Stack.Screen name="demoList" component={DemoListScreen} />
-//     </Stack.Navigator>
-//   )
-// }
 
 // Documentation: https://reactnavigation.org/docs/stack-navigator/
 const Stack = createNativeStackNavigator<NavigatorParamList>()

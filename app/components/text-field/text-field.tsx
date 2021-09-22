@@ -1,6 +1,6 @@
 import React, {useState} from "react"
 import {StyleProp, TextInput, TextInputProps, TextStyle, TouchableOpacity, View, ViewStyle} from "react-native"
-import { color, spacing, typography } from "../../theme"
+import { color, spacing, typography } from "@theme/"
 import { translate, TxKeyPath } from "../../i18n"
 import { Text } from "../text/text"
 import {Colors, Spacing} from "@styles";
@@ -9,6 +9,7 @@ import FastImage from "react-native-fast-image";
 
 import eyeIcon from '@assets/icons/eyes.png'
 import eyeIconFalse from '@assets/icons/eyesFalse.png'
+import {HStack} from "@components/view-stack";
 
 // the base styling for the container
 const CONTAINER: ViewStyle = {
@@ -59,6 +60,8 @@ export interface TextFieldProps extends TextInputProps {
   forwardedRef?: any
 
   isError?: boolean
+
+  isRequired?: boolean
 }
 
 const EYES_ICON =  {
@@ -81,6 +84,7 @@ export function TextField(props: TextFieldProps) {
     inputStyle: inputStyleOverride,
     forwardedRef,
     isError,
+    isRequired = true,
     ...rest
   } = props
 
@@ -107,10 +111,17 @@ export function TextField(props: TextFieldProps) {
 
   const [showPassword, setShowPassword] = useState<boolean>(false)
 
+  const renderRequired = () => {
+    return isRequired === true ? <Text type={'label'} style={[{fontSize: Spacing[14]}, LABEL_STYLE]} text={`*`} /> : null
+  }
+
   if(props.secureTextEntry){
     return(
       <View style={[containerStyles, {position: 'relative'}]}>
-        <Text style={[{fontSize: Spacing[14]}, LABEL_STYLE]} tx={labelTx} text={label} />
+        <HStack>
+          {renderRequired()}
+          <Text type={'label'} style={[{fontSize: Spacing[14]}, LABEL_STYLE]} tx={labelTx} text={label} />
+        </HStack>
         <Spacer height={Spacing[4]} />
         <TextInput
           placeholder={actualPlaceholder}
@@ -131,7 +142,10 @@ export function TextField(props: TextFieldProps) {
 
   return (
     <View style={containerStyles}>
-      <Text style={[{fontSize: Spacing[14]}, LABEL_STYLE]} tx={labelTx} text={label} />
+      <HStack>
+        {renderRequired()}
+        <Text type={'label'} style={[{fontSize: Spacing[14]}, LABEL_STYLE]} tx={labelTx} text={label} />
+      </HStack>
       <Spacer height={Spacing[4]} />
       <TextInput
         placeholder={actualPlaceholder}

@@ -1,5 +1,5 @@
 import React, { FC } from "react"
-import {Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet} from "react-native"
+import {Keyboard, KeyboardAvoidingView, Platform, StyleSheet} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {
@@ -20,7 +20,7 @@ const keyboardVerticalOffset = Platform.OS === 'ios' ? 40 : 0
 const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observer(
   ({ navigation }) => {
     const verifyNumber = () => {
-      navigation.navigate("verifyPhone")
+      navigation.navigate("createProfile")
       Keyboard.dismiss()
     }
     const goToLogin = () => navigation.navigate("login")
@@ -53,11 +53,9 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
             <Spacer height={Spacing[16]} />
             <SMSVerifyCode
               verifyCodeLength={4}
-              // containerPaddingVertical={Spacing[8]}
               containerPaddingHorizontal={Spacing[128]}
               codeViewStyle={{borderWidth: Spacing[2], borderRadius:Spacing[20], minWidth: Spacing[64], minHeight: Spacing[96]}}
               codeFontSize={Spacing[72]}
-              // containerBackgroundColor={'red'}
               containerStyle={{justifyContent:'center'}}
               codeViewBorderColor={Colors.UNDERTONE_BLUE}
               onInputCompleted={onInputCompleted}
