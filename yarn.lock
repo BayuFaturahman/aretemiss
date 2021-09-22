@@ -2255,6 +2255,11 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-5.9.10.tgz#97d3a9fa62a3a4838ec7a6ec91cfec5a26e365b6"
   integrity sha512-1NPlBA2Hu/KWc3EnQcDRPRX0x8Dg9tuQlQQVWVQjlg+u+PjCq7ANEtbikOFKp5yQqfF8tqzU5+84/IfDO8zpiA==
 
+"@react-native-picker/picker@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@react-native-picker/picker/-/picker-2.1.0.tgz#1ef22d4e9b2e555d44b43453f51a46d8631f3182"
+  integrity sha512-iJ/QaDrBMBaW6cFuQyR3DXzcn2h7c5O7mGgmNLCBQHTTtLNBZR+Sxogy6YleFPeToNdysG5mTTkXqBmlWHMQqg==
+
 "@react-native/assets@1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@react-native/assets/-/assets-1.0.0.tgz#c6f9bf63d274bafc8e970628de24986b30a55c8e"
@@ -13509,11 +13514,6 @@ react-native-modalbox@^2.0.0:
   dependencies:
     prop-types "^15.5.10"
 
-react-native-otp-inputs@^7.0.3:
-  version "7.0.3"
-  resolved "https://registry.yarnpkg.com/react-native-otp-inputs/-/react-native-otp-inputs-7.0.3.tgz#f341284ff5f865239c59f0aad008994e26b114cb"
-  integrity sha512-s+Bfcct2xpNSOqO9EiGjDh0RzwjDuiNW+nH41BzUz3ahL2iHo073RutHtb4wrvHX9r8f9aJNsfI9HtVCS80slA==
-
 react-native-paper@^3.6.0:
   version "3.12.0"
   resolved "https://registry.yarnpkg.com/react-native-paper/-/react-native-paper-3.12.0.tgz#0ca136067593a74972f2270a49f02994ce547a80"
@@ -13569,6 +13569,13 @@ react-native-size-matters@^0.3.1:
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/react-native-size-matters/-/react-native-size-matters-0.3.1.tgz#24d0cfc335a2c730f6d58bd7b43ea5a41be4b49f"
   integrity sha512-mKOfBLIBFBcs9br1rlZDvxD5+mAl8Gfr5CounwJtxI6Z82rGrMO+Kgl9EIg3RMVf3G855a85YVqHJL2f5EDRlw==
+
+react-native-sms-verifycode@^2.4.3:
+  version "2.4.3"
+  resolved "https://registry.yarnpkg.com/react-native-sms-verifycode/-/react-native-sms-verifycode-2.4.3.tgz#f89bea09d8e6a7219c5c225d0aa1167c95f4b113"
+  integrity sha512-S518092BqydeX1IL7OoDuGo7MnDjKhvmunge7Ggmo2I7agBnT4RN2NOsJw9HKDqB2o8w1uoVseumY4J/ie5Jzg==
+  dependencies:
+    prop-types "^15.6.2"
 
 react-native-status-bar-height@^2.5.0:
   version "2.6.0"

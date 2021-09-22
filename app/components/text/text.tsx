@@ -33,6 +33,14 @@ export function Text(props: TextProps) {
     )
   }
 
+  if(props.type === 'header2'){
+    return(
+      <ReactNativeText {...rest} style={[style, {fontSize: Spacing[18]} ,styleOverride ]}>
+        {content}
+      </ReactNativeText>
+    )
+  }
+
   if(props.type === 'warning'){
     return(
       <ReactNativeText {...rest} style={[style, {color: Colors.MAIN_RED} ,styleOverride ]}>
@@ -51,7 +59,15 @@ export function Text(props: TextProps) {
 
   if(props.type === 'label'){
     return(
-      <ReactNativeText {...rest} style={[style, {fontSize: Spacing[14]} ,styleOverride ]}>
+      <ReactNativeText {...rest} style={[style, {fontSize: Spacing[12]} ,styleOverride ]}>
+        {content}
+      </ReactNativeText>
+    )
+  }
+
+  if(props.type === 'button'){
+    return(
+      <ReactNativeText {...rest} style={[style, {fontSize: Spacing[18]} ,styleOverride ]}>
         {content}
       </ReactNativeText>
     )

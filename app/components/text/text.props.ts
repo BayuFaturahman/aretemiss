@@ -35,5 +35,5 @@ export interface TextProps extends TextProperties {
    */
   preset?: TextPresets
 
-  type?: 'header' | 'body' | 'label' | 'warning' | 'button'
+  type?: 'header' | 'header2' | 'body' | 'label' | 'warning' | 'button'
 }

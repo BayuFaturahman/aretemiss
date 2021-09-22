@@ -16,6 +16,8 @@ import FastImage from "react-native-fast-image";
 
 const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = observer(
   ({ navigation }) => {
+
+    const goToOTP = () => navigation.navigate("verifyOTP")
     const goToLogin = () => navigation.navigate("login")
 
     const styles = StyleSheet.create({
@@ -60,7 +62,7 @@ const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
             <Button
               type={"primary"}
               text={"Kirim SMS verifikasi"}
-              onPress={goToLogin}
+              onPress={goToOTP}
             />
             <Spacer height={Spacing[8]} />
             <Button

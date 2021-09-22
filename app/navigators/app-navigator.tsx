@@ -11,7 +11,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { WelcomeScreen, DemoScreen, DemoListScreen } from "@screens"
 import { navigationRef } from "./navigation-utilities"
 
-import authScreens from "@navigators/auth-navigator";
+import authScreens, { NavigatorParamList } from "@navigators/auth-navigator";
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -25,29 +25,30 @@ import authScreens from "@navigators/auth-navigator";
  *   https://reactnavigation.org/docs/params/
  *   https://reactnavigation.org/docs/typescript#type-checking-the-navigator
  */
-export type NavigatorParamList = {
-  welcome: undefined
-  demo: undefined
-  demoList: undefined
-}
+// export type NavigatorParamList = {
+//   welcome: undefined
+//   demo: undefined
+//   demoList: undefined
+// }
+//
+//
+// const AppStack = () => {
+//   return (
+//     <Stack.Navigator
+//       screenOptions={{
+//         headerShown: false,
+//       }}
+//       initialRouteName="welcome"
+//     >
+//       <Stack.Screen name="welcome" component={WelcomeScreen} />
+//       <Stack.Screen name="demo" component={DemoScreen} />
+//       <Stack.Screen name="demoList" component={DemoListScreen} />
+//     </Stack.Navigator>
+//   )
+// }
 
 // Documentation: https://reactnavigation.org/docs/stack-navigator/
-const Stack = createNativeStackNavigator()
-
-const AppStack = () => {
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-      initialRouteName="welcome"
-    >
-      <Stack.Screen name="welcome" component={WelcomeScreen} />
-      <Stack.Screen name="demo" component={DemoScreen} />
-      <Stack.Screen name="demoList" component={DemoListScreen} />
-    </Stack.Navigator>
-  )
-}
+const Stack = createNativeStackNavigator<NavigatorParamList>()
 
 const AuthStack: React.FC = () => {
   return (
@@ -55,7 +56,7 @@ const AuthStack: React.FC = () => {
       screenOptions={{
         headerShown: false,
       }}
-      initialRouteName="verifyPhone"
+      initialRouteName="verifyOTP"
     >
       {authScreens.map((route)=>{
         return(
