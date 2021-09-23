@@ -134,7 +134,7 @@ export function TextField(props: TextFieldProps) {
         >
         </TextInput>
         <TouchableOpacity style={{position: 'absolute', right: 0, bottom: Spacing[20]}} onPress={()=>setShowPassword(!showPassword)}>
-          <FastImage style={EYES_ICON} source={showPassword ? eyeIcon : eyeIconFalse} resizeMode={"contain"}/>
+          <FastImage style={EYES_ICON} source={showPassword ? eyeIconFalse : eyeIcon} resizeMode={"contain"}/>
         </TouchableOpacity>
       </View>
     )

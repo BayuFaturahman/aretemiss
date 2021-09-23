@@ -28,6 +28,9 @@ const Spacing = {
   '84': ms(84),
   '96': ms(96),
   '128': ms(128),
+  '256': ms(256),
+  '320': ms(320),
+  '480': ms(480),
 };
 
 export const CustomSpacing = ms;

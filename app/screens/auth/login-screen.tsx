@@ -18,6 +18,8 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
   ({ navigation }) => {
     const nextScreen = () => navigation.navigate("verifyPhone")
 
+    const goToForgotPassword = () => navigation.navigate("forgotPassword")
+
     const styles = StyleSheet.create({
 
     })
@@ -59,7 +61,7 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
               type={"secondary"}
               // style={CONTINUE}
               text={"Lupa Password"}
-              onPress={nextScreen}
+              onPress={goToForgotPassword}
             />
           </VStack>
           <Spacer />

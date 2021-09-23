@@ -46,6 +46,22 @@ export function Button(props: ButtonProps) {
     )
   }
 
+  if (type === 'primary-dark') {
+    return (
+      <TouchableOpacity style={[{
+        backgroundColor: Colors.UNDERTONE_BLUE,
+        paddingVertical: Spacing[8],
+        borderRadius: Spacing[20]
+      }, styleOverride]} {...rest}>
+        <Text type={'button'} tx={tx} text={text} style={{
+          textAlign: 'center',
+          color: Colors.WHITE,
+          fontSize: Spacing[14]
+        }} />
+      </TouchableOpacity>
+    )
+  }
+
   if (type === 'secondary') {
     return (
       <TouchableOpacity style={[{
