@@ -25,7 +25,7 @@ const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
     })
 
     return (
-      <VStack testID="LoginScreen" style={{backgroundColor: Colors.WHITE, flex: 1, justifyContent: 'center'}}>
+      <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.WHITE, flex: 1, justifyContent: 'center'}}>
         {/* <GradientBackground colors={["#422443", "#281b34"]} /> */}
         <SafeAreaView style={{flex: 1}}>
           <Spacer />

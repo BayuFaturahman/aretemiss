@@ -25,7 +25,7 @@ export const presets = {
   /**
    * A bold version of the default text.
    */
-  bold: { ...BASE, fontWeight: "bold" } as TextStyle,
+  bold: { ...BASE, fontFamily: typography.primaryBold } as TextStyle,
 
   /**
    * Large headers.

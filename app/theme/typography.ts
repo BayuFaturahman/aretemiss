@@ -17,7 +17,12 @@ export const typography = {
   /**
    * The primary font.  Used in most places.
    */
-  primary: Platform.select({ ios: "BrandonGrotesque-Bold", android: "BrandonGrotesque-Bold" }),
+  primary: Platform.select({ ios: "BrandonGrotesque-Regular", android: "BrandonGrotesque-Regular" }),
+
+  /**
+   * The primary Bold font.
+   */
+  primaryBold: Platform.select({ ios: "BrandonGrotesque-Bold", android: "BrandonGrotesque-Bold" }),
 
   /**
    * An alternate font used for perhaps titles and stuff.

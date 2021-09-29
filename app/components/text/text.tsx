@@ -25,10 +25,21 @@ export function Text(props: TextProps) {
   if(props.type === 'header'){
     return(
       <VStack style={Layout.widthFull}>
-        <ReactNativeText {...rest} style={[style, {fontSize: Spacing[24], textAlign: 'center'} ,styleOverride ]}>
+        <ReactNativeText {...rest} style={[style, presets.bold, {fontSize: Spacing[24], textAlign: 'center'} ,styleOverride ]}>
           {content}
         </ReactNativeText>
         <View style={{height: Spacing[6], backgroundColor: Colors.MAIN_RED, maxWidth: 144, width: '100%', marginLeft: 'auto', marginRight: 'auto'}}></View>
+      </VStack>
+    )
+  }
+
+  if(props.type === 'left-header'){
+    return(
+      <VStack style={[Layout.widthFull,{alignItems: 'flex-start'}]}>
+        <ReactNativeText {...rest} style={[style, presets.bold, { fontSize: Spacing[18], textAlign: 'center', lineHeight: Spacing[20]} ,styleOverride ]}>
+          {content}
+        </ReactNativeText>
+        <View style={{height: Spacing[6], backgroundColor: Colors.MAIN_RED, width: Spacing[128]}}></View>
       </VStack>
     )
   }
@@ -43,7 +54,7 @@ export function Text(props: TextProps) {
 
   if(props.type === 'warning'){
     return(
-      <ReactNativeText {...rest} style={[style, {color: Colors.MAIN_RED} ,styleOverride ]}>
+      <ReactNativeText {...rest} style={[style, presets.bold, {color: Colors.MAIN_RED} ,styleOverride ]}>
         {content}
       </ReactNativeText>
     )
@@ -57,9 +68,17 @@ export function Text(props: TextProps) {
     )
   }
 
+  if(props.type === 'body-bold'){
+    return(
+      <ReactNativeText {...rest} style={[style, presets.bold, {fontSize: Spacing[14]} ,styleOverride ]}>
+        {content}
+      </ReactNativeText>
+    )
+  }
+
   if(props.type === 'label'){
     return(
-      <ReactNativeText {...rest} style={[style, {fontSize: Spacing[12]} ,styleOverride ]}>
+      <ReactNativeText {...rest} style={[style, presets.bold, {fontSize: Spacing[12]} ,styleOverride ]}>
         {content}
       </ReactNativeText>
     )
@@ -67,7 +86,15 @@ export function Text(props: TextProps) {
 
   if(props.type === 'button'){
     return(
-      <ReactNativeText {...rest} style={[style, {fontSize: Spacing[18]} ,styleOverride ]}>
+      <ReactNativeText {...rest} style={[style, presets.bold, {fontSize: Spacing[18]} ,styleOverride ]}>
+        {content}
+      </ReactNativeText>
+    )
+  }
+
+  if(props.type === 'button-small'){
+    return(
+      <ReactNativeText {...rest} style={[style, presets.bold, {fontSize: Spacing[16]} ,styleOverride ]}>
         {content}
       </ReactNativeText>
     )

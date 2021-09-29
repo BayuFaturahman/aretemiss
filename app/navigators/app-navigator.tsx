@@ -4,13 +4,15 @@
  * Generally speaking, it will contain an auth flow (registration, login, forgot password)
  * and a "main" flow which the user will use once logged in.
  */
-import React, {FunctionComponent} from "react"
+import React, {FunctionComponent, useState} from "react"
 import {StatusBar, useColorScheme} from "react-native"
 import { NavigationContainer, DefaultTheme, DarkTheme } from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { navigationRef } from "./navigation-utilities"
 
-import authScreens, { NavigatorParamList } from "@navigators/auth-navigator";
+import authScreens, { NavigatorParamList as AuthNavigatorParamList} from "@navigators/auth-navigator";
+
+import mainScreens, { NavigatorParamList as MainNavigatorParamList } from "@navigators/main-navigator";
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -26,11 +28,11 @@ import authScreens, { NavigatorParamList } from "@navigators/auth-navigator";
  */
 
 // Documentation: https://reactnavigation.org/docs/stack-navigator/
-const Stack = createNativeStackNavigator<NavigatorParamList>()
+const AuthStack = createNativeStackNavigator<AuthNavigatorParamList>()
 
-const AuthStack: React.FC = () => {
+const AuthNavigator: React.FC = () => {
   return (
-    <Stack.Navigator
+    <AuthStack.Navigator
       screenOptions={{
         headerShown: false,
       }}
@@ -38,14 +40,37 @@ const AuthStack: React.FC = () => {
     >
       {authScreens.map((route)=>{
         return(
-          <Stack.Screen
+          <AuthStack.Screen
             key={route.name}
             name={route.name}
             component={route.component as FunctionComponent<unknown>}
             options={{headerShown: false}} />
         )
       })}
-    </Stack.Navigator>
+    </AuthStack.Navigator>
+  )
+}
+
+const MainStack = createNativeStackNavigator<MainNavigatorParamList>()
+
+const MainNavigator: React.FC = () => {
+  return (
+    <MainStack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+      initialRouteName="coachingJournalMain"
+    >
+      {mainScreens.map((route)=>{
+        return(
+          <MainStack.Screen
+            key={route.name}
+            name={route.name}
+            component={route.component as FunctionComponent<unknown>}
+            options={{headerShown: false}} />
+        )
+      })}
+    </MainStack.Navigator>
   )
 }
 
@@ -53,6 +78,9 @@ interface NavigationProps extends Partial<React.ComponentProps<typeof Navigation
 
 export const AppNavigator = (props: NavigationProps) => {
   const colorScheme = useColorScheme()
+
+  const [isLogin, setIsLogin] = useState(true)
+
   return (
     <NavigationContainer
       ref={navigationRef}
@@ -65,15 +93,7 @@ export const AppNavigator = (props: NavigationProps) => {
         backgroundColor="white"
       />
       {/* TODO : If User not authenticated reroute to this stack */}
-      <AuthStack />
-      {/* <Stack.Navigator> */}
-      {/*  <Stack.Screen */}
-      {/*    name="Authentication" */}
-      {/*    component={AuthStack} */}
-      {/*    options={{headerShown: false}} */}
-      {/*  /> */}
-      {/*  <AppStack /> */}
-      {/* </Stack.Navigator> */}
+      {isLogin === true ? <MainNavigator /> : <AuthNavigator />}
     </NavigationContainer>
   )
 }

@@ -91,7 +91,7 @@ export const WelcomeScreen: FC<StackScreenProps<NavigatorParamList, "welcome">> 
     const nextScreen = () => navigation.navigate("demo")
 
     return (
-      <View testID="LoginScreen" style={FULL}>
+      <View testID="CoachingJournalMain" style={FULL}>
         <GradientBackground colors={["#422443", "#281b34"]} />
         <Screen style={CONTAINER} preset="scroll" backgroundColor={color.transparent}>
           <Header headerTx="welcomeScreen.poweredBy" style={HEADER} titleStyle={HEADER_TITLE} />

@@ -25,7 +25,7 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
     })
 
     return (
-      <VStack testID="LoginScreen" style={{backgroundColor: Colors.WHITE, flex: 1, justifyContent: 'center'}}>
+      <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.WHITE, flex: 1, justifyContent: 'center'}}>
         {/* <GradientBackground colors={["#422443", "#281b34"]} /> */}
         <KeyboardAvoidingView behavior='padding' style={{ minHeight: Dimensions.get('screen').height}}>
           <ScrollView bounces={false} style={[Layout.flex, Layout.heightFull]}>

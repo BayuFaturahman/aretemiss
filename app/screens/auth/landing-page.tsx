@@ -23,7 +23,7 @@ const LandingPage: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
     })
 
     return (
-      <VStack testID="LoginScreen" style={{backgroundColor: Colors.WHITE, flex: 1, justifyContent: 'center'}}>
+      <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.WHITE, flex: 1, justifyContent: 'center'}}>
         <SafeAreaView style={{flex: 1}}>
           <Spacer />
           <VStack horizontal={Spacing[24]}>

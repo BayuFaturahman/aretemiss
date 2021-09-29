@@ -128,3 +128,8 @@ export const UNDERTONE_BLUE = '#032161';
 export const MAIN_RED = '#D92D34';
 export const BRIGHT_BLUE = '#054DEC';
 
+export const HONEY_YELLOW = '#F2C94C';
+export const SOFT_PURPLE = '#BB6BD9';
+export const SOFT_GREEN = '#6FCF97';
+export const LIGHT_GRAY = '#F2F2F2';
+
