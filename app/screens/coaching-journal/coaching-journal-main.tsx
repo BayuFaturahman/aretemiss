@@ -6,7 +6,7 @@ import {
   Text,
   BackNavigation
 } from "@components"
-import { NavigatorParamList } from "@navigators/auth-navigator"
+import { NavigatorParamList } from "@navigators/main-navigator"
 import {VStack} from "@components/view-stack";
 import Spacer from "@components/spacer";
 import {Colors, Layout, Spacing} from "@styles";
@@ -84,7 +84,7 @@ const EXAMPLE_COACHING_DATA:Array<CoachingJournalItem> = [
   }
 ]
 
-const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
+const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJournalMain">> = observer(
   ({ navigation }) => {
 
     const [coachingData, setCoachingData] = useState<Array<CoachingJournalItem>>(EXAMPLE_COACHING_DATA);
@@ -92,13 +92,9 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "login">> = o
     const [, forceUpdate] = useReducer(x => x + 1, 0);
 
 
-    const goBack = () => navigation.navigate("verifyPhone")
+    const goBack = () => navigation.navigate("settingsPage")
 
-    const newEntry = () => navigation.navigate("forgotPassword")
-
-    const styles = StyleSheet.create({
-
-    })
+    const newEntry = () => navigation.navigate("settingsPage")
 
     const holdActivitiesId = useCallback((selectedId)=>{
       setSelectedActivities(selectedId)

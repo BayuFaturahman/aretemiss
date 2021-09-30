@@ -14,6 +14,7 @@ import authScreens, { NavigatorParamList as AuthNavigatorParamList} from "@navig
 
 import mainScreens, { NavigatorParamList as MainNavigatorParamList } from "@navigators/main-navigator";
 import {useStores} from "@models";
+import {observer} from "mobx-react-lite";
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -78,7 +79,7 @@ const MainNavigator: React.FC = () => {
 
 interface NavigationProps extends Partial<React.ComponentProps<typeof NavigationContainer>> {}
 
-export const AppNavigator = (props: NavigationProps) => {
+export const AppNavigator = observer( (props: NavigationProps) => {
   const colorScheme = useColorScheme()
 
   const [isLogin, setIsLogin] = useState(false)
@@ -86,12 +87,13 @@ export const AppNavigator = (props: NavigationProps) => {
   const { authStore } = useStores()
 
   useEffect(() => {
+    console.log('check auth')
     if(authStore.authUser.token){
       setIsLogin(true)
     }else{
       setIsLogin(false)
     }
-  }, [authStore.authUser.token])
+  }, [authStore.authUser.token, authStore.authUser])
 
   return (
     <NavigationContainer
@@ -104,11 +106,10 @@ export const AppNavigator = (props: NavigationProps) => {
         // translucent
         backgroundColor="white"
       />
-      {/* TODO : If User not authenticated reroute to this stack */}
       {isLogin === true ? <MainNavigator /> : <AuthNavigator />}
     </NavigationContainer>
   )
-}
+}, )
 
 AppNavigator.displayName = "AppNavigator"
 
