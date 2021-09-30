@@ -15,6 +15,7 @@ import FastImage from "react-native-fast-image";
 
 import SMSVerifyCode from 'react-native-sms-verifycode'
 import {useStores} from "@models";
+import {errorCollection} from "@utils/form-error-type";
 
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 40 : 0
 
@@ -22,6 +23,8 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
   ({ navigation }) => {
 
     const [otpCode, setOTPCode] = useState<number | null>()
+    const [isError, setIsError] = useState<boolean>(false)
+    const [errorMessage, setErrorMessage] = useState<string | null>('')
 
     const { authStore } = useStores()
 
@@ -30,6 +33,7 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
       if(authStore.authUser.otp === Number(otpCode)){
         console.log('otp match')
       }
+      authStore.loginVerify(otpCode ? otpCode.toString() : '')
     }
 
     const goToLogin = () => navigation.navigate("login")
@@ -43,6 +47,16 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
       verifyNumber()
     }, [otpCode])
 
+    useEffect(() => {
+      if(authStore.formErrorCode){
+        console.log(authStore.formErrorCode)
+        setIsError(true)
+        setErrorMessage(errorCollection.find(i => i.errorCode === authStore.formErrorCode).message)
+      }else{
+        setIsError(false)
+      }
+    }, [authStore.formErrorCode, authStore.login, isError])
+
     const styles = StyleSheet.create({
 
     })
@@ -55,8 +69,8 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
             <Text type={'header'} text="Selamat datang di iLEAD." />
             <Spacer height={Spacing[32]} />
 
-             <Text type={'body'} style={{textAlign: 'center'}}>
-               Berhasil! Kami sudah mengirimkan 4 digit nomor verifikasi melalui SMS ke nomor hapemu.
+             <Text type={'warning'} style={{textAlign: 'center'}}>
+               {errorMessage}
              </Text>
 
             <Text type={'body'} style={{textAlign: 'center'}}>

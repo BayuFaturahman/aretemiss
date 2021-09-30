@@ -50,6 +50,7 @@ export class Api {
   }
 
   setToken(token){
+    console.log('token set: '+ token)
     this.apisauce.setHeader('Authorization', token)
   }
 

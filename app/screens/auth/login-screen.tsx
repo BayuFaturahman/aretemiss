@@ -37,7 +37,7 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
     }, [phoneNumber, password])
 
     useEffect(() => {
-      authStore.resetAuthStore()
+      // authStore.resetAuthStore()
     }, [])
 
     useEffect(() => {
@@ -62,6 +62,10 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
         setIsError(false)
       }
     }, [authStore.formErrorCode, authStore.login, isError])
+
+    const logout = useCallback( ()=>{
+      authStore.resetAuthStore()
+    }, [])
 
     return (
       <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.WHITE, flex: 1, justifyContent: 'center'}}>
@@ -104,7 +108,7 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
               type={"secondary"}
               // style={CONTINUE}
               text={"Lupa Password"}
-              onPress={goToForgotPassword}
+              onPress={logout}
             />
           </VStack>
           <Spacer />

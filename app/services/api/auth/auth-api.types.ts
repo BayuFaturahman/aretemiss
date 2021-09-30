@@ -11,4 +11,11 @@ export interface ErrorFormResponse {
   message: string
 }
 
+export interface LoginVerifyResponse {
+  token: string
+  needChangePassword: boolean
+}
+
 export type LoginResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: LoginResponse }  | GeneralApiProblem
+
+export type LoginVerifyResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: LoginVerifyResponse }  | GeneralApiProblem

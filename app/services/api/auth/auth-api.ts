@@ -1,7 +1,7 @@
 import { ApiResponse } from "apisauce"
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
-import {LoginResult} from "@services/api/auth/auth-api.types";
+import {LoginResult, LoginVerifyResult} from "@services/api/auth/auth-api.types";
 
 export class AuthApi {
   private api: Api
@@ -38,7 +38,7 @@ export class AuthApi {
     }
   }
 
-  async loginVerify(phoneNumber: string, userId: string, otpCode: string, otpHash: string): Promise<LoginResult> {
+  async loginVerify(phoneNumber: string, userId: string, otpCode: string, otpHash: string): Promise<LoginVerifyResult> {
     try {
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.post(

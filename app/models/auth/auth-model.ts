@@ -13,7 +13,8 @@ export const AuthModel = types.model("AuthUser").props({
   updatedAt: types.maybe(types.string),
   token: types.maybe(types.string),
   otp: types.maybeNull(types.number),
-  otpHash: types.maybe(types.string)
+  otpHash: types.maybe(types.string),
+  needChangePassword: types.maybe(types.boolean)
 })
 
 type AuthUserType = Instance<typeof AuthModel>

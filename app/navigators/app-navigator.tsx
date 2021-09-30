@@ -4,7 +4,7 @@
  * Generally speaking, it will contain an auth flow (registration, login, forgot password)
  * and a "main" flow which the user will use once logged in.
  */
-import React, {FunctionComponent, useState} from "react"
+import React, {FunctionComponent, useEffect, useState} from "react"
 import {StatusBar, useColorScheme} from "react-native"
 import { NavigationContainer, DefaultTheme, DarkTheme } from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
@@ -13,6 +13,7 @@ import { navigationRef } from "./navigation-utilities"
 import authScreens, { NavigatorParamList as AuthNavigatorParamList} from "@navigators/auth-navigator";
 
 import mainScreens, { NavigatorParamList as MainNavigatorParamList } from "@navigators/main-navigator";
+import {useStores} from "@models";
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -81,6 +82,16 @@ export const AppNavigator = (props: NavigationProps) => {
   const colorScheme = useColorScheme()
 
   const [isLogin, setIsLogin] = useState(false)
+
+  const { authStore } = useStores()
+
+  useEffect(() => {
+    if(authStore.authUser.token){
+      setIsLogin(true)
+    }else{
+      setIsLogin(false)
+    }
+  }, [authStore.authUser.token])
 
   return (
     <NavigationContainer
