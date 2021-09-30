@@ -35,8 +35,9 @@ const AuthNavigator: React.FC = () => {
     <AuthStack.Navigator
       screenOptions={{
         headerShown: false,
+        gestureEnabled: true,
       }}
-      initialRouteName="landingPage"
+      initialRouteName="login"
     >
       {authScreens.map((route)=>{
         return(
@@ -44,7 +45,7 @@ const AuthNavigator: React.FC = () => {
             key={route.name}
             name={route.name}
             component={route.component as FunctionComponent<unknown>}
-            options={{headerShown: false}} />
+            options={{headerShown: false, gestureEnabled: true}} />
         )
       })}
     </AuthStack.Navigator>
@@ -79,7 +80,7 @@ interface NavigationProps extends Partial<React.ComponentProps<typeof Navigation
 export const AppNavigator = (props: NavigationProps) => {
   const colorScheme = useColorScheme()
 
-  const [isLogin, setIsLogin] = useState(true)
+  const [isLogin, setIsLogin] = useState(false)
 
   return (
     <NavigationContainer

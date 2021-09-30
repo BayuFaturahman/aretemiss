@@ -130,7 +130,7 @@ export function TextField(props: TextFieldProps) {
           {...rest}
           style={inputStyles}
           ref={forwardedRef}
-          secureTextEntry={showPassword}
+          secureTextEntry={!showPassword}
         >
         </TextInput>
         <TouchableOpacity style={{position: 'absolute', right: 0, bottom: Spacing[20]}} onPress={()=>setShowPassword(!showPassword)}>

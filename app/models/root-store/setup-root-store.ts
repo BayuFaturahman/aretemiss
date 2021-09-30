@@ -34,6 +34,15 @@ export async function setupRootStore() {
     // load data from storage
     data = (await storage.load(ROOT_STATE_STORAGE_KEY)) || {}
     rootStore = RootStoreModel.create(data, env)
+
+    // TODO check token validity here
+    console.log('user token')
+    console.log(rootStore.authStore.authUser.token)
+
+    env.api.removeToken()
+
+    // console.log(env.api.setToken('123'))
+
   } catch (e) {
     // if there's any problems loading, then let's at least fallback to an empty state
     // instead of crashing.

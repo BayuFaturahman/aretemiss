@@ -34,6 +34,11 @@ export class Api {
    * Be as quick as possible in here.
    */
   setup() {
+
+    // const { authStore } = useStores()
+
+    console.log('setup api')
+
     // construct the apisauce instance
     this.apisauce = create({
       baseURL: this.config.url,
@@ -42,6 +47,14 @@ export class Api {
         Accept: "application/json",
       },
     })
+  }
+
+  setToken(token){
+    this.apisauce.setHeader('Authorization', token)
+  }
+
+  removeToken(){
+    this.apisauce.setHeader('Authorization', '')
   }
 
   /**

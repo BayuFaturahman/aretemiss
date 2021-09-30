@@ -1,4 +1,4 @@
-import React, { FC } from "react"
+import React, {FC, useCallback, useEffect, useState} from "react"
 import {Keyboard, KeyboardAvoidingView, Platform, StyleSheet} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
@@ -14,20 +14,34 @@ import logoBottom from "@assets/icons/ilead-bottom-logo.png";
 import FastImage from "react-native-fast-image";
 
 import SMSVerifyCode from 'react-native-sms-verifycode'
+import {useStores} from "@models";
 
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 40 : 0
 
 const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observer(
   ({ navigation }) => {
+
+    const [otpCode, setOTPCode] = useState<number | null>()
+
+    const { authStore } = useStores()
+
     const verifyNumber = () => {
-      navigation.navigate("createProfile")
-      Keyboard.dismiss()
+      console.log('verify number')
+      if(authStore.authUser.otp === Number(otpCode)){
+        console.log('otp match')
+      }
     }
+
     const goToLogin = () => navigation.navigate("login")
 
-    const onInputCompleted = () => {
+    const onInputCompleted =(otp) => {
+      setOTPCode(otp)
       Keyboard.dismiss()
     }
+
+    useEffect(() => {
+      verifyNumber()
+    }, [otpCode])
 
     const styles = StyleSheet.create({
 
@@ -35,7 +49,6 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
 
     return (
       <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.WHITE, flex: 1, justifyContent: 'center'}}>
-        {/* <GradientBackground colors={["#422443", "#281b34"]} /> */}
         <KeyboardAvoidingView behavior='padding' keyboardVerticalOffset={keyboardVerticalOffset} style={{flex: 1}}>
           <Spacer />
           <VStack top={Spacing[24]} horizontal={Spacing[24]}>
@@ -45,6 +58,10 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
              <Text type={'body'} style={{textAlign: 'center'}}>
                Berhasil! Kami sudah mengirimkan 4 digit nomor verifikasi melalui SMS ke nomor hapemu.
              </Text>
+
+            <Text type={'body'} style={{textAlign: 'center'}}>
+              {authStore.authUser.otp}
+            </Text>
 
             <Spacer height={Spacing[12]} />
           </VStack>
