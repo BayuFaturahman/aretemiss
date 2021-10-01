@@ -14,6 +14,7 @@ import {
   signupFailed,
   signupVerifySuccess,
   signVerifyFailed,
+  setAuthToken,
 } from '../actions/index';
 import Utils from '../common/utils';
 
@@ -51,6 +52,7 @@ function* workerLoginVerify(api, params) {
       const response = yield call(api.postLoginVerify, params.payload);
       if (response.status === 200) {
         yield call(api.setAuthToken,response.data.data.token);
+        yield put(setAuthToken(response.data.data.token))
         console.log('response.', response.data)
         yield put(loginVerifySuccess(response.data));
       } else {

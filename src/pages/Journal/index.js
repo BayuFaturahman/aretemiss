@@ -46,6 +46,17 @@ class JournalScreen extends React.Component {
     return {...prevState};
   };
 
+  toDetail = (data) => {
+    console.log('this.props.account', this.props.account)
+    console.log('data.coach_id', data.coach_id)
+
+    const detailAs = data.coach_id == this.props.account.user_id ? 'coach' : 'learner'
+    console.log('detailAs', detailAs)
+    if(detailAs == 'coach'){
+      this.props.navigation.navigate('DetailJournal', { id: data.journal_id ? data.journal_id : '', detail: detailAs})
+    }
+  }
+
   render() {
     return (
       <View style={styles.parentContainer}>
@@ -94,7 +105,7 @@ class JournalScreen extends React.Component {
                       {items.journals.map((data, index)=>{
                       return <TouchableOpacity 
                         style={[styles.containContainTop, { borderBottomWidth: index == items.journals.length -1 ? 0 : 1}]}
-                        onPress={()=>{this.props.navigation.navigate('DetailJournal')}}
+                        onPress={()=>{this.toDetail(data)}}
                         >
                           <View style={styles.dotGreen}/>
                           <Text>
@@ -125,6 +136,7 @@ class JournalScreen extends React.Component {
 const mapStateToProps = (state) => {
   return {
     jurnal: state.account.jurnal,
+    account: state.account.account,
     getJurnalResponse: state.account.getJurnalResponse,
   };
 };

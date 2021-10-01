@@ -10,12 +10,14 @@ const create = (baseURL = 'https://hermes-dot-ilead-2021.et.r.appspot.com/') => 
     headers: {
       'Cache-Control': 'no-cache',
       // 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI4YjM2Y2YxYS0zMmRmLTQyM2YtOTEwYS02NjdiNGUxMWM0ZGEiLCJpYXQiOjE2MzA1NTYxNTQsImV4cCI6MTYzMDY0MjU1NH0.tQYb2rngQWVIVFJH44ByQTVoEBAGGvOQ2U__WE3Jzo4'
-      'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI4YjM2Y2YxYS0zMmRmLTQyM2YtOTEwYS02NjdiNGUxMWM0ZGEiLCJpYXQiOjE2MzE4Njk4ODcsImV4cCI6MTYzMTk1NjI4N30.KuKziiiypjKkBtwtNmtWDdWrxux3KvSrbrsBhjioV7A'
-
+      'Authorization': 'Bearer '
     },
     // 10 second timeout...
     timeout: 30000
   });
+
+  const naviMonitor = response => console.log('hey!  listen! ', response)
+  api.addMonitor(naviMonitor)
 
   const setAuthToken = (userAuth) => { api.setHeader('Authorization', `Bearer ${userAuth}`) };
   const setLanguage = () => api.setHeader('Accept-Language', 'id');  
@@ -38,7 +40,7 @@ const create = (baseURL = 'https://hermes-dot-ilead-2021.et.r.appspot.com/') => 
   const createJurnal = (params) => api.post(`journal`, params);  
 
   const getFeedback = (id) => api.get(`journal/${id}/feedback`);  
-  const createFeedback = () => api.get(`journal`);  
+  const createFeedback = () => api.get(`  `);  
 
   return {
     api,

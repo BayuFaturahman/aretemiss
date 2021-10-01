@@ -1,6 +1,10 @@
 import React from 'react';
 
 import {View, Image, Text, Animated, ActivityIndicator} from 'react-native';
+import api from '../../services/api';
+
+//Redux Library
+import {connect} from 'react-redux';
 
 import styles from './styles';
 
@@ -41,7 +45,12 @@ class SplashScreen extends React.Component {
       });
 
       this.timeoutHandle = setTimeout(() => {
-        this.props.navigation.navigate('Home');
+        if(this.props.token !=  null){
+          api.setAuthToken(this.props.token)
+          this.props.navigation.navigate('Home');
+        }else{
+          this.props.navigation.navigate('Landing');
+        }
       }, 2000);
     });
   }
@@ -64,4 +73,16 @@ class SplashScreen extends React.Component {
   }
 }
 
-export default SplashScreen;
+// Method to get the Global State Object
+const mapStateToProps = (state) => {
+  return {
+    token: state.persistReducer.authToken,
+  };
+};
+
+// Method to dispatch Actions
+const mapDispatchToProps = (dispatch) => ({
+});
+
+// Make the Component available to other parts of the application
+export default connect(mapStateToProps, mapDispatchToProps)(SplashScreen);

@@ -43,6 +43,7 @@ import {
     SET_REQUEST_JOURNAL,
     CREATE_JOURNAL_SUCCESS,
     CREATE_JOURNAL_FAILED,
+    SET_AUTH_TOKEN,
 } from './types';
 
 
@@ -351,6 +352,13 @@ export const getJournalDetailFailed = (response) => {
 export const setRequestJournal = (response) => {
     return {
         type: SET_REQUEST_JOURNAL,
+        payload: response
+    }
+}
+
+export const setAuthToken = (response) => {
+    return {
+        type: SET_AUTH_TOKEN,
         payload: response
     }
 }

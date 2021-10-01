@@ -73,3 +73,6 @@ export const GET_JOURNAL_DETAIL_FAILED = 'get_journal_detail_failed';
 
 // set_request_journal
 export const SET_REQUEST_JOURNAL = 'set_request_journal';
+
+// set_auth_token
+export const SET_AUTH_TOKEN = 'set_auth_token';

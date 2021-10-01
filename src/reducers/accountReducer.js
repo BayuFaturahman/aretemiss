@@ -82,6 +82,9 @@ export default (state, action) => {
             jurnal: groupArrays,
             spinner: false,
          }
+         case GET_JOURNAL_FAILED:
+            return { ...state, getJurnalResponse: null, 
+               jurnal: [], spinner: false}
       case ACCOUNT:
          return { ...state, spinner: true}
       case ACCOUNT_SUCCESS:
@@ -95,6 +98,7 @@ export default (state, action) => {
       case CREATE_JOURNAL:
             return { ...state, spinner: true}
       case CREATE_JOURNAL_SUCCESS:
+            console.log('action.payload', action.payload)
             return { ...state, createJournalResponse: action.payload, spinner: false}
       case CREATE_JOURNAL_FAILED:
             return { 

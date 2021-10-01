@@ -222,6 +222,7 @@ const mapStateToProps = (state) => {
   return {
     jurnal: state.account.jurnal,
     account: state.account.account,
+    spinner: state.account.spinner
   };
 };
 

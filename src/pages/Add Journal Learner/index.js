@@ -15,7 +15,7 @@ import * as Progress from 'react-native-progress';
 import moment from 'moment'
 import styles from './styles';
 
-import { getJournalDetailActions } from '../../actions/index';
+import {accountActions, getJournalActions, getTeamMemberActions, setRequestJournal} from '../../actions/index';
 
 import {Spinner, TextInputCustom} from '../../components';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -26,10 +26,9 @@ import {connect} from 'react-redux';
 import { TextAreaCustom } from '../../components/TextInputArea';
 
 // Create a component
-class DetailJournalScreen extends React.Component {
+class AddJournalScreen extends React.Component {
   constructor(props) {
     super(props);
-    const { id } = props.route ? props.route.params : ''
     this.state = {
       title: '',
       errorTitle: '',
@@ -43,8 +42,6 @@ class DetailJournalScreen extends React.Component {
       errorTalkingTingkat: '',
       talkingNextSession: '',
       errorTalkingNextSession: '',
-      jl_lesson_learned: '',
-      jl_commitment: '',
       errorValue: '',
       open: false,
       value: null,
@@ -52,9 +49,9 @@ class DetailJournalScreen extends React.Component {
       mode: 'date',
       show: false,
       type: null,
-      detailId: id,
-      items: [{value: 'A', label: 'A'}]
+    items: [{value: 'A', label: 'A'}]
     };
+
     this.setValue = this.setValue.bind(this);
   }
 
@@ -90,10 +87,8 @@ class DetailJournalScreen extends React.Component {
   };
 
   componentDidMount() {
-    if(this.state.detailId != ""){
-      this.props.getJurnal(this.state.detailId);
-    }else{
-      this.props.navigation.pop()
+    if(this.props.account && this.props.account.team1_id != ""){
+      this.props.getTeamMember(this.props.account.team1_id);
     }
   }
 
@@ -127,7 +122,23 @@ class DetailJournalScreen extends React.Component {
   };
 
   lanjutkan = async () => {
-    if (this.state.talkingTingkatan == '') {
+    if (this.state.title == '') {
+      await this.setState({
+        errorTitle: 'Masukan Title',
+      });
+    } else if (this.state.value == '') {
+      await this.setState({
+        errorValue: 'Masukan Nama',
+      });
+    } else if (this.state.talkingAbout == '') {
+      await this.setState({
+        errorTalkingAbout: 'Masukan Komentar',
+      });
+    } else if (this.state.talkingEfektif == '') {
+      await this.setState({
+        errorTalkingEfektif: 'Masukan Komentar',
+      });
+    } else if (this.state.talkingTingkatan == '') {
       await this.setState({
         errorTalkingTingkatan: 'Masukan Komentar',
       });
@@ -149,16 +160,13 @@ class DetailJournalScreen extends React.Component {
           this.state.value
         ],
       }
-
+      this.props.createRequestJournal(params)
+      this.props.navigation.navigate('AddFeedback')
     }
   };
   render() {
-  let name =  ''
-  this.props.jurnal && this.props.jurnal.data && this.props.jurnal.data.jl_learner_fullname.map((data) => {
-    name = `${name} ${data}`
-    console.log(`${data}, ${name}`)
-  })
-  
+    const { open, value, items, show } = this.state;
+    const dataDropdown = this.props.teamMember.length > 0 ? this.props.teamMember : []
     return (
       <View style={styles.parentContainer}>
         <StatusBar backgroundColor="#1E2171" barStyle="light-content" />
@@ -170,7 +178,7 @@ class DetailJournalScreen extends React.Component {
                   <View>
                     <View style={styles.titleCardContent}>
                       <Text style={styles.contentText}>
-                         Journal entry overview
+                        Tambah journal entry
                       </Text>
                     </View>
                   </View>
@@ -182,84 +190,79 @@ class DetailJournalScreen extends React.Component {
                 </View>
                 <View style={{marginLeft: 24, marginRight: 24}}>
                   <TextInputCustom
-                    value={this.props.jurnal && this.props.jurnal.data && this.props.jurnal.data.journal_title}
+                    value={this.state.title}
                     label={'Title'}
                     onChangeText={(e) => this.changeValue('title', e)}
                     onKeyPress={false}
                     format={false}
-                    editable={false}
                     error={this.state.errorTitle}
                   />
                 </View>
                 <View style={[styles.JournalContainer]}>
-                  <TouchableOpacity style={styles.JournalDateContainer} disabled={true}>
+                  <TouchableOpacity style={styles.JournalDateContainer} onPress={()=>this.showDatepicker()}>
                     <Text style={styles.textDate}>
                       {moment(this.state.date).format('DD MMM')}
                     </Text>
                   </TouchableOpacity>
                   <View style={styles.JournalContentContainer}>
-                    <TextAreaCustom
-                      value={name}
-                      onKeyPress={false}
-                      format={false}
-                      editable={false}
-                      error={this.state.errorTalkingAbout}
+                    <DropDownPicker
+                      open={open}
+                      value={this.state.value}
+                      style={{
+                        borderColor: this.state.errorValue == '' ? '#A8A8A8' : 'red',
+                        marginBottom: 16
+                      }}
+                      textStyle={{
+                        color: '#A8A8A8'
+                      }}
+                      translation={{
+                        PLACEHOLDER: "Dengan"
+                      }}
+                      items={dataDropdown}
+                      setOpen={(callback)=>this.setOpen(callback)}
+                      setValue={(callback)=>this.setValue(callback)}
+                      setItems={(callback)=>this.setItems(callback)}
                     />
                     <TextAreaCustom
-                      value={this.props.jurnal && this.props.jurnal.data && this.props.jurnal.data.journal_content}
+                      value={this.state.talkingAbout}
                       label={'Apa yang dibicarakan saat coaching?'}
+                      onChangeText={(e) => this.changeValue('talkingAbout', e)}
                       onKeyPress={false}
                       format={false}
-                      editable={false}
                       error={this.state.errorTalkingAbout}
                     />
                   </View>
-                  
                 </View>
                 <View style={{marginLeft: 24, marginRight: 24}}>
                   <TextAreaCustom
-                    value={this.props.jurnal && this.props.jurnal.data && this.props.jurnal.data.journal_strength}
+                    value={this.state.talkingEfektif}
                     label={'Sebagai coach, apa yang sudah saya lakukan dengan efektif?'}
+                    onChangeText={(e) => this.changeValue('talkingEfektif', e)}
                     onKeyPress={false}  
                     format={false}
-                    editable={false}
+                    error={this.state.errorTalkingEfektif}
                   />
                   <TextAreaCustom
-                    value={this.props.jurnal && this.props.jurnal.data && this.props.jurnal.data.journal_improvement}
+                    value={this.state.talkingTingkatan}
                     label={'Sebagai coach, kualitas apa yang dapat saya tingkatkan?'}
-                    onKeyPress={false}
-                    format={false}
-                    editable={false}
-                  />
-                  <TextAreaCustom
-                    value={this.props.jurnal && this.props.jurnal.data && this.props.jurnal.data.journal_commitment}
-                    label={'Apa saja yang akan saya lakukan secara berbeda untuk sesi selanjutnya?'}
-                    onKeyPress={false}
-                    format={false}
-                    editable={false}
-                  />
-                    <TextAreaCustom
-                    value={this.state.jl_lesson_learned}
-                    label={'Tulislah “lessons learned”-mu di coaching session ini.'}
                     onChangeText={(e) => this.changeValue('talkingTingkatan', e)}
                     onKeyPress={false}
                     format={false}
                     error={this.state.errorTalkingTingkat}
                   />
                   <TextAreaCustom
-                    value={this.state.jl_commitment}
-                    label={'Komitment apa saja yang sudah disepakati bersama?'}
+                    value={this.state.talkingNextSession}
+                    label={'Apa saja yang akan saya lakukan secara berbeda untuk sesi selanjutnya?'}
                     onChangeText={(e) => this.changeValue('talkingNextSession', e)}
                     onKeyPress={false}
                     format={false}
-                    editable={false}
                     error={this.state.errorTalkingNextSession}
                   />
                 </View>
-                <View style={{flexDirection: 'row', marginLeft: 24, marginRight: 24,
+                <View style={{flexDirection: 'row', justifyContent: 'center', marginLeft: 24, marginRight: 24,
                   marginTop: 16}}>
-                      <TouchableOpacity style={this.props.jurnal && this.props.jurnal.data.journal_type == 'casual' ? styles.dotYellowSelected : styles.dotYellow}/>
-                      <TouchableOpacity style={this.props.jurnal && this.props.jurnal.data.journal_type == 'weekly' ? styles.dotPurpleSelected : styles.dotPurple}/>
+                      <TouchableOpacity style={this.state.type == 0 ? styles.dotYellowSelected : styles.dotYellow} onPress={()=>{ this.setState({ type: 0})}}/>
+                      <TouchableOpacity style={this.state.type == 1 ? styles.dotPurpleSelected : styles.dotPurple} onPress={()=>{ this.setState({ type: 1})}}/>
                 </View>
                 <View style={{flexDirection: 'row', justifyContent: 'center', marginLeft: 24, marginRight: 24,
                   marginTop: 32}}>
@@ -273,11 +276,17 @@ class DetailJournalScreen extends React.Component {
                   </Text>
                 </View>
                 <View style={{flexDirection: 'row', justifyContent: 'center', marginLeft: 24, marginRight: 24, marginTop: 32}}>
-                  <TouchableOpacity style={{ backgroundColor: 'red', justifyContent: 'center', width: 164, height: 40, borderRadius: 17}} onPress={()=>{this.lanjutkan()}}>
+                  <TouchableOpacity style={{ backgroundColor: '#054DEC', justifyContent: 'center', width: 164, height: 40, borderRadius: 17}} onPress={()=>{this.lanjutkan()}}>
                   <Text style={{fontSize: 14, color: '#FFFFFF', textAlign:'center'}}>
-                    Hasil feedback
+                    Lakukan feedback
                     </Text>
                   </TouchableOpacity>
+                </View>
+                <View style={{flexDirection: 'row', justifyContent: 'center', marginLeft: 24, marginRight: 24,
+                  marginTop: 24}}>
+                  <Text style={{fontSize: 11, color: 'red', textAlign: 'center'}}>
+                    Penting! Catatan coaching-mu belum tersimpan sampai kamu klik “Submit” setelah melakukan feedback.                  
+                  </Text>
                 </View>
               </View>
 
@@ -307,7 +316,7 @@ class DetailJournalScreen extends React.Component {
 // Method to get the Global State Object
 const mapStateToProps = (state) => {
   return {
-    jurnal: state.account.journalDetail,
+    jurnal: state.account.jurnal,
     account: state.account.account,
     teamMember: state.account.teamMember,
     spinner: state.account.spinner,
@@ -316,9 +325,12 @@ const mapStateToProps = (state) => {
 
 // Method to dispatch Actions
 const mapDispatchToProps = (dispatch) => ({
-  getJurnal: (data) => dispatch(getJournalDetailActions(data))
+  getJurnal: () => dispatch(getJournalActions()),
+  getTeamMember: (data) => dispatch(getTeamMemberActions(data)),
+  createRequestJournal: (data) => dispatch(setRequestJournal(data)),
+
 });
 
 // Make the Component available to other parts of the application
-export default connect(mapStateToProps, mapDispatchToProps)(DetailJournalScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(AddJournalScreen);
 

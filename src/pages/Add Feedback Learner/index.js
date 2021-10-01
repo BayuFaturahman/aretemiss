@@ -49,9 +49,7 @@ class AddFeedbackScreens extends React.Component {
   }
 
   componentDidUpdate = (prevProps, prevState) => {
-    console.log('componentDidUpdate', this.props.createJournalResponse)
     if(this.props.createJournalResponse != prevProps.createJournalResponse){
-      console.log('this.props.createJournalResponse', this.props.createJournalResponse)
       if(this.props.createJournalResponse && this.props.createJournalResponse.message == 'Success'){
         this.props.navigation.navigate('Journal'); 
       }
@@ -87,7 +85,6 @@ class AddFeedbackScreens extends React.Component {
         q6: this.state.q6
       }
     }
-    console.log('params', params)
     this.props.createJurnal(params)
   }
   render() {
@@ -116,7 +113,7 @@ class AddFeedbackScreens extends React.Component {
                 <ScrollView
                     style={styles.scrollView}>
                     <Text style={[styles.descriptionText, {color: 'black', textAlign: 'left'}]}>
-                      Dalam skala 1 - 5, seberapa baik saya sudah membangun rapport atau kedekatan di awal sesi?                
+                      Dalam skala 1 - 5, seberapa baik coach-mu sudah membangun rapport atau kedekatan di awal sesi?             
                     </Text>
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft: 24, marginRight: 24,
                   marginTop: 16}}>
@@ -127,7 +124,7 @@ class AddFeedbackScreens extends React.Component {
                       <TouchableOpacity style={this.isChecked('q1', '5') ? styles.dotBlue:styles.dotGrey} onPress={()=>{this.changeValue('q1','5')}}/>
                     </View>
                     <Text style={[styles.descriptionText, {color: 'black', textAlign: 'left'}]}>
-                      Dalam skala 1 - 5, seberapa baik saya sudah membantu coachee menentukan outcome? Berilah rating pada pernyataan berikut ini sesuai dengan sesi coaching yang sudah kamu lakukan.                
+                      Dalam skala 1 - 5, seberapa baik coach-mu sudah membantu saya sebagai coachee menentukan outcome?
                     </Text>
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft: 24, marginRight: 24,
                   marginTop: 16}}>
@@ -138,7 +135,7 @@ class AddFeedbackScreens extends React.Component {
                       <TouchableOpacity style={this.isChecked('q2', '5') ? styles.dotBlue:styles.dotGrey} onPress={()=>{this.changeValue('q2','5')}}/>
                     </View>
                     <Text style={[styles.descriptionText, {color: 'black', textAlign: 'left'}]}>
-                      Dalam skala 1 - 5, seberapa baik saya sudah mempraktekan active listening atau mendengar aktif saat sesi berlangsung?
+                      Dalam skala 1 - 5, seberapa baik coach-mu sudah mempraktekan active listening atau mendengar aktif saat sesi berlangsung?
                     </Text>
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft: 24, marginRight: 24,
                   marginTop: 16}}>
@@ -149,7 +146,7 @@ class AddFeedbackScreens extends React.Component {
                       <TouchableOpacity style={this.isChecked('q3', '5') ? styles.dotBlue:styles.dotGrey} onPress={()=>{this.changeValue('q3','5')}}/>
                     </View>
                     <Text style={[styles.descriptionText, {color: 'black', textAlign: 'left'}]}>
-                      Dalam skala 1 - 5, seberapa baik saya sudah mengajukan powerful questions atau pertanyaan yang menggugah pada saat sesi berlangsung?
+                      Dalam skala 1 - 5, seberapa baik coach-mu sudah mengajukan powerful questions atau pertanyaan yang menggugah pada saat sesi berlangsung?
                     </Text>
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft: 24, marginRight: 24,
                   marginTop: 16}}>
@@ -160,7 +157,7 @@ class AddFeedbackScreens extends React.Component {
                       <TouchableOpacity style={this.isChecked('q4', '5') ? styles.dotBlue:styles.dotGrey} onPress={()=>{this.changeValue('q4','5')}}/>
                     </View>
                     <Text style={[styles.descriptionText, {color: 'black', textAlign: 'left'}]}>
-                    Dalam skala 1 - 5, seberapa baik saya sudah menggali insights atau pembelajaran yang coachee dapatkan selama sesi berlangsung?
+                      Dalam skala 1 - 5, seberapa baik saya sudah menggali insights atau pembelajaran yang coachee dapatkan selama sesi berlangsung?
                     </Text>
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft: 24, marginRight: 24,
                   marginTop: 16}}>
@@ -171,7 +168,7 @@ class AddFeedbackScreens extends React.Component {
                       <TouchableOpacity style={this.isChecked('q5', '5') ? styles.dotBlue:styles.dotGrey} onPress={()=>{this.changeValue('q5','5')}}/>
                     </View>
                     <Text style={[styles.descriptionText, {color: 'black'}]}>
-                      Dalam skala 1 - 5, seberapa baik saya sudah membantu coachee untuk menyampaikan komitmen di akhir sesi?
+                    Dalam skala 1 - 5, seberapa baik coach-mu sudah membantu saya sebagai coachee untuk menyampaikan komitmen di akhir sesi?”
                     </Text>
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', marginLeft: 24, marginRight: 24,
                   marginTop: 16}}>
