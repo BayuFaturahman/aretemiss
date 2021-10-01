@@ -1,6 +1,6 @@
 import {AppRoute} from "@navigators/navigation-type";
 import {coachingJournalMain} from "@screens/coaching-journal";
-import Settings from "@screens/settings/settings";
+import {settings, myAccount} from "@screens/settings";
 
 const screens: AppRoute[] = [
   {
@@ -9,13 +9,18 @@ const screens: AppRoute[] = [
   },
   {
     name: 'settingsPage',
-    component: Settings,
+    component: settings,
+  },
+  {
+    name: 'myAccount',
+    component: myAccount,
   },
 ];
 
 export type NavigatorParamList = {
   coachingJournalMain: undefined;
   settingsPage: undefined;
+  myAccount: undefined;
 };
 
 export default screens

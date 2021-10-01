@@ -9,7 +9,8 @@ import FastImage from "react-native-fast-image";
 
 import eyeIcon from '@assets/icons/eyes.png'
 import eyeIconFalse from '@assets/icons/eyesFalse.png'
-import {HStack} from "@components/view-stack";
+import {HStack, VStack} from "@components/view-stack";
+import {Button} from "@components/button/button";
 
 // the base styling for the container
 const CONTAINER: ViewStyle = {
@@ -62,6 +63,10 @@ export interface TextFieldProps extends TextInputProps {
   isError?: boolean
 
   isRequired?: boolean
+
+  changeButton?: boolean
+
+  onPressChangeButton?(): void
 }
 
 const EYES_ICON =  {
@@ -85,6 +90,8 @@ export function TextField(props: TextFieldProps) {
     forwardedRef,
     isError,
     isRequired = true,
+    changeButton = false,
+    onPressChangeButton = () => null,
     ...rest
   } = props
 
@@ -115,6 +122,17 @@ export function TextField(props: TextFieldProps) {
     return isRequired === true ? <Text type={'label'} style={[{fontSize: Spacing[14]}, LABEL_STYLE]} text={`*`} /> : null
   }
 
+  const renderChangeButton = () => {
+    return (changeButton === true ? <VStack style={{width: Spacing[72], position: 'absolute', right: 0, top: Spacing[12]}}>
+        <Button
+          type={"primary"}
+          text={"Ganti"}
+          onPress={onPressChangeButton}
+        />
+      </VStack> : null
+    )
+  }
+
   if(props.secureTextEntry){
     return(
       <View style={[containerStyles, {position: 'relative'}]}>
@@ -133,9 +151,10 @@ export function TextField(props: TextFieldProps) {
           secureTextEntry={!showPassword}
         >
         </TextInput>
-        <TouchableOpacity style={{position: 'absolute', right: 0, bottom: Spacing[20]}} onPress={()=>setShowPassword(!showPassword)}>
+        <TouchableOpacity style={{ position: 'absolute', right: changeButton === true ? null : 0, bottom: Spacing[20]}} onPress={()=>setShowPassword(!showPassword)}>
           <FastImage style={EYES_ICON} source={showPassword ? eyeIconFalse : eyeIcon} resizeMode={"contain"}/>
         </TouchableOpacity>
+        {renderChangeButton()}
       </View>
     )
   }
@@ -155,6 +174,7 @@ export function TextField(props: TextFieldProps) {
         style={inputStyles}
         ref={forwardedRef}
       />
+      {renderChangeButton()}
     </View>
   )
 }

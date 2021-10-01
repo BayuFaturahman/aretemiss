@@ -20,6 +20,8 @@ const Settings: FC<StackScreenProps<NavigatorParamList, "settingsPage">> = obser
 
     const goBack = () => navigation.goBack()
 
+    const goToMyAccount = () => navigation.navigate('myAccount')
+
     const logout = useCallback( ()=>{
       authStore.resetAuthStore()
     }, [])
@@ -38,7 +40,7 @@ const Settings: FC<StackScreenProps<NavigatorParamList, "settingsPage">> = obser
               <Button
                 type={"primary"}
                 text={"My Account"}
-                // onPress={submitLogin}
+                onPress={goToMyAccount}
               />
               <Spacer height={Spacing[16]} />
               <Button
