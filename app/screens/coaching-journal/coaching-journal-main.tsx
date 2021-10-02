@@ -1,5 +1,5 @@
 import React, {FC, useCallback, useReducer, useState} from "react"
-import {FlatList, SafeAreaView, ScrollView, StyleSheet} from "react-native"
+import {FlatList, SafeAreaView, ScrollView, StyleSheet, View} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {
@@ -7,7 +7,7 @@ import {
   BackNavigation
 } from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
-import {VStack} from "@components/view-stack";
+import {HStack, VStack} from "@components/view-stack";
 import Spacer from "@components/spacer";
 import {Colors, Layout, Spacing} from "@styles";
 
@@ -15,6 +15,13 @@ import {CoachingJournalItemRender} from "@screens/coaching-journal/components/co
 import {CoachingJournalItem} from "@screens/coaching-journal/coaching-journal.type";
 import {ActivitiesTypeLegends} from "@screens/coaching-journal/components/activities-type-legends";
 import {NewButton} from "@screens/coaching-journal/components/new-button";
+import FastImage from "react-native-fast-image";
+
+import arrowYellow from "@assets/icons/coachingJournal/empty/arrow-yellow.png";
+import smileYellow from "@assets/icons/coachingJournal/empty/smile-yellow.png";
+import surprissedPurple from "@assets/icons/coachingJournal/empty/surprised-purple.png";
+import {dimensions} from "@config/platform.config";
+import {EmptyList} from "@screens/coaching-journal/components/empty-list";
 
 const EXAMPLE_COACHING_DATA:Array<CoachingJournalItem> = [
   {
@@ -87,6 +94,8 @@ const EXAMPLE_COACHING_DATA:Array<CoachingJournalItem> = [
 const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJournalMain">> = observer(
   ({ navigation }) => {
 
+    // empty list state
+    // const [coachingData, setCoachingData] = useState<Array<CoachingJournalItem>>([]);
     const [coachingData, setCoachingData] = useState<Array<CoachingJournalItem>>(EXAMPLE_COACHING_DATA);
     const [selectedActivities, setSelectedActivities] = useState<string>('');
     const [, forceUpdate] = useReducer(x => x + 1, 0);
@@ -128,12 +137,23 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
             </VStack>
             <VStack top={Spacing[32]} horizontal={Spacing[24]} style={[Layout.heightFull, {backgroundColor: Colors.WHITE, borderTopStartRadius: Spacing[48], borderTopEndRadius: Spacing[48]}]}>
               <NewButton onPress={newEntry} />
+              {coachingData.length === 0 ? <FastImage style={{
+                height: Spacing[96],
+                width: Spacing[96],
+                left: (dimensions.screenWidth / 2) + Spacing[32],
+                top: Spacing[24],
+                zIndex: 20,
+                position: 'absolute'
+              }} source={arrowYellow} resizeMode={"contain"}/> : null}
               <Spacer height={Spacing[12]} />
               <Text type={'left-header'} style={{}} text="Catatan jurnal coaching" />
               <Spacer height={Spacing[12]} />
               <FlatList
                 ItemSeparatorComponent={()=><Spacer height={Spacing[24]} />}
                 data={coachingData}
+                ListEmptyComponent={()=>
+                  <EmptyList />
+                }
                 renderItem={({item, index})=><CoachingJournalItemRender
                   {...{item, index}}
                   onPressActivity={holdActivitiesId}
@@ -144,10 +164,12 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
                 />}
                 keyExtractor={item => item.date}
                 ListFooterComponent={
-                  <VStack vertical={Spacing[24]}>
-                    <ActivitiesTypeLegends />
-                  </VStack>
-                }
+                  coachingData.length === 0 ?
+                  null :
+                    <VStack vertical={Spacing[24]}>
+                      <ActivitiesTypeLegends />
+                    </VStack>
+                  }
               />
             </VStack>
           </ScrollView>
