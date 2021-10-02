@@ -35,7 +35,7 @@ export function Text(props: TextProps) {
 
   if(props.type === 'left-header'){
     return(
-      <VStack style={[Layout.widthFull,{alignItems: 'flex-start'}]}>
+      <VStack style={{alignItems: 'flex-start'}}>
         <ReactNativeText {...rest} style={[style, presets.bold, { fontSize: Spacing[18], textAlign: 'center', lineHeight: Spacing[20]} ,styleOverride ]}>
           {content}
         </ReactNativeText>

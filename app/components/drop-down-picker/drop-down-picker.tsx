@@ -13,11 +13,11 @@ import {color, typography} from "@theme/";
 export interface DropDownProps extends DropDownPickerProps {
   onValueChange(items): void
   items?: ItemType[]
-  label: string
+  label?: string
   isRequired: boolean
   isError?: boolean
   placeholder: string
-  containerStyle: StyleProp<StyleProp<any>>
+  containerStyle?: StyleProp<StyleProp<any>>
   open?
   value?
   setOpen?

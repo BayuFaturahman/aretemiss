@@ -132,4 +132,5 @@ export const HONEY_YELLOW = '#F2C94C';
 export const SOFT_PURPLE = '#BB6BD9';
 export const SOFT_GREEN = '#6FCF97';
 export const LIGHT_GRAY = '#F2F2F2';
+export const CLOUD_GRAY = '#E0E0E0';
 

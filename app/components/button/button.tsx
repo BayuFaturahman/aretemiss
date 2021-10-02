@@ -4,6 +4,7 @@ import { Text } from "../text/text"
 import { viewPresets, textPresets } from "./button.presets"
 import { ButtonProps } from "./button.props"
 import {Colors, Spacing} from "@styles";
+import {CLOUD_GRAY} from "@styles/Color";
 
 /**
  * For your text displaying needs.
@@ -66,6 +67,23 @@ export function Button(props: ButtonProps) {
     return (
       <TouchableOpacity style={[{
         paddingVertical: Spacing[8],
+      }, styleOverride]} {...rest}>
+        <Text type={'button'} tx={tx} text={text} style={{
+          textAlign: 'center',
+          color: Colors.UNDERTONE_BLUE,
+          fontSize: Spacing[14]
+        }} />
+      </TouchableOpacity>
+    )
+  }
+
+  if (type === 'negative') {
+    return (
+      <TouchableOpacity style={[{
+        backgroundColor: Colors.CLOUD_GRAY,
+        paddingVertical: Spacing[8],
+        paddingHorizontal: Spacing[16],
+        borderRadius: Spacing[20]
       }, styleOverride]} {...rest}>
         <Text type={'button'} tx={tx} text={text} style={{
           textAlign: 'center',

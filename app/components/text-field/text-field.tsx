@@ -67,6 +67,8 @@ export interface TextFieldProps extends TextInputProps {
   changeButton?: boolean
 
   onPressChangeButton?(): void
+
+  isTextArea?: boolean
 }
 
 const EYES_ICON =  {
@@ -92,6 +94,7 @@ export function TextField(props: TextFieldProps) {
     isRequired = true,
     changeButton = false,
     onPressChangeButton = () => null,
+    isTextArea = false,
     ...rest
   } = props
 
@@ -130,6 +133,28 @@ export function TextField(props: TextFieldProps) {
           onPress={onPressChangeButton}
         />
       </VStack> : null
+    )
+  }
+
+  if(props.isTextArea){
+    return(
+      <View style={containerStyles}>
+        <HStack>
+          {renderRequired()}
+          <Text type={'label'} style={[{fontSize: Spacing[14]}, LABEL_STYLE]} tx={labelTx} text={label} />
+        </HStack>
+        <Spacer height={Spacing[4]} />
+        <TextInput
+          multiline={true}
+          placeholder={actualPlaceholder}
+          placeholderTextColor={color.palette.lighterGrey}
+          underlineColorAndroid={color.transparent}
+          {...rest}
+          style={inputStyles}
+          ref={forwardedRef}
+        />
+        {renderChangeButton()}
+      </View>
     )
   }
 

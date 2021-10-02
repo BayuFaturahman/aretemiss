@@ -103,7 +103,7 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
 
     const goBack = () => navigation.navigate("settingsPage")
 
-    const newEntry = () => navigation.navigate("settingsPage")
+    const newEntry = () => navigation.navigate("newJournalEntry")
 
     const holdActivitiesId = useCallback((selectedId)=>{
       setSelectedActivities(selectedId)
