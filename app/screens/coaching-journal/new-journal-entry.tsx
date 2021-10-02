@@ -21,6 +21,11 @@ import arrowYellow from "@assets/icons/coachingJournal/empty/arrow-yellow.png";
 import {dimensions} from "@config/platform.config";
 import {EmptyList} from "@screens/coaching-journal/components/empty-list";
 
+import Modal from "react-native-modal";
+import notIcon from "@assets/icons/coachingJournal/note.png";
+import CalendarPicker from 'react-native-calendar-picker';
+import {typography} from "@theme";
+
 const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalMain">> = observer(
   ({ navigation }) => {
 
@@ -29,6 +34,17 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
     const [selectedActivities, setSelectedActivities] = useState<string>('');
     const [, forceUpdate] = useReducer(x => x + 1, 0);
 
+    const [isModalVisible, setModalVisible] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(null);
+
+    const toggleModal = () => {
+      setModalVisible(!isModalVisible);
+    };
+
+    const onDateChange = useCallback((selectedId)=>{
+      setSelectedDate(selectedId)
+      // forceUpdate()
+    }, [])
 
     const goBack = () => navigation.goBack()
 
@@ -112,7 +128,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                   </VStack>
                 </HStack>
                 <HStack>
-                  <TouchableOpacity style={{height: '100%', width: '20%'}}>
+                  <TouchableOpacity style={{height: '100%', width: '20%'}} onPress={toggleModal}>
                     <VStack horizontal={Spacing[8]} vertical={Spacing[2]} style={{flex:1, width: '100%', borderRadius: Spacing[12], alignItems: 'flex-end', justifyContent: 'flex-end', backgroundColor: Colors.MAIN_BLUE}}>
                       <Text type={'button'} style={{color:Colors.WHITE, bottom: -Spacing[8]}} text={dateArr[0]} />
                       <Text type={'button'} style={{color:Colors.WHITE}} text={dateArr[1]} />
@@ -192,6 +208,48 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
               <ActivitiesTypeLegends showedItems={[1,2]} />
             </VStack>
           </ScrollView>
+          <Modal
+            isVisible={isModalVisible}
+            onBackdropPress={()=> toggleModal()}
+            swipeDirection="left"
+            key={'modal-new-entry'}
+          >
+            <View style={{ flex: 1, justifyContent: 'center' }}>
+              <VStack style={{backgroundColor: Colors.WHITE, borderRadius: Spacing[48], minHeight: Spacing[256], alignItems: 'center', justifyContent:'center'}} horizontal={Spacing[24]} vertical={Spacing[24]}>
+                {/* <FastImage style={{ */}
+                {/*  height: Spacing[24], */}
+                {/*  width: Spacing[24] */}
+                {/* }} source={notIcon} resizeMode={"contain"}/> */}
+                <VStack vertical={Spacing[12]}>
+                  <Spacer height={Spacing[24]} />
+                  <CalendarPicker
+                    onDateChange={onDateChange}
+                    textStyle={{
+                      fontFamily: typography.primaryBold,
+                      colors: Colors.MAIN_BLUE
+                    }}
+                    selectedDayColor={Colors.MAIN_BLUE}
+                    selectedDayTextColor={Colors.WHITE}
+                    style={{padding: Spacing[20]}}
+                    width={dimensions.screenWidth - Spacing[64]}
+                  />
+                  <HStack style={[Layout.widthFull, {justifyContent: 'center'}]}>
+                    <Button
+                      type={"negative"}
+                      text={"Cancel"}
+                      onPress={toggleModal}
+                    />
+                    <Button
+                      type={"primary"}
+                      text={"Pilih"}
+                      onPress={toggleModal}
+                      style={{minWidth: Spacing[72]}}
+                    />
+                  </HStack>
+                </VStack>
+              </VStack>
+            </View>
+          </Modal>
         </SafeAreaView>
       </VStack>
     )
