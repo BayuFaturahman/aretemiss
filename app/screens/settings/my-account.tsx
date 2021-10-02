@@ -23,9 +23,9 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
 
     const goBack = () => navigation.goBack()
 
-    const logout = useCallback( ()=>{
-      authStore.resetAuthStore()
-    }, [])
+    const goToChangePassword = () => navigation.navigate('changePassword')
+
+    const goToChangePhone = () => navigation.navigate('changePhone')
 
     const ChangeProfilePicture = ({isError = false}) => {
 
@@ -97,6 +97,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                   isRequired={false}
                   secureTextEntry={true}
                   changeButton={true}
+                  onPressChangeButton={goToChangePassword}
                 />
                 <TextField
                   // value={password}
@@ -107,6 +108,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                   // isError={isError && (authStore.formErrorCode === 3 || authStore.formErrorCode === 15)}
                   // onChangeText={setPassword}
                   changeButton={true}
+                  onPressChangeButton={goToChangePhone}
                 />
               </VStack>
               <Spacer height={Spacing[12]} />
