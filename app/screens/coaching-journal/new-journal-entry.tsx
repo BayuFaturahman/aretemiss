@@ -29,6 +29,14 @@ import {typography} from "@theme";
 const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalMain">> = observer(
   ({ navigation }) => {
 
+    const styles = StyleSheet.create({
+      textError: {
+        color: Colors.MAIN_RED
+      }
+    })
+
+    const fieldError = true
+
     // empty list state
     const [coachingData, setCoachingData] = useState<Array<CoachingJournalItem>>([]);
     const [selectedActivities, setSelectedActivities] = useState<string>('');
@@ -37,8 +45,19 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
     const [isModalVisible, setModalVisible] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
 
+
     const toggleModal = () => {
-      setModalVisible(!isModalVisible);
+      setTimeout(() => {
+        setModalVisible(!isModalVisible);
+      }, 300);
+      console.log(isModalVisible)
+    };
+
+    const closeModal = () => {
+      console.log('closee')
+      setTimeout(() => {
+        setModalVisible(false);
+      }, 300);
     };
 
     const onDateChange = useCallback((selectedId)=>{
@@ -59,12 +78,17 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
       console.log(id)
     }, [])
 
-
     const dateArr = "02 AUG".split(' ')
 
-    const ActivityTypeSelector = ({onActivityPress = (item) => null, selectedActivity = 'weekly_coaching'}) => {
+
+    const ActivityTypeSelector = ({onActivityPress = (item) => null, selectedActivity = 'weekly_coaching', isError = false}) => {
+
+      const styles = StyleSheet.create({
+        container: {borderColor: 'red', borderRadius: Spacing[20], borderStyle: 'dashed', borderWidth: isError ? Spacing[2] : 0, justifyContent: 'space-around', padding: Spacing[6]}
+      })
+
       return(
-      <HStack style={{justifyContent: 'space-around'}}>
+      <HStack style={styles.container}>
         {ACTIVITIES_TYPE.map((item, index)=>{
           if(index < 2){
             return(
@@ -170,9 +194,9 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                   />
                 </VStack>
                 <VStack top={Spacing[12]}>
-                  <Text type={'body-bold'} style={{textAlign: 'center', top: Spacing[4]}}>
+                  <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, fieldError ? styles.textError : null ]}>
                     {`Sebagai coach, kualitas apa yang dapat saya `}
-                    <Text type={'body-bold'} style={{color: Colors.BRIGHT_BLUE}}>
+                    <Text type={'body-bold'} style={[{color: Colors.BRIGHT_BLUE}, fieldError ? styles.textError : null]}>
                       {'tingkatkan?'}
                     </Text>
                   </Text>
@@ -182,6 +206,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                     isRequired={false}
                     secureTextEntry={false}
                     isTextArea={true}
+                    isError={true}
                   />
                 </VStack>
                 <VStack top={Spacing[12]}>
@@ -201,56 +226,59 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                 </VStack>
               </VStack>
             </VStack>
-            <VStack vertical={Spacing[24]} horizontal={Spacing[128]}>
-              <ActivityTypeSelector onActivityPress={holdActivitiesId} selectedActivity={selectedActivities} />
+            <VStack vertical={Spacing[16]}>
+              <VStack bottom={Spacing[8]} horizontal={Spacing[128]}>
+                <ActivityTypeSelector onActivityPress={holdActivitiesId} selectedActivity={selectedActivities} isError={fieldError} />
+              </VStack>
+              <Text type={'body-bold'} style={[{color: Colors.BRIGHT_BLUE, textAlign: 'center'}, fieldError ? styles.textError : null]}>
+                {'Pilihlah kategori sesi coaching-mu.'}
+              </Text>
             </VStack>
             <VStack vertical={Spacing[24]}>
               <ActivitiesTypeLegends showedItems={[1,2]} />
             </VStack>
           </ScrollView>
-          <Modal
-            isVisible={isModalVisible}
-            onBackdropPress={()=> toggleModal()}
-            swipeDirection="left"
-            key={'modal-new-entry'}
-          >
-            <View style={{ flex: 1, justifyContent: 'center' }}>
-              <VStack style={{backgroundColor: Colors.WHITE, borderRadius: Spacing[48], minHeight: Spacing[256], alignItems: 'center', justifyContent:'center'}} horizontal={Spacing[24]} vertical={Spacing[24]}>
-                {/* <FastImage style={{ */}
-                {/*  height: Spacing[24], */}
-                {/*  width: Spacing[24] */}
-                {/* }} source={notIcon} resizeMode={"contain"}/> */}
-                <VStack vertical={Spacing[12]}>
-                  <Spacer height={Spacing[24]} />
-                  <CalendarPicker
-                    onDateChange={onDateChange}
-                    textStyle={{
-                      fontFamily: typography.primaryBold,
-                      colors: Colors.MAIN_BLUE
-                    }}
-                    selectedDayColor={Colors.MAIN_BLUE}
-                    selectedDayTextColor={Colors.WHITE}
-                    style={{padding: Spacing[20]}}
-                    width={dimensions.screenWidth - Spacing[64]}
-                  />
-                  <HStack style={[Layout.widthFull, {justifyContent: 'center'}]}>
-                    <Button
-                      type={"negative"}
-                      text={"Cancel"}
-                      onPress={toggleModal}
-                    />
-                    <Button
-                      type={"primary"}
-                      text={"Pilih"}
-                      onPress={toggleModal}
-                      style={{minWidth: Spacing[72]}}
-                    />
-                  </HStack>
-                </VStack>
-              </VStack>
-            </View>
-          </Modal>
         </SafeAreaView>
+        <Modal
+          isVisible={isModalVisible}
+          onBackdropPress={()=> closeModal()}
+        >
+          <View style={{ flex: 1, justifyContent: 'center' }}>
+            <VStack style={{backgroundColor: Colors.WHITE, borderRadius: Spacing[48], minHeight: Spacing[256], alignItems: 'center', justifyContent:'center'}} horizontal={Spacing[24]} vertical={Spacing[24]}>
+              {/* <FastImage style={{ */}
+              {/*  height: Spacing[24], */}
+              {/*  width: Spacing[24] */}
+              {/* }} source={notIcon} resizeMode={"contain"}/> */}
+              <VStack vertical={Spacing[12]}>
+                <Spacer height={Spacing[24]} />
+                <CalendarPicker
+                  onDateChange={onDateChange}
+                  textStyle={{
+                    fontFamily: typography.primaryBold,
+                    colors: Colors.MAIN_BLUE
+                  }}
+                  selectedDayColor={Colors.MAIN_BLUE}
+                  selectedDayTextColor={Colors.WHITE}
+                  style={{padding: Spacing[20]}}
+                  width={dimensions.screenWidth - Spacing[64]}
+                />
+                <HStack style={[Layout.widthFull, {justifyContent: 'center'}]}>
+                  <Button
+                    type={"negative"}
+                    text={"Cancel"}
+                    onPress={toggleModal}
+                  />
+                  <Button
+                    type={"primary"}
+                    text={"Pilih"}
+                    onPress={toggleModal}
+                    style={{minWidth: Spacing[72]}}
+                  />
+                </HStack>
+              </VStack>
+            </VStack>
+          </View>
+        </Modal>
       </VStack>
     )
   },
