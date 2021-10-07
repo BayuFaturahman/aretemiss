@@ -13,7 +13,7 @@ import {Colors, Layout, Spacing} from "@styles";
 
 import {useStores} from "@models";
 
-const Settings: FC<StackScreenProps<NavigatorParamList, "settingsPage">> = observer(
+const Notifications: FC<StackScreenProps<NavigatorParamList, "notificationList">> = observer(
   ({ navigation }) => {
 
     const { authStore } = useStores()
@@ -21,8 +21,6 @@ const Settings: FC<StackScreenProps<NavigatorParamList, "settingsPage">> = obser
     const goBack = () => navigation.goBack()
 
     const goToMyAccount = () => navigation.navigate('myAccount')
-
-    const goToNotification = () => navigation.navigate('notificationList')
 
     const logout = useCallback( ()=>{
       authStore.resetAuthStore()
@@ -38,25 +36,7 @@ const Settings: FC<StackScreenProps<NavigatorParamList, "settingsPage">> = obser
             <Spacer height={Spacing[32]} />
           </VStack>
           <VStack top={Spacing[32]} horizontal={Spacing[24]} style={[Layout.heightFull, {backgroundColor: Colors.WHITE, borderTopStartRadius: Spacing[48], borderTopEndRadius: Spacing[48]}]}>
-            <VStack top={Spacing[32]} horizontal={Spacing[48]}>
-              <Button
-                type={"primary"}
-                text={"My Account"}
-                onPress={goToMyAccount}
-              />
-              <Spacer height={Spacing[16]} />
-              <Button
-                type={"primary-dark"}
-                text={"Notifications"}
-                onPress={goToNotification}
-              />
-              <Spacer height={Spacing[16]} />
-              <Button
-                type={"primary-dark"}
-                text={"Logout"}
-                onPress={logout}
-              />
-            </VStack>
+
             <Spacer height={Spacing[12]} />
 
           </VStack>
@@ -66,4 +46,4 @@ const Settings: FC<StackScreenProps<NavigatorParamList, "settingsPage">> = obser
   },
 )
 
-export default Settings;
+export default Notifications;
