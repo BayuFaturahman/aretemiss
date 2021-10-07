@@ -1,30 +1,25 @@
 import React, {FC, useCallback, useReducer, useState} from "react"
-import {FlatList, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View} from "react-native"
+import {SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {
   Text,
-  BackNavigation, Button, TextField, DropDownPicker
+  Button, TextField, DropDownPicker
 } from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
 import {HStack, VStack} from "@components/view-stack";
 import Spacer from "@components/spacer";
 import {Colors, Layout, Spacing} from "@styles";
 
-import {CoachingJournalItemRender} from "@screens/coaching-journal/components/coaching-journal-item-render";
 import {CoachingJournalItem} from "@screens/coaching-journal/coaching-journal.type";
 import {ACTIVITIES_TYPE, ActivitiesTypeLegends} from "@screens/coaching-journal/components/activities-type-legends";
-import {NewButton} from "@screens/coaching-journal/components/new-button";
-import FastImage from "react-native-fast-image";
 
-import arrowYellow from "@assets/icons/coachingJournal/empty/arrow-yellow.png";
 import {dimensions} from "@config/platform.config";
-import {EmptyList} from "@screens/coaching-journal/components/empty-list";
 
-import Modal from "react-native-modal";
-import notIcon from "@assets/icons/coachingJournal/note.png";
 import CalendarPicker from 'react-native-calendar-picker';
 import {typography} from "@theme";
+
+import Modal from 'react-native-modalbox';
 
 const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalMain">> = observer(
   ({ navigation }) => {
@@ -49,7 +44,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
     const toggleModal = () => {
       setTimeout(() => {
         setModalVisible(!isModalVisible);
-      }, 300);
+      }, 100);
       console.log(isModalVisible)
     };
 
@@ -57,7 +52,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
       console.log('closee')
       setTimeout(() => {
         setModalVisible(false);
-      }, 300);
+      }, 100);
     };
 
     const onDateChange = useCallback((selectedId)=>{
@@ -239,9 +234,14 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
             </VStack>
           </ScrollView>
         </SafeAreaView>
+
         <Modal
-          isVisible={isModalVisible}
-          onBackdropPress={()=> closeModal()}
+          isOpen={isModalVisible}
+          style={{
+            height: '50%',
+            width: dimensions.screenWidth - Spacing[24],
+            backgroundColor: 'rgba(52, 52, 52, 0)'
+          }}
         >
           <View style={{ flex: 1, justifyContent: 'center' }}>
             <VStack style={{backgroundColor: Colors.WHITE, borderRadius: Spacing[48], minHeight: Spacing[256], alignItems: 'center', justifyContent:'center'}} horizontal={Spacing[24]} vertical={Spacing[24]}>
