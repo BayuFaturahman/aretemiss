@@ -105,6 +105,8 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
 
     const newEntry = () => navigation.navigate("newJournalEntry")
 
+    const quizForm = () => navigation.navigate("quizForm")
+
     const holdActivitiesId = useCallback((selectedId)=>{
       setSelectedActivities(selectedId)
       // forceUpdate()
@@ -126,6 +128,7 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
       <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: 'center'}}>
         <SafeAreaView style={Layout.flex}>
           <BackNavigation goBack={goBack} />
+          <NewButton onPress={quizForm} />
           <ScrollView>
             <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
               <Text type={'header'} style={{color: Colors.WHITE}} text="Coaching Journal" />

@@ -1,5 +1,5 @@
 import {AppRoute} from "@navigators/navigation-type";
-import {coachingJournalMain, newJournalEntry, fillFeedback} from "@screens/coaching-journal";
+import {coachingJournalMain, newJournalEntry, fillFeedback, quizForm} from "@screens/coaching-journal";
 import {settings, myAccount, changePassword, changePhone} from "@screens/settings";
 
 const screens: AppRoute[] = [
@@ -31,6 +31,10 @@ const screens: AppRoute[] = [
     name: 'changePhone',
     component: changePhone,
   },
+  {
+    name: 'quizForm',
+    component: quizForm,
+  },
 ];
 
 export type NavigatorParamList = {
@@ -41,6 +45,7 @@ export type NavigatorParamList = {
   changePassword: undefined;
   newJournalEntry: undefined;
   fillFeedback: undefined;
+  quizForm: undefined;
 };
 
 export default screens
