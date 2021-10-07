@@ -62,7 +62,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
 
     const goBack = () => navigation.goBack()
 
-    const newEntry = () => navigation.navigate("settingsPage")
+    const goToFeedback = () => navigation.navigate("fillFeedback")
 
     const holdActivitiesId = useCallback((selectedId)=>{
       setSelectedActivities(selectedId)
@@ -229,8 +229,14 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                 {'Pilihlah kategori sesi coaching-mu.'}
               </Text>
             </VStack>
-            <VStack vertical={Spacing[24]}>
+            <VStack horizontal={Spacing[72]} vertical={Spacing[24]}>
               <ActivitiesTypeLegends showedItems={[1,2]} />
+              <Spacer height={Spacing[24]} />
+              <Button
+                type={"primary"}
+                text={"Lakukan Feedback"}
+                onPress={goToFeedback}
+              />
             </VStack>
           </ScrollView>
         </SafeAreaView>

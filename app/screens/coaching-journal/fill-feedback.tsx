@@ -11,63 +11,57 @@ import {HStack, VStack} from "@components/view-stack";
 import Spacer from "@components/spacer";
 import {Colors, Layout, Spacing} from "@styles";
 
-import {CoachingJournalItemRender} from "@screens/coaching-journal/components/coaching-journal-item-render";
-import {CoachingJournalItem} from "@screens/coaching-journal/coaching-journal.type";
-import {ACTIVITIES_TYPE, ActivitiesTypeLegends} from "@screens/coaching-journal/components/activities-type-legends";
 import {NewButton} from "@screens/coaching-journal/components/new-button";
-import FastImage from "react-native-fast-image";
-
-import arrowYellow from "@assets/icons/coachingJournal/empty/arrow-yellow.png";
-import {dimensions} from "@config/platform.config";
 import {EmptyList} from "@screens/coaching-journal/components/empty-list";
+import {CoachingJournalItemRender} from "@screens/coaching-journal/components/coaching-journal-item-render";
+import {ActivitiesTypeLegends} from "@screens/coaching-journal/components/activities-type-legends";
 
-import Modal from "react-native-modal";
-import notIcon from "@assets/icons/coachingJournal/note.png";
-import CalendarPicker from 'react-native-calendar-picker';
-import {typography} from "@theme";
+type ChoiceItemType = {
+  id: string
+  title: string
+  choice: 0 | 1 | 2 | 3 | 4 | 5
+}
 
-const FillFeedback: FC<StackScreenProps<NavigatorParamList, "coachingJournalMain">> = observer(
+const EXAMPLE_DATA:Array<ChoiceItemType> = [
+  {
+    id: '0',
+    title: '“Dalam skala 1 - 5, seberapa baik saya sudah membangun rapport atau kedekatan di awal sesi?”',
+    choice: 0
+  },
+  {
+    id: '1',
+    title: '“Dalam skala 1 - 5, seberapa baik saya sudah membantu coachee menentukan outcome?”',
+    choice: 0
+  },
+  {
+    id: '2',
+    title: '“Dalam skala 1 - 5, seberapa baik saya sudah membantu coachee menentukan outcome?”',
+    choice: 0
+  },
+  {
+    id: '3',
+    title: '“Dalam skala 1 - 5, seberapa baik saya sudah membantu coachee menentukan outcome?”',
+    choice: 0
+  },
+  {
+    id: '4',
+    title: '“Dalam skala 1 - 5, seberapa baik saya sudah membantu coachee menentukan outcome?”',
+    choice: 0
+  }
+]
+
+const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = observer(
   ({ navigation }) => {
 
-    const styles = StyleSheet.create({
-      textError: {
-        color: Colors.MAIN_RED
-      }
-    })
-
-    const fieldError = true
-
     // empty list state
-    const [coachingData, setCoachingData] = useState<Array<CoachingJournalItem>>([]);
+    const [feedbackData, setFeedbackData] = useState<Array<ChoiceItemType>>(EXAMPLE_DATA);
     const [selectedActivities, setSelectedActivities] = useState<string>('');
     const [, forceUpdate] = useReducer(x => x + 1, 0);
 
-    const [isModalVisible, setModalVisible] = useState(false);
-    const [selectedDate, setSelectedDate] = useState(null);
-
-
-    const toggleModal = () => {
-      setTimeout(() => {
-        setModalVisible(!isModalVisible);
-      }, 300);
-      console.log(isModalVisible)
-    };
-
-    const closeModal = () => {
-      console.log('closee')
-      setTimeout(() => {
-        setModalVisible(false);
-      }, 300);
-    };
-
-    const onDateChange = useCallback((selectedId)=>{
-      setSelectedDate(selectedId)
-      // forceUpdate()
-    }, [])
 
     const goBack = () => navigation.goBack()
 
-    const newEntry = () => navigation.navigate("settingsPage")
+    const newEntry = () => navigation.navigate("newJournalEntry")
 
     const holdActivitiesId = useCallback((selectedId)=>{
       setSelectedActivities(selectedId)
@@ -78,207 +72,93 @@ const FillFeedback: FC<StackScreenProps<NavigatorParamList, "coachingJournalMain
       console.log(id)
     }, [])
 
-    const dateArr = "02 AUG".split(' ')
+    const goToFeedback = useCallback((id)=>{
+      console.log(id)
+    }, [])
 
+    const goToNoteFeedback = useCallback((id)=>{
+      console.log(id)
+    }, [])
 
-    const ActivityTypeSelector = ({onActivityPress = (item) => null, selectedActivity = 'weekly_coaching', isError = false}) => {
+    const selectFeedbackItem = useCallback((id, choice)=>{
 
-      const styles = StyleSheet.create({
-        container: {borderColor: 'red', borderRadius: Spacing[20], borderStyle: 'dashed', borderWidth: isError ? Spacing[2] : 0, justifyContent: 'space-around', padding: Spacing[6]}
+      const updated = feedbackData.map((item)=>{
+        if(item.id === id){
+          return { ...item, choice: choice}
+        }
+        return item;
       })
 
+      setFeedbackData(updated)
+    }, [feedbackData])
+
+    const ChoiceItem = ({item, index}) => {
       return(
-      <HStack style={styles.container}>
-        {ACTIVITIES_TYPE.map((item, index)=>{
-          if(index < 2){
-            return(
-              <TouchableOpacity style={{
-                borderColor: Colors.MAIN_RED, borderWidth: item.value === selectedActivity ? Spacing[2] : 0,
-                height: Spacing[32], width: Spacing[32], backgroundColor: item.color, borderRadius: Spacing[128]}}
-                                onPress={()=>onActivityPress(item.value)}
-              />
-            )
-          } else{
-            return (
-              <></>
-            )
-          }
-        })}
-      </HStack>
+        <VStack vertical={Spacing[8]}>
+          <Text type={'body'} style={{textAlign: 'center'}}>
+            {item.title}
+          </Text>
+          <HStack top={Spacing[12]} style={{justifyContent: 'space-around'}}>
+            {Array(5).fill(0).map((value, i, array)=>{
+              return(
+                <TouchableOpacity onPress={()=> selectFeedbackItem(item.id, i + 1)}>
+                  <VStack>
+                    <View style={{
+                      height: Spacing[24],
+                      width: Spacing[24],
+                      backgroundColor: item.choice === i + 1 ? Colors.BRIGHT_BLUE : Colors.CLOUD_GRAY,
+                      borderRadius: Spacing[128], borderWidth: Spacing[2],
+                      borderColor: item.choice === i + 1 ? Colors.BRIGHT_BLUE : Colors.MAIN_RED
+                    }} />
+                    <Text type={'body'} style={{textAlign: 'center'}}>
+                      {i + 1}
+                    </Text>
+                  </VStack>
+                </TouchableOpacity>
+              )
+            })}
+          </HStack>
+        </VStack>
       )
     }
 
-
     return (
-      <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.WHITE, flex: 1, justifyContent: 'center'}}>
+      <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: 'center'}}>
         <SafeAreaView style={Layout.flex}>
+          <BackNavigation goBack={goBack} />
           <ScrollView>
-            <VStack top={Spacing[32]} horizontal={Spacing[24]}>
-              <HStack>
-                <Text type={'left-header'} style={{}} text="Tambah journal entry" />
-                <Spacer/>
-                <HStack>
-                  <Button
-                    type={"negative"}
-                    text={"Cancel"}
-                    onPress={goBack}
-                  />
-                </HStack>
-              </HStack>
-
-              <VStack>
-                <TextField
-                  // label="No. HP baru:"
-                  isRequired={false}
-                  secureTextEntry={false}
-                  placeholder={'Tulis nama judul sesi coaching di sini.'}
-                />
-                <HStack style={{zIndex: 100}}>
-                  <VStack style={{width:Spacing[64]}}>
-                    <Text type={'body-bold'} style={{textAlign: 'right', top: Spacing[4]}} text="dengan" />
-                  </VStack>
-                  <Spacer/>
-                  <VStack style={{maxWidth: dimensions.screenWidth - Spacing[128]}}>
-                    <DropDownPicker
-                      isRequired={false}
-                      // label="Pilih team kedua (jika ada):"
-                      onValueChange={(value)=>console.log('testt '+ value)}
-                      placeholder={'Pilih salah satu'}
-                      containerStyle={{marginTop: Spacing[4]}}
-                      zIndex={2000}
-                      zIndexInverse={2000}
-                      dropDownDirection={"BOTTOM"}
-                    />
-                  </VStack>
-                </HStack>
-                <HStack>
-                  <TouchableOpacity style={{height: '100%', width: '20%'}} onPress={toggleModal}>
-                    <VStack horizontal={Spacing[8]} vertical={Spacing[2]} style={{flex:1, width: '100%', borderRadius: Spacing[12], alignItems: 'flex-end', justifyContent: 'flex-end', backgroundColor: Colors.MAIN_BLUE}}>
-                      <Text type={'button'} style={{color:Colors.WHITE, bottom: -Spacing[8]}} text={dateArr[0]} />
-                      <Text type={'button'} style={{color:Colors.WHITE}} text={dateArr[1]} />
+            <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
+              <Text type={'left-header'} style={{color: Colors.WHITE}} text="Self-reflection feedback" />
+              <Spacer height={Spacing[24]} />
+              <Text type={"header"} style={{color: Colors.WHITE, textAlign:'center', fontSize: Spacing[12]}}>Berilah rating pada pernyataan berikut ini
+                sesuai dengan sesi coaching yang sudah kamu lakukan.</Text>
+              <Spacer height={Spacing[32]} />
+            </VStack>
+            <VStack top={Spacing[32]} horizontal={Spacing[24]} style={[Layout.heightFull, {backgroundColor: Colors.WHITE, borderTopStartRadius: Spacing[48], borderTopEndRadius: Spacing[48]}]}>
+              <FlatList
+                ItemSeparatorComponent={()=><Spacer height={Spacing[24]} />}
+                data={feedbackData}
+                ListEmptyComponent={()=>
+                  <EmptyList />
+                }
+                renderItem={({item, index})=> <ChoiceItem item={item} index={index} />}
+                keyExtractor={item => item.id}
+                ListFooterComponent={
+                  feedbackData.length === 0 ?
+                    null :
+                    <VStack horizontal={Spacing[72]} vertical={Spacing[24]}>
+                      <Button
+                        type={"primary"}
+                        text={"Submit"}
+                        // onPress={toggleModal}
+                        style={{minWidth: Spacing[72]}}
+                      />
                     </VStack>
-                  </TouchableOpacity>
-                   <Spacer />
-                  <VStack top={Spacing[8]} style={{width: '75%'}}>
-                    <Text type={'body-bold'} style={{textAlign: 'center', top: Spacing[4]}}>
-                      {`Apa yang `}
-                      <Text type={'body-bold'} style={{color: Colors.BRIGHT_BLUE}}>
-                        {'dibicarakan'}
-                      </Text>
-                      {` saat coaching?`}
-                    </Text>
-                    <TextField
-                      // label="Masukan kembali no. HP baru:"
-                      style={{ paddingTop: 0}}
-                      inputStyle={{minHeight: Spacing[72]}}
-                      isRequired={false}
-                      secureTextEntry={false}
-                      isTextArea={true}
-                    />
-                  </VStack>
-                </HStack>
-                <VStack top={Spacing[12]}>
-                  <Text type={'body-bold'} style={{textAlign: 'center', top: Spacing[4]}}>
-                    {`Sebagai coach, apa yang sudah saya lakukan dengan `}
-                    <Text type={'body-bold'} style={{color: Colors.BRIGHT_BLUE}}>
-                      {'efektif?'}
-                    </Text>
-                  </Text>
-                  <TextField
-                    // label="Masukan kembali no. HP baru:"
-                    style={{ paddingTop: 0}}
-                    inputStyle={{minHeight: Spacing[48]}}
-                    isRequired={false}
-                    secureTextEntry={false}
-                    isTextArea={true}
-                  />
-                </VStack>
-                <VStack top={Spacing[12]}>
-                  <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, fieldError ? styles.textError : null ]}>
-                    {`Sebagai coach, kualitas apa yang dapat saya `}
-                    <Text type={'body-bold'} style={[{color: Colors.BRIGHT_BLUE}, fieldError ? styles.textError : null]}>
-                      {'tingkatkan?'}
-                    </Text>
-                  </Text>
-                  <TextField
-                    style={{ paddingTop: 0}}
-                    inputStyle={{minHeight: Spacing[48]}}
-                    isRequired={false}
-                    secureTextEntry={false}
-                    isTextArea={true}
-                    isError={true}
-                  />
-                </VStack>
-                <VStack top={Spacing[12]}>
-                  <Text type={'body-bold'} style={{textAlign: 'center', top: Spacing[4]}}>
-                    <Text type={'body-bold'} style={{color: Colors.BRIGHT_BLUE}}>
-                      {'Komitment?'}
-                    </Text>
-                    {` apa saja yang sudah disepakati bersama?`}
-                  </Text>
-                  <TextField
-                    style={{ paddingTop: 0}}
-                    inputStyle={{minHeight: Spacing[128]}}
-                    isRequired={false}
-                    secureTextEntry={false}
-                    isTextArea={true}
-                  />
-                </VStack>
-              </VStack>
-            </VStack>
-            <VStack vertical={Spacing[16]}>
-              <VStack bottom={Spacing[8]} horizontal={Spacing[128]}>
-                <ActivityTypeSelector onActivityPress={holdActivitiesId} selectedActivity={selectedActivities} isError={fieldError} />
-              </VStack>
-              <Text type={'body-bold'} style={[{color: Colors.BRIGHT_BLUE, textAlign: 'center'}, fieldError ? styles.textError : null]}>
-                {'Pilihlah kategori sesi coaching-mu.'}
-              </Text>
-            </VStack>
-            <VStack vertical={Spacing[24]}>
-              <ActivitiesTypeLegends showedItems={[1,2]} />
+                }
+              />
             </VStack>
           </ScrollView>
         </SafeAreaView>
-        <Modal
-          isVisible={isModalVisible}
-          onBackdropPress={()=> closeModal()}
-        >
-          <View style={{ flex: 1, justifyContent: 'center' }}>
-            <VStack style={{backgroundColor: Colors.WHITE, borderRadius: Spacing[48], minHeight: Spacing[256], alignItems: 'center', justifyContent:'center'}} horizontal={Spacing[24]} vertical={Spacing[24]}>
-              {/* <FastImage style={{ */}
-              {/*  height: Spacing[24], */}
-              {/*  width: Spacing[24] */}
-              {/* }} source={notIcon} resizeMode={"contain"}/> */}
-              <VStack vertical={Spacing[12]}>
-                <Spacer height={Spacing[24]} />
-                <CalendarPicker
-                  onDateChange={onDateChange}
-                  textStyle={{
-                    fontFamily: typography.primaryBold,
-                    colors: Colors.MAIN_BLUE
-                  }}
-                  selectedDayColor={Colors.MAIN_BLUE}
-                  selectedDayTextColor={Colors.WHITE}
-                  style={{padding: Spacing[20]}}
-                  width={dimensions.screenWidth - Spacing[64]}
-                />
-                <HStack style={[Layout.widthFull, {justifyContent: 'center'}]}>
-                  <Button
-                    type={"negative"}
-                    text={"Cancel"}
-                    onPress={toggleModal}
-                  />
-                  <Button
-                    type={"primary"}
-                    text={"Pilih"}
-                    onPress={toggleModal}
-                    style={{minWidth: Spacing[72]}}
-                  />
-                </HStack>
-              </VStack>
-            </VStack>
-          </View>
-        </Modal>
       </VStack>
     )
   },
