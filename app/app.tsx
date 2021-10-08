@@ -15,10 +15,11 @@ import React, { useState, useEffect } from "react"
 import { SafeAreaProvider, initialWindowMetrics } from "react-native-safe-area-context"
 import { initFonts } from "./theme/fonts" // expo
 import * as storage from "./utils/storage"
-import { useBackButtonHandler, AppNavigator, canExit, useNavigationPersistence } from "./navigators"
+import {useBackButtonHandler, AppNavigator, canExit, useNavigationPersistence, navigate} from "./navigators"
 import { RootStore, RootStoreProvider, setupRootStore } from "./models"
 import { ToggleStorybook } from "../storybook/toggle-storybook"
 import { ErrorBoundary } from "./screens/error/error-boundary"
+import {useNavigation} from "@react-navigation/native";
 
 // This puts screens in a native ViewController or Activity. If you want fully native
 // stack navigation, use `createNativeStackNavigator` in place of `createStackNavigator`:
@@ -46,6 +47,14 @@ function App() {
       setupRootStore().then(setRootStore)
     })()
   }, [])
+
+  if (__DEV__) {
+    // eslint-disable-next-line global-require
+    const DevMenu = require('react-native-dev-menu');
+    DevMenu.addItem('Notification List Screen', () => {
+      navigate('notificationList');
+    });
+  }
 
   // Before we show the app, we have to wait for our state to be ready.
   // In the meantime, don't render anything. This will be the background

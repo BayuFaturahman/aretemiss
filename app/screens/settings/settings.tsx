@@ -22,7 +22,7 @@ const Settings: FC<StackScreenProps<NavigatorParamList, "settingsPage">> = obser
 
     const goToMyAccount = () => navigation.navigate('myAccount')
 
-    const goToNotification = () => navigation.navigate('notificationList')
+    const goToNotification = () => navigation.navigate('notificationSettings')
 
     const logout = useCallback( ()=>{
       authStore.resetAuthStore()

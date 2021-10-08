@@ -360,6 +360,10 @@ PODS:
     - React-Core
   - RNDeviceInfo (5.6.5):
     - React
+  - RNDevMenu (4.0.2):
+    - React-Core
+    - React-Core/DevSupport
+    - React-RCTNetwork
   - RNFastImage (8.5.8):
     - React-Core
     - SDWebImage (~> 5.11.1)
@@ -466,6 +470,7 @@ DEPENDENCIES:
   - "RNCPicker (from `../node_modules/@react-native-picker/picker`)"
   - "RNDateTimePicker (from `../node_modules/@react-native-community/datetimepicker`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
+  - RNDevMenu (from `../node_modules/react-native-dev-menu`)
   - RNFastImage (from `../node_modules/react-native-fast-image`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
@@ -590,6 +595,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/datetimepicker"
   RNDeviceInfo:
     :path: "../node_modules/react-native-device-info"
+  RNDevMenu:
+    :path: "../node_modules/react-native-dev-menu"
   RNFastImage:
     :path: "../node_modules/react-native-fast-image"
   RNGestureHandler:
@@ -686,6 +693,7 @@ SPEC CHECKSUMS:
   RNCPicker: f7a40b21b915b7a187624d52f52b7bc2f73ea413
   RNDateTimePicker: 7658208086d86d09e1627b5c34ba0cf237c60140
   RNDeviceInfo: c5f8f3a456adcbba405ace475254b08febc4c095
+  RNDevMenu: fd325b5554b61fe7f48d9205a3877cf5ee88cd7c
   RNFastImage: adef7f9c9a7aeca0141807ee5a8be8a3eb240dd8
   RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
   RNKeychain: b8e0711b959a19c5b057d1e970d3c83d159b6da5
