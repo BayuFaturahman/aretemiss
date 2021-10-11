@@ -28,6 +28,11 @@ export const presets = {
   bold: { ...BASE, fontFamily: typography.primaryBold } as TextStyle,
 
   /**
+   * A italic regular version of the default text.
+   */
+  italic: { ...BASE, fontFamily: typography.primaryItalic } as TextStyle,
+
+  /**
    * Large headers.
    */
   header: { ...BASE, fontSize: 24, fontWeight: "bold" } as TextStyle,

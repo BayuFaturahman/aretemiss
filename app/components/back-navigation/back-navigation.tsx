@@ -6,13 +6,15 @@ import {Colors, Layout, Spacing} from "@styles";
 
 export interface BackNavigationProps {
   goBack(): void
+  color?: string
 }
 
 export function BackNavigation(props: BackNavigationProps) {
+
   return (
     <VStack style={Layout.widthFull} horizontal={Spacing[20]} vertical={Spacing[8]}>
       <TouchableOpacity onPress={props.goBack}>
-        <Text type={'button-small'} style={{color: Colors.WHITE}}>◂ Back</Text>
+        <Text type={'button-small'} style={{color: props.color ? props.color : Colors.WHITE }}>◂ Back</Text>
       </TouchableOpacity>
     </VStack>
   )

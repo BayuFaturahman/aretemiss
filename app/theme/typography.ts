@@ -25,6 +25,11 @@ export const typography = {
   primaryBold: Platform.select({ ios: "BrandonGrotesque-Bold", android: "BrandonGrotesque-Bold" }),
 
   /**
+   * The primary italic font.
+   */
+  primaryItalic: Platform.select({ ios: "BrandonGrotesque-RegularItalic", android: "BrandonGrotesque-RegularItalic" }),
+
+  /**
    * An alternate font used for perhaps titles and stuff.
    */
   secondary: Platform.select({ ios: "Arial", android: "sans-serif" }),

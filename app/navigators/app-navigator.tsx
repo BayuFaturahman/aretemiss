@@ -39,7 +39,7 @@ const AuthNavigator: React.FC = () => {
         headerShown: false,
         gestureEnabled: true,
       }}
-      initialRouteName="login"
+      initialRouteName="landingPage"
     >
       {authScreens.map((route)=>{
         return(
@@ -62,7 +62,7 @@ const MainNavigator: React.FC = () => {
       screenOptions={{
         headerShown: false,
       }}
-      initialRouteName="coachingJournalMain"
+      initialRouteName="homepage"
     >
       {mainScreens.map((route)=>{
         return(

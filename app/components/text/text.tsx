@@ -13,7 +13,7 @@ import {VStack} from "@components/view-stack";
  */
 export function Text(props: TextProps) {
   // grab the props
-  const { preset = "default", tx, txOptions, text, children, style: styleOverride, ...rest } = props
+  const { preset = "default", tx, txOptions, text, children, style: styleOverride, underlineWidth, ...rest } = props
 
   // figure out which content to use
   const i18nText = tx && translate(tx, txOptions)
@@ -39,7 +39,22 @@ export function Text(props: TextProps) {
         <ReactNativeText {...rest} style={[style, presets.bold, { fontSize: Spacing[18], textAlign: 'center', lineHeight: Spacing[20]} ,styleOverride ]}>
           {content}
         </ReactNativeText>
-        <View style={{height: Spacing[6], backgroundColor: Colors.MAIN_RED, width: Spacing[128]}}></View>
+        <View style={{height: Spacing[6], backgroundColor: Colors.MAIN_RED, width: underlineWidth || Spacing[128]}}></View>
+      </VStack>
+    )
+  }
+
+  if(props.type === 'right-header'){
+    return(
+      <VStack style={{alignItems: 'flex-end'}}>
+        <ReactNativeText {...rest} style={[style, presets.bold, { fontSize: Spacing[18], textAlign: 'center', lineHeight: Spacing[20]} ,styleOverride ]}>
+          {content}
+        </ReactNativeText>
+        <View style={{
+          height: Spacing[6],
+          backgroundColor: Colors.MAIN_RED,
+          width: underlineWidth || Spacing[128]
+        }}/>
       </VStack>
     )
   }

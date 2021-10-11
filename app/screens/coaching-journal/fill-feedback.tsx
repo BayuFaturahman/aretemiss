@@ -1,4 +1,4 @@
-import React, {FC, useCallback, useReducer, useState} from "react"
+import React, {FC, useCallback, useEffect, useReducer, useState} from "react"
 import {FlatList, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
@@ -11,10 +11,10 @@ import {HStack, VStack} from "@components/view-stack";
 import Spacer from "@components/spacer";
 import {Colors, Layout, Spacing} from "@styles";
 
-import {NewButton} from "@screens/coaching-journal/components/new-button";
 import {EmptyList} from "@screens/coaching-journal/components/empty-list";
-import {CoachingJournalItemRender} from "@screens/coaching-journal/components/coaching-journal-item-render";
-import {ActivitiesTypeLegends} from "@screens/coaching-journal/components/activities-type-legends";
+import {useStores} from "@models";
+
+import Spinner from 'react-native-loading-spinner-overlay';
 
 type ChoiceItemType = {
   id: string
@@ -25,27 +25,32 @@ type ChoiceItemType = {
 const EXAMPLE_DATA:Array<ChoiceItemType> = [
   {
     id: '0',
-    title: '“Dalam skala 1 - 5, seberapa baik saya sudah membangun rapport atau kedekatan di awal sesi?”',
+    title: 'Dalam skala 1 - 5, seberapa baik coach-mu sudah membangun rapport atau kedekatan di awal sesi',
     choice: 0
   },
   {
     id: '1',
-    title: '“Dalam skala 1 - 5, seberapa baik saya sudah membantu coachee menentukan outcome?”',
+    title: 'Dalam skala 1 - 5, seberapa baik coach-mu sudah membantu saya sebagai coachee menentukan outcome?',
     choice: 0
   },
   {
     id: '2',
-    title: '“Dalam skala 1 - 5, seberapa baik saya sudah membantu coachee menentukan outcome?”',
+    title: '“Dalam skala 1 - 5, seberapa baik coach-mu sudah mempraktekan active listening atau mendengar aktif saat sesi berlangsung?”',
     choice: 0
   },
   {
     id: '3',
-    title: '“Dalam skala 1 - 5, seberapa baik saya sudah membantu coachee menentukan outcome?”',
+    title: '“Dalam skala 1 - 5, seberapa baik coach-mu sudah mengajukan powerful questions atau pertanyaan yang menggugah pada saat sesi berlangsung?”',
     choice: 0
   },
   {
     id: '4',
-    title: '“Dalam skala 1 - 5, seberapa baik saya sudah membantu coachee menentukan outcome?”',
+    title: '“Dalam skala 1 - 5, seberapa baik coach-mu sudah menggali insights atau pembelajaran yang saya dapatkan selama sesi berlangsung?”',
+    choice: 0
+  },
+  {
+    id: '5',
+    title: '“Dalam skala 1 - 5, seberapa baik coach-mu sudah membantu saya sebagai coachee untuk menyampaikan komitmen di akhir sesi?”',
     choice: 0
   }
 ]
@@ -57,7 +62,7 @@ const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = o
     const [feedbackData, setFeedbackData] = useState<Array<ChoiceItemType>>(EXAMPLE_DATA);
     const [selectedActivities, setSelectedActivities] = useState<string>('');
     const [, forceUpdate] = useReducer(x => x + 1, 0);
-
+    const { coachingStore, profileStore } = useStores()
 
     const goBack = () => navigation.goBack()
 
@@ -67,18 +72,6 @@ const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = o
       setSelectedActivities(selectedId)
       // forceUpdate()
     }, [selectedActivities])
-
-    const goToNote = useCallback((id)=>{
-      console.log(id)
-    }, [])
-
-    const goToFeedback = useCallback((id)=>{
-      console.log(id)
-    }, [])
-
-    const goToNoteFeedback = useCallback((id)=>{
-      console.log(id)
-    }, [])
 
     const selectFeedbackItem = useCallback((id, choice)=>{
 
@@ -91,6 +84,22 @@ const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = o
 
       setFeedbackData(updated)
     }, [feedbackData])
+
+    const submit = () => {
+      coachingStore.createJournal(
+        feedbackData[0].choice,
+        feedbackData[1].choice,
+        feedbackData[2].choice,
+        feedbackData[3].choice,
+        feedbackData[4].choice,
+        feedbackData[5].choice
+      )
+    }
+
+    useEffect(() => {
+      coachingStore.resetLoading()
+      profileStore.resetLoading()
+    },[])
 
     const ChoiceItem = ({item, index}) => {
       return(
@@ -150,7 +159,7 @@ const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = o
                       <Button
                         type={"primary"}
                         text={"Submit"}
-                        // onPress={toggleModal}
+                        onPress={submit}
                         style={{minWidth: Spacing[72]}}
                       />
                     </VStack>
@@ -159,6 +168,11 @@ const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = o
             </VStack>
           </ScrollView>
         </SafeAreaView>
+        <Spinner
+          visible={coachingStore.isLoading || profileStore.isLoading}
+          textContent={'Memuat...'}
+          // textStyle={styles.spinnerTextStyle}
+        />
       </VStack>
     )
   },
