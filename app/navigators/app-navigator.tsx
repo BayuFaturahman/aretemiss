@@ -95,6 +95,19 @@ export const AppNavigator = observer( (props: NavigationProps) => {
   //   // }
   // }, [authStore.authUser.token, authStore.authUser])
 
+  if (__DEV__) {
+    // eslint-disable-next-line global-require
+    const DevMenu = require('react-native-dev-menu');
+
+    DevMenu.addItem('Force Login true', () => {
+      setIsLogin(true)
+    });
+
+    DevMenu.addItem('Force Login false', () => {
+      setIsLogin(false)
+    });
+  }
+
   return (
     <NavigationContainer
       ref={navigationRef}
