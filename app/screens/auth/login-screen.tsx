@@ -16,6 +16,8 @@ import FastImage from "react-native-fast-image";
 
 import {useStores} from "../../bootstrap/context.boostrap";
 
+import Spinner from 'react-native-loading-spinner-overlay';
+
 
 const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
   ({ navigation }) => {
@@ -32,7 +34,6 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
     const nextScreen = () => navigation.navigate("verifyOTP")
 
     const submitLogin = useCallback( async()=>{
-      setIsError(false)
       await authStore.login(phoneNumber , password)
     }, [phoneNumber, password])
 
@@ -40,6 +41,21 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
       console.log('is loading')
       console.log(authStore.isLoading)
     }, [authStore.isLoading])
+
+    useEffect(() => {
+      console.log('is error')
+      if(authStore.errorMessage !== null){
+        setIsError(true)
+      }
+    }, [authStore.errorMessage])
+
+    useEffect(() => {
+      console.log('login succeed')
+      if(authStore.otp !== null){
+        setIsError(false)
+        nextScreen()
+      }
+    }, [authStore.otp])
 
     // useEffect(() => {
     //   // authStore.resetAuthStore()
@@ -80,16 +96,14 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
             <Text type={'header'} text="Selamat datang di iLEAD." />
             <Spacer height={Spacing[24]} />
             <Text type={'warning'} style={{textAlign: 'center'}}>
-              {/* Waduh. Nomor verifikasi yang kamu masukan salah. */}
-              {/* Coba cek kembali nomor hapemu dan kirim ulang nomor verifikasinya! */}
-              {errorMessage}
+              {authStore.errorMessage}
             </Text>
             <Spacer height={Spacing[32]} />
             <TextField
               value={phoneNumber}
-              label="Masukan no. HP yang sudah diregistrasi:"
+              label="Masukan E-mail yang sudah diregistrasi:"
               style={{ paddingTop: 0}}
-              // isError={isError && (authStore.formErrorCode === 2 || authStore.formErrorCode === 1 || authStore.formErrorCode === 10 || authStore.formErrorCode === 15)}
+              isError={isError && (authStore.errorCode === 2 || authStore.errorCode === 1 || authStore.errorCode === 10 || authStore.errorCode === 14)}
               onChangeText={setPhoneNumber}
             />
             <TextField
@@ -97,7 +111,7 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
               label="Password"
               style={{ paddingTop: 0}}
               secureTextEntry={true}
-              // isError={isError && (authStore.formErrorCode === 3 || authStore.formErrorCode === 15)}
+              isError={isError && (authStore.errorCode === 3 || authStore.errorCode === 15 || authStore.errorCode === 10)}
               onChangeText={setPassword}
             />
           </VStack>
@@ -122,6 +136,11 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
             bottom: 0
           }} source={logoBottom} resizeMode={"contain"}/>
         </SafeAreaView>
+        <Spinner
+          visible={authStore.isLoading}
+          textContent={'Memuat...'}
+          // textStyle={styles.spinnerTextStyle}
+        />
       </VStack>
     )
   },

@@ -14,8 +14,8 @@ import logoBottom from "@assets/icons/ilead-bottom-logo.png";
 import FastImage from "react-native-fast-image";
 
 import SMSVerifyCode from 'react-native-sms-verifycode'
-import {useStores} from "@models";
 import {errorCollection} from "@utils/form-error-type";
+import {useStores} from "../../bootstrap/context.boostrap";
 
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 40 : 0
 
@@ -30,10 +30,10 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
 
     const verifyNumber = () => {
       console.log('verify number')
-      if(authStore.authUser.otp === Number(otpCode)){
+      if(authStore.otp === Number(otpCode)){
         console.log('otp match')
       }
-      authStore.loginVerify(otpCode ? otpCode.toString() : '')
+      // authStore.loginVerify(otpCode ? otpCode.toString() : '')
     }
 
     const goToLogin = () => navigation.navigate("login")
@@ -47,15 +47,15 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
       verifyNumber()
     }, [otpCode])
 
-    useEffect(() => {
-      if(authStore.formErrorCode){
-        console.log(authStore.formErrorCode)
-        setIsError(true)
-        setErrorMessage(errorCollection.find(i => i.errorCode === authStore.formErrorCode).message)
-      }else{
-        setIsError(false)
-      }
-    }, [authStore.formErrorCode, authStore.login, isError])
+    // useEffect(() => {
+    //   if(authStore.){
+    //     // console.log(authStore.formErrorCode)
+    //     setIsError(true)
+    //     setErrorMessage(errorCollection.find(i => i.errorCode === authStore.formErrorCode).message)
+    //   }else{
+    //     setIsError(false)
+    //   }
+    // }, [authStore.formErrorCode, authStore.login, isError])
 
     const styles = StyleSheet.create({
 
@@ -74,7 +74,7 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
              </Text>
 
             <Text type={'body'} style={{textAlign: 'center'}}>
-              {authStore.authUser.otp}
+              {authStore.otp}
             </Text>
 
             <Spacer height={Spacing[12]} />
