@@ -13,7 +13,7 @@ import { navigationRef } from "./navigation-utilities"
 import authScreens, { NavigatorParamList as AuthNavigatorParamList} from "@navigators/auth-navigator";
 
 import mainScreens, { NavigatorParamList as MainNavigatorParamList } from "@navigators/main-navigator";
-import {useStores} from "@models";
+// import {useStores} from "@models";
 import {observer} from "mobx-react-lite";
 
 /**
@@ -84,16 +84,16 @@ export const AppNavigator = observer( (props: NavigationProps) => {
 
   const [isLogin, setIsLogin] = useState(false)
 
-  const { authStore } = useStores()
+  // const { authStore } = useStores()
 
-  useEffect(() => {
-    console.log('check auth')
-    if(authStore.authUser.token){
-      setIsLogin(true)
-    }else{
-      setIsLogin(false)
-    }
-  }, [authStore.authUser.token, authStore.authUser])
+  // useEffect(() => {
+  //   // console.log('check auth')
+  //   // if(authStore.authUser.token){
+  //   //   setIsLogin(true)
+  //   // }else{
+  //   //   setIsLogin(false)
+  //   // }
+  // }, [authStore.authUser.token, authStore.authUser])
 
   return (
     <NavigationContainer

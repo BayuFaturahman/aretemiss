@@ -10,12 +10,12 @@ export class AuthApi {
     this.api = api
   }
 
-  async login(phoneNumber: string, password: string): Promise<LoginResult> {
+  async login(email: string, password: string): Promise<LoginResult> {
     try {
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.post(
         "/signin",
-        { phoneNumber: phoneNumber, password: password },
+        { email: email, password: password },
       )
 
       if(response.status === 400){

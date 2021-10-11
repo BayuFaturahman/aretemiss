@@ -16,10 +16,14 @@ import { SafeAreaProvider, initialWindowMetrics } from "react-native-safe-area-c
 import { initFonts } from "./theme/fonts" // expo
 import * as storage from "./utils/storage"
 import {useBackButtonHandler, AppNavigator, canExit, useNavigationPersistence, navigate} from "./navigators"
-import { RootStore, RootStoreProvider, setupRootStore } from "./models"
+// import { RootStore, RootStoreProvider, setupRootStore } from "./models"
 import { ToggleStorybook } from "../storybook/toggle-storybook"
 import { ErrorBoundary } from "./screens/error/error-boundary"
 import {useNavigation} from "@react-navigation/native";
+
+import {StoreProvider} from "./bootstrap/context.boostrap";
+import RootStore from "./bootstrap/store.bootstrap";
+import {setupRootStore} from "./store/setup-store";
 
 // This puts screens in a native ViewController or Activity. If you want fully native
 // stack navigation, use `createNativeStackNavigator` in place of `createStackNavigator`:
@@ -67,7 +71,7 @@ function App() {
   // otherwise, we're ready to render the app
   return (
     <ToggleStorybook>
-      <RootStoreProvider value={rootStore}>
+      <StoreProvider store={rootStore}>
         <SafeAreaProvider initialMetrics={initialWindowMetrics}>
           <ErrorBoundary catchErrors={"always"}>
             <AppNavigator
@@ -76,7 +80,7 @@ function App() {
             />
           </ErrorBoundary>
         </SafeAreaProvider>
-      </RootStoreProvider>
+      </StoreProvider>
     </ToggleStorybook>
   )
 }

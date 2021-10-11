@@ -13,8 +13,9 @@ import Spacer from "@components/spacer";
 import {Colors, Spacing} from "@styles";
 import logoBottom from "@assets/icons/ilead-bottom-logo.png";
 import FastImage from "react-native-fast-image";
-import {useStores} from "@models";
 import {errorCollection} from "@utils/form-error-type";
+
+import {useStores} from "../../bootstrap/context.boostrap";
 
 
 const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
@@ -31,40 +32,40 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
 
     const nextScreen = () => navigation.navigate("verifyOTP")
 
-    const submitLogin = useCallback( ()=>{
+    const submitLogin = useCallback( async()=>{
       setIsError(false)
-      authStore.login(phoneNumber , password)
+      await authStore.login(phoneNumber , password)
     }, [phoneNumber, password])
 
-    useEffect(() => {
-      // authStore.resetAuthStore()
-    }, [])
-
-    useEffect(() => {
-      console.log(authStore.authUser.otp)
-      if(authStore.authUser.otp){
-        nextScreen()
-      }
-    }, [authStore.authUser.otp])
-
-    useEffect(() => {
-      console.log('is loading'+ authStore.isLoading)
-    }, [authStore.isLoading])
-
-    useEffect(() => {
-      if(authStore.formErrorCode){
-        console.log('ada error')
-        console.log(isError)
-        console.log(authStore.formErrorCode)
-        setIsError(true)
-        setErrorMessage(errorCollection.find(i => i.errorCode === authStore.formErrorCode).message)
-      }else{
-        setIsError(false)
-      }
-    }, [authStore.formErrorCode, authStore.login, isError])
+    // useEffect(() => {
+    //   // authStore.resetAuthStore()
+    // }, [])
+    //
+    // useEffect(() => {
+    //   console.log(authStore.authUser.otp)
+    //   if(authStore.authUser.otp){
+    //     nextScreen()
+    //   }
+    // }, [authStore.authUser.otp])
+    //
+    // useEffect(() => {
+    //   console.log('is loading'+ authStore.isLoading)
+    // }, [authStore.isLoading])
+    //
+    // useEffect(() => {
+    //   if(authStore.formErrorCode){
+    //     console.log('ada error')
+    //     console.log(isError)
+    //     console.log(authStore.formErrorCode)
+    //     setIsError(true)
+    //     setErrorMessage(errorCollection.find(i => i.errorCode === authStore.formErrorCode).message)
+    //   }else{
+    //     setIsError(false)
+    //   }
+    // }, [authStore.formErrorCode, authStore.login, isError])
 
     const logout = useCallback( ()=>{
-      authStore.resetAuthStore()
+      // authStore.resetAuthStore()
     }, [])
 
     return (
@@ -84,16 +85,15 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
               value={phoneNumber}
               label="Masukan no. HP yang sudah diregistrasi:"
               style={{ paddingTop: 0}}
-              isError={isError && (authStore.formErrorCode === 2 || authStore.formErrorCode === 1 || authStore.formErrorCode === 10 || authStore.formErrorCode === 15)}
+              // isError={isError && (authStore.formErrorCode === 2 || authStore.formErrorCode === 1 || authStore.formErrorCode === 10 || authStore.formErrorCode === 15)}
               onChangeText={setPhoneNumber}
-              keyboardType={'numeric'}
             />
             <TextField
               value={password}
               label="Password"
               style={{ paddingTop: 0}}
               secureTextEntry={true}
-              isError={isError && (authStore.formErrorCode === 3 || authStore.formErrorCode === 15)}
+              // isError={isError && (authStore.formErrorCode === 3 || authStore.formErrorCode === 15)}
               onChangeText={setPassword}
             />
           </VStack>
