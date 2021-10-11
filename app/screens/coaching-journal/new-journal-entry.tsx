@@ -27,7 +27,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 
 const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalMain">> = observer(
   ({ navigation }) => {
-    const { profileStore, authStore, coachingStore } = useStores()
+    // const { profileStore, authStore, coachingStore } = useStores()
 
     const styles = StyleSheet.create({
       textError: {
@@ -75,50 +75,50 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
 
     useEffect(() => {
       setSelectedDate(moment().format('LLLL'))
-      profileStore.resetLoading()
-      coachingStore.resetLoading()
+      // profileStore.resetLoading()
+      // coachingStore.resetLoading()
     }, [])
 
-    useEffect(()=>{
-      if(coachingStore.isDetailCoach){
-        coachingStore.getJournalDetail()
-      }
-    }, [coachingStore.isDetailCoach])
-
-    useEffect(()=>{
-      if(!coachingStore.isDetailCoach){
-        if(profileStore.profile && profileStore.profile[0] && profileStore.profile[0].team1_id){
-          profileStore.getTeamMember(profileStore.profile[0].team1_id)
-        }
-      }else{
-          setTitle(coachingStore.journalDetail.journal_title)
-          setContent(coachingStore.journalDetail.journal_content)
-          setStrength(coachingStore.journalDetail.journal_strength)
-          setImprovement(coachingStore.journalDetail.journal_improvement)
-          setCommitment(coachingStore.journalDetail.journal_commitment)
-          setSelectedDate(coachingStore.journalDetail.journal_date)
-          setSelectedActivities(coachingStore.journalDetail.journal_type)
-      }
-    }, [profileStore.profile])
-
-    useEffect(()=>{
-      if(!profileStore.isLoading){
-        const dataItem = profileStore.teamMember.map((data, index)=>{
-          return { key:index, label: data.fullname, customKey: data.id }
-        })
-        setDataTeamMember(dataItem)
-      }
-    }, [profileStore.teamMember, profileStore.isLoading])
-
-    useEffect(() => {
-        if(coachingStore.message == "Success"){
-          coachingStore.resetCoachingStore()
-          navigation.navigate("coachingJournalMain")
-        }
-    },[coachingStore.message])
+    // useEffect(()=>{
+    //   if(coachingStore.isDetailCoach){
+    //     coachingStore.getJournalDetail()
+    //   }
+    // }, [coachingStore.isDetailCoach])
+    //
+    // useEffect(()=>{
+    //   if(!coachingStore.isDetailCoach){
+    //     if(profileStore.profile && profileStore.profile[0] && profileStore.profile[0].team1_id){
+    //       profileStore.getTeamMember(profileStore.profile[0].team1_id)
+    //     }
+    //   }else{
+    //       setTitle(coachingStore.journalDetail.journal_title)
+    //       setContent(coachingStore.journalDetail.journal_content)
+    //       setStrength(coachingStore.journalDetail.journal_strength)
+    //       setImprovement(coachingStore.journalDetail.journal_improvement)
+    //       setCommitment(coachingStore.journalDetail.journal_commitment)
+    //       setSelectedDate(coachingStore.journalDetail.journal_date)
+    //       setSelectedActivities(coachingStore.journalDetail.journal_type)
+    //   }
+    // }, [profileStore.profile])
+    //
+    // useEffect(()=>{
+    //   if(!profileStore.isLoading){
+    //     const dataItem = profileStore.teamMember.map((data, index)=>{
+    //       return { key:index, label: data.fullname, customKey: data.id }
+    //     })
+    //     setDataTeamMember(dataItem)
+    //   }
+    // }, [profileStore.teamMember, profileStore.isLoading])
+    //
+    // useEffect(() => {
+    //     if(coachingStore.message == "Success"){
+    //       coachingStore.resetCoachingStore()
+    //       navigation.navigate("coachingJournalMain")
+    //     }
+    // },[coachingStore.message])
 
     const goBack = () => {
-      coachingStore.resetLoading()
+      // coachingStore.resetLoading()
       navigation.goBack()
     }
 
@@ -144,26 +144,26 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
       }else if(selectedDate == ""){
         setError("selectedDate")
       }else{
-        console.log('learner', learner.customKey)
-        coachingStore.saveFormJournal(
-          authStore.authUser.id,
-          moment(selectedDate).format('YYYY-MM-DDTHH:mm:ss.SSS\\Z'),
-          title,
-          content,
-          strength,
-          improvement,
-          commitment,
-          [`${learner.customKey}`],
-          selectedActivities
-        )
+        // console.log('learner', learner.customKey)
+        // coachingStore.saveFormJournal(
+        //   authStore.authUser.id,
+        //   moment(selectedDate).format('YYYY-MM-DDTHH:mm:ss.SSS\\Z'),
+        //   title,
+        //   content,
+        //   strength,
+        //   improvement,
+        //   commitment,
+        //   [`${learner.customKey}`],
+        //   selectedActivities
+        // )
       }
 
     }
-    useEffect(()=>{
-      if(coachingStore.coach_id){
-        goToFeedback()
-      }
-    }, [coachingStore.coach_id])
+    // useEffect(()=>{
+    //   if(coachingStore.coach_id){
+    //     goToFeedback()
+    //   }
+    // }, [coachingStore.coach_id])
 
     const holdActivitiesId = useCallback((selectedId)=>{
       setSelectedActivities(selectedId)
@@ -223,7 +223,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                   value={title}
                   onChangeText={setTitle}
                   isRequired={false}
-                  disabled={coachingStore.isDetailCoach}
+                  // disabled={coachingStore.isDetailCoach}
                   isError={isError == "title"}
                   secureTextEntry={false}
                   placeholder={'Tulis nama judul sesi coaching di sini.'}
@@ -252,7 +252,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                   <TouchableOpacity
                     style={{height: '100%', width: '20%'}}
                     onPress={toggleModal}
-                    disabled={coachingStore.isDetailCoach}
+                    // disabled={coachingStore.isDetailCoach}
                   >
                     <VStack horizontal={Spacing[8]} vertical={Spacing[2]} style={{flex:1, width: '100%', borderRadius: Spacing[12], alignItems: 'flex-end', justifyContent: 'flex-end', backgroundColor: Colors.MAIN_BLUE}}>
                       <Text type={'button'} style={{color:Colors.WHITE, bottom: -Spacing[8]}} text={`${moment(selectedDate).format('DD MMM')}`.split(' ')[0]} />
@@ -271,7 +271,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                     <TextField
                       style={{ paddingTop: 0}}
                       value={content}
-                      disabled={coachingStore.isDetailCoach}
+                      // disabled={coachingStore.isDetailCoach}
                       isError={isError == "content"}
                       onChangeText={setContent}
                       inputStyle={{minHeight: Spacing[72]}}
@@ -293,7 +293,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                     inputStyle={{minHeight: Spacing[48]}}
                     isRequired={false}
                     value={strength}
-                    disabled={coachingStore.isDetailCoach}
+                    // disabled={coachingStore.isDetailCoach}
                     isError={isError == "strength"}
                     onChangeText={setStrength}
                     secureTextEntry={false}
@@ -313,7 +313,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                     isRequired={false}
                     secureTextEntry={false}
                     isTextArea={true}
-                    disabled={coachingStore.isDetailCoach}
+                    // disabled={coachingStore.isDetailCoach}
                     isError={isError == "improvement"}
                     value={improvement}
                     onChangeText={setImprovement}
@@ -332,7 +332,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                     isRequired={false}
                     secureTextEntry={false}
                     isTextArea={true}
-                    disabled={coachingStore.isDetailCoach}
+                    // disabled={coachingStore.isDetailCoach}
                     value={commitment}
                     onChangeText={setCommitment}
                   />
@@ -350,16 +350,16 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
             <VStack horizontal={Spacing[72]} vertical={Spacing[24]}>
               <ActivitiesTypeLegends showedItems={[1,2]} />
               <Spacer height={Spacing[24]} />
-              {coachingStore.isDetailCoach ?
-              <Button
-                type={"primary"}
-                text={"Hasil Feedback"}
-                onPress={goToFeedbackDetail}
-              />: <Button
-                type={"primary"}
-                text={"Lakukan Feedback"}
-                onPress={verifyData}
-              />}
+              {/* {coachingStore.isDetailCoach ? */}
+              {/* <Button */}
+              {/*  type={"primary"} */}
+              {/*  text={"Hasil Feedback"} */}
+              {/*  onPress={goToFeedbackDetail} */}
+              {/* />: <Button */}
+              {/*  type={"primary"} */}
+              {/*  text={"Lakukan Feedback"} */}
+              {/*  onPress={verifyData} */}
+              {/* />} */}
 
             </VStack>
           </ScrollView>
@@ -406,7 +406,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
           </View>
         </Modal>
         <Spinner
-          visible={coachingStore.isLoading}
+          // visible={coachingStore.isLoading}
           textContent={'Memuat...'}
           // textStyle={styles.spinnerTextStyle}
         />

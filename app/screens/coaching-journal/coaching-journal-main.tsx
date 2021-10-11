@@ -101,7 +101,7 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
     const [, forceUpdate] = useReducer(x => x + 1, 0);
 
 
-    const goBack = () => navigation.navigate("settingsPage")
+    const goBack = () => navigation.goBack()
 
     const newEntry = () => navigation.navigate("newJournalEntry")
 
@@ -128,7 +128,6 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
       <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: 'center'}}>
         <SafeAreaView style={Layout.flex}>
           <BackNavigation goBack={goBack} />
-          <NewButton onPress={quizForm} />
           <ScrollView>
             <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
               <Text type={'header'} style={{color: Colors.WHITE}} text="Coaching Journal" />

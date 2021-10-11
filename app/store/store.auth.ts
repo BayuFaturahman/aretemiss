@@ -155,6 +155,15 @@ export default class AuthStore {
     await this.serviceStore.setToken(this.token)
   }
 
+  async resetAuthStore (){
+    this.formReset()
+    this.token = null
+
+    this.otp = null
+
+    await this.serviceStore.clearTokens()
+  }
+
 
   // #endregion
 }

@@ -92,6 +92,20 @@ export default class ServiceStore {
     console.log('end setToken');
   }
 
+  async clearTokens() {
+    console.log('start clearTokens');
+
+    this.refreshToken = '';
+    this.accessToken = '';
+    try {
+      await storage.remove(ACCESS_TOKEN_KEY);
+    } catch (error) {
+      throw new Error('Unable to remove access token and refresh token.');
+    }
+
+    console.log('end clearTokens');
+  }
+
 }
 
 // #endregion

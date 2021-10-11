@@ -15,6 +15,7 @@ import authScreens, { NavigatorParamList as AuthNavigatorParamList} from "@navig
 import mainScreens, { NavigatorParamList as MainNavigatorParamList } from "@navigators/main-navigator";
 // import {useStores} from "@models";
 import {observer} from "mobx-react-lite";
+import {useStores} from "../bootstrap/context.boostrap";
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -84,16 +85,16 @@ export const AppNavigator = observer( (props: NavigationProps) => {
 
   const [isLogin, setIsLogin] = useState(false)
 
-  // const { authStore } = useStores()
+  const { authStore, serviceStore } = useStores()
 
-  // useEffect(() => {
-  //   // console.log('check auth')
-  //   // if(authStore.authUser.token){
-  //   //   setIsLogin(true)
-  //   // }else{
-  //   //   setIsLogin(false)
-  //   // }
-  // }, [authStore.authUser.token, authStore.authUser])
+  useEffect(()=>{
+    if(serviceStore.accessToken){
+      setIsLogin(true)
+    } else if (serviceStore.accessToken === ''){
+      setIsLogin(false)
+    }
+  },[serviceStore.rehydrated, serviceStore.accessToken])
+
 
   if (__DEV__) {
     // eslint-disable-next-line global-require

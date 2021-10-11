@@ -10,8 +10,7 @@ import { NavigatorParamList } from "@navigators/main-navigator"
 import {VStack} from "@components/view-stack";
 import Spacer from "@components/spacer";
 import {Colors, Layout, Spacing} from "@styles";
-
-import {useStores} from "@models";
+import {useStores} from "../../bootstrap/context.boostrap";
 
 const Settings: FC<StackScreenProps<NavigatorParamList, "settingsPage">> = observer(
   ({ navigation }) => {
