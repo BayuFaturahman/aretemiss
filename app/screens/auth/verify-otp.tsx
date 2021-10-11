@@ -14,7 +14,6 @@ import logoBottom from "@assets/icons/ilead-bottom-logo.png";
 import FastImage from "react-native-fast-image";
 
 import SMSVerifyCode from 'react-native-sms-verifycode'
-import {errorCollection} from "@utils/form-error-type";
 import {useStores} from "../../bootstrap/context.boostrap";
 
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 40 : 0
@@ -28,12 +27,12 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
 
     const { authStore } = useStores()
 
-    const verifyNumber = () => {
+    const verifyNumber = async () => {
       console.log('verify number')
       if(authStore.otp === Number(otpCode)){
         console.log('otp match')
       }
-      // authStore.loginVerify(otpCode ? otpCode.toString() : '')
+      await authStore.loginVerify(otpCode ? otpCode.toString() : '')
     }
 
     const goToLogin = () => navigation.navigate("login")
@@ -44,7 +43,7 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
     }
 
     useEffect(() => {
-      verifyNumber()
+      verifyNumber().then(r => console.log(r))
     }, [otpCode])
 
     // useEffect(() => {

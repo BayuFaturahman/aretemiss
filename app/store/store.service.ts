@@ -62,13 +62,13 @@ export default class ServiceStore {
     try {
       // Check whether there's a saved token or not
       const savedToken = await storage.load(ACCESS_TOKEN_KEY);
-      const savedRefreshToken = await storage.load(REFRESH_TOKEN_KEY);
+      // const savedRefreshToken = await storage.load(REFRESH_TOKEN_KEY);
 
       // Token available
-      if (savedToken && savedRefreshToken) {
+      if (savedToken) {
         console.log('SAVED TOKEN');
         this.accessToken = savedToken;
-        this.refreshToken = savedRefreshToken;
+        // this.refreshToken = savedRefreshToken;
         this.setHeaderToken(savedToken);
       }
     } catch (error) {
@@ -76,6 +76,20 @@ export default class ServiceStore {
       throw new Error('Unable to retrieved saved token from storage.');
     }
     this.setRehydrated(true);
+  }
+
+  async setToken(value: string) {
+    console.log('start setToken');
+    this.accessToken = value;
+    try {
+      await storage.save(ACCESS_TOKEN_KEY, value);
+      this.setHeaderToken(value);
+    } catch (error) {
+      console.log(error);
+      throw new Error('Unable to save token to storage.');
+    }
+
+    console.log('end setToken');
   }
 
 }

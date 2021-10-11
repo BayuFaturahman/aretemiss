@@ -38,13 +38,13 @@ export class AuthApi {
     }
   }
 
-  async loginVerify(phoneNumber: string, userId: string, otpCode: string, otpHash: string): Promise<LoginVerifyResult> {
+  async loginVerify(email: string, userId: string, otpCode: string, otpHash: string): Promise<LoginVerifyResult> {
     try {
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.post(
         "/signin/verify",
         {
-          "phoneNumber": phoneNumber,
+          "email": email,
           "userId": userId,
           "otpCode": otpCode,
           "otpHash": otpHash

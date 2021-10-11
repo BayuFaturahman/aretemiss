@@ -7,7 +7,7 @@ import MainStore from "./store.main";
 import ServiceStore from "./store.service";
 import {AuthApi} from "@services/api/auth/auth-api";
 import {Api} from "@services/api";
-import {ErrorFormResponse, LoginResponse} from "@services/api/auth/auth-api.types";
+import {ErrorFormResponse, LoginResponse, LoginVerifyResponse} from "@services/api/auth/auth-api.types";
 
 // #region MAIN CLASS
 
@@ -26,6 +26,10 @@ export default class AuthStore {
   userId: string
   otpHash: string
   otp: number
+
+  email: string
+  needChangePassword: boolean
+  token: string
   // End
 
   /* Misc */
@@ -37,6 +41,7 @@ export default class AuthStore {
   constructor(serviceStore:ServiceStore, mainStore: MainStore, api: Api) {
 
     this.mainStore = mainStore;
+    this.serviceStore = serviceStore;
 
     this.api = api
 
@@ -47,6 +52,10 @@ export default class AuthStore {
     this.userId = null
     this.otpHash = null
     this.otp = null
+
+    this.email = null
+    this.needChangePassword = false
+    this.token = null
 
     this.errorCode = null
     this.errorMessage = null
@@ -73,7 +82,7 @@ export default class AuthStore {
         console.log(response.response.userId)
         console.log(response.response.otpHash)
 
-        this.loginSuccess(response.response)
+        this.loginSuccess(response.response, email)
       }
 
     } catch (e) {
@@ -85,13 +94,44 @@ export default class AuthStore {
       console.log('login done')
       this.isLoading = false
     }
-
   }
 
-  loginSuccess (data: LoginResponse){
+  async loginVerify(otpCode: string) {
+    console.log('login verify')
+    this.isLoading = true
+    try {
+      const response = await this.apiAuth.loginVerify(this.email, this.userId, otpCode, this.otpHash)
+
+      console.log(response)
+
+      if(response.kind === 'form-error'){
+        console.log(response.response.errorCode)
+        console.log(response.response.message)
+
+        this.formError(response.response)
+      }
+
+      if(response.kind === 'ok'){
+        this.loginVerifySuccess(response.response)
+      }
+
+    } catch (e) {
+      console.log('login verify error catch')
+      console.log(e)
+      this.loginFailed(e)
+      this.isLoading = false
+    } finally {
+      console.log('login done')
+      this.isLoading = false
+    }
+  }
+
+  loginSuccess (data: LoginResponse, email: string){
     this.userId = data.userId
     this.otpHash = data.otpHash
     this.otp = data.otp
+
+    this.email = email
   }
 
   loginFailed (e: any){
@@ -107,6 +147,14 @@ export default class AuthStore {
     this.errorCode = null
     this.errorMessage = null
   }
+
+  async loginVerifySuccess (data: LoginVerifyResponse){
+    this.needChangePassword = data.needChangePassword
+    this.token = data.token
+
+    await this.serviceStore.setToken(this.token)
+  }
+
 
   // #endregion
 }
