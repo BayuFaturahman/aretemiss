@@ -32,24 +32,35 @@ export default class AuthStore {
 
   // #region CONSTRUCTOR
   constructor(serviceStore:ServiceStore, mainStore: MainStore, api: Api) {
+
+    makeAutoObservable(this);
+
     this.mainStore = mainStore;
 
     this.api = api
 
     this.apiAuth = new AuthApi(this.api)
 
-    makeAutoObservable(this);
+    this.isLoading = false
+
   }
 
   async login(email: string, password: string) {
     console.log('login')
-
+    this.isLoading = true
     try {
-
       const response = await this.apiAuth.login(email,password)
 
-      console.log(response)
-      console.log('runn login')
+      if(response.kind === 'form-error'){
+        console.log(response.response.errorCode)
+        console.log(response.response.message)
+      }
+
+      if(response.kind === 'ok'){
+        console.log(response.response.otp)
+        console.log(response.response.userId)
+        console.log(response.response.otpHash)
+      }
 
     } catch (e) {
       console.log('login e catch')

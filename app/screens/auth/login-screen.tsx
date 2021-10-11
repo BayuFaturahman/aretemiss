@@ -13,7 +13,6 @@ import Spacer from "@components/spacer";
 import {Colors, Spacing} from "@styles";
 import logoBottom from "@assets/icons/ilead-bottom-logo.png";
 import FastImage from "react-native-fast-image";
-import {errorCollection} from "@utils/form-error-type";
 
 import {useStores} from "../../bootstrap/context.boostrap";
 
@@ -36,6 +35,11 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
       setIsError(false)
       await authStore.login(phoneNumber , password)
     }, [phoneNumber, password])
+
+    useEffect(() => {
+      console.log('is loading')
+      console.log(authStore.isLoading)
+    }, [authStore.isLoading])
 
     // useEffect(() => {
     //   // authStore.resetAuthStore()
