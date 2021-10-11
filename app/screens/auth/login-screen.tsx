@@ -52,11 +52,11 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
 
     useEffect(() => {
       console.log('login succeed')
-      if(authStore.otp !== null){
+      if(authStore.otpHash !== null){
         setIsError(false)
         nextScreen()
       }
-    }, [authStore.otp])
+    }, [authStore.otpHash])
 
     // useEffect(() => {
     //   // authStore.resetAuthStore()

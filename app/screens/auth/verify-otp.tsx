@@ -16,6 +16,8 @@ import FastImage from "react-native-fast-image";
 import SMSVerifyCode from 'react-native-sms-verifycode'
 import {useStores} from "../../bootstrap/context.boostrap";
 
+import Spinner from 'react-native-loading-spinner-overlay';
+
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 40 : 0
 
 const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observer(
@@ -27,15 +29,24 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
 
     const { authStore } = useStores()
 
-    const verifyNumber = async () => {
+    const goToLogin = () => navigation.navigate("login")
+    const nextScreen = () => {
+      if(authStore.isLoginFlow === false) {
+        navigation.navigate("createProfile")
+      } // TODO: add else case
+    }
+
+    const verifyNumber = useCallback( async () => {
       console.log('verify number')
       if(authStore.otp === Number(otpCode)){
         console.log('otp match')
       }
-      await authStore.loginVerify(otpCode ? otpCode.toString() : '')
-    }
-
-    const goToLogin = () => navigation.navigate("login")
+      if(authStore.isLoginFlow) {
+        await authStore.loginVerify(otpCode ? otpCode.toString() : '')
+      } else {
+        await authStore.signupVerify(otpCode ? otpCode.toString() : '')
+      }
+    }, [otpCode])
 
     const onInputCompleted =(otp) => {
       setOTPCode(otp)
@@ -43,8 +54,24 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
     }
 
     useEffect(() => {
-      verifyNumber().then(r => console.log(r))
-    }, [otpCode])
+      console.log('is loading')
+      console.log(authStore.isLoading)
+    }, [authStore.isLoading])
+
+    useEffect(() => {
+      console.log('is error')
+      if(authStore.errorMessage !== null){
+        setIsError(true)
+      }
+    }, [authStore.errorMessage])
+
+    useEffect(() => {
+      console.log('succeed')
+      if(authStore.token !== null){
+        setIsError(false)
+        nextScreen()
+      }
+    }, [authStore.otp])
 
     // useEffect(() => {
     //   if(authStore.){
@@ -111,6 +138,11 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
             bottom: 0
           }} source={logoBottom} resizeMode={"contain"}/>
         </KeyboardAvoidingView>
+        <Spinner
+          visible={authStore.isLoading}
+          textContent={'Memuat...'}
+          // textStyle={styles.spinnerTextStyle}
+        />
       </VStack>
     )
   },

@@ -14,11 +14,17 @@ import {Colors, Layout, Spacing} from "@styles";
 import logoBottom from "@assets/icons/ilead-bottom-logo.png";
 import FastImage from "react-native-fast-image";
 
+import { useStores } from "../../bootstrap/context.boostrap"
+
+import Spinner from 'react-native-loading-spinner-overlay';
+
 const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> = observer(
   ({ navigation }) => {
 
     const goToOTP = () => navigation.navigate("verifyOTP")
     const goToLogin = () => navigation.navigate("login")
+
+    const { authStore } = useStores()
 
     const styles = StyleSheet.create({
 
