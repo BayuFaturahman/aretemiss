@@ -99,7 +99,6 @@ export const AppNavigator = observer( (props: NavigationProps) => {
     <NavigationContainer
       ref={navigationRef}
       theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-      {...props}
     >
       <StatusBar
         barStyle="dark-content"

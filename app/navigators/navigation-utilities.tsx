@@ -113,6 +113,7 @@ export function useNavigationPersistence(storage: any, persistenceKey: string) {
   const restoreState = async () => {
     try {
       const state = await storage.load(persistenceKey)
+      console.log(state)
       if (state) setInitialNavigationState(state)
     } finally {
       setIsRestored(true)
