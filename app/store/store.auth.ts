@@ -8,10 +8,10 @@ import ServiceStore from "./store.service";
 import {AuthApi} from "@services/api/auth/auth-api";
 import {Api} from "@services/api";
 import {
-  ErrorFormResponse, 
-  LoginResponse, 
-  LoginVerifyResponse, 
-  SignupResponse, 
+  ErrorFormResponse,
+  LoginResponse,
+  LoginVerifyResponse,
+  SignupResponse,
   SignupVerifyResponse
 } from "@services/api/auth/auth-api.types";
 
@@ -164,9 +164,13 @@ export default class AuthStore {
     try {
       const response = await this.apiAuth.signup(email, password)
 
+      console.log(response)
+
       if(response.kind === 'form-error'){
         console.log(response.response.errorCode)
         console.log(response.response.message)
+
+        console.log(response)
 
         this.formError(response.response)
       }
@@ -175,6 +179,8 @@ export default class AuthStore {
         console.log(response.response.email)
         console.log(response.response.otp)
         console.log(response.response.otpHash)
+
+        console.log(response)
 
         this.signupSuccess(response.response)
       }
@@ -194,10 +200,12 @@ export default class AuthStore {
     this.email = data.email
     this.otpHash = data.otpHash
     this.otp = data.otp
+    console.log('sign up oke')
   }
 
   signupFailed (e: any) {
     this.errorMessage = e
+    console.log(e)
   }
 
   async signupVerify(otpCode: string) {
@@ -235,6 +243,8 @@ export default class AuthStore {
     this.token = data.token
     this.isVerify = data.isVerify
     this.email = data.email
+
+    this.isLoginFlow = false
   }
 
   formError (data: ErrorFormResponse){
@@ -245,6 +255,15 @@ export default class AuthStore {
   formReset () {
     this.errorCode = null
     this.errorMessage = null
+  }
+
+  resetLoginState () {
+    this.email = null
+    this.otpHash = null
+    this.otp = null
+
+    this.isLoginFlow = false
+    this.token = null
   }
 
   async resetAuthStore (){

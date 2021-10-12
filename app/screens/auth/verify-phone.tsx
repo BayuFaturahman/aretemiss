@@ -3,6 +3,7 @@ import { SafeAreaView, StyleSheet } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {
+  BackNavigation,
   Button,
   Text,
   TextField,
@@ -17,6 +18,7 @@ import FastImage from "react-native-fast-image";
 import {useStores} from "../../bootstrap/context.boostrap";
 
 import Spinner from 'react-native-loading-spinner-overlay';
+import {useFocusEffect} from "@react-navigation/native";
 
 const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = observer(
   ({ navigation }) => {
@@ -33,10 +35,19 @@ const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
     const goToLogin = () => navigation.navigate("login")
 
     const submitVerify = useCallback( async() =>{
-      if(phoneNumber === phoneNumberVerify) {
-        await authStore.signup(phoneNumber, password)
-      }
+      authStore.resetLoginState()
+      await authStore.signup(phoneNumber, password)
     }, [phoneNumber, phoneNumberVerify, password])
+
+    useEffect(() => {
+      authStore.formReset()
+      authStore.resetAuthStore()
+    }, [])
+
+    // useFocusEffect(useCallback(() => {
+    //   authStore.formReset()
+    //   authStore.resetAuthStore()
+    // }, [authStore.otp, authStore.token, authStore.isLoading]))
 
     useEffect(() => {
       console.log('is loading')
@@ -52,29 +63,33 @@ const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
 
     useEffect(() => {
       console.log('register succeed')
-      if(authStore.otpHash !== null){
+      if(authStore.otp !== null){
         setIsError(false)
         nextScreen()
       }
-    }, [authStore.otpHash])
+    }, [authStore.otp])
 
     const styles = StyleSheet.create({
 
     })
 
+    const goBack = () => {
+      navigation.goBack()
+    }
+
     return (
       <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.WHITE, flex: 1, justifyContent: 'center'}}>
         {/* <GradientBackground colors={["#422443", "#281b34"]} /> */}
         <SafeAreaView style={{flex: 1}}>
+          <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
           <Spacer />
           <VStack top={Spacing[24]} horizontal={Spacing[24]}>
             <Text type={'header'} text="Selamat datang di iLEAD." />
             <Spacer height={Spacing[24]} />
 
-            {/* <Text type={'warning'} style={{textAlign: 'center'}}> */}
-            {/*  Waduh. Nomor verifikasi yang kamu masukan salah. */}
-            {/*  Coba cek kembali nomor hapemu dan kirim ulang nomor verifikasinya! */}
-            {/* </Text> */}
+             <Text type={'warning'} style={{textAlign: 'center'}}>
+               {authStore.errorMessage}
+             </Text>
 
             <Spacer height={Spacing[32]} />
             <TextField

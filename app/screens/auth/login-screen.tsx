@@ -39,6 +39,11 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
     }, [phoneNumber, password])
 
     useEffect(() => {
+      authStore.formReset()
+      authStore.resetAuthStore()
+    }, [])
+
+    useEffect(() => {
       console.log('is loading')
       console.log(authStore.isLoading)
     }, [authStore.isLoading])
@@ -52,11 +57,11 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
 
     useEffect(() => {
       console.log('login succeed')
-      if(authStore.otpHash !== null){
+      if(authStore.otp !== null){
         setIsError(false)
         nextScreen()
       }
-    }, [authStore.otpHash])
+    }, [authStore.otp])
 
     // useEffect(() => {
     //   // authStore.resetAuthStore()

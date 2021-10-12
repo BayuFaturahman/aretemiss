@@ -65,6 +65,7 @@
     "react-native-loading-spinner-overlay": "^2.0.0",
     "react-native-masked-text": "^1.13.0",
     "react-native-modal-datetime-picker": "^11.0.0",
+    "react-native-modal-selector": "^2.1.0",
     "react-native-modalbox": "^2.0.0",
     "react-native-paper": "^3.6.0",
     "react-native-progress": "^4.1.2",
