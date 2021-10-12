@@ -43,6 +43,7 @@
     "apisauce": "2.0.0",
     "expo-linear-gradient": "^9.2.0",
     "expo-localization": "9.1.0",
+    "formik": "^2.2.9",
     "i18n-js": "3.8.0",
     "mobx": "6.1.8",
     "mobx-react-lite": "3.2.0",

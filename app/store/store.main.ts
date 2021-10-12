@@ -6,11 +6,23 @@ import ServiceStore from "./store.service";
 import {Api} from "@services/api";
 import {ProfileApi} from "@services/api/profile/profile-api";
 import {ErrorFormResponse} from "@services/api/auth/auth-api.types";
-import {TeamResponse} from "@services/api/profile/profile-api.types";
+import {TeamResponse, UpdateProfileResponse} from "@services/api/profile/profile-api.types";
+import {ProfileUpdateForm} from "@screens/auth/create-profile";
 
 // CONFIGS
 
 // CONSTANTS
+
+export type UserProfile = {
+  userId: string
+  fullName: string
+  nickName: string
+  phoneNumber?: string
+  email: string
+  team1Id: string
+  team2Id: string
+  team3Id: string
+}
 
 export default class MainStore {
   // #region PROPERTIES
@@ -25,6 +37,8 @@ export default class MainStore {
   profileApi: ProfileApi
   teamResponse: TeamResponse
 
+  userProfile:UserProfile
+
   // #region CONSTRUCTOR
 
   constructor(serviceStore: ServiceStore, api: Api) {
@@ -38,6 +52,16 @@ export default class MainStore {
     this.profileApi = new ProfileApi(this.api)
 
     this.teamResponse = null
+
+    this.userProfile = {
+      userId: '',
+      fullName: '',
+      nickName: '',
+      email:'',
+      team1Id: '',
+      team2Id: '',
+      team3Id: ''
+    }
 
     makeAutoObservable(this);
   }
@@ -59,9 +83,6 @@ export default class MainStore {
       console.log(response)
 
       if(response.kind === 'form-error'){
-        console.log(response.response.errorCode)
-        console.log(response.response.message)
-
         this.formError(response.response)
       }
 
@@ -70,7 +91,7 @@ export default class MainStore {
       }
 
     } catch (e) {
-      console.log('getTeamList')
+      console.log('getTeamList error')
       console.log(e)
       this.getTeamFailed(e)
     } finally {
@@ -88,6 +109,47 @@ export default class MainStore {
     this.errorMessage = e
   }
 
+  async updateProfile(userId: string, data: ProfileUpdateForm) {
+    console.log('updateProfile')
+    this.isLoading = true
+    try {
+      const response = await this.profileApi.updateProfile(userId, data)
+
+      if(response.kind === 'form-error'){
+        this.formError(response.response)
+      }
+
+      if(response.kind === 'ok'){
+        await this.updateProfileSuccess(response.response)
+      }
+
+    } catch (e) {
+      console.log('updateProfile error')
+      console.log(e)
+      this.updateProfileFailed(e)
+    } finally {
+      console.log('updateProfile done')
+      this.isLoading = false
+    }
+  }
+
+  async updateProfileSuccess(data: UpdateProfileResponse) {
+    this.userProfile = {
+      userId: data.data.userId,
+      fullName: data.data.fullname,
+      nickName: data.data.nickname,
+      email: data.data.email,
+      team1Id: data.data.team1Id,
+      team2Id: data.data.team2Id,
+      team3Id: data.data.team3Id
+    }
+
+    await this.serviceStore.setToken(data.data.token)
+  }
+
+  updateProfileFailed(e: any) {
+    this.errorMessage = e
+  }
 
   // #endregion
 }

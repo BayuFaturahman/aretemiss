@@ -3,7 +3,7 @@ import * as storage from "@utils/storage"
 
 // PACKAGE IMPORTS
 import {makeAutoObservable} from 'mobx';
-import {ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY} from "./types.store";
+import {ACCESS_TOKEN_KEY} from "./types.store";
 import {Api} from "@services/api";
 
 // #endregion

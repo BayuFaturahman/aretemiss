@@ -19,6 +19,10 @@ const EXAMPLE_DATA:IOption[] = [
   { key: 4, label: 'Vegetable', customKey: 'Not a fruit' }
 ];
 
+const INITIAL_DATA:IOption[] = [
+  { key: 1, label: '', id: '' },
+];
+
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 export interface DropDownProps {
@@ -58,10 +62,8 @@ export function DropDownPicker(props: DropDownProps) {
 
   useEffect(()=>{
     onValueChange(value)
-    console.log(value)
   },[value])
   useEffect(()=>{
-    console.log("items", items)
     setItems(items)
     forceUpdate()
   },[items])
@@ -106,8 +108,8 @@ export function DropDownPicker(props: DropDownProps) {
           borderRadius: Spacing[20],
           maxHeight: 44,
         }}
-        data={items_}
-        initValue="Select something yummy!"
+        data={items === [] ? INITIAL_DATA : items_}
+        initValue={placeholder}
         onChange={(option)=>{ setValue(option) }}
         selectTextPassThruProps={{style: TEXT_STYLE}}
         passThruProps={{style: {width: '100%', flex:1}}}

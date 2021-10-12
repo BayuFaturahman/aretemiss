@@ -2,6 +2,7 @@ import { ApiResponse } from "apisauce"
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
 import { GetProfileResult, GetTeamMemberResult, TeamListResult, UpdateProfileResult } from "./profile-api.types";
+import {ProfileUpdateForm} from "@screens/auth/create-profile";
 
 export class ProfileApi {
   private api: Api
@@ -35,22 +36,15 @@ export class ProfileApi {
     }
   }
 
-  async updateProfileVerify(id:string, fullName: string, nickname: string, email: string, team1Id: string, team2Id: string, team3Id: string): Promise<UpdateProfileResult> {
+  async updateProfile(userId: string,formData: ProfileUpdateForm): Promise<UpdateProfileResult> {
     try {
-      console.log('updateProfileVerify', id)
+      console.log('updateProfile', userId)
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.patch(
-        `/user/${id}`,
-        {
-          "fullname": fullName,
-          "nickname": nickname,
-          "email": email ? email : "",
-          "team1Id": team1Id,
-          "team2Id": team2Id ? team2Id: "",
-          "team3Id": team3Id ? team3Id: ""
-        },
+        `/user/${userId}`,
+        formData,
       )
-      console.log('response', response)
+
       if(response.status === 400){
         const res = response.data
         return { kind: "form-error", response: res }
@@ -72,6 +66,7 @@ export class ProfileApi {
       return { kind: "bad-data"}
     }
   }
+
   async getProfile(): Promise<GetProfileResult> {
     try {
       // make the api call
@@ -95,6 +90,7 @@ export class ProfileApi {
       return { kind: "bad-data"}
     }
   }
+
   async getTeamMember(id: string): Promise<GetTeamMemberResult> {
     try {
       console.log('getTeamMember())', id)

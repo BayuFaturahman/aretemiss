@@ -17,8 +17,17 @@ export interface TeamResponse {
   message: string
 }
 export interface UpdateProfileResponse {
-  errorCode: number
   message: string
+  data: {
+    "userId": string
+    "fullname": string
+    "nickname": string
+    "email": string
+    "team1Id": string
+    "team2Id": string
+    "team3Id": string
+    "token": string
+  }
 }
 
 export type TeamListResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: TeamResponse }  | GeneralApiProblem
