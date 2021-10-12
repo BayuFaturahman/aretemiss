@@ -11,6 +11,7 @@ import {VStack} from "@components/view-stack";
 import Spacer from "@components/spacer";
 import {Colors, Layout, Spacing} from "@styles";
 import {useStores} from "../../bootstrap/context.boostrap";
+import RNAnimated from "react-native-animated-component";
 
 const Settings: FC<StackScreenProps<NavigatorParamList, "settingsPage">> = observer(
   ({ navigation }) => {
@@ -38,23 +39,38 @@ const Settings: FC<StackScreenProps<NavigatorParamList, "settingsPage">> = obser
           </VStack>
           <VStack top={Spacing[32]} horizontal={Spacing[24]} style={[Layout.heightFull, {backgroundColor: Colors.WHITE, borderTopStartRadius: Spacing[48], borderTopEndRadius: Spacing[48]}]}>
             <VStack top={Spacing[32]} horizontal={Spacing[48]}>
-              <Button
-                type={"primary"}
-                text={"My Account"}
-                onPress={goToMyAccount}
-              />
+              <RNAnimated
+                appearFrom={'left'}
+                animationDuration={300}
+              >
+                <Button
+                  type={"primary"}
+                  text={"My Account"}
+                  onPress={goToMyAccount}
+                />
+              </RNAnimated>
               <Spacer height={Spacing[16]} />
-              <Button
-                type={"primary-dark"}
-                text={"Notifications"}
-                onPress={goToNotification}
-              />
+              <RNAnimated
+                appearFrom={'left'}
+                animationDuration={500}
+              >
+                <Button
+                  type={"primary-dark"}
+                  text={"Notifications"}
+                  onPress={goToNotification}
+                />
+              </RNAnimated>
               <Spacer height={Spacing[16]} />
-              <Button
-                type={"primary-dark"}
-                text={"Logout"}
-                onPress={logout}
-              />
+              <RNAnimated
+                appearFrom={'left'}
+                animationDuration={700}
+              >
+                <Button
+                  type={"primary-dark"}
+                  text={"Logout"}
+                  onPress={logout}
+                />
+              </RNAnimated>
             </VStack>
             <Spacer height={Spacing[12]} />
 

@@ -126,7 +126,7 @@ export const CoachingJournalItemRender = (
           return(
             <VStack style={[Layout.widthFull,{minWidth: dimensions.screenWidth - Spacing[72]}]}>
               {renderContent}
-              <View style={{borderBottomWidth: activitiesIndex + 1 === item.activities.length ? 0 : Spacing[1], borderColor: Colors.MAIN_BLUE, paddingTop: Spacing[2]}}/>
+              <View style={{borderBottomWidth: activitiesIndex + 1 === item.activities.length ? 0 : Spacing[1], borderColor: Colors.MAIN_BLUE, paddingTop: Spacing[2], maxWidth: dimensions.screenWidth - Spacing[128]}}/>
             </VStack>
           )
         })}

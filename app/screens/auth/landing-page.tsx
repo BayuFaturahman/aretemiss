@@ -1,4 +1,4 @@
-import React, { FC } from "react"
+import React, {FC, useEffect, useReducer} from "react"
 import { SafeAreaView, StyleSheet } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
@@ -11,6 +11,7 @@ import Spacer from "@components/spacer";
 import {Colors, Spacing} from "@styles";
 import ileadLogo from "@assets/icons/ilead-logo.png";
 import FastImage from "react-native-fast-image";
+import RNAnimated from "react-native-animated-component";
 
 const LandingPage: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = observer(
   ({ navigation }) => {
@@ -28,24 +29,39 @@ const LandingPage: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
           <Spacer />
           <VStack horizontal={Spacing[24]}>
 
-            <FastImage style={{
-              height: Spacing[256],
-              bottom: 0
-            }} source={ileadLogo} resizeMode={"contain"}/>
+            <RNAnimated
+              appearFrom="bottom"
+              animationDuration={500}
+            >
+              <FastImage style={{
+                height: Spacing[256],
+                bottom: 0
+              }} source={ileadLogo} resizeMode={"contain"}/>
+            </RNAnimated>
 
           </VStack>
           <VStack top={Spacing[32]} horizontal={Spacing[96]}>
-            <Button
-              type={"primary-dark"}
-              text={"Register"}
-              onPress={goToRegister}
-            />
+            <RNAnimated
+              appearFrom="bottom"
+              animationDuration={700}
+            >
+              <Button
+                type={"primary-dark"}
+                text={"Register"}
+                onPress={goToRegister}
+              />
+            </RNAnimated>
             <Spacer height={Spacing[14]} />
-            <Button
-              type={"primary"}
-              text={"Login"}
-              onPress={goToLogin}
-            />
+            <RNAnimated
+              appearFrom="bottom"
+              animationDuration={1000}
+            >
+              <Button
+                type={"primary"}
+                text={"Login"}
+                onPress={goToLogin}
+              />
+            </RNAnimated>
           </VStack>
           <Spacer />
         </SafeAreaView>
