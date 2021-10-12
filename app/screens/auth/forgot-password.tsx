@@ -1,4 +1,4 @@
-import React, { FC } from "react"
+import React, {FC, useCallback, useEffect, useState} from "react"
 import { SafeAreaView, StyleSheet } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
@@ -13,12 +13,33 @@ import Spacer from "@components/spacer";
 import {Colors, Spacing} from "@styles";
 import logoBottom from "@assets/icons/ilead-bottom-logo.png";
 import FastImage from "react-native-fast-image";
+import {useStores} from "../../bootstrap/context.boostrap";
+
+import Spinner from 'react-native-loading-spinner-overlay';
 
 const forgotPassword: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = observer(
   ({ navigation }) => {
 
+    const [isError, setIsError] = useState<boolean>(false)
+    const [email, setEmail] = useState<string>('')
+
     const goToOTP = () => navigation.navigate("verifyOTP")
     const goToLogin = () => navigation.navigate("login")
+
+    const { authStore } = useStores()
+
+    useEffect(() => {
+      authStore.formReset()
+      authStore.resetAuthStore()
+    }, [])
+
+    useEffect(() => {
+
+    }, [authStore.isForgotPasswordSuccess])
+
+    const submitEmail = useCallback(async ()=>{
+      await authStore.forgotPassword(email)
+    },[email])
 
     const styles = StyleSheet.create({
 
@@ -32,29 +53,32 @@ const forgotPassword: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = 
             <Spacer height={Spacing[24]} />
 
              <Text type={'body'} style={{textAlign: 'center'}}>
-               Lupa password-mu? Tenang.
-               Masukan alamat e-mail yang kamu registrasikan di iLEAD. Kami akan segera mengirimkan link untuk mengubah password lamamu menjadi password yang baru.
+               {authStore.errorMessage === null ?
+               <>
+                 Lupa password-mu? Tenang.
+                 Masukan alamat e-mail yang kamu registrasikan di iLEAD. Kami akan segera mengirimkan link untuk mengubah password lamamu menjadi password yang baru.
+               </> : null }
+
              </Text>
 
             <Text type={'warning'} style={{textAlign: 'center'}}>
-              Wah. Alamat e-mail ini belum terdaftar. Mungkin kamu menggunakan e-mail lain?
-
-              Coba masukan alamat e-mail lain, atau coba login dengan alamat e-mail lain yuk.
+              {authStore.errorMessage}
             </Text>
 
             <Spacer height={Spacing[32]} />
             <TextField
-              // value={'089123123123'}
+              value={email}
+              onChangeText={setEmail}
               label="Masukan alamat e-mail yang sudah diregistrasi:"
               style={{ paddingTop: 0}}
-              isError={false}
+              isError={authStore.errorMessage !== null}
             />
           </VStack>
           <VStack top={Spacing[32]} horizontal={Spacing[96]}>
             <Button
               type={"primary"}
               text={"Kirim"}
-              onPress={goToOTP}
+              onPress={submitEmail}
             />
             <Spacer height={Spacing[8]} />
             <Button
@@ -83,7 +107,7 @@ const forgotPassword: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = 
             <Button
               type={"primary"}
               text={"Kirim ulang e-mail"}
-              onPress={goToOTP}
+              onPress={submitEmail}
             />
             <Spacer height={Spacing[8]} />
             <Button
@@ -189,10 +213,10 @@ const forgotPassword: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = 
         {/* <GradientBackground colors={["#422443", "#281b34"]} /> */}
         <SafeAreaView style={{flex: 1}}>
           <Spacer />
-          {/* {renderEmailForm()} */}
+          {authStore.isForgotPasswordSuccess ? renderEmailSent() : renderEmailForm() }
           {/* {renderEmailSent()} */}
           {/* {renderPasswordConfirmationForm()} */}
-          {renderPhonePasswordConfirmationForm()}
+          {/* {renderPhonePasswordConfirmationForm()} */}
           <Spacer />
           <FastImage style={{
             height: Spacing[96],
@@ -200,6 +224,11 @@ const forgotPassword: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = 
             bottom: 0
           }} source={logoBottom} resizeMode={"contain"}/>
         </SafeAreaView>
+        <Spinner
+          visible={authStore.isLoading}
+          textContent={'Memuat...'}
+          // textStyle={styles.spinnerTextStyle}
+        />
       </VStack>
     )
   },

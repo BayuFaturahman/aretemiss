@@ -2,6 +2,7 @@ import { ApiResponse } from "apisauce"
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
 import {
+  ForgotPasswordResult,
   LoginResult,
   LoginVerifyResult,
   SignupResult,
@@ -83,7 +84,7 @@ export class AuthApi {
         "/signup",
         { email: email, password: password }
       )
-      
+
       if(response.status === 400){
         const res = response.data
         return { kind: "form-error", response: res }
@@ -114,7 +115,36 @@ export class AuthApi {
           otpHash: otpHash
         }
       )
-      
+
+      if(response.status === 400){
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data.data
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data"}
+    }
+  }
+
+  async forgotPassword(email: string): Promise<ForgotPasswordResult> {
+    try {
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.post(
+        "/forgot-password",
+        {
+          email: email,
+        }
+      )
+
       if(response.status === 400){
         const res = response.data
         return { kind: "form-error", response: res }
