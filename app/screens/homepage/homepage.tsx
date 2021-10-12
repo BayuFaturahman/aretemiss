@@ -63,7 +63,7 @@ const MOOD_EXAMPLE_DATA:MoodItemType = {
   moodType: 'happy'
 }
 
-const Notifications: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
+const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
   ({ navigation }) => {
 
     const [refreshing, setRefreshing] = React.useState(false);
@@ -201,7 +201,7 @@ const Notifications: FC<StackScreenProps<NavigatorParamList, "homepage">> = obse
       return(
         <VStack top={Spacing[48]} horizontal={Spacing[8]} bottom={Spacing[12]}>
           <VStack horizontal={Spacing[12]}>
-            {/* <NotificationButton goToNotifications={goToNotifications} /> */}
+             <NotificationButton goToNotifications={goToNotifications} />
           </VStack>
           <Spacer height={Spacing[24]} />
           <VStack horizontal={Spacing[12]}>
@@ -271,4 +271,4 @@ const Notifications: FC<StackScreenProps<NavigatorParamList, "homepage">> = obse
   },
 )
 
-export default Notifications;
+export default Homepage;
