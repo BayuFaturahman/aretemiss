@@ -31,11 +31,6 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
     const { authStore } = useStores()
 
     const goToLogin = () => navigation.navigate("login")
-    const nextScreen = () => {
-      if(authStore.isLoginFlow === false) {
-        navigation.navigate("createProfile")
-      } // TODO: add else case
-    }
 
     const verifyNumber = useCallback( async () => {
       console.log('verify number')
@@ -68,11 +63,11 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
 
     useEffect(() => {
       console.log('succeed')
-      if(authStore.token !== null){
+      if(authStore.isCreateProfile === true){
         setIsError(false)
-        nextScreen()
+        navigation.navigate("createProfile")
       }
-    }, [authStore.otp, authStore.userId])
+    }, [authStore.isCreateProfile])
 
     // useEffect(() => {
     //   if(authStore.){
@@ -103,7 +98,7 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
               <Spacer height={Spacing[32]} />
 
                <Text type={'warning'} style={{textAlign: 'center'}}>
-                 {errorMessage}
+                 {authStore.errorMessage}
                </Text>
 
               <Text type={'body'} style={{textAlign: 'center'}}>

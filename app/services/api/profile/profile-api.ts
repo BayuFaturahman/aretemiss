@@ -2,7 +2,6 @@ import { ApiResponse } from "apisauce"
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
 import { GetProfileResult, GetTeamMemberResult, TeamListResult, UpdateProfileResult } from "./profile-api.types";
-const axios = require('axios');
 
 export class ProfileApi {
   private api: Api
@@ -29,7 +28,6 @@ export class ProfileApi {
       }
 
       const res = response.data
-
       return { kind: "ok", response: res }
     } catch (e) {
       __DEV__ && console.tron.log(e.message)

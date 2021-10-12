@@ -19,7 +19,7 @@ export default class RootStore {
 
     this.api = api
     this.serviceStore = new ServiceStore(api);
-    this.mainStore = new MainStore(this.serviceStore);
+    this.mainStore = new MainStore(this.serviceStore, this.api);
     this.authStore = new AuthStore(this.serviceStore, this.mainStore, this.api);
 
   }

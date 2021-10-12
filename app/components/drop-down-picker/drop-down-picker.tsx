@@ -8,9 +8,9 @@ import Spacer from "@components/spacer";
 import {Platform, StyleProp, TextStyle} from "react-native";
 import {color, typography} from "@theme";
 
-import ModalSelector from 'react-native-modal-selector'
+import ModalSelector, {IOption} from 'react-native-modal-selector'
 
-const EXAMPLE_DATA = [
+const EXAMPLE_DATA:IOption[] = [
   { key: 1, label: 'Red Apples', customKey: 'Not a fruit' },
   { key: 2, label: 'Cherries', customKey: 'Not a fruit' },
   { key: 3, label: 'Cranberries', customKey: 'Not a fruit'},
@@ -21,9 +21,9 @@ const EXAMPLE_DATA = [
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-export interface DropDownProps extends DropDownPickerProps {
+export interface DropDownProps {
   onValueChange(items): void
-  items?: ItemType[]
+  items?: IOption[]
   label?: string
   isRequired: boolean
   isError?: boolean

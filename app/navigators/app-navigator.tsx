@@ -85,7 +85,7 @@ export const AppNavigator = observer( (props: NavigationProps) => {
 
   const [isLogin, setIsLogin] = useState(false)
 
-  const { authStore, serviceStore } = useStores()
+  const { serviceStore } = useStores()
 
   useEffect(()=>{
     if(serviceStore.accessToken){

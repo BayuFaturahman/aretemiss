@@ -38,11 +38,13 @@ export default class AuthStore {
   needChangePassword: boolean
   token: string
   isVerify: boolean
+  isLoginFlow: boolean
+
+  isCreateProfile: boolean
   // End
 
   /* Misc */
   version = '1.0';
-  isLoginFlow: boolean
 
   api: Api
 
@@ -72,6 +74,7 @@ export default class AuthStore {
     this.errorMessage = null
 
     this.isLoginFlow = false
+    this.isCreateProfile = false
 
     makeAutoObservable(this);
 
@@ -125,7 +128,7 @@ export default class AuthStore {
       }
 
       if(response.kind === 'ok'){
-        this.loginVerifySuccess(response.response)
+        await this.loginVerifySuccess(response.response)
       }
 
     } catch (e) {
@@ -209,7 +212,7 @@ export default class AuthStore {
   }
 
   async signupVerify(otpCode: string) {
-    console.log('login verify')
+    console.log('signup verify')
     this.isLoading = true
     try {
       const response = await this.apiAuth.signupVerify(this.email, otpCode, this.otpHash)
@@ -224,7 +227,7 @@ export default class AuthStore {
       }
 
       if(response.kind === 'ok'){
-        this.signupVerifySuccess(response.response)
+        await this.signupVerifySuccess(response.response)
       }
 
     } catch (e) {
@@ -238,13 +241,16 @@ export default class AuthStore {
     }
   }
 
-  signupVerifySuccess (data: SignupVerifyResponse) {
+  async signupVerifySuccess (data: SignupVerifyResponse) {
+    console.log('signupVerifySuccess')
     this.userId = data.userId
     this.token = data.token
     this.isVerify = data.isVerify
     this.email = data.email
 
     this.isLoginFlow = false
+    this.serviceStore.setHeaderToken(this.token)
+    this.isCreateProfile = true
   }
 
   formError (data: ErrorFormResponse){
@@ -253,6 +259,7 @@ export default class AuthStore {
   }
 
   formReset () {
+    this.isCreateProfile = false
     this.errorCode = null
     this.errorMessage = null
   }
@@ -264,6 +271,7 @@ export default class AuthStore {
 
     this.isLoginFlow = false
     this.token = null
+    this.isCreateProfile = false
   }
 
   async resetAuthStore (){
@@ -271,6 +279,7 @@ export default class AuthStore {
     this.token = null
 
     this.otp = null
+    this.isCreateProfile = false
 
     await this.serviceStore.clearTokens()
   }

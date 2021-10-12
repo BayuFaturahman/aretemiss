@@ -1,4 +1,4 @@
-import React, {FC} from "react"
+import React, {FC, useCallback, useEffect, useState} from "react"
 import {Dimensions, KeyboardAvoidingView, SafeAreaView, ScrollView, StyleSheet} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
@@ -18,17 +18,42 @@ import FastImage from "react-native-fast-image";
 import { useStores } from "../../bootstrap/context.boostrap"
 
 import Spinner from 'react-native-loading-spinner-overlay';
+import {IOption} from "react-native-modal-selector";
 
 const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> = observer(
   ({ navigation }) => {
 
     const goToOTP = () => navigation.navigate("verifyOTP")
 
-    const { authStore } = useStores()
+    const [teamList1, setTeamList1] = useState<IOption[]>([])
+
+    const { authStore, mainStore } = useStores()
 
     const styles = StyleSheet.create({
 
     })
+
+    const getTeam = useCallback(async ()=>{
+      await mainStore.getTeamList()
+    },[])
+
+    useEffect(()=>{
+      getTeam()
+    },[])
+
+    useEffect(()=>{
+      if(mainStore.teamResponse !== null){
+        const itemsData:IOption[] = mainStore.teamResponse.data.map((item, index)=>{
+          return({
+              key: index,
+              label: item.name,
+              id: item.id
+          })
+        })
+        setTeamList1(itemsData)
+      }
+    },[mainStore.teamResponse])
+
 
     const goBack = () => {
       navigation.navigate("verifyPhone")
@@ -36,7 +61,6 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
 
     return (
       <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.WHITE, flex: 1, justifyContent: 'center'}}>
-        {/* <GradientBackground colors={["#422443", "#281b34"]} /> */}
         <SafeAreaView style={{flex: 1}}>
           <KeyboardAvoidingView behavior='padding' style={{ minHeight: Dimensions.get('screen').height}}>
             <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
@@ -47,8 +71,7 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
               <Spacer height={Spacing[24]} />
 
                <Text type={'warning'} style={{textAlign: 'center'}}>
-                 Kayaknya ada yang belum diisi nih.
-                 Yuk isi semua kolomnya!
+                 {mainStore.errorMessage}
                </Text>
 
               <Spacer height={Spacing[32]} />
@@ -69,6 +92,7 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
               />
 
               <DropDownPicker
+                items={teamList1}
                 isRequired={true} label="Pilih team:"
                 onValueChange={(value)=>console.log('testt '+ value)}
                 placeholder={'Pilih salah satu'}
@@ -78,6 +102,7 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
                 dropDownDirection={"BOTTOM"}
               />
               <DropDownPicker
+                items={teamList1}
                 isRequired={false}
                 label="Pilih team kedua (jika ada):"
                 onValueChange={(value)=>console.log('testt '+ value)}
@@ -88,6 +113,7 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
                 dropDownDirection={"BOTTOM"}
               />
               <DropDownPicker
+                items={teamList1}
                 isRequired={false}
                 label="Pilih team kedua (jika ada):"
                 onValueChange={(value)=>console.log('testt '+ value)}

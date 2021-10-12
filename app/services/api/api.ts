@@ -51,11 +51,11 @@ export class Api {
 
   setToken(token){
     console.log('token set: '+ token)
-    this.apisauce.setHeader('Authorization', token)
+    this.apisauce.setHeader('Authorization', `Bearer ${token}`)
   }
 
   removeToken(){
-    this.apisauce.setHeader('Authorization', '')
+    this.apisauce.deleteHeader('Authorization')
   }
 
   /**

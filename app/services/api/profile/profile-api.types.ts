@@ -1,7 +1,10 @@
-import { Profile, ProfileMember } from "@models/profile/profile-model"
-import { Team } from "@models/profile/team-model"
+// import { Profile, ProfileMember } from "@models/profile/profile-model"
 import { GeneralApiProblem } from "../api-problem"
 
+export type Team = {
+  id: string
+  name: string
+}
 
 export interface ErrorFormResponse {
   errorCode: number
