@@ -19,7 +19,7 @@ import moment from 'moment'
 
 import {dimensions} from "@config/platform.config";
 import {CoachingJournalItem} from "@screens/coaching-journal/coaching-journal.type";
-import {useStores} from "@models";
+import { useStores } from "../../bootstrap/context.boostrap"
 
 import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png";
 import downArrow from "@assets/icons/down-arrow.png";
@@ -94,7 +94,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
         },
       ]
     });
-    // const {profileStore, authStore, coachingStore} = useStores()
+    const {mainStore} = useStores()
 
     if (__DEV__) {
       // eslint-disable-next-line global-require
@@ -134,10 +134,15 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       console.log(id)
     }, [])
 
-    // useEffect(() => {
-    //   // profileStore.getProfile()
-    //   // coachingStore.getJournal()
-    // }, [])
+    const getTeam = useCallback(async ()=>{
+      await mainStore.getTeamList()
+    },[])
+
+    useEffect(() => {
+      getTeam()
+      // profileStore.getProfile()
+      // coachingStore.getJournal()
+    }, [])
 
     // const createList = async() => {
     //   const id = authStore.authUser.id
