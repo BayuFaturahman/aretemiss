@@ -68,6 +68,7 @@ export class ProfileApi {
   }
 
   async getProfile(): Promise<GetProfileResult> {
+    console.log('getProfile() GetProfileResult',)
     try {
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.get(`/user/profile`)
@@ -82,7 +83,7 @@ export class ProfileApi {
         if (problem) return problem
       }
 
-      const res = response.data.data
+      const res = response.data
 
       return { kind: "ok", response: res }
     } catch (e) {

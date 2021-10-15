@@ -1,6 +1,5 @@
-import { JournalDetailUser } from "@models/coaching/journal-detail-model"
-import { JournalUser } from "@models/coaching/journal-model"
-import { Team } from "@models/profile/team-model"
+
+import { FeedbackDetail, JournalDetail, JournalModel } from "app/store/store.coaching"
 import { GeneralApiProblem } from "../api-problem"
 
 
@@ -11,7 +10,9 @@ export interface ErrorFormResponse {
 
 export interface JournalResponse {
   token: string
-  journal: JournalUser[]
+  journal: JournalModel[]
+  message: string
+
 }
 export interface CreateJournalResponse {
   errorCode: number
@@ -22,6 +23,6 @@ export type JournalListResult = { kind: "form-error"; response: ErrorFormRespons
 
 export type CreateJournalResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreateJournalResponse }  | GeneralApiProblem
 
-export type JournalDetailResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: JournalDetailUser}  | GeneralApiProblem
+export type JournalDetailResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: JournalDetail}  | GeneralApiProblem
 
 export type FeedbackDetailResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: FeedbackDetail }  | GeneralApiProblem

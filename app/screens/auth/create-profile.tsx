@@ -81,6 +81,7 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
 
     const onSubmit = useCallback(async (data: ProfileUpdateForm)=>{
       console.log(data)
+      data.email = authStore.email
       await mainStore.updateProfile(authStore.userId, data)
     },[])
 
@@ -120,13 +121,13 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
                       value={values.nickname}
                       onChangeText={handleChange('nickname')}
                     />
-                    <TextField
+                    {/* <TextField
                       label="Alamat e-mail:"
                       style={{ paddingTop: 0}}
                       isError={false}
                       value={values.email}
                       onChangeText={handleChange('email')}
-                    />
+                    /> */}
 
                     <DropDownPicker
                       items={teamList1}

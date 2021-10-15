@@ -1,4 +1,5 @@
 // import { Profile, ProfileMember } from "@models/profile/profile-model"
+import { ProfileModel } from "app/store/store.main"
 import { GeneralApiProblem } from "../api-problem"
 
 export type Team = {
@@ -30,11 +31,17 @@ export interface UpdateProfileResponse {
   }
 }
 
+export interface GetProfileResponse {
+  message: string
+  data: ProfileModel[]
+  token: string
+}
+
 export type TeamListResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: TeamResponse }  | GeneralApiProblem
 
 export type UpdateProfileResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: UpdateProfileResponse }  | GeneralApiProblem
 
-export type GetProfileResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: Profile[] }  | GeneralApiProblem
+export type GetProfileResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetProfileResponse }  | GeneralApiProblem
 
 export type GetTeamMemberResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: ProfileMember[] }  | GeneralApiProblem
 

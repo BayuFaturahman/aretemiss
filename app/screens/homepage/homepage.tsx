@@ -1,5 +1,5 @@
-import React, {FC, useCallback, useState, useEffect} from "react"
-import {SafeAreaView, ScrollView, TouchableOpacity, View, StatusBar, RefreshControl} from "react-native"
+import React, {FC, useCallback, useState, useEffect, useReducer} from "react"
+import {SafeAreaView, ScrollView, StatusBar, RefreshControl} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {
@@ -40,6 +40,7 @@ import {navigate} from "@navigators";
 import * as storage from "@utils/storage";
 
 import RNAnimated from "react-native-animated-component";
+import { delay } from "@utils/delay"
 
 const FEED_EXAMPLE_DATA_ITEM:FeedItemType = {
   id: '0',
@@ -59,10 +60,10 @@ const FEED_EXAMPLE_DATA_ITEM:FeedItemType = {
 const MOOD_EXAMPLE_DATA:MoodItemType = {
   avatarUrl: 'https://www.gstatic.com/webp/gallery3/2.png',
   user: {
-    name: 'Mr. Ridwan Manggala',
-    title: 'Head of Sales Dept.'
+    name: '',
+    title: ''
   },
-  moodType: 'happy'
+  moodType: ''
 }
 
 const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
@@ -77,24 +78,8 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       }, 1000)
     }, []);
 
-    const [coachingJournalData, setCoachingJournalData] = useState<CoachingJournalItem>({
-      date: '02 AUG',
-      activities: [
-        {
-          title: 'Weekly coaching with Agus Surya Pradana.',
-          type: 'weekly_coaching',
-          id: '1',
-          isTagged: false
-        },
-        {
-          title: 'Coffee time dengan semua anggota tim.',
-          type: 'gathering',
-          id: '2',
-          isTagged: true
-        },
-      ]
-    });
-    const {mainStore} = useStores()
+    const [coachingJournalData, setCoachingJournalData] = useState<CoachingJournalItem>(null);
+    const {mainStore, coachingStore} = useStores()
 
     if (__DEV__) {
       // eslint-disable-next-line global-require
@@ -114,10 +99,13 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
         navigation.navigate('fillFeedbackDetail')
       });
     }
+    const [, forceUpdate] = useReducer(x => x + 1, 0);
 
     const [selectedActivities, setSelectedActivities] = useState<string>('');
     const [isHomepageError, setHomepageError] = useState<boolean>(false);
+    const [feedData, setFeedDAta] = useState<FeedItemType>(FEED_EXAMPLE_DATA_ITEM);
 
+    const [moodData, setMoodData] = useState<MoodItemType>(MOOD_EXAMPLE_DATA);
     const holdActivitiesId = useCallback((selectedId)=>{
       setSelectedActivities(selectedId)
     }, [selectedActivities])
@@ -134,56 +122,80 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       console.log(id)
     }, [])
 
-    const getTeam = useCallback(async ()=>{
-      await mainStore.getTeamList()
+    const getUserProfile = useCallback(async ()=>{
+      console.log('useEffect getUserProfile', mainStore.userProfile)
+      await mainStore.getProfile()
+    },[])
+
+    const getJournalList = useCallback(async ()=>{
+      console.log('useEffect getJournalList', mainStore.userProfile)
+      await coachingStore.getJournal()
     },[])
 
     useEffect(() => {
-      getTeam()
-      // profileStore.getProfile()
-      // coachingStore.getJournal()
+      setTimeout(()=>{
+        getUserProfile()
+      }, 500)
+      setTimeout(()=>{
+        getJournalList()
+      }, 500)
     }, [])
 
-    // const createList = async() => {
-    //   const id = authStore.authUser.id
-    //   let groupArrays = []
-    //   const groups = coachingStore.journal.reduce((groups, journalData) => {
-    //     const date = journalData.journal_created_at.split('T')[0];
-    //        if (!groups[date]) {
-    //         groups[date] = [];
-    //        }
-    //        groups[date].push(
-    //          {
-    //            ...journalData,
-    //             title: journalData.journal_title,
-    //             type: journalData.journal_type,
-    //             id: journalData.jl_id,
-    //             isTagged: id != journalData.coach_id
-    //          }
-    //        );
-    //        return groups;
-    //     }, {});
-    //     groupArrays = Object.keys(groups).map((date) => {
-    //        return {
-    //        date: moment(date).format('DD MMM'),
-    //        activities: groups[date]
-    //        };
-    //     });
-    // }
+    useEffect(()=>{
+      if(mainStore.userProfile){
+        console.log('useEffect mainStore.userProfile', mainStore.userProfile)
+        let data = MOOD_EXAMPLE_DATA
+        data.user.name = mainStore.userProfile.user_fullname
+        data.user.title = mainStore.userProfile.team1_name
+        setMoodData(data)
+        forceUpdate()
+      }
+    },[mainStore.userProfile, mainStore.getProfileSuccess])
+
+    useEffect(()=>{
+      console.log('useEffect coachingStore.listJournal', coachingStore.listJournal)
+
+    },[coachingStore.listJournal, coachingStore.journalSucceed])
+
+    useEffect(()=>{
+      console.log('useEffect coachingStore.errorMessage', coachingStore.errorMessage)
+
+    },[coachingStore.errorMessage, coachingStore.coachingFailed])
+    const createList = () => {
+      const id = mainStore.userProfile.user_id
+      let groupArrays = []
+      const groups = coachingStore.listJournal.reduce((groups, journalData) => {
+        const date = journalData.journal_created_at.split('T')[0];
+           if (!groups[date]) {
+            groups[date] = [];
+           }
+           groups[date].push(
+             {
+               ...journalData,
+                title: journalData.journal_title,
+                type: journalData.journal_type,
+                id: journalData.jl_id,
+                isTagged: id != journalData.coach_id
+             }
+           );
+           return groups;
+        }, {});
+        groupArrays = Object.keys(groups).map((date) => {
+           return {
+           date: moment(date).format('DD MMM'),
+           activities: groups[date]
+           };
+        });
+        if(groupArrays[0]) setCoachingJournalData(groupArrays[0])
+        forceUpdate
+    }
     // useEffect(() => {
     //   createList()
     // }, [coachingStore.journal])
     //
-    // useEffect(() => {
-    //   const data = MOOD_EXAMPLE_DATA
-    //   data.user.name = profileStore.profile && profileStore.profile[0] && profileStore.profile[0].user_fullname ? profileStore.profile[0].user_fullname : ''
-    //   data.user.title = profileStore.profile && profileStore.profile[0] && profileStore.profile[0].team1_name ? profileStore.profile[0].team1_name : ''
-    //   setMoodData(data)
-    // }, [profileStore.profile])
 
-    const [feedData, setFeedDAta] = useState<FeedItemType>(FEED_EXAMPLE_DATA_ITEM);
 
-    const [moodData, setMoodData] = useState<MoodItemType>(MOOD_EXAMPLE_DATA);
+ 
 
     const goToNotifications = () => navigation.navigate('notificationList')
 
@@ -226,7 +238,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
                 type={'right-header'}
                 style={{color: Colors.WHITE, fontSize: Spacing[16]}}
                 underlineWidth={Spacing[72]}>
-                {`Hai, Iwan`}
+                {`Hai, ${moodData.user.name}`}
               </Text>
             </VStack>
           </RNAnimated>

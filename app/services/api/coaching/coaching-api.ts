@@ -1,8 +1,9 @@
 import { JournalUser } from "@models/coaching/journal-model";
 import { ApiResponse } from "apisauce"
+import { FeedbackDetail } from "app/store/store.coaching";
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
-import { CreateJournalResult, JournalDetailResult, JournalListResult, JournalResponse } from "./coaching-api.types";
+import { CreateJournalResult, FeedbackDetailResult, JournalDetailResult, JournalListResult } from "./coaching-api.types";
 
 export class CoachingApi {
   private api: Api
@@ -19,7 +20,7 @@ export class CoachingApi {
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.get(
         "/journal")
-        console.log('response', response.data)
+        console.log('getJournalList response', response.data)
 
       if(response.status === 400){
         const res = response.data
@@ -30,8 +31,9 @@ export class CoachingApi {
         const problem = getGeneralApiProblem(response)
         if (problem) return problem
       }
+      const res = response.data
+      console.log('getJournalList res', res)
 
-      const res = response.data.data
       return { kind: "ok", response: res }
     } catch (e) {
       __DEV__ && console.tron.log(e.message)
@@ -63,7 +65,7 @@ export class CoachingApi {
     }
   }
 
-  async getFeedbackDetail(id: string): Promise<JournalListResult> {
+  async getFeedbackDetail(id: string): Promise<FeedbackDetailResult> {
     try {
       console.log('request getFeedbackDetail Detail')
 
@@ -82,7 +84,7 @@ export class CoachingApi {
         if (problem) return problem
       }
 
-      const res = response.data.data
+      const res = response.data
       return { kind: "ok", response: res }
     } catch (e) {
       __DEV__ && console.tron.log(e.message)

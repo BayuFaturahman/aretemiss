@@ -13,7 +13,7 @@ import {ProfileUpdateForm} from "@screens/auth/create-profile";
 
 // CONSTANTS
 
-export type UserProfile = {
+export type UpdatingProfile = {
   userId: string
   fullName: string
   nickName: string
@@ -24,20 +24,53 @@ export type UserProfile = {
   team3Id: string
 }
 
+export type ProfileModel = {
+  user_id: string
+  user_fullname: string
+  user_nickname: string
+  user_email: string
+  user_phone_number: string
+  user_password: string
+  user_team_1_id: string
+  user_team_2_id: string
+  user_team_3_id: string
+  user_status: string
+  is_deleted: number
+  user_role: string
+  user_is_verify: number
+  user_forgot_password_hash: string
+  user_created_at: string
+  user_updated_at: string
+  user_forgot_pass: number
+  user_mood: string
+  user_photo: string
+  user_is_allow_notification: number
+  user_is_allow_reminder_notification: number
+  user_fcm_token: string
+  team1_id: string
+  team1_name: string
+  team2_id: string
+  team2_name: string
+  team3_id: string
+  team3_name: string
+}
+
 export default class MainStore {
   // #region PROPERTIES
 
   serviceStore: ServiceStore
   api: Api
   isLoading: boolean
-
+  
   errorCode: number
   errorMessage: string
 
   profileApi: ProfileApi
   teamResponse: TeamResponse
 
-  userProfile:UserProfile
+  updatingProfile: UpdatingProfile
+
+  userProfile: ProfileModel
 
   // #region CONSTRUCTOR
 
@@ -53,7 +86,7 @@ export default class MainStore {
 
     this.teamResponse = null
 
-    this.userProfile = {
+    this.updatingProfile = {
       userId: '',
       fullName: '',
       nickName: '',
@@ -61,6 +94,37 @@ export default class MainStore {
       team1Id: '',
       team2Id: '',
       team3Id: ''
+    }
+
+    this.userProfile =  {
+      user_id: '',
+      user_fullname: '',
+      user_nickname: '',
+      user_email: '',
+      user_phone_number: '',
+      user_password: '',
+      user_team_1_id: '',
+      user_team_2_id: '',
+      user_team_3_id: '',
+      user_status: '',
+      is_deleted: 0,
+      user_role: '',
+      user_is_verify: 0,
+      user_forgot_password_hash: '',
+      user_created_at: '',
+      user_updated_at: '',
+      user_forgot_pass: 0,
+      user_mood: '',
+      user_photo: '',
+      user_is_allow_notification: 0,
+      user_is_allow_reminder_notification: 0,
+      user_fcm_token: '',
+      team1_id: '',
+      team1_name: '',
+      team2_id: '',
+      team2_name: '',
+      team3_id: '',
+      team3_name: '',
     }
 
     makeAutoObservable(this);
@@ -110,7 +174,6 @@ export default class MainStore {
   }
 
   async updateProfile(userId: string, data: ProfileUpdateForm) {
-    console.log('updateProfile')
     this.isLoading = true
     try {
       const response = await this.profileApi.updateProfile(userId, data)
@@ -134,7 +197,7 @@ export default class MainStore {
   }
 
   async updateProfileSuccess(data: UpdateProfileResponse) {
-    this.userProfile = {
+    this.updatingProfile = {
       userId: data.data.userId,
       fullName: data.data.fullname,
       nickName: data.data.nickname,
@@ -148,6 +211,63 @@ export default class MainStore {
   }
 
   updateProfileFailed(e: any) {
+    this.errorMessage = e
+  }
+
+  async getProfile(){
+     this.isLoading = true
+     try {
+      let response = await this.profileApi.getProfile()
+
+       if(response.kind === 'form-error'){
+         this.formError(response.response)
+       }
+ 
+       if(response.kind === 'ok'){
+         await this.getProfileSuccess(response.response.data)
+       }
+ 
+     } catch (e) {
+       console.log(e)
+       this.updateProfileFailed(e)
+     } finally {
+       this.isLoading = false
+    }
+  }
+  async getProfileSuccess(data: ProfileModel[]) {
+    this.userProfile =  {
+      user_id: data[0].user_id,
+      user_fullname: data[0].user_fullname,
+      user_nickname: data[0].user_nickname,
+      user_email: data[0].user_email,
+      user_phone_number: data[0].user_phone_number,
+      user_password: data[0].user_password,
+      user_team_1_id: data[0].user_team_1_id,
+      user_team_2_id: data[0].user_team_2_id,
+      user_team_3_id: data[0].user_team_3_id,
+      user_status: data[0].user_status,
+      is_deleted: data[0].is_deleted,
+      user_role: data[0].user_role,
+      user_is_verify: data[0].user_is_verify,
+      user_forgot_password_hash: data[0].user_forgot_password_hash,
+      user_created_at: data[0].user_created_at,
+      user_updated_at: data[0].user_updated_at,
+      user_forgot_pass: data[0].user_forgot_pass,
+      user_mood: data[0].user_mood,
+      user_photo: data[0].user_photo,
+      user_is_allow_notification: data[0].user_is_allow_notification,
+      user_is_allow_reminder_notification: data[0].user_is_allow_reminder_notification,
+      user_fcm_token: data[0].user_fcm_token,
+      team1_id: data[0].team1_id,
+      team1_name: data[0].team1_name,
+      team2_id: data[0].team2_id,
+      team2_name: data[0].team2_name,
+      team3_id: data[0].team3_id,
+      team3_name: data[0].team3_name,
+    }
+  }
+
+  getProfileFailed(e: any) {
     this.errorMessage = e
   }
 
