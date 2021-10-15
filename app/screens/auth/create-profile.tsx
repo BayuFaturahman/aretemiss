@@ -29,6 +29,8 @@ export type ProfileUpdateForm = {
   team1Id: string
   team2Id: string
   team3Id: string
+  isAllowNotification?: number
+  isAllowReminderNotification?: number
 }
 
 const ProfileUpdateInitialForm: ProfileUpdateForm = {
@@ -37,7 +39,7 @@ const ProfileUpdateInitialForm: ProfileUpdateForm = {
   email: '',
   team1Id: '',
   team2Id: '',
-  team3Id: ''
+  team3Id: '',
 };
 
 const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> = observer(

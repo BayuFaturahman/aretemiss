@@ -1,4 +1,4 @@
-import React, {FC, useState,} from "react"
+import React, {FC, useCallback, useEffect, useState,} from "react"
 import {SafeAreaView} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
@@ -11,19 +11,79 @@ import {HStack, VStack} from "@components/view-stack";
 import Spacer from "@components/spacer";
 import {Colors, Layout, Spacing} from "@styles";
 
+import { useStores } from "../../bootstrap/context.boostrap"
+
 import {dimensions} from "@config/platform.config";
+
+
+export type ProfileUpdateForm = {
+  fullname: string
+  nickname: string
+  email: string
+  team1Id: string
+  team2Id: string
+  team3Id: string
+  isAllowNotification?: number
+  isAllowReminderNotification?: number
+}
 
 
 const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observer(
   ({ navigation }) => {
 
-    const goBack = () => navigation.goBack()
+    const { authStore, mainStore } = useStores();
 
-    const [isNotificationEnabled, setIsNotificationEnabled] = useState(false);
-    const toggleSwitchIsNotificationEnabled = () => setIsNotificationEnabled(previousState => !previousState);
+    console.log('ATAs ', mainStore.userProfile)
 
-    const [isNotificationReminderEnabled, setIsNotificationReminderEnabled] = useState(false);
-    const toggleSwitchIsNotificationReminderEnabled = () => setIsNotificationReminderEnabled(previousState => !previousState);
+    const userProfile: ProfileUpdateForm = {
+      fullname: mainStore.userProfile.fullName,
+      nickname: mainStore.userProfile.nickName,
+      email: mainStore.userProfile.email,
+      team1Id: mainStore.userProfile.team1Id,
+      team2Id: mainStore.userProfile.team2Id,
+      team3Id: mainStore.userProfile.team3Id,
+      isAllowNotification: mainStore.userProfile.isAllowNotification,
+      isAllowReminderNotification: mainStore.userProfile.isAllowReminderNotification,
+    }
+
+    console.log('USER PROFILE', userProfile)
+
+    
+    const submitUpdateNotification = useCallback(async (data: ProfileUpdateForm) => {
+      console.log('dalam submit ', data)
+      await mainStore.updateProfile(authStore.userId, data)
+      await mainStore.setProfile()
+    }, [])
+    
+    const goBack = () => {
+      submitUpdateNotification(userProfile)
+      navigation.goBack()
+
+    }
+
+    const [isNotificationEnabled, setIsNotificationEnabled] = useState(userProfile.isAllowNotification===1 ? true: false);
+    const toggleSwitchIsNotificationEnabled = () => {
+      console.log('before: ', isNotificationEnabled)
+      setIsNotificationEnabled(previousState => !previousState)
+      // submitUpdateNotification(userProfile)
+    }
+   
+    
+
+    const [isNotificationReminderEnabled, setIsNotificationReminderEnabled] = useState(userProfile.isAllowReminderNotification === 1 ? true: false);
+    const toggleSwitchIsNotificationReminderEnabled = () => {
+      setIsNotificationReminderEnabled(previousState => !previousState);
+      console.log(isNotificationReminderEnabled)
+    }
+
+   
+    useEffect(() => {
+      console.log('dalem use effect ', isNotificationEnabled)
+      userProfile['isAllowNotification'] = isNotificationEnabled ? 1:0;
+      userProfile['isAllowReminderNotification'] = isNotificationReminderEnabled ? 1:0;
+      console.log(userProfile)
+      // submitUpdateNotification(userProfile);
+    },[isNotificationEnabled, isNotificationReminderEnabled])
 
     return (
       <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: 'center'}}>
