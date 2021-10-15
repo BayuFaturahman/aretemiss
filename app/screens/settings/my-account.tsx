@@ -107,7 +107,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
               />
             </VStack>
             <VStack style={{ width: Spacing[128] }} top={Spacing[20]}>
-              <Button type={"primary"} text={"Ganti Foto"} />
+              {/* <Button type={"primary"} text={"Ganti Foto"} /> */}
             </VStack>
           </HStack>
         </VStack>
