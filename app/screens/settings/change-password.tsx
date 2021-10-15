@@ -8,7 +8,7 @@ import { VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
 import { Colors, Layout, Spacing } from "@styles"
 
-import {useStores} from "../../bootstrap/context.boostrap";
+import { useStores } from "../../bootstrap/context.boostrap"
 
 const ChangePassword: FC<StackScreenProps<NavigatorParamList, "changePassword">> = observer(
   ({ navigation }) => {
@@ -16,6 +16,7 @@ const ChangePassword: FC<StackScreenProps<NavigatorParamList, "changePassword">>
     const [password, setPassword] = useState<string>("")
     const [confirmPassword, setConfirmPassword] = useState<string>("")
     const [isPasswordMatch, setIsPasswordMatch] = useState<boolean>(false)
+    let isSubmitPasswordChange: boolean = false
 
     const goBack = () => navigation.goBack()
 
@@ -27,17 +28,18 @@ const ChangePassword: FC<StackScreenProps<NavigatorParamList, "changePassword">>
 
     const changePassword = useCallback(async () => {
       await authStore.changePassword(password)
-      console.log("dibawah change password")
+      isSubmitPasswordChange = false
+      goBack();
     }, [password])
 
     const checkPassword = () => {
+      isSubmitPasswordChange = true
       console.log(password)
       if (password.length === 0 || password != confirmPassword) {
         setIsPasswordMatch(false)
         return
       }
       setIsPasswordMatch(true)
-      console.log("sama")
       changePassword()
     }
 
@@ -68,12 +70,14 @@ const ChangePassword: FC<StackScreenProps<NavigatorParamList, "changePassword">>
                 borderTopEndRadius: Spacing[48],
               },
             ]}
-          > 
-          {!isPasswordMatch && (
-            <Text type={"warning"} style={{ textAlign: "center" }}>
-              {"Hmm. Kelihatannya kedua password yang kamu isi tidak sama. Coba samakan password-nya dulu yah, baru bisa diproses nih."}
-            </Text>
-          )}
+          >
+            {!isPasswordMatch && isSubmitPasswordChange && (
+              <Text type={"warning"} style={{ textAlign: "center" }}>
+                {
+                  "Hmm. Kelihatannya kedua password yang kamu isi tidak sama. Coba samakan password-nya dulu yah, baru bisa diproses nih."
+                }
+              </Text>
+            )}
             <VStack top={Spacing[32]} horizontal={Spacing[24]}>
               <Spacer height={Spacing[16]} />
               <TextField
@@ -81,7 +85,7 @@ const ChangePassword: FC<StackScreenProps<NavigatorParamList, "changePassword">>
                 style={{ paddingTop: 0 }}
                 isRequired={false}
                 secureTextEntry={true}
-                isError={!isPasswordMatch}
+                isError={!isPasswordMatch && isSubmitPasswordChange}
                 value={password}
                 onChangeText={(value) => setPassword(value)}
               />
@@ -91,7 +95,7 @@ const ChangePassword: FC<StackScreenProps<NavigatorParamList, "changePassword">>
                 style={{ paddingTop: 0 }}
                 isRequired={false}
                 secureTextEntry={true}
-                isError={!isPasswordMatch}
+                isError={!isPasswordMatch && isSubmitPasswordChange}
                 value={confirmPassword}
                 onChangeText={(value) => setConfirmPassword(value)}
               />
