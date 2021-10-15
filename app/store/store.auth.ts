@@ -30,7 +30,6 @@ export default class AuthStore {
 
   // User Properties
   userId: string
-  password: string
   otpHash: string
   otp: number
 
