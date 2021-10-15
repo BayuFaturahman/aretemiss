@@ -147,6 +147,38 @@ export default class MainStore {
     await this.serviceStore.setToken(data.data.token)
   }
 
+  async setProfile() {
+    console.log("setProfile")
+    this.isLoading = true
+    try {
+      const response = await this.profileApi.getProfile()
+
+      if (response.kind === "form-error") {
+        this.formError(response.response)
+      }
+      if (response.kind === "ok") {
+        this.userProfile = {
+          userId: response.response[0]["user_nickname"],
+          fullName: response.response[0]["user_fullname"],
+          nickName: response.response[0]["user_nickname"],
+          email: response.response[0]["user_email"],
+          team1Id: response.response[0]["user_team_1_id"],
+          team2Id: response.response[0]["user_team_2_id"],
+          team3Id: response.response[0]["user_team_3_id"],
+          phoneNumber: response.response[0]["user_phone_number"]
+        }
+      }
+    } catch (e) {
+      console.log("setProfile error")
+      console.log(e)
+      // this.updateProfileFailed(e)
+    } finally {
+      console.log("setProfile done")
+      this.isLoading = false
+    }
+  }
+
+
   updateProfileFailed(e: any) {
     this.errorMessage = e
   }
