@@ -258,11 +258,11 @@ export default class AuthStore {
     this.isCreateProfile = true
   }
   
-  async changePassword(password: string) {
+  async changePassword(currentPassword: string, password: string) {
     console.log('change password')
     this.isLoading = true
     try {
-      const response = await this.apiAuth.changePassword(password)
+      const response = await this.apiAuth.changePassword(currentPassword, password)
 
       console.log(response)
 

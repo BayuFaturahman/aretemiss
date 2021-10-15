@@ -13,10 +13,11 @@ import { useStores } from "../../bootstrap/context.boostrap"
 const ChangePassword: FC<StackScreenProps<NavigatorParamList, "changePassword">> = observer(
   ({ navigation }) => {
     const { authStore } = useStores()
+    const [currentPassword, setCurrentPassword] = useState<string>("")
     const [password, setPassword] = useState<string>("")
     const [confirmPassword, setConfirmPassword] = useState<string>("")
     const [isPasswordMatch, setIsPasswordMatch] = useState<boolean>(false)
-    let isSubmitPasswordChange: boolean = false
+    const [isSubmitPasswordChange, setIsSubmitPasswordChange] = useState<boolean>(false)
 
     const goBack = () => navigation.goBack()
 
@@ -27,13 +28,13 @@ const ChangePassword: FC<StackScreenProps<NavigatorParamList, "changePassword">>
     }, [])
 
     const changePassword = useCallback(async () => {
-      await authStore.changePassword(password)
-      isSubmitPasswordChange = false
-      goBack();
+      await authStore.changePassword(currentPassword, password)
+      setIsSubmitPasswordChange(false)
+      goBack()
     }, [password])
 
     const checkPassword = () => {
-      isSubmitPasswordChange = true
+      setIsSubmitPasswordChange(true)
       console.log(password)
       if (password.length === 0 || password != confirmPassword) {
         setIsPasswordMatch(false)
@@ -79,6 +80,16 @@ const ChangePassword: FC<StackScreenProps<NavigatorParamList, "changePassword">>
               </Text>
             )}
             <VStack top={Spacing[32]} horizontal={Spacing[24]}>
+              <Spacer height={Spacing[16]} />
+              <TextField
+                label="Password saat ini:"
+                style={{ paddingTop: 0 }}
+                isRequired={false}
+                secureTextEntry={true}
+                isError={false}
+                value={currentPassword}
+                onChangeText={(value) => setCurrentPassword(value)}
+              />
               <Spacer height={Spacing[16]} />
               <TextField
                 label="Password baru:"

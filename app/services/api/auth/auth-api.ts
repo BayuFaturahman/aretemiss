@@ -167,10 +167,11 @@ export class AuthApi {
     }
   }
 
-  async changePassword(password: string): Promise<ChangePasswordResult> {
+  async changePassword(currentPassword: string, password: string): Promise<ChangePasswordResult> {
     try {
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.patch("/change-password", {
+        oldPassword: currentPassword,
         password: password,
       })
 
