@@ -59,6 +59,7 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
       console.log('login succeed')
       if(authStore.otp !== null){
         setIsError(false)
+        authStore.password = password
         nextScreen()
       }
     }, [authStore.otp])
