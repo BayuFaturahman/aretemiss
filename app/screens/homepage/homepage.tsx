@@ -39,6 +39,8 @@ import DevMenu from "react-native-dev-menu";
 import {navigate} from "@navigators";
 import * as storage from "@utils/storage";
 
+import RNAnimated from "react-native-animated-component";
+
 const FEED_EXAMPLE_DATA_ITEM:FeedItemType = {
   id: '0',
   imageUrl: 'https://www.gstatic.com/webp/gallery/4.jpg',
@@ -191,7 +193,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       if(isHomepageError){
         return(
           <VStack top={dimensions.screenHeight / 2} horizontal={Spacing[12]}>
-            <HomepageCardWrapper>
+            <HomepageCardWrapper animationDuration={300}>
               <HomepageErrorCard navigateTo={onRefresh} />
             </HomepageCardWrapper>
           </VStack>
@@ -201,22 +203,32 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       return(
         <VStack top={Spacing[48]} horizontal={Spacing[8]} bottom={Spacing[12]}>
           <VStack horizontal={Spacing[12]}>
+            <RNAnimated
+              appearFrom="left"
+              animationDuration={500}
+            >
              <NotificationButton goToNotifications={goToNotifications} />
+            </RNAnimated>
           </VStack>
           <Spacer height={Spacing[24]} />
-          <VStack horizontal={Spacing[12]}>
-            {/* <Text type={'right-header'} style={{color: Colors.WHITE, fontSize: Spacing[16]}} underlineWidth={Spacing[72]}>{`Hai, ${profileStore.profile && profileStore.profile[0] && profileStore.profile[0].user_fullname ? profileStore.profile[0].user_fullname : ''}`}</Text> */}
-            <Text
-              type={'right-header'}
-              style={{color: Colors.WHITE, fontSize: Spacing[16]}}
-              underlineWidth={Spacing[72]}>
-              {`Hai, Iwan`}
-            </Text>
-          </VStack>
+          <RNAnimated
+            appearFrom="right"
+            animationDuration={700}
+          >
+            <VStack horizontal={Spacing[12]}>
+              {/* <Text type={'right-header'} style={{color: Colors.WHITE, fontSize: Spacing[16]}} underlineWidth={Spacing[72]}>{`Hai, ${profileStore.profile && profileStore.profile[0] && profileStore.profile[0].user_fullname ? profileStore.profile[0].user_fullname : ''}`}</Text> */}
+              <Text
+                type={'right-header'}
+                style={{color: Colors.WHITE, fontSize: Spacing[16]}}
+                underlineWidth={Spacing[72]}>
+                {`Hai, Iwan`}
+              </Text>
+            </VStack>
+          </RNAnimated>
 
           <Spacer height={Spacing[32]} />
 
-          <HomepageCardWrapper>
+          <HomepageCardWrapper animationDuration={500}>
             <CoachingJournalComponent
               data={coachingJournalData}
               // data={null}
@@ -227,7 +239,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
               onPressNoteFeedback={goToNoteFeedback} goToCoaching={goToJournalCoaching} />
           </HomepageCardWrapper>
           <Spacer height={Spacing[12]} />
-          <HomepageCardWrapper>
+          <HomepageCardWrapper animationDuration={700}>
             <FeedItemComponent
               // data={feedData}
               data={null}
@@ -235,7 +247,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
             />
           </HomepageCardWrapper>
           <Spacer height={Spacing[12]} />
-          <HomepageCardWrapper>
+          <HomepageCardWrapper animationDuration={1000}>
             <MoodComponent data={moodData} />
           </HomepageCardWrapper>
         </VStack>

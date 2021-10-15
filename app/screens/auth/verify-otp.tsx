@@ -24,7 +24,7 @@ const keyboardVerticalOffset = Platform.OS === 'ios' ? 40 : 0
 const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observer(
   ({ navigation }) => {
 
-    const [otpCode, setOTPCode] = useState<number | null>()
+    const [otpCode, setOTPCode] = useState<number | null>(null)
     const [isError, setIsError] = useState<boolean>(false)
     const [errorMessage, setErrorMessage] = useState<string | null>('')
 
@@ -45,10 +45,20 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
       }
     }, [otpCode])
 
-    const onInputCompleted =(otp) => {
+    const onInputCompleted = (otp) => {
       setOTPCode(otp)
       Keyboard.dismiss()
     }
+
+    useEffect(() => {
+      authStore.formReset()
+    }, [])
+
+    useEffect(() => {
+      if(otpCode !== null){
+        verifyNumber()
+      }
+    }, [otpCode])
 
     useEffect(() => {
       console.log('is loading')

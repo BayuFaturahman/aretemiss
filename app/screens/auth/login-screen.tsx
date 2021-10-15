@@ -140,7 +140,7 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
                 type={"secondary"}
                 // style={CONTINUE}
                 text={"Lupa Password"}
-                onPress={logout}
+                onPress={goToForgotPassword}
               />
             </VStack>
             <Spacer />

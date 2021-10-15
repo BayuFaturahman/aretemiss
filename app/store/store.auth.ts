@@ -8,7 +8,7 @@ import ServiceStore from "./store.service";
 import {AuthApi} from "@services/api/auth/auth-api";
 import {Api} from "@services/api";
 import {
-  ErrorFormResponse,
+  ErrorFormResponse, ForgotPasswordResponse,
   LoginResponse,
   LoginVerifyResponse,
   SignupResponse,
@@ -42,6 +42,8 @@ export default class AuthStore {
   isLoginFlow: boolean
 
   isCreateProfile: boolean
+
+  isForgotPasswordSuccess: boolean
   // End
 
   /* Misc */
@@ -76,6 +78,8 @@ export default class AuthStore {
 
     this.isLoginFlow = false
     this.isCreateProfile = false
+
+    this.isForgotPasswordSuccess = false
 
     makeAutoObservable(this);
 
@@ -302,6 +306,7 @@ export default class AuthStore {
     this.isLoginFlow = false
     this.token = null
     this.isCreateProfile = false
+    this.isForgotPasswordSuccess = false
   }
 
   async resetAuthStore (){
@@ -312,6 +317,43 @@ export default class AuthStore {
     this.isCreateProfile = false
 
     await this.serviceStore.clearTokens()
+  }
+
+  async forgotPassword(email: string) {
+    console.log('forgotPassword')
+    this.isLoading = true
+    try {
+      const response = await this.apiAuth.forgotPassword(email)
+
+      if(response.kind === 'form-error'){
+        console.log(response.response.errorCode)
+        console.log(response.response.message)
+
+        this.formError(response.response)
+      }
+
+      if(response.kind === 'ok'){
+        this.forgotPasswordSuccess()
+      }
+
+    } catch (e) {
+      console.log('signup verify error catch')
+      console.log(e)
+      this.signupFailed(e)
+      this.isLoading = false
+    } finally {
+      console.log('signup done')
+      this.isLoading = false
+    }
+  }
+
+  forgotPasswordSuccess () {
+    this.isForgotPasswordSuccess = true
+  }
+
+  forgotPasswordError (e) {
+    console.log(e)
+    this.isForgotPasswordSuccess = false
   }
 
 
