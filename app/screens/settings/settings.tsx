@@ -49,7 +49,7 @@ const Settings: FC<StackScreenProps<NavigatorParamList, "settingsPage">> = obser
                   onPress={goToMyAccount}
                 />
               </RNAnimated>
-              <Spacer height={Spacing[16]} />
+              {/* <Spacer height={Spacing[16]} />
               <RNAnimated
                 appearFrom={'left'}
                 animationDuration={500}
@@ -59,7 +59,7 @@ const Settings: FC<StackScreenProps<NavigatorParamList, "settingsPage">> = obser
                   text={"Notifications"}
                   onPress={goToNotification}
                 />
-              </RNAnimated>
+              </RNAnimated> */}
               <Spacer height={Spacing[16]} />
               <RNAnimated
                 appearFrom={'left'}
