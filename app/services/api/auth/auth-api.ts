@@ -6,8 +6,9 @@ import {
   LoginResult,
   LoginVerifyResult,
   SignupResult,
-  SignupVerifyResult
-} from "@services/api/auth/auth-api.types";
+  SignupVerifyResult,
+  ChangePasswordResult,
+} from "@services/api/auth/auth-api.types"
 
 export class AuthApi {
   private api: Api
@@ -19,12 +20,12 @@ export class AuthApi {
   async login(email: string, password: string): Promise<LoginResult> {
     try {
       // make the api call
-      const response: ApiResponse<any> = await this.api.apisauce.post(
-        "/signin",
-        { email: email, password: password },
-      )
+      const response: ApiResponse<any> = await this.api.apisauce.post("/signin", {
+        email: email,
+        password: password,
+      })
 
-      if(response.status === 400){
+      if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
       }
@@ -40,24 +41,26 @@ export class AuthApi {
       return { kind: "ok", response: res }
     } catch (e) {
       __DEV__ && console.tron.log(e.message)
-      return { kind: "bad-data"}
+      return { kind: "bad-data" }
     }
   }
 
-  async loginVerify(email: string, userId: string, otpCode: string, otpHash: string): Promise<LoginVerifyResult> {
+  async loginVerify(
+    email: string,
+    userId: string,
+    otpCode: string,
+    otpHash: string,
+  ): Promise<LoginVerifyResult> {
     try {
       // make the api call
-      const response: ApiResponse<any> = await this.api.apisauce.post(
-        "/signin/verify",
-        {
-          email: email,
-          userId: userId,
-          otpCode: otpCode,
-          otpHash: otpHash
-        },
-      )
+      const response: ApiResponse<any> = await this.api.apisauce.post("/signin/verify", {
+        email: email,
+        userId: userId,
+        otpCode: otpCode,
+        otpHash: otpHash,
+      })
 
-      if(response.status === 400){
+      if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
       }
@@ -73,7 +76,7 @@ export class AuthApi {
       return { kind: "ok", response: res }
     } catch (e) {
       __DEV__ && console.tron.log(e.message)
-      return { kind: "bad-data"}
+      return { kind: "bad-data" }
     }
   }
 
@@ -100,7 +103,7 @@ export class AuthApi {
       return { kind: "ok", response: res }
     } catch (e) {
       __DEV__ && console.tron.log(e.message)
-      return { kind: "bad-data"}
+      return { kind: "bad-data" }
     }
   }
 
@@ -160,7 +163,35 @@ export class AuthApi {
       return { kind: "ok", response: res }
     } catch (e) {
       __DEV__ && console.tron.log(e.message)
-      return { kind: "bad-data"}
+      return { kind: "bad-data" }
+    }
+  }
+
+  async changePassword(currentPassword: string, password: string): Promise<ChangePasswordResult> {
+    try {
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.patch("/change-password", {
+        oldPassword: currentPassword,
+        password: password,
+      })
+
+      if (response.status === 400) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data.data
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data" }
     }
   }
 }
