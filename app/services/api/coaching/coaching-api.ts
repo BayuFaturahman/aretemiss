@@ -67,13 +67,9 @@ export class CoachingApi {
 
   async getFeedbackDetail(id: string): Promise<FeedbackDetailResult> {
     try {
-      console.log('request getFeedbackDetail Detail')
-
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.get(
         `/journal/${id}/feedback`)
-        console.log('response feedbackdetail', response.data)
-
       if(response.status === 400){
         const res = response.data
         return { kind: "form-error", response: res }
@@ -84,7 +80,7 @@ export class CoachingApi {
         if (problem) return problem
       }
 
-      const res = response.data
+      const res = response.data.data
       return { kind: "ok", response: res }
     } catch (e) {
       __DEV__ && console.tron.log(e.message)

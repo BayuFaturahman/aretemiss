@@ -156,6 +156,16 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
       }
     },[coachingStore.listJournal, coachingStore.journalSucceed])
 
+    useEffect(()=>{
+      console.log('coachingStore.refreshData', coachingStore.refreshData)
+
+      if(coachingStore.refreshData){
+        setTimeout(()=>{
+          coachingStore.getJournal()
+        }, 20)
+      }
+    },[coachingStore.refreshData, coachingStore.createJournalSucceed, coachingStore.createFeedbackSucced])
+
     const createList = () => {
       const id = mainStore.userProfile.user_id
       let groupArrays = []
@@ -186,6 +196,7 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
       }
       if(groupArrays){
         setCoachingData(groupArrays)
+        coachingStore.setRefreshData(false)
         forceUpdate()
       }
     }

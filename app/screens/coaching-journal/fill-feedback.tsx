@@ -116,6 +116,7 @@ const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = o
   useEffect(() => {
       if(coachingStore.messageCreateJournal == "Success" && !coachingStore.isDetail){
         coachingStore.resetCoachingStore()
+        coachingStore.setRefreshData(true)
         navigation.navigate("coachingJournalMain")
       }
   },[coachingStore.messageCreateJournal, coachingStore.createJournalSucceed])
@@ -123,6 +124,7 @@ const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = o
   useEffect(() => {
       if(coachingStore.messageCreateFeedback == "Success" && coachingStore.isDetail){
         coachingStore.resetCoachingStore()
+        coachingStore.setRefreshData(true)
         navigation.navigate("coachingJournalMain")
       }
   },[coachingStore.messageCreateFeedback, coachingStore.createFeedbackSucced])

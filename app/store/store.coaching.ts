@@ -80,6 +80,7 @@ export default class CoachingStore {
   isDetailCoach: boolean
 
   isFormCoach: boolean
+  refreshData: boolean
 
   formErrorCode: number
 
@@ -88,7 +89,11 @@ export default class CoachingStore {
 
   listJournal : JournalModel[]
   journalDetail: JournalDetail
-  feedbackDetail: FeedbackDetail
+  
+  my_feedback: FeedbackJLSixth
+  coachee_feedback: FeedbackJLSixth
+  same_feedback: FeedbackJLFive
+
   coach_id: string
   date: string
   title: string
@@ -122,8 +127,8 @@ export default class CoachingStore {
     this.messageUpdatedJournal = ''
     this.messageCreateFeedback = ''
 
-    this.isFormCoach
-
+    this.isFormCoach = false
+    this.refreshData = false
     this.coachingApi = new CoachingApi(this.api)
 
     this.isLoading = false
@@ -149,32 +154,29 @@ export default class CoachingStore {
       jl_learner_fullname: '',
       coach_fullname: ''
     }
-    this.feedbackDetail = {
-      my_feedback: {
-        q1: 0,
-        q2: 0,
-        q3: 0,
-        q4: 0,
-        q5: 0,
-        q6: 0,
-      },
-      coachee_feedback: {
-        q1: 0,
-        q2: 0,
-        q3: 0,
-        q4: 0,
-        q5: 0,
-        q6: 0,
-      },
-      same_feedback: {
-        q1: 0,
-        q2: 0,
-        q3: 0,
-        q4: 0,
-        q5: 0,
-      }
+    this.my_feedback= {
+      q1: 0,
+      q2: 0,
+      q3: 0,
+      q4: 0,
+      q5: 0,
+      q6: 0,
     }
-
+    this.coachee_feedback = {
+      q1: 0,
+      q2: 0,
+      q3: 0,
+      q4: 0,
+      q5: 0,
+      q6: 0,
+    }
+    this.same_feedback = {
+      q1: 0,
+      q2: 0,
+      q3: 0,
+      q4: 0,
+      q5: 0,
+    }
     makeAutoObservable(this);
   }
 
@@ -195,9 +197,10 @@ export default class CoachingStore {
     } finally {
       this.isLoading = false
     }
-
   }
-
+  setRefreshData(data: boolean){
+    this.refreshData = data
+  }
   async createJournal(
     q1:number,
     q2:number,
@@ -227,6 +230,7 @@ export default class CoachingStore {
     )
     console.log(result)
     if (result.kind === "ok") {
+      this.refreshData = true
       this.createJournalSucceed(result.response.message)
     } else if (result.kind === 'form-error'){
       this.coachingFailed(result.response.errorCode)
@@ -291,6 +295,8 @@ export default class CoachingStore {
     this.commitment = ''
     this.learnerIds = []
     this.type = ''
+    this.refreshData = true
+    this.listJournal = []
     this.messageCreateJournal = message
     this.formErrorCode = null
     this.isLoading = false
@@ -341,7 +347,9 @@ export default class CoachingStore {
     this.isLoading = true
     console.log('getFeedbackDetail')
     const result = await this.coachingApi.getFeedbackDetail(this.detailId)
-    console.log('getFeedbackDetail result', result)
+    console.log('getFeedbackDetail result', result.response)
+    console.log('getFeedbackDetail result my_feedback', result.response.my_feedback)
+
     if (result.kind === "ok") {
       this.feedbackDetailSucced(result.response)
     } else if (result.kind === 'form-error'){
@@ -352,24 +360,43 @@ export default class CoachingStore {
   }
 
   feedbackDetailSucced(response: FeedbackDetail) {
-    this.feedbackDetail.same_feedback = response.same_feedback
-    this.feedbackDetail.my_feedback = response.my_feedback
-    this.feedbackDetail.same_feedback = response.same_feedback
-
+    this.my_feedback = {
+      q1: response.my_feedback.q1,
+      q2: response.my_feedback.q2,
+      q3: response.my_feedback.q3,
+      q4: response.my_feedback.q4,
+      q5: response.my_feedback.q5,
+      q6: response.my_feedback.q6,
+    }
+    this.coachee_feedback = {
+      q1: response.coachee_feedback.q1,
+      q2: response.coachee_feedback.q2,
+      q3: response.coachee_feedback.q3,
+      q4: response.coachee_feedback.q4,
+      q5: response.coachee_feedback.q5,
+      q6: response.coachee_feedback.q6,
+    }
+    this.same_feedback= {
+      q1: response.same_feedback.q1,
+      q2: response.same_feedback.q2,
+      q3: response.same_feedback.q3,
+      q4: response.same_feedback.q4,
+      q5: response.same_feedback.q5,
+    }
     this.formErrorCode = null
     this.isLoading = false
   }
 
   feedbackDetailReset() {
     console.log('feedbackDetailReset')
-    this.feedbackDetail.same_feedback = {
+    this.same_feedback = {
       q1: 0,
       q2: 0,
       q3: 0,
       q4: 0,
       q5: 0,
     }
-    this.feedbackDetail.my_feedback = {
+    this.my_feedback = {
       q1: 0,
       q2: 0,
       q3: 0,
@@ -377,7 +404,7 @@ export default class CoachingStore {
       q5: 0,
       q6: 0
     }
-    this.feedbackDetail.coachee_feedback = {
+    this.coachee_feedback = {
       q1: 0,
       q2: 0,
       q3: 0,

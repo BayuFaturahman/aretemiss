@@ -28,30 +28,30 @@ const EXAMPLE_DATA:Array<ChoiceItemType> = [
   {
     id: '0',
     title: 'Dalam skala 1 - 5, seberapa baik coach-mu sudah membangun rapport atau kedekatan di awal sesi',
-    sameChoice: 4,
-    yourChoice: 4,
-    coacheChoice: 4,
+    sameChoice: 0,
+    yourChoice: 0,
+    coacheChoice: 0,
   },
   {
     id: '1',
     title: 'Dalam skala 1 - 5, seberapa baik coach-mu sudah membantu saya sebagai coachee menentukan outcome?',
     sameChoice: 0,
-    yourChoice: 5,
-    coacheChoice: 4,
+    yourChoice: 0,
+    coacheChoice: 0,
   },
   {
     id: '2',
     title: '“Dalam skala 1 - 5, seberapa baik coach-mu sudah mempraktekan active listening atau mendengar aktif saat sesi berlangsung?”',
     sameChoice: 0,
-    yourChoice: 2,
-    coacheChoice: 4,
+    yourChoice: 0,
+    coacheChoice: 0,
   },
   {
     id: '3',
     title: '“Dalam skala 1 - 5, seberapa baik coach-mu sudah mengajukan powerful questions atau pertanyaan yang menggugah pada saat sesi berlangsung?”',
-    sameChoice: 5,
-    yourChoice: 5,
-    coacheChoice: 5,
+    sameChoice: 0,
+    yourChoice: 0,
+    coacheChoice: 0,
   },
   {
     id: '4',
@@ -63,9 +63,9 @@ const EXAMPLE_DATA:Array<ChoiceItemType> = [
   {
     id: '5',
     title: '“Dalam skala 1 - 5, seberapa baik coach-mu sudah membantu saya sebagai coachee untuk menyampaikan komitmen di akhir sesi?”',
-    sameChoice: 1,
-    yourChoice: 1,
-    coacheChoice: 1,
+    sameChoice: 0,
+    yourChoice: 0,
+    coacheChoice: 0,
   }
 ]
 
@@ -127,18 +127,11 @@ const FillFeedbackDetail: FC<StackScreenProps<NavigatorParamList, "fillFeedbackD
     const getFeedbackDetail = useCallback(async ()=>{
         await coachingStore.getFeedbackDetail()
 
-        if(coachingStore.feedbackDetail){
-          const coachee_feedback = coachingStore.feedbackDetail.coachee_feedback
-          const my_feedback = coachingStore.feedbackDetail.coachee_feedback
-          const sameChoice = coachingStore.feedbackDetail.same_feedback
-          console.log(`coachee_feedback`, coachee_feedback)
-          console.log(`my_feedback`, my_feedback)
-          console.log(`sameChoice`, sameChoice)
-    
+        if(coachingStore.coachee_feedback && coachingStore.my_feedback){
+          const coachee_feedback = coachingStore.coachee_feedback
+          const my_feedback = coachingStore.my_feedback
+              
           const updated = await feedbackData.map((item, index)=>{
-            console.log('coachee_feedback[`q${index+1}`]',coachee_feedback[`q${index+1}`])
-            console.log('my_feedback[`q${index+1}`]',my_feedback[`q${index+1}`])
-
             return { 
               title: item.title, 
               id: item.id, 
@@ -150,7 +143,7 @@ const FillFeedbackDetail: FC<StackScreenProps<NavigatorParamList, "fillFeedbackD
           console.log(`updated`, updated)
           setFeedbackData(updated)
         }
-    },[coachingStore.feedbackDetail, coachingStore.feedbackDetailSucced])
+    },[coachingStore.coachee_feedback, coachingStore.my_feedback, coachingStore.feedbackDetailSucced])
 
     useEffect(() => {
       coachingStore.resetLoading()
