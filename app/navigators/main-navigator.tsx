@@ -54,10 +54,6 @@ const screens: AppRoute[] = [
     name: 'fillFeedbackDetail',
     component: fillFeedbackDetail,
   },
-  {
-    name: 'createProfile',
-    component: createProfile,
-  },
 ];
 
 export type NavigatorParamList = {
@@ -73,7 +69,6 @@ export type NavigatorParamList = {
   notificationSettings: undefined;
   homepage: undefined;
   fillFeedbackDetail: undefined;
-  createProfile: undefined;
 };
 
 export default screens

@@ -164,9 +164,11 @@ export default class AuthStore {
 
     if(data.isVerify === 0){
       this.isCreateProfile = true
+      await this.serviceStore.setHeaderToken(this.token)
+    } else {
+      this.isCreateProfile = false
+      await this.serviceStore.setToken(this.token)
     }
-
-    await this.serviceStore.setToken(this.token)
   }
 
   async signup(email: string, password: string) {

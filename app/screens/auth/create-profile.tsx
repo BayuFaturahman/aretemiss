@@ -25,7 +25,7 @@ import {IOption} from "react-native-modal-selector";
 export type ProfileUpdateForm = {
   fullname: string
   nickname: string
-  // email: string
+  email: string
   team1Id: string
   team2Id: string
   team3Id: string
@@ -60,7 +60,9 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
     },[])
 
     useEffect(()=>{
-      getTeam()
+      if(authStore.token){
+        getTeam()
+      }
     },[])
 
     useEffect(()=>{
@@ -70,10 +72,12 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
     },[serviceStore.rehydrated, serviceStore.accessToken])
 
     useEffect(()=>{
-      if(mainStore.userProfile.userId !== ''){
-        navigation.navigate('homepage')
+      if(mainStore.updatingProfile.userId !== ''){
+        navigation.reset({
+          routes: [{ name: 'homepage' }]
+        })
       }
-    },[mainStore.userProfile.userId])
+    },[mainStore.updatingProfile])
 
     useEffect(()=>{
       if(mainStore.teamResponse !== null){
@@ -172,7 +176,7 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
                     <DropDownPicker
                       items={teamList1}
                       isRequired={false}
-                      label="Pilih team kedua (jika ada):"
+                      label="Pilih team ketiga (jika ada):"
                       onValueChange={(value:IOption)=> {
                          setFieldValue('team3Id', value?.id ?? '')
                       }}

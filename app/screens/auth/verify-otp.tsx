@@ -39,7 +39,7 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
       }
       if(authStore.isLoginFlow) {
         await authStore.loginVerify(otpCode ? otpCode.toString() : '')
-        await mainStore.setProfile()
+        // await mainStore.setProfile()
       } else {
         await authStore.signupVerify(otpCode ? otpCode.toString() : '')
       }
@@ -113,9 +113,7 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
                    {authStore.errorMessage}
                  </Text>
 
-                <Text type={'body'} style={{textAlign: 'center'}}>
-                  {authStore.otp}
-                </Text>
+                { __DEV__ === true ?  <Text type={'body'} style={{textAlign: 'center'}}>{authStore.otp}</Text> : null}
 
                 <Spacer height={Spacing[12]} />
               </VStack>

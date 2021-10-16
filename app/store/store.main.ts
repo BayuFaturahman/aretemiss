@@ -255,7 +255,7 @@ export default class MainStore {
       }
       if (response.kind === "ok") {
         this.userProfile = {
-          userId: response.response[0]["user_nickname"],
+          userId: response.response[0]["user_id"],
           fullName: response.response[0]["user_fullname"],
           nickName: response.response[0]["user_nickname"],
           email: response.response[0]["user_email"],
