@@ -12,7 +12,7 @@ import Spacer from "@components/spacer";
 import {Colors, Layout, Spacing} from "@styles";
 
 import {EmptyList} from "@screens/coaching-journal/components/empty-list";
-import {useStores} from "@models";
+import { useStores } from "../../bootstrap/context.boostrap"
 
 import Spinner from 'react-native-loading-spinner-overlay';
 
@@ -28,30 +28,30 @@ const EXAMPLE_DATA:Array<ChoiceItemType> = [
   {
     id: '0',
     title: 'Dalam skala 1 - 5, seberapa baik coach-mu sudah membangun rapport atau kedekatan di awal sesi',
-    sameChoice: 4,
-    yourChoice: 4,
-    coacheChoice: 4,
+    sameChoice: 0,
+    yourChoice: 0,
+    coacheChoice: 0,
   },
   {
     id: '1',
     title: 'Dalam skala 1 - 5, seberapa baik coach-mu sudah membantu saya sebagai coachee menentukan outcome?',
     sameChoice: 0,
-    yourChoice: 5,
-    coacheChoice: 4,
+    yourChoice: 0,
+    coacheChoice: 0,
   },
   {
     id: '2',
     title: '“Dalam skala 1 - 5, seberapa baik coach-mu sudah mempraktekan active listening atau mendengar aktif saat sesi berlangsung?”',
     sameChoice: 0,
-    yourChoice: 2,
-    coacheChoice: 4,
+    yourChoice: 0,
+    coacheChoice: 0,
   },
   {
     id: '3',
     title: '“Dalam skala 1 - 5, seberapa baik coach-mu sudah mengajukan powerful questions atau pertanyaan yang menggugah pada saat sesi berlangsung?”',
-    sameChoice: 5,
-    yourChoice: 5,
-    coacheChoice: 5,
+    sameChoice: 0,
+    yourChoice: 0,
+    coacheChoice: 0,
   },
   {
     id: '4',
@@ -63,9 +63,9 @@ const EXAMPLE_DATA:Array<ChoiceItemType> = [
   {
     id: '5',
     title: '“Dalam skala 1 - 5, seberapa baik coach-mu sudah membantu saya sebagai coachee untuk menyampaikan komitmen di akhir sesi?”',
-    sameChoice: 1,
-    yourChoice: 1,
-    coacheChoice: 1,
+    sameChoice: 0,
+    yourChoice: 0,
+    coacheChoice: 0,
   }
 ]
 
@@ -101,7 +101,7 @@ const FillFeedbackDetail: FC<StackScreenProps<NavigatorParamList, "fillFeedbackD
     const [feedbackData, setFeedbackData] = useState<Array<ChoiceItemType>>(EXAMPLE_DATA);
     const [selectedActivities, setSelectedActivities] = useState<string>('');
     const [, forceUpdate] = useReducer(x => x + 1, 0);
-    const { coachingStore, profileStore } = useStores()
+    const { coachingStore, mainStore } = useStores()
 
     const goBack = () => navigation.goBack()
 
@@ -124,27 +124,13 @@ const FillFeedbackDetail: FC<StackScreenProps<NavigatorParamList, "fillFeedbackD
       setFeedbackData(updated)
     }, [feedbackData])
 
-    const submit = () => {
-      coachingStore.createJournal(
-        feedbackData[0].choice,
-        feedbackData[1].choice,
-        feedbackData[2].choice,
-        feedbackData[3].choice,
-        feedbackData[4].choice,
-        feedbackData[5].choice
-      )
-    }
+    const getFeedbackDetail = useCallback(async ()=>{
+        await coachingStore.getFeedbackDetail()
 
-    useEffect(() => {
-      async()=>{
-        if(coachingStore.feedbackDetail){
-          const coachee_feedback = coachingStore.feedbackDetail.coachee_feedback
-          const my_feedback = coachingStore.feedbackDetail.coachee_feedback
-          const sameChoice = coachingStore.feedbackDetail.same_feedback
-          console.log(`coachee_feedback ${coachee_feedback}`)
-          console.log(`my_feedback ${my_feedback}`)
-          console.log(`sameChoice ${sameChoice}`)
-    
+        if(coachingStore.coachee_feedback && coachingStore.my_feedback){
+          const coachee_feedback = coachingStore.coachee_feedback
+          const my_feedback = coachingStore.my_feedback
+              
           const updated = await feedbackData.map((item, index)=>{
             return { 
               title: item.title, 
@@ -157,14 +143,14 @@ const FillFeedbackDetail: FC<StackScreenProps<NavigatorParamList, "fillFeedbackD
           console.log(`updated`, updated)
           setFeedbackData(updated)
         }
-      }
-      
-    },[coachingStore.feedbackDetailSucced])
+    },[coachingStore.coachee_feedback, coachingStore.my_feedback, coachingStore.feedbackDetailSucced])
 
     useEffect(() => {
       coachingStore.resetLoading()
-      profileStore.resetLoading()
-      coachingStore.getFeedbackDetail()
+      mainStore.resetLoading()
+      setTimeout(()=>{
+        getFeedbackDetail()
+      }, 20)
     },[])
 
     const FeedbackResultType = ({}) => {
@@ -305,7 +291,7 @@ const FillFeedbackDetail: FC<StackScreenProps<NavigatorParamList, "fillFeedbackD
           </ScrollView>
         </SafeAreaView>
         <Spinner
-          visible={coachingStore.isLoading || profileStore.isLoading}
+          visible={coachingStore.isLoading || mainStore.isLoading}
           textContent={'Memuat...'}
         />
       </VStack>

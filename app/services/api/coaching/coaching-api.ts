@@ -1,8 +1,9 @@
 import { JournalUser } from "@models/coaching/journal-model";
 import { ApiResponse } from "apisauce"
+import { FeedbackDetail } from "app/store/store.coaching";
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
-import { CreateJournalResult, JournalDetailResult, JournalListResult, JournalResponse } from "./coaching-api.types";
+import { CreateJournalResult, FeedbackDetailResult, JournalDetailResult, JournalListResult } from "./coaching-api.types";
 
 export class CoachingApi {
   private api: Api
@@ -19,7 +20,7 @@ export class CoachingApi {
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.get(
         "/journal")
-        console.log('response', response.data)
+        console.log('getJournalList response', response.data)
 
       if(response.status === 400){
         const res = response.data
@@ -30,8 +31,9 @@ export class CoachingApi {
         const problem = getGeneralApiProblem(response)
         if (problem) return problem
       }
-
       const res = response.data.data
+      console.log('getJournalList res', res)
+
       return { kind: "ok", response: res }
     } catch (e) {
       __DEV__ && console.tron.log(e.message)
@@ -63,15 +65,11 @@ export class CoachingApi {
     }
   }
 
-  async getFeedbackDetail(id: string): Promise<JournalListResult> {
+  async getFeedbackDetail(id: string): Promise<FeedbackDetailResult> {
     try {
-      console.log('request getFeedbackDetail Detail')
-
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.get(
         `/journal/${id}/feedback`)
-        console.log('response feedbackdetail', response.data)
-
       if(response.status === 400){
         const res = response.data
         return { kind: "form-error", response: res }
@@ -153,5 +151,134 @@ export class CoachingApi {
     }
   }
 
+  async updateJournalLearner(
+    content: string,
+    commitment: string,
+    lessonsLearned: string,
+    id: string
+  ): Promise<CreateJournalResult> {
+    try {
+      console.log('updateJournalLearner ap', id)
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.patch(
+        `/journal/${id}`,
+        {
+          content,
+          commitment,
+          lessonsLearned
+        },
+      )
+      console.log('createJournal response', response)
+      console.log(response)
+      if(response.status === 400){
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data"}
+    }
+  }
+  async updateJournalCoach(
+    content: string,
+    commitment: string,
+    lessonsLearned: string,
+    strength: string,
+    type: string,
+    id: string
+  ): Promise<CreateJournalResult> {
+    try {
+      console.log('updateJournalCoach ap', id)
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.patch(
+        `/journal/${id}`,
+        {
+          content,
+          commitment,
+          lessonsLearned,
+          strength,
+          type
+        },
+      )
+      console.log('updateJournalCoach response', response)
+      console.log(response)
+      if(response.status === 400){
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data"}
+    }
+  }
+
+  async createFeedback(
+    journalId: string,
+    q1:number,
+    q2:number,
+    q3:number,
+    q4:number,
+    q5:number,
+    q6:number
+  ): Promise<CreateJournalResult> {
+    try {
+      console.log('createFeedback ap', journalId)
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.post(
+        `/feedback`,
+        {
+          journalId,
+          questions: {
+            q1,
+            q2,
+            q3,
+            q4,
+            q5,
+            q6
+          }
+        },
+      )
+      console.log('createFeedback response', response)
+      console.log(response)
+      if(response.status === 400){
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data"}
+    }
+  }
+  
 
 }

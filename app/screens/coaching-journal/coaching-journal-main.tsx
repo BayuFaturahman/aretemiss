@@ -1,4 +1,4 @@
-import React, {FC, useCallback, useReducer, useState} from "react"
+import React, {FC, useCallback, useReducer, useState, useEffect} from "react"
 import {FlatList, SafeAreaView, ScrollView, StyleSheet, View} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
@@ -10,12 +10,14 @@ import { NavigatorParamList } from "@navigators/main-navigator"
 import {HStack, VStack} from "@components/view-stack";
 import Spacer from "@components/spacer";
 import {Colors, Layout, Spacing} from "@styles";
+import moment from 'moment'
 
 import {CoachingJournalItemRender} from "@screens/coaching-journal/components/coaching-journal-item-render";
 import {CoachingJournalItem} from "@screens/coaching-journal/coaching-journal.type";
 import {ActivitiesTypeLegends} from "@screens/coaching-journal/components/activities-type-legends";
 import {NewButton} from "@screens/coaching-journal/components/new-button";
 import FastImage from "react-native-fast-image";
+import { useStores } from "../../bootstrap/context.boostrap"
 
 import arrowYellow from "@assets/icons/coachingJournal/empty/arrow-yellow.png";
 import smileYellow from "@assets/icons/coachingJournal/empty/smile-yellow.png";
@@ -96,15 +98,19 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
 
     // empty list state
     // const [coachingData, setCoachingData] = useState<Array<CoachingJournalItem>>([]);
-    const [coachingData, setCoachingData] = useState<Array<CoachingJournalItem>>(EXAMPLE_COACHING_DATA);
+    const [coachingData, setCoachingData] = useState<Array<CoachingJournalItem>>([]);
     const [selectedActivities, setSelectedActivities] = useState<string>('');
     const [, forceUpdate] = useReducer(x => x + 1, 0);
+    const {mainStore, coachingStore} = useStores()
 
 
     const goBack = () => navigation.goBack()
 
-    const newEntry = () => navigation.navigate("newJournalEntry")
-
+    const newEntry = () => {
+      coachingStore.isDetailJournal(false)
+      coachingStore.setFormCoach(true)
+      navigation.navigate("newJournalEntry")
+    }
     const quizForm = () => navigation.navigate("quizForm")
 
     const holdActivitiesId = useCallback((selectedId)=>{
@@ -112,17 +118,88 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
       // forceUpdate()
     }, [selectedActivities])
 
-    const goToNote = useCallback((id)=>{
+    const goToNote = useCallback((id, coach_id)=>{
       console.log(id)
+      coachingStore.isDetailJournal(true)
+      const detailCoaching = coach_id == mainStore.userProfile.user_id
+      coachingStore.setDetailCoaching(detailCoaching)
+      coachingStore.setDetailID(id)
+      coachingStore.setFormCoach(true)
+      console.log('goToNote coach_id', coach_id)
+      console.log('goToNote user_id', mainStore.userProfile.user_id)
+      navigation.navigate("newJournalEntry")
     }, [])
 
     const goToFeedback = useCallback((id)=>{
+      coachingStore.isDetailJournal(true)
+      coachingStore.setDetailID(id)
+      navigation.navigate("fillFeedbackDetail")
       console.log(id)
     }, [])
 
-    const goToNoteFeedback = useCallback((id)=>{
-      console.log(id)
+    const goToNoteFeedback = useCallback((id, coach_id)=>{
+
+      coachingStore.isDetailJournal(true)
+      const detailCoaching = coach_id == mainStore.userProfile.user_id
+      coachingStore.setDetailCoaching(detailCoaching)
+      coachingStore.setDetailID(id)
+      coachingStore.setFormCoach(false)
+      console.log('goToNoteFeedback coach_id', coach_id)
+      console.log('goToNoteFeedback user_id', mainStore.userProfile.user_id)
+
+      navigation.navigate("newJournalEntry")
     }, [])
+
+    useEffect(()=>{
+      if(coachingStore.listJournal){
+        createList()
+      }
+    },[coachingStore.listJournal, coachingStore.journalSucceed])
+
+    useEffect(()=>{
+      console.log('coachingStore.refreshData', coachingStore.refreshData)
+
+      if(coachingStore.refreshData){
+        setTimeout(()=>{
+          coachingStore.getJournal()
+        }, 20)
+      }
+    },[coachingStore.refreshData, coachingStore.createJournalSucceed, coachingStore.createFeedbackSucced])
+
+    const createList = () => {
+      const id = mainStore.userProfile.user_id
+      let groupArrays = []
+      if(coachingStore.listJournal){
+        const groups = coachingStore.listJournal.reduce((groups, journalData) => {
+          const date = journalData.journal_created_at.split('T')[0];
+             if (!groups[date]) {
+              groups[date] = [];
+             }
+             groups[date].push(
+               {
+                 ...journalData,
+                  title: journalData.journal_title,
+                  type: journalData.journal_type,
+                  id: journalData.journal_id,
+                  isTagged: id != journalData.coach_id,
+                  coach_id: journalData.coach_id
+               }
+             );
+             return groups;
+          }, {});
+          groupArrays = Object.keys(groups).map((date) => {
+             return {
+             date: moment(date).format('DD MMM'),
+             activities: groups[date]
+             };
+          });
+      }
+      if(groupArrays){
+        setCoachingData(groupArrays)
+        coachingStore.setRefreshData(false)
+        forceUpdate()
+      }
+    }
 
     return (
       <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: 'center'}}>
