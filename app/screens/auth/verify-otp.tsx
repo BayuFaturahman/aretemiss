@@ -28,7 +28,7 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
     const [isError, setIsError] = useState<boolean>(false)
     const [errorMessage, setErrorMessage] = useState<string | null>('')
 
-    const { authStore } = useStores()
+    const { authStore, mainStore } = useStores()
 
     const goToLogin = () => navigation.navigate("login")
 
@@ -39,6 +39,7 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
       }
       if(authStore.isLoginFlow) {
         await authStore.loginVerify(otpCode ? otpCode.toString() : '')
+        await mainStore.setProfile()
       } else {
         await authStore.signupVerify(otpCode ? otpCode.toString() : '')
       }

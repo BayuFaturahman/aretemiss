@@ -256,6 +256,35 @@ export default class AuthStore {
     this.serviceStore.setHeaderToken(this.token)
     this.isCreateProfile = true
   }
+  
+  async changePassword(currentPassword: string, password: string) {
+    console.log('change password')
+    this.isLoading = true
+    try {
+      const response = await this.apiAuth.changePassword(currentPassword, password)
+
+      console.log(response)
+
+      if(response.kind === 'form-error'){
+        console.log(response.response.errorCode)
+        console.log(response.response.message)
+
+        this.formError(response.response)
+      }
+
+      if(response.kind === 'ok'){
+        console.log('change password succeed')
+      }
+
+    } catch (e) {
+      console.log('change password error catch')
+      console.log(e)
+      this.isLoading = false
+    } finally {
+      console.log('change password done')
+      this.isLoading = false
+    }
+  }
 
   formError (data: ErrorFormResponse){
     this.errorCode = data.errorCode
