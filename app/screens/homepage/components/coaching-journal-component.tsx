@@ -34,7 +34,6 @@ export const CoachingJournalComponent = ({
   if(data === null){
     return(
       <VStack>
-        <Text type={'left-header'} style={{fontSize: Spacing[16]}} underlineWidth={Spacing[72]} text="Feed." />
         <Spacer width={Spacing[24]} />
         <EmptyList buttonLabel={'Tambah sekarang!'}
                    description={'Kamu belum menambahkan catatan coaching journal.'}

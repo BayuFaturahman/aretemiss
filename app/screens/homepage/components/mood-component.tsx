@@ -26,7 +26,7 @@ export const MoodComponent = ({data}:{data: MoodItemType}) => {
           width: Spacing[64],
           borderRadius: Spacing[8]
         }} source={nullProfileIcon} resizeMode={"contain"}/>
-        <VStack left={Spacing[8]}>
+        <VStack left={Spacing[8]} right={Spacing[128]}>
           <Text type={'body-bold'} text={data.user.name} />
           <Text type={'body'} text={data.user.title} />
         </VStack>

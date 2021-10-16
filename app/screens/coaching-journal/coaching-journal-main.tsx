@@ -1,5 +1,5 @@
 import React, {FC, useCallback, useReducer, useState, useEffect} from "react"
-import {FlatList, SafeAreaView, ScrollView, StyleSheet, View} from "react-native"
+import {FlatList, RefreshControl, SafeAreaView, ScrollView, StyleSheet, View} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {
@@ -103,6 +103,9 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
     const [, forceUpdate] = useReducer(x => x + 1, 0);
     const {mainStore, coachingStore} = useStores()
 
+    const onRefresh = React.useCallback(async() => {
+      await coachingStore.getJournal()
+    }, []);
 
     const goBack = () => navigation.goBack()
 
@@ -205,7 +208,15 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
       <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: 'center'}}>
         <SafeAreaView style={Layout.flex}>
           <BackNavigation goBack={goBack} />
-          <ScrollView>
+          <ScrollView
+            refreshControl={
+              <RefreshControl
+                refreshing={coachingStore.isLoading}
+                onRefresh={onRefresh}
+                tintColor={Colors.MAIN_RED}
+              />
+            }
+          >
             <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
               <Text type={'header'} style={{color: Colors.WHITE}} text="Coaching Journal" />
               <Spacer height={Spacing[24]} />

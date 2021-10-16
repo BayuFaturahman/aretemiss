@@ -4,7 +4,7 @@ import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {
   BackNavigation,
-  Button,
+  Button, DismissKeyboard,
   Text,
   TextField,
 } from "@components"
@@ -78,71 +78,73 @@ const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
     }
 
     return (
-      <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.WHITE, flex: 1, justifyContent: 'center'}}>
-        {/* <GradientBackground colors={["#422443", "#281b34"]} /> */}
-        <SafeAreaView style={{flex: 1}}>
-          <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
-          <Spacer />
-          <VStack top={Spacing[24]} horizontal={Spacing[24]}>
-            <Text type={'header'} text="Selamat datang di iLEAD." />
-            <Spacer height={Spacing[24]} />
+      <DismissKeyboard>
+        <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.WHITE, flex: 1, justifyContent: 'center'}}>
+          {/* <GradientBackground colors={["#422443", "#281b34"]} /> */}
+          <SafeAreaView style={{flex: 1}}>
+            <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
+            <Spacer />
+            <VStack top={Spacing[24]} horizontal={Spacing[24]}>
+              <Text type={'header'} text="Selamat datang di iLEAD." />
+              <Spacer height={Spacing[24]} />
 
-             <Text type={'warning'} style={{textAlign: 'center'}}>
-               {authStore.errorMessage}
-             </Text>
+               <Text type={'warning'} style={{textAlign: 'center'}}>
+                 {authStore.errorMessage}
+               </Text>
 
-            <Spacer height={Spacing[32]} />
-            <TextField
-              // value={'089123123123'}
-              // label="No. HP:"
-              label="Alamat E-mail:"
-              style={{ paddingTop: 0}}
-              isError={isError && (authStore.errorCode === 1 || authStore.errorCode === 10 || authStore.errorCode === 14)}
-              onChangeText={setPhoneNumber}
+              <Spacer height={Spacing[32]} />
+              <TextField
+                // value={'089123123123'}
+                // label="No. HP:"
+                label="Alamat E-mail:"
+                style={{ paddingTop: 0}}
+                isError={isError && (authStore.errorCode === 1 || authStore.errorCode === 10 || authStore.errorCode === 14)}
+                onChangeText={setPhoneNumber}
+              />
+              <TextField
+                // value={'089123123123'}
+                label="Masukan kembali alamat E-mail:"
+                style={{ paddingTop: 0}}
+                isError={isError && (authStore.errorCode === 1 || authStore.errorCode === 10 || authStore.errorCode === 14)}
+                onChangeText={setPhoneNumberVerify}
+              />
+              <TextField
+                // value={'089123123123'}
+                label="Password baru:"
+                style={{ paddingTop: 0}}
+                secureTextEntry={true}
+                isError={isError && (authStore.errorCode === 3 || authStore.errorCode === 15 || authStore.errorCode === 10)}
+                onChangeText={setPassword}
+              />
+            </VStack>
+            <VStack top={Spacing[32]} horizontal={Spacing[96]}>
+              <Button
+                type={"primary"}
+                // text={"Kirim SMS verifikasi"}
+                text={"Kirim verifikasi"}
+                onPress={submitVerify}
+              />
+              <Spacer height={Spacing[8]} />
+              <Button
+                type={"secondary"}
+                text={"Login"}
+                onPress={goToLogin}
+              />
+            </VStack>
+            <Spacer />
+            <FastImage style={{
+              height: Spacing[96],
+              marginLeft: Spacing[48],
+              bottom: 0
+            }} source={logoBottom} resizeMode={"contain"}/>
+          </SafeAreaView>
+          <Spinner
+              visible={authStore.isLoading}
+              textContent={'Memuat...'}
+              // textStyle={styles.spinnerTextStyle}
             />
-            <TextField
-              // value={'089123123123'}
-              label="Masukan kembali alamat E-mail:"
-              style={{ paddingTop: 0}}
-              isError={isError && (authStore.errorCode === 1 || authStore.errorCode === 10 || authStore.errorCode === 14)}
-              onChangeText={setPhoneNumberVerify}
-            />
-            <TextField
-              // value={'089123123123'}
-              label="Password baru:"
-              style={{ paddingTop: 0}}
-              secureTextEntry={true}
-              isError={isError && (authStore.errorCode === 3 || authStore.errorCode === 15 || authStore.errorCode === 10)}
-              onChangeText={setPassword}
-            />
-          </VStack>
-          <VStack top={Spacing[32]} horizontal={Spacing[96]}>
-            <Button
-              type={"primary"}
-              // text={"Kirim SMS verifikasi"}
-              text={"Kirim verifikasi"}
-              onPress={submitVerify}
-            />
-            <Spacer height={Spacing[8]} />
-            <Button
-              type={"secondary"}
-              text={"Login"}
-              onPress={goToLogin}
-            />
-          </VStack>
-          <Spacer />
-          <FastImage style={{
-            height: Spacing[96],
-            marginLeft: Spacing[48],
-            bottom: 0
-          }} source={logoBottom} resizeMode={"contain"}/>
-        </SafeAreaView>
-        <Spinner
-            visible={authStore.isLoading}
-            textContent={'Memuat...'}
-            // textStyle={styles.spinnerTextStyle}
-          />
-      </VStack>
+        </VStack>
+      </DismissKeyboard>
     )
   },
 )

@@ -11,23 +11,14 @@ import {HStack, VStack} from "@components/view-stack";
 import Spacer from "@components/spacer";
 import {Colors, Layout, Spacing} from "@styles";
 
-import {CoachingJournalItemRender} from "@screens/coaching-journal/components/coaching-journal-item-render";
 import FastImage from "react-native-fast-image";
 import topLogo from "@assets/icons/home-top-bg.png";
-import notificationBell from "@assets/icons/notification-bell.png";
 import moment from 'moment'
 
 import {dimensions} from "@config/platform.config";
 import {CoachingJournalItem} from "@screens/coaching-journal/coaching-journal.type";
 import { useStores } from "../../bootstrap/context.boostrap"
 
-import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png";
-import downArrow from "@assets/icons/down-arrow.png";
-import smileMood from "@assets/icons/mood/smile.png";
-import settings from "@assets/icons/settings.png";
-import surprised from "@assets/icons/homepage/surprised.png";
-import sad from "@assets/icons/homepage/sad.png";
-import {EmptyList} from "@screens/notification/components/empty-list";
 import {NotificationButton} from "@screens/homepage/components/notification-button";
 import {SettingsButton} from "@screens/homepage/components/settings-button";
 import {HomepageCardWrapper} from "@screens/homepage/components/homepage-card-wrapper";
@@ -37,10 +28,8 @@ import {MoodComponent, MoodItemType} from "@screens/homepage/components/mood-com
 import {HomepageErrorCard} from "@screens/homepage/components/homepage-error-card";
 import DevMenu from "react-native-dev-menu";
 import {navigate} from "@navigators";
-import * as storage from "@utils/storage";
 
 import RNAnimated from "react-native-animated-component";
-import { delay } from "@utils/delay"
 
 const FEED_EXAMPLE_DATA_ITEM:FeedItemType = {
   id: '0',
@@ -69,17 +58,12 @@ const MOOD_EXAMPLE_DATA:MoodItemType = {
 const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
   ({ navigation }) => {
 
-    const [refreshing, setRefreshing] = React.useState(false);
-
-    const onRefresh = React.useCallback(() => {
-      setRefreshing(true);
-      setTimeout(() => {
-        setRefreshing(false);
-      }, 1000)
+    const onRefresh = React.useCallback(async() => {
+      await getJournalList()
     }, []);
 
     const [coachingJournalData, setCoachingJournalData] = useState<CoachingJournalItem>(null);
-    const {mainStore, coachingStore} = useStores()
+    const {mainStore, coachingStore, serviceStore} = useStores()
 
     if (__DEV__) {
       // eslint-disable-next-line global-require
@@ -110,16 +94,36 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       setSelectedActivities(selectedId)
     }, [selectedActivities])
 
-    const goToNote = useCallback((id)=>{
+    const goToNote = useCallback(async (id, coach_id)=>{
+      console.log(id)
+      await coachingStore.isDetailJournal(true)
+      const detailCoaching = coach_id === mainStore.userProfile.user_id
+      coachingStore.setDetailCoaching(detailCoaching)
+      coachingStore.setDetailID(id)
+      coachingStore.setFormCoach(true)
+      console.log('goToNote coach_id', coach_id)
+      console.log('goToNote user_id', mainStore.userProfile.user_id)
+      navigation.navigate("newJournalEntry")
+    }, [])
+
+    const goToFeedback = useCallback(async (id)=>{
+      await coachingStore.isDetailJournal(true)
+      coachingStore.setDetailID(id)
+      navigation.navigate("fillFeedbackDetail")
       console.log(id)
     }, [])
 
-    const goToFeedback = useCallback((id)=>{
-      console.log(id)
-    }, [])
+    const goToNoteFeedback = useCallback(async (id, coach_id)=>{
 
-    const goToNoteFeedback = useCallback((id)=>{
-      console.log(id)
+      await coachingStore.isDetailJournal(true)
+      const detailCoaching = coach_id === mainStore.userProfile.user_id
+      coachingStore.setDetailCoaching(detailCoaching)
+      coachingStore.setDetailID(id)
+      coachingStore.setFormCoach(false)
+      console.log('goToNoteFeedback coach_id', coach_id)
+      console.log('goToNoteFeedback user_id', mainStore.userProfile.user_id)
+
+      navigation.navigate("newJournalEntry")
     }, [])
 
     const getUserProfile = useCallback(async ()=>{
@@ -127,7 +131,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       await mainStore.getProfile()
       if(mainStore.userProfile){
         console.log('useCallback mainStore.userProfile', mainStore.userProfile)
-        let data = MOOD_EXAMPLE_DATA
+        const data = MOOD_EXAMPLE_DATA
         data.user.name = mainStore.userProfile.user_fullname
         data.user.title = mainStore.userProfile.team1_name
         setMoodData(data)
@@ -142,16 +146,19 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
         console.log('useCallback coachingStore.listJournal', coachingStore.listJournal)
         createList()
       }
-    },[])
+    },[coachingStore.createJournalSucceed])
 
     useEffect(() => {
-      setTimeout(()=>{
-        getUserProfile()
-      }, 20)
-      setTimeout(()=>{
-        getJournalList()
-      }, 20)
-    }, [])
+      const loadData = async () => {
+        await getUserProfile()
+        await getJournalList()
+        // await mainStore.setProfile()
+      }
+
+      if(serviceStore.rehydrated === true){
+        loadData().then(r => console.log(r))
+      }
+    }, [serviceStore.rehydrated])
 
     const createList = () => {
       const id = mainStore.userProfile.user_id
@@ -186,7 +193,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       }
     }
 
-  
+
     const goToNotifications = () => navigation.navigate('notificationList')
 
     const goToJournalCoaching = () => navigation.navigate('coachingJournalMain')
@@ -209,14 +216,14 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
       return(
         <VStack top={Spacing[48]} horizontal={Spacing[8]} bottom={Spacing[12]}>
-          <VStack horizontal={Spacing[12]}>
-            <RNAnimated
-              appearFrom="left"
-              animationDuration={500}
-            >
-             <NotificationButton goToNotifications={goToNotifications} />
-            </RNAnimated>
-          </VStack>
+          {/* <VStack horizontal={Spacing[12]}> */}
+          {/*  <RNAnimated */}
+          {/*    appearFrom="left" */}
+          {/*    animationDuration={500} */}
+          {/*  > */}
+          {/*   <NotificationButton goToNotifications={goToNotifications} /> */}
+          {/*  </RNAnimated> */}
+          {/* </VStack> */}
           <Spacer height={Spacing[24]} />
           <RNAnimated
             appearFrom="right"
@@ -275,7 +282,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
           <ScrollView
             refreshControl={
               <RefreshControl
-                refreshing={refreshing}
+                refreshing={coachingStore.isLoading}
                 onRefresh={onRefresh}
                 tintColor={Colors.MAIN_RED}
               />

@@ -3,7 +3,7 @@ import { SafeAreaView, StyleSheet } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {
-  Button,
+  Button, DismissKeyboard,
   Text,
   TextField,
 } from "@components"
@@ -209,27 +209,29 @@ const forgotPassword: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = 
     }
 
     return (
-      <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.WHITE, flex: 1, justifyContent: 'center'}}>
-        {/* <GradientBackground colors={["#422443", "#281b34"]} /> */}
-        <SafeAreaView style={{flex: 1}}>
-          <Spacer />
-          {authStore.isForgotPasswordSuccess ? renderEmailSent() : renderEmailForm() }
-          {/* {renderEmailSent()} */}
-          {/* {renderPasswordConfirmationForm()} */}
-          {/* {renderPhonePasswordConfirmationForm()} */}
-          <Spacer />
-          <FastImage style={{
-            height: Spacing[96],
-            marginLeft: Spacing[48],
-            bottom: 0
-          }} source={logoBottom} resizeMode={"contain"}/>
-        </SafeAreaView>
-        <Spinner
-          visible={authStore.isLoading}
-          textContent={'Memuat...'}
-          // textStyle={styles.spinnerTextStyle}
-        />
-      </VStack>
+      <DismissKeyboard>
+        <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.WHITE, flex: 1, justifyContent: 'center'}}>
+          {/* <GradientBackground colors={["#422443", "#281b34"]} /> */}
+          <SafeAreaView style={{flex: 1}}>
+            <Spacer />
+            {authStore.isForgotPasswordSuccess ? renderEmailSent() : renderEmailForm() }
+            {/* {renderEmailSent()} */}
+            {/* {renderPasswordConfirmationForm()} */}
+            {/* {renderPhonePasswordConfirmationForm()} */}
+            <Spacer />
+            <FastImage style={{
+              height: Spacing[96],
+              marginLeft: Spacing[48],
+              bottom: 0
+            }} source={logoBottom} resizeMode={"contain"}/>
+          </SafeAreaView>
+          <Spinner
+            visible={authStore.isLoading}
+            textContent={'Memuat...'}
+            // textStyle={styles.spinnerTextStyle}
+          />
+        </VStack>
+      </DismissKeyboard>
     )
   },
 )

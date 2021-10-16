@@ -89,7 +89,7 @@ export default class CoachingStore {
 
   listJournal : JournalModel[]
   journalDetail: JournalDetail
-  
+
   my_feedback: FeedbackJLSixth
   coachee_feedback: FeedbackJLSixth
   same_feedback: FeedbackJLFive
@@ -198,9 +198,11 @@ export default class CoachingStore {
       this.isLoading = false
     }
   }
+
   setRefreshData(data: boolean){
     this.refreshData = data
   }
+
   async createJournal(
     q1:number,
     q2:number,
@@ -209,6 +211,9 @@ export default class CoachingStore {
     q5:number,
     q6:number
   ){
+    console.log('createJournal')
+    console.log(this.date)
+
     this.isLoading = true
 
     const result = await this.coachingApi.createJournal(
@@ -228,10 +233,11 @@ export default class CoachingStore {
       q5,
       q6
     )
+
     console.log(result)
     if (result.kind === "ok") {
       this.refreshData = true
-      this.createJournalSucceed(result.response.message)
+      await this.createJournalSucceed(result.response.message)
     } else if (result.kind === 'form-error'){
       this.coachingFailed(result.response.errorCode)
     } else {
