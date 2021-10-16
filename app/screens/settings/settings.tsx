@@ -18,7 +18,11 @@ const Settings: FC<StackScreenProps<NavigatorParamList, "settingsPage">> = obser
 
     const { authStore } = useStores()
 
-    const goBack = () => navigation.goBack()
+    const goBack = () => {
+      navigation.reset({
+        routes: [{ name: 'homepage' }]
+      })
+    }
 
     const goToMyAccount = () => navigation.navigate('myAccount')
 

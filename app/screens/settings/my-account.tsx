@@ -56,7 +56,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
 
     const submitEditProfile = useCallback(async (data: ProfileUpdateForm) => {
       console.log(data)
-      await mainStore.updateProfile(authStore.userId, data)
+      await mainStore.updateProfile(mainStore.userProfile.user_id, data)
       toggleModal()
     }, [email, nickname])
 

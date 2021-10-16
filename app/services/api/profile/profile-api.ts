@@ -46,7 +46,8 @@ export class ProfileApi {
         formData,
       )
 
-      console.log('updateProfile response', response)
+      console.log('updateProfile response', response.data)
+      console.log('updateProfile response', response.status)
 
       if(response.status === 400){
         const res = response.data

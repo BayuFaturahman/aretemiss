@@ -61,7 +61,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
 
     const onRefresh = React.useCallback(async() => {
-      await getJournalList()
+      await loadData()
     }, []);
 
     const [coachingJournalData, setCoachingJournalData] = useState<CoachingJournalItem>(null);
@@ -150,12 +150,12 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       }
     },[])
 
-    useEffect(() => {
+    const loadData = async () => {
+      await getUserProfile()
+      await getJournalList()
+    }
 
-      const loadData = async () => {
-        await getUserProfile()
-        await getJournalList()
-      }
+    useEffect(() => {
 
       setTimeout(()=>{
         loadData()
