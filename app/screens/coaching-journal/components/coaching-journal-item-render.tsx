@@ -15,9 +15,9 @@ type CoachingJournalItemRenderProps = {
   index: number
   selectedActivities: string
   onPressActivity(id: string): void
-  onPressNote(id: string): void
-  onPressFeedback(id: string): void
-  onPressNoteFeedback(id: string): void
+  onPressNote(id: string, coach_id: string): void
+  onPressFeedback(id: string, coach_id: string): void
+  onPressNoteFeedback(id: string, coach_id: string): void
 }
 
 export const CoachingJournalItemRender = (
@@ -33,11 +33,11 @@ export const CoachingJournalItemRender = (
 
   const dateArr = item.date.split(' ')
 
-  const renderButtonTagged = (isTagged: boolean, id: string) => {
+  const renderButtonTagged = (isTagged: boolean, id: string, coach_id: string) => {
     if(isTagged){
       return(
         <HStack left={Spacing[8]} style={{maxWidth: dimensions.screenWidth - Spacing[128]}}>
-          <TouchableOpacity onPress={()=>onPressNoteFeedback(id)} style={[{backgroundColor: Colors.LIGHT_GRAY, borderRadius: Spacing[12], alignItems: 'center'}, Layout.widthFull]}>
+          <TouchableOpacity onPress={()=>onPressNoteFeedback(id, coach_id)} style={[{backgroundColor: Colors.LIGHT_GRAY, borderRadius: Spacing[12], alignItems: 'center'}, Layout.widthFull]}>
             <HStack horizontal={Spacing[8]} style={{minHeight:Spacing[64]}}>
               <FastImage style={{
                 height: Spacing[24],
@@ -52,7 +52,7 @@ export const CoachingJournalItemRender = (
     }else{
       return(
         <HStack left={Spacing[8]} style={{maxWidth: dimensions.screenWidth - Spacing[128]}}>
-          <TouchableOpacity onPress={()=>onPressNote(id)} style={{flex:1,backgroundColor: Colors.LIGHT_GRAY, borderTopStartRadius: Spacing[12], borderBottomStartRadius: Spacing[12], alignItems: 'center'}}>
+          <TouchableOpacity onPress={()=>onPressNote(id, coach_id)} style={{flex:1,backgroundColor: Colors.LIGHT_GRAY, borderTopStartRadius: Spacing[12], borderBottomStartRadius: Spacing[12], alignItems: 'center'}}>
             <HStack horizontal={Spacing[8]} style={{minHeight:Spacing[64]}}>
               <FastImage style={{
                 height: Spacing[24],
@@ -63,7 +63,7 @@ export const CoachingJournalItemRender = (
             </HStack>
           </TouchableOpacity>
           <View style={{backgroundColor: Colors.UNDERTONE_BLUE, width: Spacing[1], height: '100%'}} />
-          <TouchableOpacity onPress={()=>onPressFeedback(id)} style={{flex:1,backgroundColor: Colors.LIGHT_GRAY, borderTopEndRadius: Spacing[12], borderBottomEndRadius: Spacing[12], alignItems: 'center'}}>
+          <TouchableOpacity onPress={()=>onPressFeedback(id, coach_id)} style={{flex:1,backgroundColor: Colors.LIGHT_GRAY, borderTopEndRadius: Spacing[12], borderBottomEndRadius: Spacing[12], alignItems: 'center'}}>
             <HStack horizontal={Spacing[8]} style={{minHeight:Spacing[64]}}>
               <FastImage style={{
                 height: Spacing[24],
@@ -106,10 +106,10 @@ export const CoachingJournalItemRender = (
 
           const renderContent = useMemo(()=>{
             if(selectedActivities === activitiesItem.id){
-              return(renderButtonTagged(activitiesItem.isTagged, activitiesItem.id))
+              return(renderButtonTagged(activitiesItem.isTagged, activitiesItem.id, activitiesItem.coach_id))
             }else{
               return(
-                <TouchableOpacity key={activitiesItem.id} onPress={()=>{onPressActivity(activitiesItem.id)}}>
+                <TouchableOpacity key={activitiesItem.jl_id} onPress={()=>{onPressActivity(activitiesItem.id)}}>
                   <HStack horizontal={Spacing[8]} style={{maxWidth: dimensions.screenWidth - Spacing[144], minHeight:Spacing[64]}}>
                     <View style={{height: Spacing[16], width: Spacing[16], backgroundColor: statusColor, borderRadius: Spacing[128]}} />
                     <Spacer width={Spacing[12]}/>

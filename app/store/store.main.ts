@@ -55,6 +55,31 @@ export type ProfileModel = {
   team3_name: string
 }
 
+
+export type ListProfileModel = {
+  id: string
+  fullname: string
+  nickname: string
+  email: string
+  phoneNumber: string
+  password: string
+  team1Id: string
+  team2Id: string
+  team3Id: string
+  status: string
+  isDeleted: string
+  role: string
+  isVerify: number
+  forgotPasswordFlag: string
+  mood: string
+  photo: string
+  isAllowNotification: number
+  isAllowReminderNotification: number
+  user_created_at: string
+  user_updated_at: string
+  user_id: string
+}
+
 export default class MainStore {
   // #region PROPERTIES
 
@@ -71,6 +96,7 @@ export default class MainStore {
   updatingProfile: UpdatingProfile
 
   userProfile: ProfileModel
+  listUserProfile: ListProfileModel[]
 
   // #region CONSTRUCTOR
 
@@ -83,7 +109,6 @@ export default class MainStore {
     this.errorMessage = null
 
     this.profileApi = new ProfileApi(this.api)
-
     this.teamResponse = null
 
     this.updatingProfile = {
@@ -137,7 +162,9 @@ export default class MainStore {
     this.errorCode = data.errorCode
     this.errorMessage = data.message
   }
-
+  resetLoading(){
+    this.isLoading = false
+  }
   async getTeamList() {
     console.log('getTeamList')
     this.isLoading = true
@@ -231,10 +258,13 @@ export default class MainStore {
        console.log(e)
        this.updateProfileFailed(e)
      } finally {
+       console.log('getProfile done')
        this.isLoading = false
     }
   }
+
   async getProfileSuccess(data: ProfileModel[]) {
+    console.log('getProfileSuccess data', data[0])
     this.userProfile =  {
       user_id: data[0].user_id,
       user_fullname: data[0].user_fullname,
@@ -271,6 +301,39 @@ export default class MainStore {
     this.errorMessage = e
   }
 
+  async getListUser(id: string){
+    this.isLoading = true
+    try {
+     let result = await this.profileApi.getTeamMember(id)
+     console.log('getListUser result', result)
+
+      if(result.kind === 'form-error'){
+        this.formError(result.response)
+      }
+
+      if(result.kind === 'ok'){
+        await this.listUserTeamSucceed(result.response)
+      }
+
+    } catch (e) {
+      console.log(e)
+      this.getListProfileFailed(e)
+    } finally {
+      console.log('getListUser done')
+      this.isLoading = false
+   }
+ }
+
+ async listUserTeamSucceed (ListUser: ListProfileModel[]) {
+    console.log('journalSucceed', ListUser)
+    this.listUserProfile = ListUser
+    this.errorMessage = null
+    this.isLoading = false
+  }
+
+  getListProfileFailed(e: any) {
+    this.errorMessage = e
+  } 
   // #endregion
 }
 

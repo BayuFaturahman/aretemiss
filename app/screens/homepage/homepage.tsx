@@ -123,80 +123,70 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     }, [])
 
     const getUserProfile = useCallback(async ()=>{
-      console.log('useEffect getUserProfile', mainStore.userProfile)
+      console.log('useCallback getUserProfile', mainStore.userProfile)
       await mainStore.getProfile()
-    },[])
-
-    const getJournalList = useCallback(async ()=>{
-      console.log('useEffect getJournalList', mainStore.userProfile)
-      await coachingStore.getJournal()
-    },[])
-
-    useEffect(() => {
-      setTimeout(()=>{
-        getUserProfile()
-      }, 500)
-      setTimeout(()=>{
-        getJournalList()
-      }, 500)
-    }, [])
-
-    useEffect(()=>{
       if(mainStore.userProfile){
-        console.log('useEffect mainStore.userProfile', mainStore.userProfile)
+        console.log('useCallback mainStore.userProfile', mainStore.userProfile)
         let data = MOOD_EXAMPLE_DATA
         data.user.name = mainStore.userProfile.user_fullname
         data.user.title = mainStore.userProfile.team1_name
         setMoodData(data)
         forceUpdate()
       }
-    },[mainStore.userProfile, mainStore.getProfileSuccess])
+    },[])
 
-    useEffect(()=>{
-      console.log('useEffect coachingStore.listJournal', coachingStore.listJournal)
+    const getJournalList = useCallback(async ()=>{
+      console.log('useCallback getJournalList', mainStore.userProfile)
+      await coachingStore.getJournal()
+      if(coachingStore.listJournal){
+        console.log('useCallback coachingStore.listJournal', coachingStore.listJournal)
+        createList()
+      }
+    },[])
 
-    },[coachingStore.listJournal, coachingStore.journalSucceed])
+    useEffect(() => {
+      setTimeout(()=>{
+        getUserProfile()
+      }, 20)
+      setTimeout(()=>{
+        getJournalList()
+      }, 20)
+    }, [])
 
-    useEffect(()=>{
-      console.log('useEffect coachingStore.errorMessage', coachingStore.errorMessage)
-
-    },[coachingStore.errorMessage, coachingStore.coachingFailed])
     const createList = () => {
       const id = mainStore.userProfile.user_id
       let groupArrays = []
-      const groups = coachingStore.listJournal.reduce((groups, journalData) => {
-        const date = journalData.journal_created_at.split('T')[0];
-           if (!groups[date]) {
-            groups[date] = [];
-           }
-           groups[date].push(
-             {
-               ...journalData,
-                title: journalData.journal_title,
-                type: journalData.journal_type,
-                id: journalData.jl_id,
-                isTagged: id != journalData.coach_id
+      if(coachingStore.listJournal){
+        const groups = coachingStore.listJournal.reduce((groups, journalData) => {
+          const date = journalData.journal_created_at.split('T')[0];
+             if (!groups[date]) {
+              groups[date] = [];
              }
-           );
-           return groups;
-        }, {});
-        groupArrays = Object.keys(groups).map((date) => {
-           return {
-           date: moment(date).format('DD MMM'),
-           activities: groups[date]
-           };
-        });
-        if(groupArrays[0]) setCoachingJournalData(groupArrays[0])
-        forceUpdate
+             groups[date].push(
+               {
+                 ...journalData,
+                  title: journalData.journal_title,
+                  type: journalData.journal_type,
+                  id: journalData.journal_id,
+                  isTagged: id != journalData.coach_id
+               }
+             );
+             return groups;
+          }, {});
+          groupArrays = Object.keys(groups).map((date) => {
+             return {
+             date: moment(date).format('DD MMM'),
+             activities: groups[date]
+             };
+          });
+      }
+      if(groupArrays[0]){
+        setCoachingJournalData(groupArrays[0])
+        forceUpdate()
+      }
     }
-    // useEffect(() => {
-    //   createList()
-    // }, [coachingStore.journal])
-    //
 
-
- 
-
+  
     const goToNotifications = () => navigation.navigate('notificationList')
 
     const goToJournalCoaching = () => navigation.navigate('coachingJournalMain')

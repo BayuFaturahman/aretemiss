@@ -12,7 +12,7 @@ import Spacer from "@components/spacer";
 import {Colors, Layout, Spacing} from "@styles";
 
 import {EmptyList} from "@screens/coaching-journal/components/empty-list";
-import {useStores} from "@models";
+import { useStores } from "../../bootstrap/context.boostrap"
 
 import Spinner from 'react-native-loading-spinner-overlay';
 
@@ -62,7 +62,7 @@ const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = o
     const [feedbackData, setFeedbackData] = useState<Array<ChoiceItemType>>(EXAMPLE_DATA);
     const [selectedActivities, setSelectedActivities] = useState<string>('');
     const [, forceUpdate] = useReducer(x => x + 1, 0);
-    const { coachingStore, profileStore } = useStores()
+    const { coachingStore, mainStore } = useStores()
 
     const goBack = () => navigation.goBack()
 
@@ -86,20 +86,46 @@ const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = o
     }, [feedbackData])
 
     const submit = () => {
-      coachingStore.createJournal(
-        feedbackData[0].choice,
-        feedbackData[1].choice,
-        feedbackData[2].choice,
-        feedbackData[3].choice,
-        feedbackData[4].choice,
-        feedbackData[5].choice
-      )
+      console.log('coachingStore.isDetail', coachingStore.isDetail)
+      if(coachingStore.isDetail){
+        coachingStore.createFeedback(
+          feedbackData[0].choice,
+          feedbackData[1].choice,
+          feedbackData[2].choice,
+          feedbackData[3].choice,
+          feedbackData[4].choice,
+          feedbackData[5].choice
+        )
+      }else{
+        coachingStore.createJournal(
+          feedbackData[0].choice,
+          feedbackData[1].choice,
+          feedbackData[2].choice,
+          feedbackData[3].choice,
+          feedbackData[4].choice,
+          feedbackData[5].choice
+        )
+      }
     }
 
     useEffect(() => {
       coachingStore.resetLoading()
-      profileStore.resetLoading()
+      mainStore.resetLoading()
     },[])
+
+  useEffect(() => {
+      if(coachingStore.messageCreateJournal == "Success" && !coachingStore.isDetail){
+        coachingStore.resetCoachingStore()
+        navigation.navigate("coachingJournalMain")
+      }
+  },[coachingStore.messageCreateJournal, coachingStore.createJournalSucceed])
+
+  useEffect(() => {
+      if(coachingStore.messageCreateFeedback == "Success" && coachingStore.isDetail){
+        coachingStore.resetCoachingStore()
+        navigation.navigate("coachingJournalMain")
+      }
+  },[coachingStore.messageCreateFeedback, coachingStore.createFeedbackSucced])
 
     const ChoiceItem = ({item, index}) => {
       return(
@@ -169,7 +195,7 @@ const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = o
           </ScrollView>
         </SafeAreaView>
         <Spinner
-          visible={coachingStore.isLoading || profileStore.isLoading}
+          visible={coachingStore.isLoading || mainStore.isLoading}
           textContent={'Memuat...'}
           // textStyle={styles.spinnerTextStyle}
         />

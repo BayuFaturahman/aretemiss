@@ -1,5 +1,5 @@
 // import { Profile, ProfileMember } from "@models/profile/profile-model"
-import { ProfileModel } from "app/store/store.main"
+import { ListProfileModel, ProfileModel } from "app/store/store.main"
 import { GeneralApiProblem } from "../api-problem"
 
 export type Team = {
@@ -43,5 +43,5 @@ export type UpdateProfileResult = { kind: "form-error"; response: ErrorFormRespo
 
 export type GetProfileResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetProfileResponse }  | GeneralApiProblem
 
-export type GetTeamMemberResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: ProfileMember[] }  | GeneralApiProblem
+export type GetTeamMemberResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: ListProfileModel[] }  | GeneralApiProblem
 

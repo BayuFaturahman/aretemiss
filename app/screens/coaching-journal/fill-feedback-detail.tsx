@@ -12,7 +12,7 @@ import Spacer from "@components/spacer";
 import {Colors, Layout, Spacing} from "@styles";
 
 import {EmptyList} from "@screens/coaching-journal/components/empty-list";
-import {useStores} from "@models";
+import { useStores } from "../../bootstrap/context.boostrap"
 
 import Spinner from 'react-native-loading-spinner-overlay';
 
@@ -101,7 +101,7 @@ const FillFeedbackDetail: FC<StackScreenProps<NavigatorParamList, "fillFeedbackD
     const [feedbackData, setFeedbackData] = useState<Array<ChoiceItemType>>(EXAMPLE_DATA);
     const [selectedActivities, setSelectedActivities] = useState<string>('');
     const [, forceUpdate] = useReducer(x => x + 1, 0);
-    const { coachingStore, profileStore } = useStores()
+    const { coachingStore, mainStore } = useStores()
 
     const goBack = () => navigation.goBack()
 
@@ -124,28 +124,21 @@ const FillFeedbackDetail: FC<StackScreenProps<NavigatorParamList, "fillFeedbackD
       setFeedbackData(updated)
     }, [feedbackData])
 
-    const submit = () => {
-      coachingStore.createJournal(
-        feedbackData[0].choice,
-        feedbackData[1].choice,
-        feedbackData[2].choice,
-        feedbackData[3].choice,
-        feedbackData[4].choice,
-        feedbackData[5].choice
-      )
-    }
+    const getFeedbackDetail = useCallback(async ()=>{
+        await coachingStore.getFeedbackDetail()
 
-    useEffect(() => {
-      async()=>{
         if(coachingStore.feedbackDetail){
           const coachee_feedback = coachingStore.feedbackDetail.coachee_feedback
           const my_feedback = coachingStore.feedbackDetail.coachee_feedback
           const sameChoice = coachingStore.feedbackDetail.same_feedback
-          console.log(`coachee_feedback ${coachee_feedback}`)
-          console.log(`my_feedback ${my_feedback}`)
-          console.log(`sameChoice ${sameChoice}`)
+          console.log(`coachee_feedback`, coachee_feedback)
+          console.log(`my_feedback`, my_feedback)
+          console.log(`sameChoice`, sameChoice)
     
           const updated = await feedbackData.map((item, index)=>{
+            console.log('coachee_feedback[`q${index+1}`]',coachee_feedback[`q${index+1}`])
+            console.log('my_feedback[`q${index+1}`]',my_feedback[`q${index+1}`])
+
             return { 
               title: item.title, 
               id: item.id, 
@@ -157,14 +150,14 @@ const FillFeedbackDetail: FC<StackScreenProps<NavigatorParamList, "fillFeedbackD
           console.log(`updated`, updated)
           setFeedbackData(updated)
         }
-      }
-      
-    },[coachingStore.feedbackDetailSucced])
+    },[coachingStore.feedbackDetail, coachingStore.feedbackDetailSucced])
 
     useEffect(() => {
       coachingStore.resetLoading()
-      profileStore.resetLoading()
-      coachingStore.getFeedbackDetail()
+      mainStore.resetLoading()
+      setTimeout(()=>{
+        getFeedbackDetail()
+      }, 20)
     },[])
 
     const FeedbackResultType = ({}) => {
@@ -305,7 +298,7 @@ const FillFeedbackDetail: FC<StackScreenProps<NavigatorParamList, "fillFeedbackD
           </ScrollView>
         </SafeAreaView>
         <Spinner
-          visible={coachingStore.isLoading || profileStore.isLoading}
+          visible={coachingStore.isLoading || mainStore.isLoading}
           textContent={'Memuat...'}
         />
       </VStack>
