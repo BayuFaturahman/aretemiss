@@ -36,14 +36,17 @@ export class ProfileApi {
     }
   }
 
-  async updateProfile(userId: string,formData: ProfileUpdateForm): Promise<UpdateProfileResult> {
+  async updateProfile(userId: string, formData: ProfileUpdateForm): Promise<UpdateProfileResult> {
     try {
       console.log('updateProfile', userId)
+      console.log('updateProfile data', formData)
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.patch(
         `/user/${userId}`,
         formData,
       )
+
+      console.log('updateProfile response', response)
 
       if(response.status === 400){
         const res = response.data

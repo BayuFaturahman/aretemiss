@@ -30,6 +30,7 @@ import DevMenu from "react-native-dev-menu";
 import {navigate} from "@navigators";
 
 import RNAnimated from "react-native-animated-component";
+import {useFocusEffect} from "@react-navigation/native";
 
 const FEED_EXAMPLE_DATA_ITEM:FeedItemType = {
   id: '0',
@@ -57,6 +58,7 @@ const MOOD_EXAMPLE_DATA:MoodItemType = {
 
 const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
   ({ navigation }) => {
+
 
     const onRefresh = React.useCallback(async() => {
       await getJournalList()
@@ -146,18 +148,18 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
         console.log('useCallback coachingStore.listJournal', coachingStore.listJournal)
         createList()
       }
-    },[coachingStore.createJournalSucceed])
+    },[])
 
     useEffect(() => {
+
       const loadData = async () => {
         await getUserProfile()
         await getJournalList()
-        // await mainStore.setProfile()
       }
 
-      if(serviceStore.rehydrated === true){
-        loadData().then(r => console.log(r))
-      }
+      setTimeout(()=>{
+        loadData()
+      }, 20)
     }, [serviceStore.rehydrated])
 
     const createList = () => {
@@ -216,14 +218,14 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
       return(
         <VStack top={Spacing[48]} horizontal={Spacing[8]} bottom={Spacing[12]}>
-          {/* <VStack horizontal={Spacing[12]}> */}
-          {/*  <RNAnimated */}
-          {/*    appearFrom="left" */}
-          {/*    animationDuration={500} */}
-          {/*  > */}
-          {/*   <NotificationButton goToNotifications={goToNotifications} /> */}
-          {/*  </RNAnimated> */}
-          {/* </VStack> */}
+          {/*<VStack horizontal={Spacing[12]}>*/}
+          {/*  <RNAnimated*/}
+          {/*    appearFrom="left"*/}
+          {/*    animationDuration={500}*/}
+          {/*  >*/}
+          {/*   <NotificationButton goToNotifications={goToNotifications} />*/}
+          {/*  </RNAnimated>*/}
+          {/*</VStack>*/}
           <Spacer height={Spacing[24]} />
           <RNAnimated
             appearFrom="right"
@@ -235,7 +237,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
                 type={'right-header'}
                 style={{color: Colors.WHITE, fontSize: Spacing[16]}}
                 underlineWidth={Spacing[72]}>
-                {`Hai, ${moodData.user.name}`}
+                {`Hai, ${mainStore.userProfile.user_nickname}`}
               </Text>
             </VStack>
           </RNAnimated>

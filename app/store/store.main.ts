@@ -208,6 +208,8 @@ export default class MainStore {
     try {
       const response = await this.profileApi.updateProfile(userId, data)
 
+      console.log(response)
+
       if (response.kind === "form-error") {
         this.formError(response.response)
       }

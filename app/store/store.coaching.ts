@@ -177,6 +177,8 @@ export default class CoachingStore {
       q4: 0,
       q5: 0,
     }
+
+    this.listJournal = []
     makeAutoObservable(this);
   }
 

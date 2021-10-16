@@ -30,8 +30,8 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
   ({ navigation }) => {
     const { authStore, mainStore } = useStores()
 
-    const [nickname, setNickname] = useState(mainStore.userProfile.nickName)
-    const [email, setEmail] = useState(mainStore.userProfile.email)
+    const [nickname, setNickname] = useState(mainStore.userProfile.user_nickname)
+    const [email, setEmail] = useState(mainStore.userProfile.user_email)
     const [isEmailValid, setIsEmailValid] = useState(true)
     const [isClickProfileUpdate, setIsClickProfileUpdate] = useState(false)
     const [isModalVisible, setModalVisible] = useState(false)
@@ -43,14 +43,14 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
     const goToChangePhone = () => navigation.navigate("changePhone")
 
     const validateEmail = () => {
-      let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/
+      const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/
       if (reg.test(email) === false) {
         console.log("Email is Not Correct")
         setIsEmailValid(false)
-        return
+
       } else {
         setIsEmailValid(true)
-        console.log("Email is Not Correct")
+        console.log("Email Correct")
       }
     }
 
@@ -58,7 +58,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
       console.log(data)
       await mainStore.updateProfile(authStore.userId, data)
       toggleModal()
-    }, [])
+    }, [email, nickname])
 
     const onEditProfile = () => {
       setIsClickProfileUpdate(true)
@@ -69,14 +69,14 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
       setTimeout(() => {
         if (isEmailValid && isClickProfileUpdate) {
           const userProfile: ProfileUpdateForm = {
-            fullname: mainStore.userProfile.fullName,
+            fullname: mainStore.userProfile.user_fullname,
             nickname: nickname,
             email: email,
-            team1Id: mainStore.userProfile.team1Id,
-            team2Id: mainStore.userProfile.team2Id,
-            team3Id: mainStore.userProfile.team3Id,
-            isAllowNotification: mainStore.userProfile.isAllowNotification,
-            isAllowReminderNotification: mainStore.userProfile.isAllowReminderNotification,
+            team1Id: mainStore.userProfile.team1_id,
+            team2Id: mainStore.userProfile.team2_id,
+            team3Id: mainStore.userProfile.team3_id,
+            isAllowNotification: mainStore.userProfile.user_is_allow_notification,
+            isAllowReminderNotification: mainStore.userProfile.user_is_allow_reminder_notification,
           }
           submitEditProfile(userProfile)
         }
@@ -152,7 +152,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                 ]}
               >
                 <VStack top={Spacing[24]}>
-                  {/*<ChangeProfilePicture />*/}
+                  {/* <ChangeProfilePicture /> */}
                   <Spacer height={Spacing[32]} />
                   <TextField
                     // value={phoneNumber}

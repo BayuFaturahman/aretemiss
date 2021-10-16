@@ -107,7 +107,11 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
       await coachingStore.getJournal()
     }, []);
 
-    const goBack = () => navigation.goBack()
+    const goBack = () => {
+      navigation.reset({
+        routes: [{ name: 'homepage' }]
+      })
+    }
 
     const newEntry = () => {
       coachingStore.isDetailJournal(false)
