@@ -148,7 +148,6 @@ export default class MainStore {
       isAllowNotification: this.userProfile.isAllowNotification,
       isAllowReminderNotification: this.userProfile.isAllowReminderNotification,
     }
-
     await this.serviceStore.setToken(data.data.token)
   }
 

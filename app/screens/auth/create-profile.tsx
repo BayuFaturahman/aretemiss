@@ -25,7 +25,7 @@ import {IOption} from "react-native-modal-selector";
 export type ProfileUpdateForm = {
   fullname: string
   nickname: string
-  email: string
+  // email: string
   team1Id: string
   team2Id: string
   team3Id: string
@@ -36,7 +36,7 @@ export type ProfileUpdateForm = {
 const ProfileUpdateInitialForm: ProfileUpdateForm = {
   fullname: '',
   nickname: '',
-  email: '',
+  // email: '',
   team1Id: '',
   team2Id: '',
   team3Id: '',
@@ -49,7 +49,7 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
 
     const [teamList1, setTeamList1] = useState<IOption[]>([])
 
-    const { authStore, mainStore } = useStores()
+    const { authStore, mainStore, serviceStore } = useStores()
 
     const styles = StyleSheet.create({
 
@@ -62,6 +62,18 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
     useEffect(()=>{
       getTeam()
     },[])
+
+    useEffect(()=>{
+      if(serviceStore.accessToken){
+        getTeam()
+      }
+    },[serviceStore.rehydrated, serviceStore.accessToken])
+
+    useEffect(()=>{
+      if(mainStore.userProfile.userId !== ''){
+        navigation.navigate('homepage')
+      }
+    },[mainStore.userProfile.userId])
 
     useEffect(()=>{
       if(mainStore.teamResponse !== null){
@@ -122,13 +134,13 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
                       value={values.nickname}
                       onChangeText={handleChange('nickname')}
                     />
-                    <TextField
-                      label="Alamat e-mail:"
-                      style={{ paddingTop: 0}}
-                      isError={false}
-                      value={values.email}
-                      onChangeText={handleChange('email')}
-                    />
+                    {/* <TextField */}
+                    {/*  label="Alamat e-mail:" */}
+                    {/*  style={{ paddingTop: 0}} */}
+                    {/*  isError={false} */}
+                    {/*  value={values.email} */}
+                    {/*  onChangeText={handleChange('email')} */}
+                    {/* /> */}
 
                     <DropDownPicker
                       items={teamList1}
