@@ -140,9 +140,9 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
         }
       }
     }, [])
-    
 
-        
+
+
     useEffect(() => {
         if(coachingStore.messageUpdatedJournal == "Success" && coachingStore.isDetail && !coachingStore.isDetailCoach){
           navigation.navigate("fillFeedback")
@@ -156,7 +156,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
 
     const goToFeedback = () => navigation.navigate("fillFeedback")
 
-    const verifyData = () => {
+    const verifyData = async () => {
       if(coachingStore.isFormCoach){
         if(title === ""){
           setError("title")
@@ -176,7 +176,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
           setError("selectedDate")
         }else{
           if(coachingStore.isDetail){
-            coachingStore.updateJournal(
+            await coachingStore.updateJournal(
               content,
               commitment,
               leassons,
@@ -207,7 +207,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
         }else if(leassons == ""){
           setError("leassons")
         }else{
-          coachingStore.updateJournal(
+          await coachingStore.updateJournal(
             content,
             commitment,
             leassons,

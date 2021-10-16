@@ -10,7 +10,7 @@ import {Api} from "@services/api";
 import { CoachingApi } from '@services/api/coaching/coaching-api';
 
 // #region MAIN CLASS
-export type FeedbackJLSixth = {  
+export type FeedbackJLSixth = {
   q1: number,
   q2: number,
   q3: number,
@@ -18,7 +18,7 @@ export type FeedbackJLSixth = {
   q5: number,
   q6: number,
 }
-export type FeedbackJLFive = {  
+export type FeedbackJLFive = {
   q1: number,
   q2: number,
   q3: number,
@@ -49,7 +49,7 @@ export type JournalDetail = {
   jl_lesson_learned: JLDetail
   jl_commitment: JLDetail
   jl_content: JLDetail
-  
+
 
   jl_learner_fullname: string
   coach_fullname: string
@@ -101,7 +101,7 @@ export default class CoachingStore {
   messageCreateJournal: string
   messageUpdatedJournal: string
   messageCreateFeedback: string
-  
+
   detailId: string
   // End
 
@@ -121,7 +121,7 @@ export default class CoachingStore {
     this.messageCreateJournal = ''
     this.messageUpdatedJournal = ''
     this.messageCreateFeedback = ''
-    
+
     this.isFormCoach
 
     this.coachingApi = new CoachingApi(this.api)
@@ -180,16 +180,24 @@ export default class CoachingStore {
 
   async getJournal(){
     this.isLoading = true
-    const result = await this.coachingApi.getJournalList()
-    if (result.kind === "ok") {
-      console.log('result.response.journal', result.response)
-      this.journalSucceed(result.response.journal)
-    } else if (result.kind === 'form-error'){
-      this.coachingFailed(result.response.errorCode)
-    } else {
-      __DEV__ && console.tron.log(result.kind)
+    try {
+      const result = await this.coachingApi.getJournalList()
+      if (result.kind === "ok") {
+        console.log('result.response.journal', result.response)
+        this.journalSucceed(result.response.journal)
+      } else if (result.kind === 'form-error'){
+        this.coachingFailed(result.response.errorCode)
+      } else {
+        __DEV__ && console.tron.log(result.kind)
+      }
+    } catch (e) {
+      console.log(e)
+    } finally {
+      this.isLoading = false
     }
+
   }
+
   async createJournal(
     q1:number,
     q2:number,
@@ -226,6 +234,7 @@ export default class CoachingStore {
       __DEV__ && console.tron.log(result.kind)
     }
   }
+
   resetLoading(){
     this.isLoading = false
   }
@@ -241,15 +250,16 @@ export default class CoachingStore {
   setDetailCoaching(data: boolean){
     this.isDetailCoach = data
   }
+
   saveFormJournal(
-    coach_id: string, 
-    date: string, 
-    title: string, 
-    content: string, 
-    strength: string, 
-    improvement: string, 
-    commitment: string, 
-    learnerIds: string[], 
+    coach_id: string,
+    date: string,
+    title: string,
+    content: string,
+    strength: string,
+    improvement: string,
+    commitment: string,
+    learnerIds: string[],
     type: string
     ){
       this.coach_id = coach_id
@@ -270,6 +280,7 @@ export default class CoachingStore {
       console.log('commitment', commitment)
       console.log('learnerIds', learnerIds)
   }
+
   async createJournalSucceed (message: string)  {
     this.coach_id = ''
     this.date = ''
@@ -284,6 +295,7 @@ export default class CoachingStore {
     this.formErrorCode = null
     this.isLoading = false
   }
+
   async journalSucceed (journal: JournalModel[]) {
     console.log('journalSucceed', journal)
     this.listJournal = journal
@@ -291,16 +303,18 @@ export default class CoachingStore {
     this.isLoading = false
   }
 
-  async coachingFailed (errorId: number) {
+  coachingFailed (errorId: number) {
     this.formErrorCode = errorId
     this.isLoading = false
   }
+
   async isDetailJournal (detailCoach: boolean) {
     this.isDetail = detailCoach
   }
 
   async getJournalDetail() {
     this.isLoading = true
+    try {
     console.log('getJournalDetail')
     const result = await this.coachingApi.getJournalDetail(this.detailId)
     console.log('getJournalDetail result', result)
@@ -311,13 +325,18 @@ export default class CoachingStore {
     } else {
       __DEV__ && console.tron.log(result.kind)
     }
+    } catch (e) {
+      console.log(e)
+     } finally {
+      this.isLoading = false
+    }
   }
+
   journalDetailSucced (response: JournalDetail) {
     this.journalDetail = response
     this.formErrorCode = null
-    this.isLoading = false
   }
-  
+
   async getFeedbackDetail(){
     this.isLoading = true
     console.log('getFeedbackDetail')
@@ -343,7 +362,7 @@ export default class CoachingStore {
 
   feedbackDetailReset() {
     console.log('feedbackDetailReset')
-    this.feedbackDetail.same_feedback = {        
+    this.feedbackDetail.same_feedback = {
       q1: 0,
       q2: 0,
       q3: 0,
@@ -458,7 +477,7 @@ export default class CoachingStore {
       q4,
       q5,
       q6
-    ) 
+    )
     console.log('updateJournal result', result)
     if (result.kind === "ok") {
       this.createFeedbackSucced(result.response.message)

@@ -86,7 +86,7 @@ export default class MainStore {
   serviceStore: ServiceStore
   api: Api
   isLoading: boolean
-  
+
   errorCode: number
   errorMessage: string
 
@@ -162,9 +162,11 @@ export default class MainStore {
     this.errorCode = data.errorCode
     this.errorMessage = data.message
   }
+
   resetLoading(){
     this.isLoading = false
   }
+
   async getTeamList() {
     console.log('getTeamList')
     this.isLoading = true
@@ -244,16 +246,16 @@ export default class MainStore {
   async getProfile(){
      this.isLoading = true
      try {
-      let response = await this.profileApi.getProfile()
+      const response = await this.profileApi.getProfile()
 
        if(response.kind === 'form-error'){
          this.formError(response.response)
        }
- 
+
        if(response.kind === 'ok'){
          await this.getProfileSuccess(response.response.data)
        }
- 
+
      } catch (e) {
        console.log(e)
        this.updateProfileFailed(e)
@@ -304,7 +306,7 @@ export default class MainStore {
   async getListUser(id: string){
     this.isLoading = true
     try {
-     let result = await this.profileApi.getTeamMember(id)
+     const result = await this.profileApi.getTeamMember(id)
      console.log('getListUser result', result)
 
       if(result.kind === 'form-error'){
@@ -333,7 +335,7 @@ export default class MainStore {
 
   getListProfileFailed(e: any) {
     this.errorMessage = e
-  } 
+  }
   // #endregion
 }
 
