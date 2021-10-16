@@ -6,7 +6,7 @@
  */
 import React, {FunctionComponent, useEffect, useState} from "react"
 import {StatusBar, useColorScheme} from "react-native"
-import { NavigationContainer, DefaultTheme, DarkTheme } from "@react-navigation/native"
+import {NavigationContainer, DefaultTheme, DarkTheme, useNavigation} from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { navigationRef } from "./navigation-utilities"
 
