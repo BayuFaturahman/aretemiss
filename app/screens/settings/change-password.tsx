@@ -10,6 +10,8 @@ import { Colors, Layout, Spacing } from "@styles"
 
 import { useStores } from "../../bootstrap/context.boostrap"
 
+import Spinner from 'react-native-loading-spinner-overlay';
+
 const ChangePassword: FC<StackScreenProps<NavigatorParamList, "changePassword">> = observer(
   ({ navigation }) => {
     const { authStore } = useStores()
@@ -117,6 +119,10 @@ const ChangePassword: FC<StackScreenProps<NavigatorParamList, "changePassword">>
             </VStack>
           </VStack>
         </SafeAreaView>
+        <Spinner
+          visible={authStore.isLoading}
+          textContent={'Memuat...'}
+        />
       </VStack>
     )
   },

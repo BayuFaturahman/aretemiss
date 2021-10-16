@@ -81,7 +81,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
           submitEditProfile(userProfile)
         }
       }, 100);
-   
+
     }, [isEmailValid, isClickProfileUpdate])
 
     const ChangeProfilePicture = ({ isError = false }) => {
@@ -152,7 +152,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                 ]}
               >
                 <VStack top={Spacing[24]}>
-                  <ChangeProfilePicture />
+                  {/*<ChangeProfilePicture />*/}
                   <Spacer height={Spacing[32]} />
                   <TextField
                     // value={phoneNumber}
