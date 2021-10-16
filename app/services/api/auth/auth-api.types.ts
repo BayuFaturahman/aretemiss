@@ -14,6 +14,7 @@ export interface ErrorFormResponse {
 export interface LoginVerifyResponse {
   token: string
   needChangePassword: boolean
+  isVerify: number
 }
 
 export interface SignupResponse {
@@ -25,7 +26,7 @@ export interface SignupResponse {
 export interface SignupVerifyResponse {
   userId: string
   email: string
-  isVerify: boolean
+  isVerify: number
   token: string
 }
 export interface ChangePasswordResponse {

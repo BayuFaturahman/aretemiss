@@ -3,6 +3,7 @@ import {coachingJournalMain, newJournalEntry, fillFeedback, quizForm, fillFeedba
 import {settings, myAccount, changePassword, changePhone, notification} from "@screens/settings";
 import {notifications} from "@screens/notification";
 import {homepage} from "@screens/homepage";
+import {createProfile} from "@screens";
 
 const screens: AppRoute[] = [
   {
@@ -53,6 +54,10 @@ const screens: AppRoute[] = [
     name: 'fillFeedbackDetail',
     component: fillFeedbackDetail,
   },
+  {
+    name: 'createProfile',
+    component: createProfile,
+  },
 ];
 
 export type NavigatorParamList = {
@@ -68,6 +73,7 @@ export type NavigatorParamList = {
   notificationSettings: undefined;
   homepage: undefined;
   fillFeedbackDetail: undefined;
+  createProfile: undefined;
 };
 
 export default screens
