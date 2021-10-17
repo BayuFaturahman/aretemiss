@@ -1,4 +1,4 @@
-export type CoachingActivitiesType = 'weekly_coaching' | 'gathering' | 'coached'
+export type CoachingActivitiesType = 'weekly_coaching' | 'kumpul_santai' | 'coached'
 
 export type CoachingActivitiesItem = {
   type: CoachingActivitiesType

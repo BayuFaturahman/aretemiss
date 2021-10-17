@@ -118,7 +118,7 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
                 <Spacer height={Spacing[12]} />
               </VStack>
               <VStack>
-                <Text type={'header2'} text="Masukan 4 digit nomor dari sms verifikasi:" style={{textAlign:'center'}} />
+                <Text type={'header2'} text="Masukan 4 digit nomor dari email verifikasi:" style={{textAlign:'center'}} />
                 <Spacer height={Spacing[16]} />
                 <SMSVerifyCode
                   verifyCodeLength={4}
@@ -133,13 +133,13 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
               <VStack top={Spacing[32]} horizontal={Spacing[96]}>
                 <Button
                   type={"primary"}
-                  text={"Verifikasi nomor ini"}
+                  text={"Verifikasi E-mail ini"}
                   onPress={verifyNumber}
                 />
                 <Spacer height={Spacing[8]} />
                 <Button
                   type={"secondary"}
-                  text={"Kirim ulang SMS verifikasi "}
+                  text={"Kirim ulang E-mail verifikasi "}
                   onPress={goToLogin}
                 />
               </VStack>

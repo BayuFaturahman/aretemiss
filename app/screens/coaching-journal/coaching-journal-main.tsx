@@ -134,7 +134,7 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
       coachingStore.setFormCoach(true)
       console.log('goToNote coach_id', coach_id)
       console.log('goToNote user_id', mainStore.userProfile.user_id)
-      navigation.navigate("newJournalEntry")
+      navigation.navigate("overviewJournalEntry")
     }, [])
 
     const goToFeedback = useCallback((id)=>{
@@ -177,8 +177,10 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
       const id = mainStore.userProfile.user_id
       let groupArrays = []
       if(coachingStore.listJournal){
+        console.log('create list')
+        console.log(coachingStore.listJournal)
         const groups = coachingStore.listJournal.reduce((groups, journalData) => {
-          const date = journalData.journal_created_at.split('T')[0];
+          const date = journalData.journal_date.split('T')[0];
              if (!groups[date]) {
               groups[date] = [];
              }

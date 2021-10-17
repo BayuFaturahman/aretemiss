@@ -1,5 +1,12 @@
 import {AppRoute} from "@navigators/navigation-type";
-import {coachingJournalMain, newJournalEntry, fillFeedback, quizForm, fillFeedbackDetail} from "@screens/coaching-journal";
+import {
+  coachingJournalMain,
+  newJournalEntry,
+  fillFeedback,
+  quizForm,
+  fillFeedbackDetail,
+  overviewJournalEntry
+} from "@screens/coaching-journal";
 import {settings, myAccount, changePassword, changePhone, notification} from "@screens/settings";
 import {notifications} from "@screens/notification";
 import {homepage} from "@screens/homepage";
@@ -54,6 +61,10 @@ const screens: AppRoute[] = [
     name: 'fillFeedbackDetail',
     component: fillFeedbackDetail,
   },
+  {
+    name: 'overviewJournalEntry',
+    component: overviewJournalEntry,
+  },
 ];
 
 export type NavigatorParamList = {
@@ -69,6 +80,7 @@ export type NavigatorParamList = {
   notificationSettings: undefined;
   homepage: undefined;
   fillFeedbackDetail: undefined;
+  overviewJournalEntry: undefined;
 };
 
 export default screens

@@ -34,6 +34,7 @@ export const CoachingJournalComponent = ({
   if(data === null){
     return(
       <VStack>
+        <Text type={'left-header'} style={{fontSize: Spacing[16]}} underlineWidth={Spacing[72]} text="Coaching Journal." />
         <Spacer width={Spacing[24]} />
         <EmptyList buttonLabel={'Tambah sekarang!'}
                    description={'Kamu belum menambahkan catatan coaching journal.'}
@@ -44,7 +45,7 @@ export const CoachingJournalComponent = ({
 
   return(
     <>
-      <Text type={'left-header'} style={{fontSize: Spacing[16]}} underlineWidth={Spacing[72]} text="Coaching Journal" />
+      <Text type={'left-header'} style={{fontSize: Spacing[16]}} underlineWidth={Spacing[72]} text="Coaching Journal." />
       <Spacer height={Spacing[8]} />
       <CoachingJournalItemRender
         item={data}

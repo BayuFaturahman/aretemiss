@@ -40,6 +40,7 @@ export class CoachingApi {
       return { kind: "bad-data"}
     }
   }
+
   async getJournalDetail(id: string): Promise<JournalDetailResult> {
     console.log('request getJournal Detail', id)
     try {
@@ -87,6 +88,7 @@ export class CoachingApi {
       return { kind: "bad-data"}
     }
   }
+
   async createJournal(
     coachId: string,
     date: string,
@@ -189,6 +191,7 @@ export class CoachingApi {
       return { kind: "bad-data"}
     }
   }
+
   async updateJournalCoach(
     content: string,
     commitment: string,
@@ -279,6 +282,6 @@ export class CoachingApi {
       return { kind: "bad-data"}
     }
   }
-  
+
 
 }

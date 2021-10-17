@@ -53,6 +53,8 @@ export type JournalDetail = {
 
   jl_learner_fullname: string
   coach_fullname: string
+
+  is_edited: boolean
 }
 
 export type JournalModel = {
@@ -65,6 +67,7 @@ export type JournalModel = {
   coach_fullname: string
   learner_id: string
   learner_fullname: string
+  journal_date: string
 }
 
 export default class CoachingStore {
@@ -188,7 +191,7 @@ export default class CoachingStore {
       const result = await this.coachingApi.getJournalList()
       if (result.kind === "ok") {
         console.log('result.response.journal', result.response)
-        this.journalSucceed(result.response.journal)
+        await this.journalSucceed(result.response.journal)
       } else if (result.kind === 'form-error'){
         this.coachingFailed(result.response.errorCode)
       } else {

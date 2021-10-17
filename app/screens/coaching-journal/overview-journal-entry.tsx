@@ -55,6 +55,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
     const [strength, setStrength] = useState<string>('');
     const [improvement, setImprovement] = useState<string>('');
     const [commitment, setCommitment] = useState<string>('');
+    const [nextCommitment, setNextCommitment] = useState<string>('');
     const [activity, setActivity] = useState<string>('');
     const [isError, setError] = useState<string>('');
 
@@ -115,6 +116,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
         setSelectedActivities(coachingStore.journalDetail.journal_type)
         setLearnerDetail(coachingStore.journalDetail.jl_learner_fullname[0])
         setLeassons(coachingStore.journalDetail.jl_lesson_learned[0].desc)
+        setNextCommitment(coachingStore.journalDetail.journal_commitment)
         forceUpdate()
       }else{
         setTitle(coachingStore.journalDetail.journal_title)
@@ -126,6 +128,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
         setLearnerDetail(coachingStore.journalDetail.coach_fullname)
         forceUpdate()
       }
+
     },[coachingStore.journalDetail, coachingStore.journalDetailSucced])
 
     useEffect(()=>{
@@ -266,7 +269,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
           <ScrollView>
             <VStack top={Spacing[32]} horizontal={Spacing[24]}>
               <HStack>
-                <Text type={'left-header'} style={{}} text="Tambah journal entry" />
+                <Text type={'left-header'} style={{}} text="Overview journal entry" />
                 <Spacer/>
                 <HStack>
                   <Button
@@ -387,7 +390,37 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                     onChangeText={setImprovement}
                   />
                 </VStack>}
-                {coachingStore.isDetail &&<VStack top={Spacing[12]}>
+
+                {coachingStore.isFormCoach &&
+                <>
+                    <VStack top={Spacing[12]}>
+                        <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError == "commitment" ? styles.textError : null ]}>
+                            Apa saja yang akan saya lakukan secara berbeda untuk
+                            <Text type={'body-bold'} style={{color: Colors.BRIGHT_BLUE}}>
+                              {' sesi selanjutnya?'}
+                            </Text>
+                        </Text>
+                        <TextField
+                            style={{ paddingTop: 0}}
+                            inputStyle={{minHeight: Spacing[128]}}
+                            isRequired={false}
+                            secureTextEntry={false}
+                            isTextArea={true}
+                          // editable={!coachingStore.isDetail}
+                            value={nextCommitment}
+                            isError={isError == "commitment"}
+                            onChangeText={setCommitment}
+                        />
+                    </VStack>
+
+                    <Text type={'body-bold'} style={{textAlign: 'center', top: Spacing[4]}}>
+                        Yang dicatat oleh coachee-mu:
+                    </Text>
+                </>
+                }
+
+
+                <VStack top={Spacing[12]}>
                   <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError == "leassons" ? styles.textError : null ]}>
                     {'Tulislah '}
                     <Text type={'body-bold'} style={{color: Colors.BRIGHT_BLUE}}>
@@ -406,13 +439,14 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                     isError={isError == "leassons"}
                     onChangeText={setLeassons}
                   />
-                </VStack>}
+                </VStack>
+
                 <VStack top={Spacing[12]}>
-                  <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError == "commitment" ? styles.textError : null ]}>
-                    Apa saja yang akan saya lakukan secara berbeda untuk
+                  <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError == "leassons" ? styles.textError : null ]}>
                     <Text type={'body-bold'} style={{color: Colors.BRIGHT_BLUE}}>
-                      {' sesi selanjutnya?'}
+                      {'Komitmen'}
                     </Text>
+                    {` apa saja yang sudah disepakati bersama?`}
                   </Text>
                   <TextField
                     style={{ paddingTop: 0}}
@@ -421,9 +455,9 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                     secureTextEntry={false}
                     isTextArea={true}
                     editable={!coachingStore.isDetail}
-                    value={commitment}
-                    isError={isError == "commitment"}
-                    onChangeText={setCommitment}
+                    value={leassons}
+                    isError={isError == "leassons"}
+                    onChangeText={setLeassons}
                   />
                 </VStack>
               </VStack>

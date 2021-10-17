@@ -92,16 +92,25 @@ export const CoachingJournalItemRender = (
 
           let statusColor:string = Colors.MAIN_BLUE
 
-          switch (activitiesItem.type){
-            case "weekly_coaching":
-              statusColor = Colors.HONEY_YELLOW;
-              break;
-            case "gathering":
-              statusColor = Colors.SOFT_PURPLE;
-              break;
-            case "coached":
-              statusColor = Colors.SOFT_GREEN;
-              break;
+          console.log(activitiesItem.type)
+          console.log(activitiesItem.coach_id)
+          console.log(activitiesItem.learner_id)
+          console.log(activitiesItem.is_coached)
+
+          if(activitiesItem.is_coached){
+            statusColor = Colors.SOFT_GREEN;
+          } else {
+            switch (activitiesItem.type){
+              case "weekly_coaching":
+                statusColor = Colors.HONEY_YELLOW;
+                break;
+              case "kumpul_santai":
+                statusColor = Colors.SOFT_PURPLE;
+                break;
+              case "coached":
+                statusColor = Colors.SOFT_GREEN;
+                break;
+            }
           }
 
           const renderContent = useMemo(()=>{
@@ -115,7 +124,7 @@ export const CoachingJournalItemRender = (
                     <Spacer width={Spacing[12]}/>
                     <VStack>
                       <Text type={'body'} style={{}} text={activitiesItem.title} numberOfLines={2} />
-                      {activitiesItem.coachedBy ? <Text type={'body'} style={{fontSize: Spacing[12]}} text={`Coached by ${activitiesItem.coachedBy}`} numberOfLines={1} /> : null}
+                      {activitiesItem.coach_fullname ? <Text type={'body'} style={{fontSize: Spacing[12]}} text={`Coached by ${activitiesItem.coach_fullname}`} numberOfLines={1} /> : null}
                     </VStack>
                   </HStack>
                 </TouchableOpacity>

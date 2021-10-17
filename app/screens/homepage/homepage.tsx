@@ -105,7 +105,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       coachingStore.setFormCoach(true)
       console.log('goToNote coach_id', coach_id)
       console.log('goToNote user_id', mainStore.userProfile.user_id)
-      navigation.navigate("newJournalEntry")
+      navigation.navigate("overviewJournalEntry")
     }, [])
 
     const goToFeedback = useCallback(async (id)=>{
@@ -125,7 +125,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       console.log('goToNoteFeedback coach_id', coach_id)
       console.log('goToNoteFeedback user_id', mainStore.userProfile.user_id)
 
-      navigation.navigate("newJournalEntry")
+      navigation.navigate("overviewJournalEntry")
     }, [])
 
     const getUserProfile = useCallback(async ()=>{
@@ -167,7 +167,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       let groupArrays = []
       if(coachingStore.listJournal){
         const groups = coachingStore.listJournal.reduce((groups, journalData) => {
-          const date = journalData.journal_created_at.split('T')[0];
+          const date = journalData.journal_date.split('T')[0];
              if (!groups[date]) {
               groups[date] = [];
              }
