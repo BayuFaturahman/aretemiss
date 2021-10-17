@@ -105,36 +105,17 @@ const FillFeedbackDetail: FC<StackScreenProps<NavigatorParamList, "fillFeedbackD
 
     const goBack = () => navigation.goBack()
 
-    const newEntry = () => navigation.navigate("newJournalEntry")
-
-    const holdActivitiesId = useCallback((selectedId)=>{
-      setSelectedActivities(selectedId)
-      // forceUpdate()
-    }, [selectedActivities])
-
-    const selectFeedbackItem = useCallback((id, choice)=>{
-
-      const updated = feedbackData.map((item)=>{
-        if(item.id === id){
-          return { ...item, choice: choice}
-        }
-        return item;
-      })
-
-      setFeedbackData(updated)
-    }, [feedbackData])
-
     const getFeedbackDetail = useCallback(async ()=>{
         await coachingStore.getFeedbackDetail()
 
         if(coachingStore.coachee_feedback && coachingStore.my_feedback){
           const coachee_feedback = coachingStore.coachee_feedback
           const my_feedback = coachingStore.my_feedback
-              
+
           const updated = await feedbackData.map((item, index)=>{
-            return { 
-              title: item.title, 
-              id: item.id, 
+            return {
+              title: item.title,
+              id: item.id,
               coacheChoice: coachee_feedback[`q${index+1}`],
               yourChoice: my_feedback[`q${index+1}`],
               sameChoice: coachee_feedback[`q${index+1}`] == my_feedback[`q${index+1}`] ? my_feedback[`q${index+1}`] : 0

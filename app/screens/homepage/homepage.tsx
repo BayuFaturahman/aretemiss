@@ -155,6 +155,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     },[])
 
     const loadData = async () => {
+      setCoachingJournalData(null)
       await getUserProfile()
       await getJournalList()
     }

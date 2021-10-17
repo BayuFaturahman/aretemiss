@@ -104,6 +104,7 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
     const {mainStore, coachingStore} = useStores()
 
     const onRefresh = React.useCallback(async() => {
+      setCoachingData([])
       await coachingStore.getJournal()
     }, []);
 
