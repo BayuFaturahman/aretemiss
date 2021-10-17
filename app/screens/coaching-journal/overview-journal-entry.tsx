@@ -25,9 +25,13 @@ import moment from "moment"
 
 import Spinner from 'react-native-loading-spinner-overlay';
 
-const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalMain">> = observer(
-  ({ navigation }) => {
+const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalEntry">> = observer(
+  ({ navigation, route }) => {
     const {mainStore, coachingStore} = useStores()
+
+    const { journalId } = route.params
+
+    console.log('overview journal '+ journalId)
 
     const styles = StyleSheet.create({
       textError: {
@@ -162,7 +166,27 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
     const goToFeedback = () => navigation.navigate("fillFeedback")
 
     const verifyData = async () => {
-      if(coachingStore.isFormCoach){
+      console.log(coachingStore.journalDetail.is_coachee)
+      console.log(coachingStore.journalDetail.is_edited)
+      console.log(coachingStore.isFormCoach)
+      console.log(coachingStore.isDetail)
+      console.log('verify data')
+
+      if (coachingStore.journalDetail.is_coachee){
+        if(coachingStore.journalDetail.is_edited){
+          console.log('is coachee && is edited')
+          console.log(journalId)
+          navigation.navigate("fillFeedbackCoachee", { isFilled: true, journalId: journalId })
+        } else {
+          await coachingStore.updateJournal(
+            content,
+            commitment,
+            leassons,
+            strength,
+            selectedActivities,
+          )
+        }
+      } else if(coachingStore.isFormCoach){
         if(title === ""){
           setError("title")
         }else if(learner == {}){
@@ -188,7 +212,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
               strength,
               selectedActivities,
             )
-          }else{
+          } else{
             coachingStore.saveFormJournal(
               mainStore.userProfile.user_id,
               moment(selectedDate).format('YYYY-MM-DDTHH:mm:ss.SSS\\Z'),
@@ -434,7 +458,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                     isRequired={false}
                     secureTextEntry={false}
                     isTextArea={true}
-                    editable={!coachingStore.isDetail}
+                    editable={!coachingStore.journalDetail.is_edited}
                     value={leassons}
                     isError={isError == "leassons"}
                     onChangeText={setLeassons}
@@ -454,10 +478,10 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                     isRequired={false}
                     secureTextEntry={false}
                     isTextArea={true}
-                    editable={!coachingStore.isDetail}
-                    value={leassons}
+                    editable={!coachingStore.journalDetail.is_edited}
+                    value={commitment}
                     isError={isError == "leassons"}
-                    onChangeText={setLeassons}
+                    onChangeText={setCommitment}
                   />
                 </VStack>
               </VStack>

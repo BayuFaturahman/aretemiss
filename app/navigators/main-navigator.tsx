@@ -5,7 +5,7 @@ import {
   fillFeedback,
   quizForm,
   fillFeedbackDetail,
-  overviewJournalEntry
+  overviewJournalEntry, fillFeedbackCoachee
 } from "@screens/coaching-journal";
 import {settings, myAccount, changePassword, changePhone, notification} from "@screens/settings";
 import {notifications} from "@screens/notification";
@@ -65,6 +65,10 @@ const screens: AppRoute[] = [
     name: 'overviewJournalEntry',
     component: overviewJournalEntry,
   },
+  {
+    name: 'fillFeedbackCoachee',
+    component: fillFeedbackCoachee,
+  },
 ];
 
 export type NavigatorParamList = {
@@ -80,7 +84,13 @@ export type NavigatorParamList = {
   notificationSettings: undefined;
   homepage: undefined;
   fillFeedbackDetail: undefined;
-  overviewJournalEntry: undefined;
+  overviewJournalEntry: {
+    journalId: string
+  };
+  fillFeedbackCoachee: {
+    isFilled: boolean,
+    journalId: string
+  }
 };
 
 export default screens

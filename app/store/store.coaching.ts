@@ -55,6 +55,7 @@ export type JournalDetail = {
   coach_fullname: string
 
   is_edited: boolean
+  is_coachee: boolean
 }
 
 export type JournalModel = {
@@ -368,6 +369,39 @@ export default class CoachingStore {
     } else {
       __DEV__ && console.tron.log(result.kind)
     }
+  }
+
+  async getFeedbackDetailById(id: string, isCoachee: boolean){
+    this.isLoading = true
+    console.log('getFeedbackDetail with id '+ id)
+    const result = await this.coachingApi.getFeedbackDetail(id)
+    console.log('getFeedbackDetail with id')
+    console.log(result)
+
+    if (result.kind === "ok") {
+      if(isCoachee){
+        this.feedbackDetailCoacheeSucceed(result.response)
+      } else {
+        this.feedbackDetailSucced(result.response)
+      }
+    } else if (result.kind === 'form-error'){
+      this.coachingFailed(result.response.errorCode)
+    } else {
+      __DEV__ && console.tron.log(result.kind)
+    }
+  }
+
+  feedbackDetailCoacheeSucceed(response: FeedbackDetail) {
+    this.my_feedback = {
+      q1: response.my_feedback.q1,
+      q2: response.my_feedback.q2,
+      q3: response.my_feedback.q3,
+      q4: response.my_feedback.q4,
+      q5: response.my_feedback.q5,
+      q6: response.my_feedback.q6,
+    }
+    this.formErrorCode = null
+    this.isLoading = false
   }
 
   feedbackDetailSucced(response: FeedbackDetail) {

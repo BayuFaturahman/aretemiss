@@ -105,7 +105,9 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       coachingStore.setFormCoach(true)
       console.log('goToNote coach_id', coach_id)
       console.log('goToNote user_id', mainStore.userProfile.user_id)
-      navigation.navigate("overviewJournalEntry")
+      navigation.navigate("overviewJournalEntry", {
+        journalId: id
+      })
     }, [])
 
     const goToFeedback = useCallback(async (id)=>{
@@ -125,7 +127,9 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       console.log('goToNoteFeedback coach_id', coach_id)
       console.log('goToNoteFeedback user_id', mainStore.userProfile.user_id)
 
-      navigation.navigate("overviewJournalEntry")
+      navigation.navigate("overviewJournalEntry", {
+        journalId: id
+      })
     }, [])
 
     const getUserProfile = useCallback(async ()=>{

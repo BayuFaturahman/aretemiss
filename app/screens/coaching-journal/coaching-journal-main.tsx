@@ -134,7 +134,9 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
       coachingStore.setFormCoach(true)
       console.log('goToNote coach_id', coach_id)
       console.log('goToNote user_id', mainStore.userProfile.user_id)
-      navigation.navigate("overviewJournalEntry")
+      navigation.navigate("overviewJournalEntry", {
+        journalId: id
+      })
     }, [])
 
     const goToFeedback = useCallback((id)=>{
@@ -154,7 +156,9 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
       console.log('goToNoteFeedback coach_id', coach_id)
       console.log('goToNoteFeedback user_id', mainStore.userProfile.user_id)
 
-      navigation.navigate("newJournalEntry")
+      navigation.navigate("overviewJournalEntry", {
+        journalId: id
+      })
     }, [])
 
     useEffect(()=>{
