@@ -178,13 +178,21 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
           console.log(journalId)
           navigation.navigate("fillFeedbackCoachee", { isFilled: true, journalId: journalId })
         } else {
-          await coachingStore.updateJournal(
-            content,
-            commitment,
-            leassons,
-            strength,
-            selectedActivities,
-          )
+          if(content == "" || content === null){
+            setError("content")
+          }else if(commitment == "" || commitment === null){
+            setError("commitment")
+          }else if(leassons == "" || leassons === null){
+            setError("leassons")
+          }else{
+            await coachingStore.updateJournal(
+              content,
+              commitment,
+              leassons,
+              '',
+              '',
+            )
+          }
         }
       } else if(coachingStore.isFormCoach){
         if(title === ""){
@@ -226,7 +234,6 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
             )
             goToFeedback()
           }
-
         }
       }else{
         if(content == ""){
@@ -388,7 +395,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                     inputStyle={{minHeight: Spacing[48]}}
                     isRequired={false}
                     value={strength}
-                    editable={!coachingStore.isDetail}
+                    // editable={!coachingStore.isDetail}
                     isError={isError == "strength"}
                     onChangeText={setStrength}
                     secureTextEntry={false}
@@ -408,7 +415,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                     isRequired={false}
                     secureTextEntry={false}
                     isTextArea={true}
-                    editable={!coachingStore.isDetail}
+                    // editable={!coachingStore.isDetail}
                     isError={isError == "improvement"}
                     value={improvement}
                     onChangeText={setImprovement}
@@ -433,7 +440,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                           // editable={!coachingStore.isDetail}
                             value={nextCommitment}
                             isError={isError == "commitment"}
-                            onChangeText={setCommitment}
+                            onChangeText={setNextCommitment}
                         />
                     </VStack>
 
