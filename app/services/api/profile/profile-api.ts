@@ -89,8 +89,13 @@ export class ProfileApi {
 
       const res = response.data
 
+      console.log(res)
+      console.log(response.status)
+
       return { kind: "ok", response: res }
     } catch (e) {
+      console.log(e)
+      console.log('error')
       __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }

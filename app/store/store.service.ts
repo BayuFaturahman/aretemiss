@@ -32,7 +32,6 @@ export default class ServiceStore {
     makeAutoObservable(this);
 
     this.initToken();
-
   }
 
   setRehydrated(value: boolean) {
@@ -57,7 +56,6 @@ export default class ServiceStore {
 
   private async initToken() {
     console.log('start initToken');
-    console.log(`this.api ${this.api}`);
 
     try {
       // Check whether there's a saved token or not
@@ -68,7 +66,6 @@ export default class ServiceStore {
       if (savedToken) {
         console.log('SAVED TOKEN');
         this.accessToken = savedToken;
-        // this.refreshToken = savedRefreshToken;
         this.setHeaderToken(savedToken);
       }
     } catch (error) {

@@ -292,9 +292,8 @@ export default class MainStore {
        }
 
        if(response.kind === 'ok'){
-         await this.getProfileSuccess(response.response.data)
+         this.getProfileSuccess(response.response.data)
        }
-
      } catch (e) {
        console.log(e)
        this.updateProfileFailed(e)
@@ -304,7 +303,7 @@ export default class MainStore {
     }
   }
 
-  async getProfileSuccess(data: ProfileModel[]) {
+  getProfileSuccess(data: ProfileModel[]) {
     console.log('getProfileSuccess data', data[0])
     this.userProfile =  {
       user_id: data[0].user_id,
