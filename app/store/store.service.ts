@@ -33,11 +33,11 @@ export default class ServiceStore {
 
     this.initToken();
 
-    this.api.apisauce.addMonitor(response => this.tokenMonitor(response, this.clearHeaderToken, this.clearTokens))
+    this.api.apisauce.addMonitor(response => this.responseMonitor(response, this.clearHeaderToken, this.clearTokens))
   }
 
-  private async tokenMonitor(response: any, clearHeaderToken, clearTokens) {
-    console.log('token monitor')
+  private async responseMonitor(response: any, clearHeaderToken, clearTokens) {
+    console.log('Response Monitor')
     console.log(response.status)
 
     const { ok, status } = response;
@@ -48,13 +48,15 @@ export default class ServiceStore {
         await clearTokens()
       } catch (e){
         console.log(e)
-        console.log('token Monitor Error')
+        console.log('Clear Token Error')
       } finally {
-        console.log('clear?')
+        console.log('Token Cleared')
         clearHeaderToken()
       }
       // should be back to login screen
     }
+
+    // TODO Add network error or timeout state (?)
   }
 
   setRehydrated(value: boolean) {

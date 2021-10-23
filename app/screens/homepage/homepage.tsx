@@ -3,11 +3,10 @@ import {SafeAreaView, ScrollView, StatusBar, RefreshControl} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {
-  Button,
   Text,
 } from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
-import {HStack, VStack} from "@components/view-stack";
+import {VStack} from "@components/view-stack";
 import Spacer from "@components/spacer";
 import {Colors, Layout, Spacing} from "@styles";
 
@@ -26,11 +25,8 @@ import {CoachingJournalComponent} from "@screens/homepage/components/coaching-jo
 import {FeedItemComponent, FeedItemType} from "@screens/homepage/components/feed-homepage-component";
 import {MoodComponent, MoodItemType} from "@screens/homepage/components/mood-component";
 import {HomepageErrorCard} from "@screens/homepage/components/homepage-error-card";
-import DevMenu from "react-native-dev-menu";
-import {navigate} from "@navigators";
 
 import RNAnimated from "react-native-animated-component";
-import {useFocusEffect} from "@react-navigation/native";
 
 const FEED_EXAMPLE_DATA_ITEM:FeedItemType = {
   id: '0',
@@ -103,6 +99,13 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
     const getUserProfile = useCallback(async ()=>{
       await mainStore.getProfile()
+    },[])
+
+    const getJournalList = useCallback(async ()=>{
+      await coachingStore.getJournal()
+    },[])
+
+    useEffect(()=> {
       if(mainStore.userProfile){
         const data = MOOD_EXAMPLE_DATA
         data.user.name = mainStore.userProfile.user_fullname
@@ -110,16 +113,14 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
         setMoodData(data)
         forceUpdate()
       }
-    },[])
+    }, [mainStore.userProfile])
 
-    const getJournalList = useCallback(async ()=>{
-      console.log('useCallback getJournalList', mainStore.userProfile)
-      await coachingStore.getJournal()
+    useEffect(()=> {
       if(coachingStore.listJournal){
         console.log('useCallback coachingStore.listJournal', coachingStore.listJournal)
         createList()
       }
-    },[])
+    }, [coachingStore.listJournal])
 
     const loadData = async () => {
       setCoachingJournalData(null)
@@ -160,7 +161,6 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       }
     }
 
-
     const goToNotifications = () => navigation.navigate('notificationList')
 
     const goToJournalCoaching = () => navigation.navigate('coachingJournalMain')
@@ -183,21 +183,20 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
       return(
         <VStack top={Spacing[48]} horizontal={Spacing[8]} bottom={Spacing[12]}>
-          {/* <VStack horizontal={Spacing[12]}> */}
-          {/*  <RNAnimated */}
-          {/*    appearFrom="left" */}
-          {/*    animationDuration={500} */}
-          {/*  > */}
-          {/*   <NotificationButton goToNotifications={goToNotifications} /> */}
-          {/*  </RNAnimated> */}
-          {/* </VStack> */}
+           <VStack horizontal={Spacing[12]}>
+            <RNAnimated
+              appearFrom="left"
+              animationDuration={500}
+            >
+             <NotificationButton goToNotifications={goToNotifications} />
+            </RNAnimated>
+           </VStack>
           <Spacer height={Spacing[24]} />
           <RNAnimated
             appearFrom="right"
             animationDuration={700}
           >
             <VStack horizontal={Spacing[12]}>
-              {/* <Text type={'right-header'} style={{color: Colors.WHITE, fontSize: Spacing[16]}} underlineWidth={Spacing[72]}>{`Hai, ${profileStore.profile && profileStore.profile[0] && profileStore.profile[0].user_fullname ? profileStore.profile[0].user_fullname : ''}`}</Text> */}
               <Text
                 type={'right-header'}
                 style={{color: Colors.WHITE, fontSize: Spacing[16]}}
