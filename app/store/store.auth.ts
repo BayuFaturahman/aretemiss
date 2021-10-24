@@ -215,7 +215,7 @@ export default class AuthStore {
 
   signupSuccess (data: SignupResponse) {
     this.email = data.email
-    this.otpHash = data.otpHash
+    this.otpHash = data.otp_hash
     this.otp = data.otp
     console.log('sign up oke')
   }
@@ -258,9 +258,9 @@ export default class AuthStore {
 
   async signupVerifySuccess (data: SignupVerifyResponse) {
     console.log('signupVerifySuccess')
-    this.userId = data.userId
+    this.userId = data.user_id
     this.token = data.token
-    this.isVerify = data.isVerify
+    this.isVerify = data.is_verify
     this.email = data.email
 
     this.isLoginFlow = false

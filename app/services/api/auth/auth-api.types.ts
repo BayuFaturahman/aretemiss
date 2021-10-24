@@ -19,14 +19,14 @@ export interface LoginVerifyResponse {
 
 export interface SignupResponse {
   email: string
-  otpHash: string
+  otp_hash: string
   otp: number
 }
 
 export interface SignupVerifyResponse {
-  userId: string
+  user_id: string
   email: string
-  isVerify: number
+  is_verify: number
   token: string
 }
 export interface ChangePasswordResponse {

@@ -285,6 +285,23 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
       console.log(data)
     },[])
 
+    // Synchronous validation
+    const validate = (values) => {
+      const errors = {};
+
+      // console.log(values)
+
+      // if (!values.email) {
+      //   errors.email = 'Required';
+      // } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
+      //   errors.email = 'Invalid email address';
+      // }
+      //
+      // // ...
+
+      return errors;
+    };
+
     const ActivityTypeSelector = ({onActivityPress = (item) => setActivity(item), selectedActivity = 'weekly_coaching', isError = false}) => {
 
       const styles = StyleSheet.create({
@@ -342,6 +359,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
               <Formik
                 initialValues={journalEntryForm}
                 onSubmit={onSubmit}
+                validate={validate}
               >
                 {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => (
                   <>
@@ -503,6 +521,40 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                           charCounter={true}
                         />
                       </VStack>
+
+                      {coachingStore.isFormCoach && (
+                        <VStack vertical={Spacing[16]}>
+                          <VStack bottom={Spacing[8]} horizontal={Spacing[96]}>
+                            <ActivityTypeSelector
+                              onActivityPress={holdActivitiesId}
+                              selectedActivity={selectedActivities}
+                              isError={fieldError}
+                            />
+                          </VStack>
+                          <Text
+                            type={"body-bold"}
+                            style={[
+                              { color: Colors.BRIGHT_BLUE, textAlign: "center" },
+                              fieldError ? styles.textError : null,
+                            ]}
+                          >
+                            {"Pilihlah kategori sesi coaching-mu."}
+                          </Text>
+                        </VStack>
+                      )}
+                      <VStack horizontal={Spacing[72]} vertical={Spacing[24]}>
+                        {coachingStore.isFormCoach ? (
+                          <ActivitiesTypeLegends showedItems={[1, 2]} />
+                        ) : (
+                          <ActivitiesTypeLegends showedItems={[3]} />
+                        )}
+                        <Spacer height={Spacing[24]} />
+                        {coachingStore.isDetail ? (
+                          <Button type={"primary"} text={"Hasil Feedback"} onPress={handleSubmit} />
+                        ) : (
+                          <Button type={"primary"} text={"Lakukan Feedback"} onPress={handleSubmit} />
+                        )}
+                      </VStack>
                     </VStack>
 
                     <Modal
@@ -550,39 +602,6 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                   </>
                 )}
               </Formik>
-            </VStack>
-            {coachingStore.isFormCoach && (
-              <VStack vertical={Spacing[16]}>
-                <VStack bottom={Spacing[8]} horizontal={Spacing[128]}>
-                  <ActivityTypeSelector
-                    onActivityPress={holdActivitiesId}
-                    selectedActivity={selectedActivities}
-                    isError={fieldError}
-                  />
-                </VStack>
-                <Text
-                  type={"body-bold"}
-                  style={[
-                    { color: Colors.BRIGHT_BLUE, textAlign: "center" },
-                    fieldError ? styles.textError : null,
-                  ]}
-                >
-                  {"Pilihlah kategori sesi coaching-mu."}
-                </Text>
-              </VStack>
-            )}
-            <VStack horizontal={Spacing[72]} vertical={Spacing[24]}>
-              {coachingStore.isFormCoach ? (
-                <ActivitiesTypeLegends showedItems={[1, 2]} />
-              ) : (
-                <ActivitiesTypeLegends showedItems={[3]} />
-              )}
-              <Spacer height={Spacing[24]} />
-              {coachingStore.isDetail ? (
-                <Button type={"primary"} text={"Hasil Feedback"} onPress={verifyData} />
-              ) : (
-                <Button type={"primary"} text={"Lakukan Feedback"} onPress={verifyData} />
-              )}
             </VStack>
           </ScrollView>
         </SafeAreaView>

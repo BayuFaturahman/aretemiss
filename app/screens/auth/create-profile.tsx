@@ -99,7 +99,8 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
 
     const onSubmit = useCallback(async (data: ProfileUpdateForm)=>{
       console.log(data)
-      data.email = authStore.email
+      console.log(authStore.userId)
+      // data.email = authStore.email
       await mainStore.updateProfile(authStore.userId, data)
     },[])
 

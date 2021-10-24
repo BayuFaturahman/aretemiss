@@ -114,8 +114,8 @@ export class AuthApi {
         "/signup/verify",
         {
           email: email,
-          otpCode: otpCode,
-          otpHash: otpHash
+          otp_code: otpCode,
+          otp_hash: otpHash
         }
       )
 
