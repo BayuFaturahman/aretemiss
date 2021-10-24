@@ -3,11 +3,10 @@ import {SafeAreaView, ScrollView, StatusBar, RefreshControl} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {
-  Button,
   Text,
 } from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
-import {HStack, VStack} from "@components/view-stack";
+import {VStack} from "@components/view-stack";
 import Spacer from "@components/spacer";
 import {Colors, Layout, Spacing} from "@styles";
 
@@ -26,11 +25,8 @@ import {CoachingJournalComponent} from "@screens/homepage/components/coaching-jo
 import {FeedItemComponent, FeedItemType} from "@screens/homepage/components/feed-homepage-component";
 import {MoodComponent, MoodItemType} from "@screens/homepage/components/mood-component";
 import {HomepageErrorCard} from "@screens/homepage/components/homepage-error-card";
-import DevMenu from "react-native-dev-menu";
-import {navigate} from "@navigators";
 
 import RNAnimated from "react-native-animated-component";
-import {useFocusEffect} from "@react-navigation/native";
 
 const FEED_EXAMPLE_DATA_ITEM:FeedItemType = {
   id: '0',
@@ -59,32 +55,19 @@ const MOOD_EXAMPLE_DATA:MoodItemType = {
 const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
   ({ navigation }) => {
 
-
     const onRefresh = React.useCallback(async() => {
       await loadData()
     }, []);
 
-    const [coachingJournalData, setCoachingJournalData] = useState<CoachingJournalItem>(null);
-    const {mainStore, coachingStore, serviceStore} = useStores()
-
     if (__DEV__) {
       // eslint-disable-next-line global-require
       const DevMenu = require('react-native-dev-menu');
-      // DevMenu.addItem('Reset all store', () => {
-      //   profileStore.resetStore()
-      //   authStore.resetStore()
-      //   coachingStore.resetStore()
-      //   storage.clear()
-      //
-      //   console.log(profileStore)
-      //   console.log(authStore)
-      //   console.log(coachingStore)
-      // });
-
       DevMenu.addItem('Feedback Detail', () => {
         navigation.navigate('fillFeedbackDetail')
       });
     }
+
+
     const [, forceUpdate] = useReducer(x => x + 1, 0);
 
     const [selectedActivities, setSelectedActivities] = useState<string>('');
@@ -96,76 +79,54 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       setSelectedActivities(selectedId)
     }, [selectedActivities])
 
+    const [coachingJournalData, setCoachingJournalData] = useState<CoachingJournalItem>(null);
+    const {mainStore, coachingStore, serviceStore} = useStores()
+
     const goToNote = useCallback(async (id, coach_id)=>{
       console.log(id)
-      await coachingStore.isDetailJournal(true)
-      const detailCoaching = coach_id === mainStore.userProfile.user_id
-      coachingStore.setDetailCoaching(detailCoaching)
-      coachingStore.setDetailID(id)
-      coachingStore.setFormCoach(true)
-      console.log('goToNote coach_id', coach_id)
-      console.log('goToNote user_id', mainStore.userProfile.user_id)
-      navigation.navigate("overviewJournalEntry", {
-        journalId: id
-      })
     }, [])
 
     const goToFeedback = useCallback(async (id)=>{
-      await coachingStore.isDetailJournal(true)
-      coachingStore.setDetailID(id)
-      navigation.navigate("fillFeedbackDetail")
       console.log(id)
     }, [])
 
     const goToNoteFeedback = useCallback(async (id, coach_id)=>{
-
-      await coachingStore.isDetailJournal(true)
-      const detailCoaching = coach_id === mainStore.userProfile.user_id
-      coachingStore.setDetailCoaching(detailCoaching)
-      coachingStore.setDetailID(id)
-      coachingStore.setFormCoach(false)
-      console.log('goToNoteFeedback coach_id', coach_id)
-      console.log('goToNoteFeedback user_id', mainStore.userProfile.user_id)
-
+      console.log(id)
       navigation.navigate("overviewJournalEntry", {
         journalId: id
       })
     }, [])
 
     const getUserProfile = useCallback(async ()=>{
-      console.log('useCallback getUserProfile', mainStore.userProfile)
       await mainStore.getProfile()
+    },[])
+
+    const getJournalList = useCallback(async ()=>{
+      await coachingStore.getJournal()
+    },[])
+
+    useEffect(()=> {
       if(mainStore.userProfile){
-        console.log('useCallback mainStore.userProfile', mainStore.userProfile)
         const data = MOOD_EXAMPLE_DATA
         data.user.name = mainStore.userProfile.user_fullname
         data.user.title = mainStore.userProfile.team1_name
         setMoodData(data)
         forceUpdate()
       }
-    },[])
+    }, [mainStore.userProfile])
 
-    const getJournalList = useCallback(async ()=>{
-      console.log('useCallback getJournalList', mainStore.userProfile)
-      await coachingStore.getJournal()
+    useEffect(()=> {
       if(coachingStore.listJournal){
         console.log('useCallback coachingStore.listJournal', coachingStore.listJournal)
         createList()
       }
-    },[])
+    }, [coachingStore.listJournal])
 
     const loadData = async () => {
       setCoachingJournalData(null)
       await getUserProfile()
       await getJournalList()
     }
-
-    useEffect(() => {
-
-      setTimeout(()=>{
-        loadData()
-      }, 20)
-    }, [serviceStore.rehydrated])
 
     const createList = () => {
       const id = mainStore.userProfile.user_id
@@ -200,7 +161,6 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       }
     }
 
-
     const goToNotifications = () => navigation.navigate('notificationList')
 
     const goToJournalCoaching = () => navigation.navigate('coachingJournalMain')
@@ -223,21 +183,20 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
       return(
         <VStack top={Spacing[48]} horizontal={Spacing[8]} bottom={Spacing[12]}>
-          {/*<VStack horizontal={Spacing[12]}>*/}
-          {/*  <RNAnimated*/}
-          {/*    appearFrom="left"*/}
-          {/*    animationDuration={500}*/}
-          {/*  >*/}
-          {/*   <NotificationButton goToNotifications={goToNotifications} />*/}
-          {/*  </RNAnimated>*/}
-          {/*</VStack>*/}
+           <VStack horizontal={Spacing[12]}>
+            <RNAnimated
+              appearFrom="left"
+              animationDuration={500}
+            >
+             <NotificationButton goToNotifications={goToNotifications} />
+            </RNAnimated>
+           </VStack>
           <Spacer height={Spacing[24]} />
           <RNAnimated
             appearFrom="right"
             animationDuration={700}
           >
             <VStack horizontal={Spacing[12]}>
-              {/* <Text type={'right-header'} style={{color: Colors.WHITE, fontSize: Spacing[16]}} underlineWidth={Spacing[72]}>{`Hai, ${profileStore.profile && profileStore.profile[0] && profileStore.profile[0].user_fullname ? profileStore.profile[0].user_fullname : ''}`}</Text> */}
               <Text
                 type={'right-header'}
                 style={{color: Colors.WHITE, fontSize: Spacing[16]}}
@@ -289,7 +248,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
           <ScrollView
             refreshControl={
               <RefreshControl
-                refreshing={coachingStore.isLoading}
+                refreshing={coachingStore.isLoading || mainStore.isLoading}
                 onRefresh={onRefresh}
                 tintColor={Colors.MAIN_RED}
               />

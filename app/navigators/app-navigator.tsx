@@ -4,11 +4,13 @@
  * Generally speaking, it will contain an auth flow (registration, login, forgot password)
  * and a "main" flow which the user will use once logged in.
  */
-import React, {FunctionComponent, useEffect, useState} from "react"
+import React, {FunctionComponent, useCallback, useEffect, useState} from "react"
 import {StatusBar, useColorScheme} from "react-native"
 import {NavigationContainer, DefaultTheme, DarkTheme, useNavigation} from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { navigationRef } from "./navigation-utilities"
+
+import { debounce } from 'lodash';
 
 import authScreens, { NavigatorParamList as AuthNavigatorParamList} from "@navigators/auth-navigator";
 
@@ -85,7 +87,14 @@ export const AppNavigator = observer( (props: NavigationProps) => {
 
   const [isLogin, setIsLogin] = useState(false)
 
-  const { serviceStore } = useStores()
+  const { serviceStore, mainStore } = useStores()
+
+  const loadData = useCallback(debounce(async () => await mainStore.getProfile(), 500), []);
+
+  // Cause Error!?
+  // const loadData = async () => {
+  //   await mainStore.getProfile()
+  // }
 
   useEffect(()=>{
     if(serviceStore.accessToken){
@@ -94,6 +103,18 @@ export const AppNavigator = observer( (props: NavigationProps) => {
       setIsLogin(false)
     }
   },[serviceStore.rehydrated, serviceStore.accessToken])
+
+  useEffect(() => {
+    if(serviceStore.rehydrated === true){
+      loadData()
+    }
+  }, [serviceStore.rehydrated])
+
+  useEffect(() => {
+    if(serviceStore.accessToken !== ''){
+      loadData()
+    }
+  }, [serviceStore.accessToken])
 
 
   if (__DEV__) {
