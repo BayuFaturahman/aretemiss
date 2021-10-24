@@ -1,29 +1,29 @@
-import React, {FC, useCallback, useReducer, useState, useEffect } from "react"
-import {SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View} from "react-native"
+import React, { FC, useCallback, useReducer, useState, useEffect } from "react"
+import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
-import {
-  Text,
-  Button, TextField, DropDownPicker
-} from "@components"
+import { Text, Button, TextField, DropDownPicker } from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
-import {HStack, VStack} from "@components/view-stack";
-import Spacer from "@components/spacer";
-import {Colors, Layout, Spacing} from "@styles";
-import {IOption} from "react-native-modal-selector";
+import { HStack, VStack } from "@components/view-stack"
+import Spacer from "@components/spacer"
+import { Colors, Layout, Spacing } from "@styles"
+import { IOption } from "react-native-modal-selector"
 
-import {ACTIVITIES_TYPE, ActivitiesTypeLegends} from "@screens/coaching-journal/components/activities-type-legends";
+import {
+  ACTIVITIES_TYPE,
+  ActivitiesTypeLegends,
+} from "@screens/coaching-journal/components/activities-type-legends"
 
-import {dimensions} from "@config/platform.config";
+import { dimensions } from "@config/platform.config"
 
-import CalendarPicker from 'react-native-calendar-picker';
-import {typography} from "@theme";
+import CalendarPicker from "react-native-calendar-picker"
+import { typography } from "@theme"
 import { useStores } from "../../bootstrap/context.boostrap"
 
-import Modal from 'react-native-modalbox';
+import Modal from "react-native-modalbox"
 import moment from "moment"
 
-import Spinner from 'react-native-loading-spinner-overlay';
+import Spinner from "react-native-loading-spinner-overlay"
 
 import { Formik } from 'formik';
 
@@ -69,50 +69,58 @@ const JournalEntryInitialValue: JournalEntryType = {
 
 const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalMain">> = observer(
   ({ navigation }) => {
-    const {mainStore, coachingStore} = useStores()
+    const { mainStore, coachingStore } = useStores()
 
     const styles = StyleSheet.create({
       textError: {
-        color: Colors.MAIN_RED
-      }
+        color: Colors.MAIN_RED,
+      },
     })
 
     const fieldError = false
 
     // empty list state
-    const [selectedActivities, setSelectedActivities] = useState<string>('');
-    const [, forceUpdate] = useReducer(x => x + 1, 0);
+    const [selectedActivities, setSelectedActivities] = useState<string>("")
+    const [, forceUpdate] = useReducer((x) => x + 1, 0)
 
-    const [isModalVisible, setModalVisible] = useState(false);
-    const [selectedDate, setSelectedDate] = useState(null);
+    const [isModalVisible, setModalVisible] = useState(false)
+    const [selectedDate, setSelectedDate] = useState(null)
     const [dataTeamMember, setDataTeamMember] = useState<IOption[]>([])
 
-    const [title, setTitle] = useState<string>('');
-    const [learner, setLearner] = useState({});
-    const [learnerDetail, setLearnerDetail] = useState('');
+    const [title, setTitle] = useState<string>("")
+    const [learner, setLearner] = useState({})
+    const [learnerDetail, setLearnerDetail] = useState("")
 
-    const [content, setContent] = useState<string>('');
-    const [leassons, setLeassons] = useState<string>('');
+    const [content, setContent] = useState<string>("")
+    const [leassons, setLeassons] = useState<string>("")
 
-    const [strength, setStrength] = useState<string>('');
-    const [improvement, setImprovement] = useState<string>('');
-    const [commitment, setCommitment] = useState<string>('');
-    const [activity, setActivity] = useState<string>('');
-    const [isError, setError] = useState<string>('');
+    const [strength, setStrength] = useState<string>("")
+    const [improvement, setImprovement] = useState<string>("")
+    const [commitment, setCommitment] = useState<string>("")
+    const [activity, setActivity] = useState<string>("")
+    const [isError, setError] = useState<string>("")
+
+    const [isEncouragementModalVisible, setIsEncouragementModalVisible] = useState(false)
 
     const [journalEntryForm, setJournalEntryForm] = useState<JournalEntryType>(JournalEntryInitialValue);
 
     const toggleModal = () => {
       setTimeout(() => {
-        setModalVisible(!isModalVisible);
-      }, 100);
-    };
+        setModalVisible(!isModalVisible)
+      }, 100)
+    }
+
+    const toggleEncouragementModal = () => {
+      setTimeout(() => {
+        setIsEncouragementModalVisible(!isEncouragementModalVisible)
+      }, 100)
+    }
 
     const closeModal = () => {
       setTimeout(() => {
-        setModalVisible(false);
-      }, 100);
-    };
+        setModalVisible(false)
+      }, 100)
+    }
 
     const onDateChange = (selectedDate, setFieldValue)=>{
       const dateTime = moment(selectedDate).format('LLLL')
@@ -121,7 +129,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
       console.log(dateTime)
     }
 
-    const getListUser = useCallback(async (id: string)=>{
+    const getListUser = useCallback(async (id: string) => {
       await mainStore.getListUser(id)
       console.log('useEffect mainStore.listUserProfile', mainStore.listUserProfile)
     },[])
@@ -141,19 +149,19 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
     },[mainStore.listUserProfile])
 
     useEffect(() => {
-      setSelectedDate(moment().format('LLLL'))
+      setSelectedDate(moment().format("LLLL"))
       // profileStore.resetLoading()
       // coachingStore.resetLoading()
     }, [])
 
-    const getListDetail = useCallback(async ()=>{
+    const getListDetail = useCallback(async () => {
       await coachingStore.getJournalDetail()
-      console.log('coachingStore.getListDetail', coachingStore.journalDetail)
-      console.log('coachingStore.isDetailCoach', coachingStore.isDetailCoach)
+      console.log("coachingStore.getListDetail", coachingStore.journalDetail)
+      console.log("coachingStore.isDetailCoach", coachingStore.isDetailCoach)
 
-      console.log('coachingStore.getListDetail.is_edited', coachingStore.journalDetail.is_edited)
+      console.log("coachingStore.getListDetail.is_edited", coachingStore.journalDetail.is_edited)
 
-      if(coachingStore.isDetailCoach){
+      if (coachingStore.isDetailCoach) {
         setTitle(coachingStore.journalDetail.journal_title)
         setContent(coachingStore.journalDetail.journal_content)
         setStrength(coachingStore.journalDetail.journal_strength)
@@ -164,7 +172,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
         setLearnerDetail(coachingStore.journalDetail.jl_learner_fullname[0])
         setLeassons(coachingStore.journalDetail.jl_lesson_learned[0].desc)
         forceUpdate()
-      }else{
+      } else {
         setTitle(coachingStore.journalDetail.journal_title)
         setContent(coachingStore.journalDetail.jl_content)
         setCommitment(coachingStore.journalDetail.jl_commitment)
@@ -174,7 +182,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
         setLearnerDetail(coachingStore.journalDetail.coach_fullname)
         forceUpdate()
       }
-    },[coachingStore.journalDetail, coachingStore.journalDetailSucced])
+    }, [coachingStore.journalDetail, coachingStore.journalDetailSucced])
 
     useEffect(()=>{
       // console.log('coachingStore.isDetail', coachingStore.isDetail)
@@ -207,25 +215,25 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
     const goToFeedback = () => navigation.navigate("fillFeedback")
 
     const verifyData = async () => {
-      if(coachingStore.isFormCoach){
-        if(title === ""){
+      if (coachingStore.isFormCoach) {
+        if (title === "") {
           setError("title")
-        }else if(learner == {}){
+        } else if (learner == {}) {
           setError("learner")
-        }else if(content == ""){
+        } else if (content == "") {
           setError("content")
-        }else if(strength == ""){
+        } else if (strength == "") {
           setError("strength")
-        }else if(improvement == ""){
+        } else if (improvement == "") {
           setError("improvement")
-        }else if(commitment == ""){
+        } else if (commitment == "") {
           setError("commitment")
-        }else if(selectedActivities == ""){
+        } else if (selectedActivities == "") {
           setError("selectedActivities")
-        }else if(selectedDate == ""){
+        } else if (selectedDate == "") {
           setError("selectedDate")
-        }else{
-          if(coachingStore.isDetail){
+        } else {
+          if (coachingStore.isDetail) {
             await coachingStore.updateJournal(
               content,
               commitment,
@@ -233,48 +241,44 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
               strength,
               selectedActivities,
             )
-          }else{
+          } else {
             coachingStore.saveFormJournal(
               mainStore.userProfile.user_id,
-              moment(selectedDate).format('YYYY-MM-DDTHH:mm:ss.SSS\\Z'),
+              moment(selectedDate).format("YYYY-MM-DDTHH:mm:ss.SSS\\Z"),
               title,
               content,
               strength,
               improvement,
               commitment,
               [`${learner && learner.id}`],
-              selectedActivities
+              selectedActivities,
             )
-            goToFeedback()
+            toggleEncouragementModal()
+            // goToFeedback()
           }
-
         }
-      }else{
-        if(content == ""){
+      } else {
+        if (content == "") {
           setError("content")
-        }else if(commitment == ""){
+        } else if (commitment == "") {
           setError("commitment")
-        }else if(leassons == ""){
+        } else if (leassons == "") {
           setError("leassons")
-        }else{
-          await coachingStore.updateJournal(
-            content,
-            commitment,
-            leassons,
-            '',
-            '',
-          )
+        } else {
+          await coachingStore.updateJournal(content, commitment, leassons, "", "")
         }
       }
     }
 
     const holdActivitiesId = useCallback((selectedId, setFieldValue)=>{
       setSelectedActivities(selectedId)
-      setFieldValue('type', selectedId)
+      // setFieldValue('type', selectedId)
     }, [selectedActivities])
 
     const searchDataUser = (id: string) => {
-      dataTeamMember.find((data)=>{return data.id == id})
+      dataTeamMember.find((data) => {
+        return data.id == id
+      })
     }
 
     const onSubmit = useCallback(async (data: JournalEntryType)=>{
@@ -284,45 +288,54 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
     const ActivityTypeSelector = ({onActivityPress = (item) => setActivity(item), selectedActivity = 'weekly_coaching', isError = false}) => {
 
       const styles = StyleSheet.create({
-        container: {borderColor: 'red', borderRadius: Spacing[20], borderStyle: 'dashed', borderWidth: isError ? Spacing[2] : 0, justifyContent: 'space-around', padding: Spacing[6]}
+        container: {
+          borderColor: "red",
+          borderRadius: Spacing[20],
+          borderStyle: "dashed",
+          borderWidth: isError ? Spacing[2] : 0,
+          justifyContent: "space-around",
+          padding: Spacing[6],
+        },
       })
 
-      return(
-      <HStack style={styles.container}>
-        {ACTIVITIES_TYPE.map((item, index)=>{
-          if(index < 2){
-            return(
-              <TouchableOpacity style={{
-                borderColor: Colors.MAIN_RED, borderWidth: item.value === selectedActivity ? Spacing[2] : 0,
-                height: Spacing[32], width: Spacing[32], backgroundColor: item.color, borderRadius: Spacing[128]}}
-                onPress={()=>onActivityPress(item.value)}
-              />
-            )
-          } else{
-            return (
-              <></>
-            )
-          }
-        })}
-      </HStack>
+      return (
+        <HStack style={styles.container}>
+          {ACTIVITIES_TYPE.map((item, index) => {
+            if (index < 2) {
+              return (
+                <TouchableOpacity
+                  style={{
+                    borderColor: Colors.MAIN_RED,
+                    borderWidth: item.value === selectedActivity ? Spacing[2] : 0,
+                    height: Spacing[32],
+                    width: Spacing[32],
+                    backgroundColor: item.color,
+                    borderRadius: Spacing[128],
+                  }}
+                  onPress={() => onActivityPress(item.value)}
+                />
+              )
+            } else {
+              return <></>
+            }
+          })}
+        </HStack>
       )
     }
 
-
     return (
-      <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.WHITE, flex: 1, justifyContent: 'center'}}>
+      <VStack
+        testID="CoachingJournalMain"
+        style={{ backgroundColor: Colors.WHITE, flex: 1, justifyContent: "center" }}
+      >
         <SafeAreaView style={Layout.flex}>
           <ScrollView>
             <VStack top={Spacing[32]} horizontal={Spacing[24]}>
               <HStack>
-                <Text type={'left-header'} style={{}} text="Tambah journal entry" />
-                <Spacer/>
+                <Text type={"left-header"} style={{}} text="Tambah journal entry" />
+                <Spacer />
                 <HStack>
-                  <Button
-                    type={"negative"}
-                    text={"Cancel"}
-                    onPress={goBack}
-                  />
+                  <Button type={"negative"} text={"Cancel"} onPress={goBack} />
                 </HStack>
               </HStack>
 
@@ -533,43 +546,131 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                 )}
               </Formik>
             </VStack>
-            {coachingStore.isFormCoach && <VStack vertical={Spacing[16]}>
-              <VStack bottom={Spacing[8]} horizontal={Spacing[128]}>
-                <ActivityTypeSelector onActivityPress={holdActivitiesId} selectedActivity={selectedActivities} isError={fieldError} />
+            {coachingStore.isFormCoach && (
+              <VStack vertical={Spacing[16]}>
+                <VStack bottom={Spacing[8]} horizontal={Spacing[128]}>
+                  <ActivityTypeSelector
+                    onActivityPress={holdActivitiesId}
+                    selectedActivity={selectedActivities}
+                    isError={fieldError}
+                  />
+                </VStack>
+                <Text
+                  type={"body-bold"}
+                  style={[
+                    { color: Colors.BRIGHT_BLUE, textAlign: "center" },
+                    fieldError ? styles.textError : null,
+                  ]}
+                >
+                  {"Pilihlah kategori sesi coaching-mu."}
+                </Text>
               </VStack>
-              <Text type={'body-bold'} style={[{color: Colors.BRIGHT_BLUE, textAlign: 'center'}, fieldError ? styles.textError : null]}>
-                {'Pilihlah kategori sesi coaching-mu.'}
-              </Text>
-            </VStack>}
+            )}
             <VStack horizontal={Spacing[72]} vertical={Spacing[24]}>
-              {coachingStore.isFormCoach ?
-                <ActivitiesTypeLegends showedItems={[1,2]} />:
+              {coachingStore.isFormCoach ? (
+                <ActivitiesTypeLegends showedItems={[1, 2]} />
+              ) : (
                 <ActivitiesTypeLegends showedItems={[3]} />
-              }
+              )}
               <Spacer height={Spacing[24]} />
-               {coachingStore.isDetail ?
-                 <Button
-                  type={"primary"}
-                  text={"Hasil Feedback"}
-                  onPress={verifyData}
-                 />: <Button
-                  type={"primary"}
-                  text={"Lakukan Feedback"}
-                  onPress={verifyData}
-                 />
-               }
-
+              {coachingStore.isDetail ? (
+                <Button type={"primary"} text={"Hasil Feedback"} onPress={verifyData} />
+              ) : (
+                <Button type={"primary"} text={"Lakukan Feedback"} onPress={verifyData} />
+              )}
             </VStack>
           </ScrollView>
+          <Modal
+            isOpen={isEncouragementModalVisible}
+            style={{
+              height: "50%",
+              width: dimensions.screenWidth - Spacing[24],
+              backgroundColor: "rgba(52, 52, 52, 0)",
+            }}
+          >
+            <View style={{ flex: 1, justifyContent: "center" }}>
+              <VStack
+                style={{
+                  backgroundColor: Colors.WHITE,
+                  borderRadius: Spacing[48],
+                  minHeight: Spacing[256],
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+                horizontal={Spacing[24]}
+                vertical={Spacing[24]}
+              >
+                <VStack horizontal={Spacing[24]} top={Spacing[24]} style={Layout.widthFull}>
+                  <VStack style={{ alignItems: "flex-end" }}>
+                    <TouchableOpacity onPress={toggleEncouragementModal}>
+                      <Text type={"header"} >X</Text>
+                    </TouchableOpacity>
+                  </VStack>
+                  <VStack>
+                    <Text
+                      type={"body-bold"}
+                      style={{ fontSize: Spacing[18], textAlign: "center" }}
+                      text={"Nicely done! "}
+                    />
+                    <Spacer height={Spacing[24]} />
+                    <Text type={'body'} style={{textAlign: 'center', top: Spacing[4]}}>
+                          {`Sebelum catatan coaching-mu tersimpan \n`}
+                          <Text type={'body-bold'} >
+                            {'isi self-reflection feedback '}
+                          </Text>
+                          <Text>{`dulu yaa`}</Text>
+                      </Text>
+                    <Spacer height={Spacing[24]} />
+                    <Text
+                      type={"body"}
+                      style={{ textAlign: "center" }}
+                      text={
+                        "Feedback ini akan diisi juga oleh coachee-mu juga sehingga kamu dapat membandingkan penilaian dirimu sendiri dengan penilaian dari coachee-mu."
+                      }
+                    />
+
+                    <Spacer height={Spacing[24]} />
+                    <Text
+                      type={"body"}
+                      style={{ textAlign: "center", color: "red" }}
+                      text={
+                        "Penting! Catatan coaching-mu belum tersimpan sampai kamu klik “Submit” setelah melakukan feedback."
+                      }
+                    />
+                    <Spacer height={Spacing[20]} />
+
+                    <HStack bottom={Spacing[32]}>
+                      <Spacer />
+
+                      <Spacer />
+                    </HStack>
+                    <HStack bottom={Spacing[24]}>
+                      <Spacer />
+                      <VStack style={{ maxWidth: Spacing[256], minWidth: Spacing[128] }}>
+                        <Button
+                          type={"primary"}
+                          text={"Isi Feedback"}
+                          style={{ height: Spacing[32], paddingHorizontal: Spacing[8] }}
+                          textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
+                          onPress={goToFeedback}
+                        />
+                      </VStack>
+                      <Spacer />
+                    </HStack>
+                  </VStack>
+                </VStack>
+              </VStack>
+            </View>
+          </Modal>
         </SafeAreaView>
         <Spinner
           visible={coachingStore.isLoading || mainStore.isLoading}
-          textContent={'Memuat...'}
-          // textStyle={styles.spinnerTextStyle}
+          textContent={"Memuat..."}
+          textStyle={styles.spinnerTextStyle}
         />
       </VStack>
     )
   },
 )
 
-export default NewJournalEntry;
+export default NewJournalEntry
