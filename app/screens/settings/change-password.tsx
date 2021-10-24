@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from "react"
+import React, { FC, useCallback, useState, useEffect } from "react"
 import { SafeAreaView } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
@@ -29,7 +29,13 @@ const ChangePassword: FC<StackScreenProps<NavigatorParamList, "changePassword">>
       authStore.resetAuthStore()
     }, [])
 
+    useEffect(() => {
+      authStore.formReset()
+    }, [])
+
+
     const checkPassword = (passwords) => {
+      authStore.formReset()
       setIsSubmitPasswordChange(true)
 
       const { confirmNewPassword, newPassword, oldPassword } = passwords
@@ -62,7 +68,11 @@ const ChangePassword: FC<StackScreenProps<NavigatorParamList, "changePassword">>
     const changePassword = useCallback(async (oldPassword, newPassword) => {
       await authStore.changePassword(oldPassword, newPassword)
       // setIsSubmitPasswordChange(false)
-      // goBack()
+      if (authStore.errorCode===null) {
+        console.log('change password success')
+        goBack()
+      }
+      
     }, [])
 
     return (
@@ -99,6 +109,12 @@ const ChangePassword: FC<StackScreenProps<NavigatorParamList, "changePassword">>
               </Text>
             )}
             <VStack top={Spacing[32]} horizontal={Spacing[24]}>
+             {authStore.errorCode===15 && 
+                <Text type={'warning'} style={{textAlign: 'center'}}>
+                  {authStore.errorMessage}
+                </Text>
+              }
+            
               <Formik
                 initialValues={{ oldPassword: "", newPassword: "", confirmNewPassword: "" }}
                 onSubmit={(values) => checkPassword(values)}
@@ -113,7 +129,7 @@ const ChangePassword: FC<StackScreenProps<NavigatorParamList, "changePassword">>
                         style={{ paddingTop: 0 }}
                         isRequired={false}
                         secureTextEntry={true}
-                        isError={isSubmitPasswordChange && isNewPasswordDuplicate}
+                        isError={isSubmitPasswordChange && (isNewPasswordDuplicate || (authStore.errorCode === 15))}
                         value={values.oldPassword}
                         onChangeText={handleChange("oldPassword")}
                       />
@@ -124,7 +140,7 @@ const ChangePassword: FC<StackScreenProps<NavigatorParamList, "changePassword">>
                         isRequired={false}
                         secureTextEntry={true}
                         isError={
-                          isSubmitPasswordChange && (!isNewPasswordMatch || isNewPasswordDuplicate)
+                          isSubmitPasswordChange && (!isNewPasswordMatch || isNewPasswordDuplicate || (authStore.errorCode === 37))
                         }
                         value={values.newPassword}
                         onChangeText={handleChange("newPassword")}
@@ -135,11 +151,16 @@ const ChangePassword: FC<StackScreenProps<NavigatorParamList, "changePassword">>
                         style={{ paddingTop: 0 }}
                         isRequired={false}
                         secureTextEntry={true}
-                        isError={isSubmitPasswordChange && !isNewPasswordMatch}
+                        isError={isSubmitPasswordChange && (!isNewPasswordMatch || (authStore.errorCode === 37))}
                         value={values.confirmNewPassword}
                         onChangeText={handleChange("confirmNewPassword")}
                       />
                     </VStack>
+                    {authStore.errorCode===37 && 
+                      <Text type={'warning'} style={{textAlign: 'center'}}>
+                        {authStore.errorMessage}
+                      </Text>
+                    }
                     <Spacer height={Spacing[12]} />
                     <VStack horizontal={Spacing[84]} vertical={Spacing[20]}>
                       <Button

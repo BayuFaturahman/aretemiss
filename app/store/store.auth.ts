@@ -275,6 +275,13 @@ export default class AuthStore {
         console.log(response.response.errorCode)
         console.log(response.response.message)
 
+        if (response.response.errorCode === 37) {
+          response.response.message = 'Password minimal 8 karakter, memiliki huruf besar dan kecil, serta memiliki angka dan simbol (!, %, &, dkk.)'
+        }
+
+        if (response.response.errorCode === 15) {
+          response.response.message = 'Waduh. Password yang kamu masukan salah. Coba cek lagi password-mu.'
+        }
         this.formError(response.response)
       }
 
