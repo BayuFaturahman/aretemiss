@@ -165,6 +165,11 @@ export default class MainStore {
     this.errorMessage = data.message
   }
 
+  formReset () {
+    this.errorCode = null
+    this.errorMessage = null
+  }
+
   resetLoading(){
     this.isLoading = false
   }
@@ -211,6 +216,9 @@ export default class MainStore {
       console.log(response)
 
       if (response.kind === "form-error") {
+        if (response.response.errorCode === 35) {
+          response.response.message = 'Alamat email yang kamu ganti sudah dimiliki akun lain. Kamu yakin mau pakai alamat yang ini?'
+        }
         this.formError(response.response)
       }
 
@@ -303,37 +311,37 @@ export default class MainStore {
     }
   }
 
-  getProfileSuccess(data: ProfileModel[]) {
+  getProfileSuccess(data: ProfileModel) {
     console.log('getProfileSuccess data', data[0])
     this.userProfile =  {
-      user_id: data[0].user_id,
-      user_fullname: data[0].user_fullname,
-      user_nickname: data[0].user_nickname,
-      user_email: data[0].user_email,
-      user_phone_number: data[0].user_phone_number,
-      user_password: data[0].user_password,
-      user_team_1_id: data[0].user_team_1_id,
-      user_team_2_id: data[0].user_team_2_id,
-      user_team_3_id: data[0].user_team_3_id,
-      user_status: data[0].user_status,
-      is_deleted: data[0].is_deleted,
-      user_role: data[0].user_role,
-      user_is_verify: data[0].user_is_verify,
-      user_forgot_password_hash: data[0].user_forgot_password_hash,
-      user_created_at: data[0].user_created_at,
-      user_updated_at: data[0].user_updated_at,
-      user_forgot_pass: data[0].user_forgot_pass,
-      user_mood: data[0].user_mood,
-      user_photo: data[0].user_photo,
-      user_is_allow_notification: data[0].user_is_allow_notification,
-      user_is_allow_reminder_notification: data[0].user_is_allow_reminder_notification,
-      user_fcm_token: data[0].user_fcm_token,
-      team1_id: data[0].team1_id,
-      team1_name: data[0].team1_name,
-      team2_id: data[0].team2_id,
-      team2_name: data[0].team2_name,
-      team3_id: data[0].team3_id,
-      team3_name: data[0].team3_name,
+      user_id: data.user_id,
+      user_fullname: data.user_fullname,
+      user_nickname: data.user_nickname,
+      user_email: data.user_email,
+      user_phone_number: data.user_phone_number,
+      user_password: data.user_password,
+      user_team_1_id: data.user_team_1_id,
+      user_team_2_id: data.user_team_2_id,
+      user_team_3_id: data.user_team_3_id,
+      user_status: data.user_status,
+      is_deleted: data.is_deleted,
+      user_role: data.user_role,
+      user_is_verify: data.user_is_verify,
+      user_forgot_password_hash: data.user_forgot_password_hash,
+      user_created_at: data.user_created_at,
+      user_updated_at: data.user_updated_at,
+      user_forgot_pass: data.user_forgot_pass,
+      user_mood: data.user_mood,
+      user_photo: data.user_photo,
+      user_is_allow_notification: data.user_is_allow_notification,
+      user_is_allow_reminder_notification: data.user_is_allow_reminder_notification,
+      user_fcm_token: data.user_fcm_token,
+      team1_id: data.team1_id,
+      team1_name: data.team1_name,
+      team2_id: data.team2_id,
+      team2_name: data.team2_name,
+      team3_id: data.team3_id,
+      team3_name: data.team3_name,
     }
   }
 

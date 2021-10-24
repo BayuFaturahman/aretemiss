@@ -8,6 +8,7 @@ import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
 import { Colors, Layout, Spacing } from "@styles"
 
+import { Formik } from "formik"
 import { useStores } from "../../bootstrap/context.boostrap"
 import FastImage from "react-native-fast-image"
 import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png"
@@ -30,11 +31,22 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
   ({ navigation }) => {
     const { authStore, mainStore } = useStores()
 
-    const [nickname, setNickname] = useState(mainStore.userProfile.user_nickname)
-    const [email, setEmail] = useState(mainStore.userProfile.user_email)
-    const [isEmailValid, setIsEmailValid] = useState(true)
-    const [isClickProfileUpdate, setIsClickProfileUpdate] = useState(false)
+    const [isEmailValid, setIsEmailValid] = useState(false)
+    const [isClickEditProfile, setIsClickEditProfile] = useState(false)
     const [isModalVisible, setModalVisible] = useState(false)
+
+    const [emailErrorMessage, setEmailErrorMessage] = useState('')
+
+    const userProfile: ProfileUpdateForm = {
+      fullname: mainStore.userProfile.user_fullname,
+      nickname: mainStore.userProfile.user_nickname,
+      email: mainStore.userProfile.user_email,
+      team1Id: mainStore.userProfile.team1_id,
+      team2Id: mainStore.userProfile.team2_id,
+      team3Id: mainStore.userProfile.team3_id,
+      isAllowNotification: mainStore.userProfile.user_is_allow_notification,
+      isAllowReminderNotification: mainStore.userProfile.user_is_allow_reminder_notification,
+    }
 
     const goBack = () => navigation.goBack()
 
@@ -42,47 +54,59 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
 
     const goToChangePhone = () => navigation.navigate("changePhone")
 
-    const validateEmail = () => {
+    
+    const validateEmail = (email) => {
       const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/
       if (reg.test(email) === false) {
         console.log("Email is Not Correct")
+        setEmailErrorMessage('Alamat email yang kamu ganti formatnya salah. Pastikan alamat emailnya sudah kamu tulis dengan benar ya!')
         setIsEmailValid(false)
-
+        return false
       } else {
         setIsEmailValid(true)
         console.log("Email Correct")
+        return true
       }
     }
 
-    const submitEditProfile = useCallback(async (data: ProfileUpdateForm) => {
-      console.log(data)
-      await mainStore.updateProfile(mainStore.userProfile.user_id, data)
-      toggleModal()
-    }, [email, nickname])
+    const onClickEditProfile = useCallback(async (data: ProfileUpdateForm) => {
+      // console.log("click : ", data)
+      mainStore.formReset();
+      userProfile.email = data.email
+      userProfile.nickname = data.nickname
+      validateEmail(data.email)
+      setIsClickEditProfile(true)
+    }, [])
 
-    const onEditProfile = () => {
-      setIsClickProfileUpdate(true)
-      validateEmail()
-    }
+    const submitEditProfile = useCallback(async (data: ProfileUpdateForm) => {
+      console.log("Data to be submitted", userProfile)
+      await mainStore.updateProfile(mainStore.userProfile.user_id, userProfile)
+      if (mainStore.errorCode === null) {
+        await mainStore.getProfile();
+        toggleModal()
+      }
+      else {
+        setIsEmailValid(false)
+        setEmailErrorMessage(mainStore.errorMessage)
+      }
+
+    }, [])
 
     useEffect(() => {
-      setTimeout(() => {
-        if (isEmailValid && isClickProfileUpdate) {
-          const userProfile: ProfileUpdateForm = {
-            fullname: mainStore.userProfile.user_fullname,
-            nickname: nickname,
-            email: email,
-            team1Id: mainStore.userProfile.team1_id,
-            team2Id: mainStore.userProfile.team2_id,
-            team3Id: mainStore.userProfile.team3_id,
-            isAllowNotification: mainStore.userProfile.user_is_allow_notification,
-            isAllowReminderNotification: mainStore.userProfile.user_is_allow_reminder_notification,
-          }
-          submitEditProfile(userProfile)
-        }
-      }, 100);
+      // setTimeout(() => {
+      console.log("Is email valid ", isEmailValid)
+      // console.log("Mau edit profile")
+      if (isEmailValid && isClickEditProfile) {
+        submitEditProfile(userProfile)
+        setIsClickEditProfile(false)
+      }
+      // }, 100)
+    }, [isEmailValid, isClickEditProfile])
 
-    }, [isEmailValid, isClickProfileUpdate])
+    useEffect(() => {
+      validateEmail(userProfile.email)
+      mainStore.formReset()
+    }, [])
 
     const ChangeProfilePicture = ({ isError = false }) => {
       const LABEL_STYLE = {
@@ -117,7 +141,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
     const toggleModal = () => {
       setTimeout(() => {
         setModalVisible(!isModalVisible)
-        setIsClickProfileUpdate(false)
+        setIsClickEditProfile(false)
       }, 100)
     }
 
@@ -130,71 +154,74 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
           <SafeAreaView style={Layout.flex}>
             <BackNavigation goBack={goBack} />
             <ScrollView>
-              <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
-                <Spacer height={Spacing[24]} />
-                <Text
-                  type={"header"}
-                  style={{ color: Colors.WHITE, fontSize: Spacing[16] }}
-                  text="My Account"
-                />
-                <Spacer height={Spacing[32]} />
-              </VStack>
-              <VStack
-                top={Spacing[32]}
-                horizontal={Spacing[24]}
-                style={[
-                  Layout.heightFull,
-                  {
-                    backgroundColor: Colors.WHITE,
-                    borderTopStartRadius: Spacing[48],
-                    borderTopEndRadius: Spacing[48],
-                  },
-                ]}
-              >
-                <VStack top={Spacing[24]}>
-                  {/* <ChangeProfilePicture /> */}
-                  <Spacer height={Spacing[32]} />
-                  <TextField
-                    // value={phoneNumber}
-                    label="Nama panggilan:"
-                    isRequired={false}
-                    style={{ paddingTop: 0 }}
-                    // isError={isError && (authStore.formErrorCode === 2 || authStore.formErrorCode === 1 || authStore.formErrorCode === 10 || authStore.formErrorCode === 15)}
-                    value={nickname}
-                    onChangeText={(value) => setNickname(value)}
-                  />
-                  <TextField
-                    // value={password}
-                    label="Alamat e-mail:"
-                    style={{ paddingTop: 0 }}
-                    isRequired={false}
-                    secureTextEntry={false}
-                    isError={!isEmailValid}
-                    value={email}
-                    onChangeText={(value) => setEmail(value)}
-                    // isError={isError && (authStore.formErrorCode === 3 || authStore.formErrorCode === 15)}
-                    // onChangeText={setPassword}
-                  />
-                  {!isEmailValid && (
-                    <Text type={"warning"} style={{ textAlign: "center" }}>
-                      {
-                        "Alamat email yang kamu ganti formatnya salah. Pastikan alamat emailnya sudah kamu tulis dengan benar ya!"
-                      }
-                    </Text>
-                  )}
-                  <Spacer height={Spacing[12]} />
-                  <TextField
-                    // value={password}
-                    label="Password:"
-                    style={{ paddingTop: 0 }}
-                    isRequired={false}
-                    secureTextEntry={false}
-                    changeButton={true}
-                    editable={false}
-                    value={"******"}
-                    onPressChangeButton={goToChangePassword}
-                  />
-                  {/* <TextField
+              <Formik initialValues={userProfile} onSubmit={onClickEditProfile}>
+                {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+                  // <View>
+                  <>
+                    <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
+                      <Spacer height={Spacing[24]} />
+                      <Text
+                        type={"header"}
+                        style={{ color: Colors.WHITE, fontSize: Spacing[16] }}
+                        text="My Account"
+                      />
+                      <Spacer height={Spacing[32]} />
+                    </VStack>
+                    <VStack
+                      top={Spacing[32]}
+                      horizontal={Spacing[24]}
+                      style={[
+                        Layout.heightFull,
+                        {
+                          backgroundColor: Colors.WHITE,
+                          borderTopStartRadius: Spacing[48],
+                          borderTopEndRadius: Spacing[48],
+                        },
+                      ]}
+                    >
+                      <VStack top={Spacing[24]}>
+                        {/* <ChangeProfilePicture /> */}
+                        <Spacer height={Spacing[32]} />
+                        <TextField
+                          // value={phoneNumber}
+                          label="Nama panggilan:"
+                          isRequired={false}
+                          style={{ paddingTop: 0 }}
+                          // isError={isError && (authStore.formErrorCode === 2 || authStore.formErrorCode === 1 || authStore.formErrorCode === 10 || authStore.formErrorCode === 15)}
+                          value={values.nickname}
+                          onChangeText={handleChange("nickname")}
+                        />
+                        <TextField
+                          // value={password}
+                          label="Alamat e-mail:"
+                          style={{ paddingTop: 0 }}
+                          isRequired={false}
+                          secureTextEntry={false}
+                          onBlur={() => validateEmail(values.email)}
+                          isError={!isEmailValid || (mainStore.errorCode === 35)}
+                          value={values.email}
+                          onChangeText={handleChange("email")}
+                          // isError={isError && (authStore.formErrorCode === 3 || authStore.formErrorCode === 15)}
+                          // onChangeText={setPassword}
+                        />
+                        {!isEmailValid && (
+                          <Text type={"warning"} style={{ textAlign: "center" }}>
+                            {emailErrorMessage}
+                          </Text>
+                        )}
+                        <Spacer height={Spacing[12]} />
+                        <TextField
+                          // value={password}
+                          label="Password:"
+                          style={{ paddingTop: 0 }}
+                          isRequired={false}
+                          secureTextEntry={false}
+                          changeButton={true}
+                          editable={false}
+                          value={"******"}
+                          onPressChangeButton={goToChangePassword}
+                        />
+                        {/* <TextField
                   // value={password}
                   label="No. HP:"
                   style={{ paddingTop: 0}}
@@ -205,12 +232,15 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                   changeButton={true}
                   onPressChangeButton={goToChangePhone}
                 /> */}
-                </VStack>
-                <Spacer height={Spacing[12]} />
-                <VStack horizontal={Spacing[96]} vertical={Spacing[20]}>
-                  <Button type={"primary"} text={"Edit"} onPress={onEditProfile} />
-                </VStack>
-              </VStack>
+                      </VStack>
+                      <Spacer height={Spacing[12]} />
+                      <VStack horizontal={Spacing[96]} vertical={Spacing[20]}>
+                        <Button type={"primary"} text={"Edit"} onPress={() => handleSubmit()} />
+                      </VStack>
+                    </VStack>
+                  </>
+                )}
+              </Formik>
             </ScrollView>
           </SafeAreaView>
         </VStack>
