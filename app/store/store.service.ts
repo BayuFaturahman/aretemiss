@@ -32,6 +32,31 @@ export default class ServiceStore {
     makeAutoObservable(this);
 
     this.initToken();
+
+    this.api.apisauce.addMonitor(response => this.responseMonitor(response, this.clearHeaderToken, this.clearTokens))
+  }
+
+  private async responseMonitor(response: any, clearHeaderToken, clearTokens) {
+    console.log('Response Monitor')
+    console.log(response.status)
+
+    const { ok, status } = response;
+
+    if (!ok && status === 401) {
+      console.log('Token Expired gan!')
+      try {
+        await clearTokens()
+      } catch (e){
+        console.log(e)
+        console.log('Clear Token Error')
+      } finally {
+        console.log('Token Cleared')
+        clearHeaderToken()
+      }
+      // should be back to login screen
+    }
+
+    // TODO Add network error or timeout state (?)
   }
 
   setRehydrated(value: boolean) {
@@ -52,6 +77,11 @@ export default class ServiceStore {
   // eslint-disable-next-line class-methods-use-this
   setHeaderToken(token: string) {
     this.api.setToken(token)
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  clearHeaderToken() {
+    this.api.removeToken()
   }
 
   private async initToken() {

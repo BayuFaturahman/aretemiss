@@ -77,7 +77,9 @@ export type NavigatorParamList = {
   myAccount: undefined;
   changePhone: undefined;
   changePassword: undefined;
-  newJournalEntry: undefined;
+  newJournalEntry: {
+    isDetail: boolean
+  };
   fillFeedback: undefined;
   quizForm: undefined;
   notificationList: undefined;

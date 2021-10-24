@@ -25,6 +25,48 @@ import moment from "moment"
 
 import Spinner from 'react-native-loading-spinner-overlay';
 
+import { Formik } from 'formik';
+
+export type JournalEntryType = {
+  coachId: string
+  date: string
+  title: string
+  content: string
+  strength: string
+  improvement: string
+  commitment: string
+  type: string
+  learnerIds: string[]
+  questions:{
+    q1:string
+    q2:string
+    q3:string
+    q4:string
+    q5:string
+    q6:string
+  }
+}
+
+const JournalEntryInitialValue: JournalEntryType = {
+  coachId: '',
+  date: moment(new Date()).format('LLLL'),
+  title: '',
+  content: '',
+  strength: '',
+  improvement: '',
+  commitment: '',
+  type: '',
+  learnerIds: [],
+  questions:{
+    q1:'',
+    q2:'',
+    q3:'',
+    q4:'',
+    q5:'',
+    q6:'',
+  }
+};
+
 const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalMain">> = observer(
   ({ navigation }) => {
     const {mainStore, coachingStore} = useStores()
@@ -58,6 +100,8 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
     const [activity, setActivity] = useState<string>('');
     const [isError, setError] = useState<string>('');
 
+    const [journalEntryForm, setJournalEntryForm] = useState<JournalEntryType>(JournalEntryInitialValue);
+
     const toggleModal = () => {
       setTimeout(() => {
         setModalVisible(!isModalVisible);
@@ -70,16 +114,19 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
       }, 100);
     };
 
-    const onDateChange = (selectedId)=>{
-      const dateTime = moment(selectedId).format('LLLL')
+    const onDateChange = (selectedDate, setFieldValue)=>{
+      const dateTime = moment(selectedDate).format('LLLL')
       setSelectedDate(dateTime)
+      setFieldValue('date', selectedDate)
       console.log(dateTime)
     }
 
     const getListUser = useCallback(async (id: string)=>{
       await mainStore.getListUser(id)
       console.log('useEffect mainStore.listUserProfile', mainStore.listUserProfile)
+    },[])
 
+    useEffect(()=>{
       if(mainStore.listUserProfile){
         console.log('mainStore.listUserProfile', mainStore.listUserProfile)
         const itemsData:IOption[] = mainStore.listUserProfile.map((item, index)=>{
@@ -87,11 +134,12 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
             key: index,
             label: item.fullname,
             id: item.id
-        }
+          }
         })
         setDataTeamMember(itemsData)
       }
-    },[])
+    },[mainStore.listUserProfile])
+
     useEffect(() => {
       setSelectedDate(moment().format('LLLL'))
       // profileStore.resetLoading()
@@ -129,26 +177,26 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
     },[coachingStore.journalDetail, coachingStore.journalDetailSucced])
 
     useEffect(()=>{
-      console.log('coachingStore.isDetail', coachingStore.isDetail)
-      if(coachingStore.isDetail){
-        setTimeout(()=>{
-          getListDetail()
-        }, 20)
-      }else{
-        if(mainStore.userProfile  && mainStore.userProfile.team1_id){
-          setTimeout(()=>{
-            getListUser(mainStore.userProfile.team1_id)
-          }, 20)
-        }
-      }
+      // console.log('coachingStore.isDetail', coachingStore.isDetail)
+      // if(coachingStore.isDetail){
+      //   setTimeout(()=>{
+      //     getListDetail()
+      //   }, 20)
+      // }else{
+      //   if(mainStore.userProfile  && mainStore.userProfile.team1_id){
+      //     setTimeout(()=>{
+      //       getListUser(mainStore.userProfile.team1_id)
+      //     }, 20)
+      //   }
+      // }
+      getListUser(mainStore.userProfile.team1_id)
     }, [])
-
-
 
     useEffect(() => {
         if(coachingStore.messageUpdatedJournal == "Success" && coachingStore.isDetail && !coachingStore.isDetailCoach){
           navigation.navigate("fillFeedback")
         }
+
     },[coachingStore.messageUpdatedJournal])
 
     const goBack = () => {
@@ -218,19 +266,20 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
           )
         }
       }
-
-
     }
 
-
-    const holdActivitiesId = useCallback((selectedId)=>{
+    const holdActivitiesId = useCallback((selectedId, setFieldValue)=>{
       setSelectedActivities(selectedId)
+      setFieldValue('type', selectedId)
     }, [selectedActivities])
 
     const searchDataUser = (id: string) => {
       dataTeamMember.find((data)=>{return data.id == id})
     }
 
+    const onSubmit = useCallback(async (data: JournalEntryType)=>{
+      console.log(data)
+    },[])
 
     const ActivityTypeSelector = ({onActivityPress = (item) => setActivity(item), selectedActivity = 'weekly_coaching', isError = false}) => {
 
@@ -277,156 +326,212 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                 </HStack>
               </HStack>
 
-              <VStack>
-                <TextField
-                  value={title}
-                  onChangeText={setTitle}
-                  isRequired={false}
-                  editable={!coachingStore.isDetail}
-                  isError={isError == "title"}
-                  secureTextEntry={false}
-                  placeholder={'Tulis nama judul sesi coaching di sini.'}
-                />
-                <HStack style={{zIndex: 100}}>
-                  <VStack style={{width:Spacing[64]}}>
-                    <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError == "learner" ? styles.textError : null ]} text="dengan" />
-                  </VStack>
-                  <Spacer/>
-                  <VStack style={{maxWidth: dimensions.screenWidth - Spacing[128]}}>
-                    {!coachingStore.isDetail ? <DropDownPicker
-                      items={dataTeamMember}
-                      isRequired={false}
-                      value={learner}
-                      onValueChange={(value)=>setLearner(value)}
-                      placeholder={'Pilih salah satu'}
-                      containerStyle={{marginTop: Spacing[4]}}
-                      zIndex={2000}
-                      isError={isError == "learner"}
-                      zIndexInverse={2000}
-                      dropDownDirection={"BOTTOM"}
-                    />:
-                    <TextField
-                      style={{ paddingTop: 0, minWidth: dimensions.screenWidth - Spacing[128]}}
-                      value={learnerDetail}
-                      isError={isError == "content"}
-                      inputStyle={{minHeight: Spacing[48]}}
-                      isRequired={false}
-                      secureTextEntry={false}
-                      isTextArea={true}
-                    />}
-                  </VStack>
-                </HStack>
-                <HStack>
-                  <TouchableOpacity
-                    style={{height: '100%', width: '20%'}}
-                    onPress={toggleModal}
-                    disabled={coachingStore.isDetail}
-                  >
-                    <VStack horizontal={Spacing[8]} vertical={Spacing[2]} style={{flex:1, width: '100%', borderRadius: Spacing[12], alignItems: 'flex-end', justifyContent: 'flex-end', backgroundColor: Colors.MAIN_BLUE}}>
-                      <Text type={'button'} style={{color:Colors.WHITE, bottom: -Spacing[8]}} text={`${moment(selectedDate).format('DD MMM')}`.split(' ')[0]} />
-                      <Text type={'button'} style={{color:Colors.WHITE}}>{`${moment(selectedDate).format('DD MMM')}`.split(' ')[1]}</Text>
+              <Formik
+                initialValues={journalEntryForm}
+                onSubmit={onSubmit}
+              >
+                {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => (
+                  <>
+                    <VStack>
+                      <TextField
+                        value={values.title}
+                        onChangeText={handleChange('title')}
+                        isRequired={false}
+                        editable={!coachingStore.isDetail}
+                        isError={isError === "title"}
+                        secureTextEntry={false}
+                        placeholder={'Tulis nama judul sesi coaching di sini.'}
+                      />
+                      <HStack style={{zIndex: 100}}>
+                        <VStack style={{width:Spacing[64]}}>
+                          <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError == "learner" ? styles.textError : null ]} text="dengan" />
+                        </VStack>
+                        <Spacer/>
+                        <VStack style={{maxWidth: dimensions.screenWidth - Spacing[128]}}>
+                          { !coachingStore.isDetail ? <DropDownPicker
+                            items={dataTeamMember}
+                            isRequired={false}
+                            value={values.learnerIds[0]}
+                            onValueChange={
+                              (value:IOption)=> {
+                                setFieldValue('learnerIds', [value?.id ?? ''])
+                              }
+                            }
+                            placeholder={'Pilih salah satu'}
+                            containerStyle={{marginTop: Spacing[4]}}
+                            isError={isError === "learner"}
+                          /> :
+                          <TextField
+                            style={{ paddingTop: 0, minWidth: dimensions.screenWidth - Spacing[128]}}
+                            value={journalEntryForm.learnerIds.toString()}
+                            isError={isError === "content"}
+                            inputStyle={{minHeight: Spacing[48]}}
+                            isRequired={false}
+                            secureTextEntry={false}
+                            isTextArea={true}
+                          /> }
+                        </VStack>
+                      </HStack>
+                      <HStack>
+                        <TouchableOpacity
+                          style={{height: '100%', width: '20%'}}
+                          onPress={toggleModal}
+                          disabled={coachingStore.isDetail}
+                        >
+                          <VStack horizontal={Spacing[8]} vertical={Spacing[2]} style={{flex:1, width: '100%', borderRadius: Spacing[12], alignItems: 'flex-end', justifyContent: 'flex-end', backgroundColor: Colors.MAIN_BLUE}}>
+                            <Text type={'button'} style={{color:Colors.WHITE, bottom: -Spacing[8]}} text={`${moment(selectedDate).format('DD MMM')}`.split(' ')[0]} />
+                            <Text type={'button'} style={{color:Colors.WHITE}}>{`${moment(values.date).format('DD MMM')}`.split(' ')[1]}</Text>
+                          </VStack>
+                        </TouchableOpacity>
+                         <Spacer />
+                        <VStack top={Spacing[8]} style={{width: '75%'}}>
+                          <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError == "content" ? styles.textError : null ]}>
+                            {`Apa yang `}
+                            <Text type={'body-bold'} style={{color: Colors.BRIGHT_BLUE}}>
+                              {'dibicarakan'}
+                            </Text>
+                            {` saat coaching?`}
+                          </Text>
+                          <TextField
+                            style={{ paddingTop: 0}}
+                            value={values.content}
+                            // editable={!coachingStore.isDetail}
+                            isError={isError === "content"}
+                            onChangeText={handleChange('content')}
+                            inputStyle={{minHeight: Spacing[72]}}
+                            isRequired={false}
+                            secureTextEntry={false}
+                            isTextArea={true}
+                          />
+                        </VStack>
+                      </HStack>
+                      { coachingStore.isFormCoach &&
+                        <VStack top={Spacing[12]}>
+                          <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError === "strength" ? styles.textError : null ]}>
+                            {`Sebagai coach, apa yang sudah saya lakukan dengan `}
+                            <Text type={'body-bold'} style={{color: Colors.BRIGHT_BLUE}}>
+                              {'efektif?'}
+                            </Text>
+                          </Text>
+                          <TextField
+                            style={{ paddingTop: 0}}
+                            inputStyle={{minHeight: Spacing[48]}}
+                            isRequired={false}
+                            value={values.strength}
+                            editable={!coachingStore.isDetail}
+                            isError={isError === "strength"}
+                            onChangeText={handleChange('strength')}
+                            secureTextEntry={false}
+                            isTextArea={true}
+                          />
+                        </VStack>
+                      }
+                      {coachingStore.isFormCoach &&
+                        <VStack top={Spacing[12]}>
+                          <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError === "improvement" ? styles.textError : null ]}>
+                            {`Sebagai coach, kualitas apa yang dapat saya `}
+                            <Text type={'body-bold'} style={[{color: Colors.BRIGHT_BLUE}, fieldError ? styles.textError : null]}>
+                              {'tingkatkan?'}
+                            </Text>
+                          </Text>
+                          <TextField
+                            style={{ paddingTop: 0}}
+                            inputStyle={{minHeight: Spacing[48]}}
+                            isRequired={false}
+                            secureTextEntry={false}
+                            isTextArea={true}
+                            editable={!coachingStore.isDetail}
+                            isError={isError === "improvement"}
+                            value={values.improvement}
+                            onChangeText={handleChange('improvement')}
+                          />
+                        </VStack> }
+                      {coachingStore.isDetail &&<VStack top={Spacing[12]}>
+                        <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError == "leassons" ? styles.textError : null ]}>
+                          {'Tulislah '}
+                          <Text type={'body-bold'} style={{color: Colors.BRIGHT_BLUE}}>
+                            {'"lessons learned"'}
+                          </Text>
+                          {`-mu dicoaching sessions ini.`}
+                        </Text>
+                        <TextField
+                          style={{ paddingTop: 0}}
+                          inputStyle={{minHeight: Spacing[128]}}
+                          isRequired={false}
+                          secureTextEntry={false}
+                          isTextArea={true}
+                          editable={!coachingStore.isDetail}
+                          // value={leassons}
+                          isError={isError === "leassons"}
+                          onChangeText={handleChange('lessons')}
+                        />
+                      </VStack>}
+                      <VStack top={Spacing[12]}>
+                        <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError === "commitment" ? styles.textError : null ]}>
+                          Apa saja yang akan saya lakukan secara berbeda untuk
+                          <Text type={'body-bold'} style={{color: Colors.BRIGHT_BLUE}}>
+                            {' sesi selanjutnya?'}
+                          </Text>
+                        </Text>
+                        <TextField
+                          style={{ paddingTop: 0}}
+                          inputStyle={{minHeight: Spacing[128]}}
+                          isRequired={false}
+                          secureTextEntry={false}
+                          isTextArea={true}
+                          editable={!coachingStore.isDetail}
+                          value={values.commitment}
+                          isError={isError === "commitment"}
+                          onChangeText={handleChange('commitment')}
+                        />
+                      </VStack>
                     </VStack>
-                  </TouchableOpacity>
-                   <Spacer />
-                  <VStack top={Spacing[8]} style={{width: '75%'}}>
-                    <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError == "content" ? styles.textError : null ]}>
-                      {`Apa yang `}
-                      <Text type={'body-bold'} style={{color: Colors.BRIGHT_BLUE}}>
-                        {'dibicarakan'}
-                      </Text>
-                      {` saat coaching?`}
-                    </Text>
-                    <TextField
-                      style={{ paddingTop: 0}}
-                      value={content}
-                      // editable={!coachingStore.isDetail}
-                      isError={isError == "content"}
-                      onChangeText={setContent}
-                      inputStyle={{minHeight: Spacing[72]}}
-                      isRequired={false}
-                      secureTextEntry={false}
-                      isTextArea={true}
-                    />
-                  </VStack>
-                </HStack>
-                {coachingStore.isFormCoach && <VStack top={Spacing[12]}>
-                  <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError == "strength" ? styles.textError : null ]}>
-                    {`Sebagai coach, apa yang sudah saya lakukan dengan `}
-                    <Text type={'body-bold'} style={{color: Colors.BRIGHT_BLUE}}>
-                      {'efektif?'}
-                    </Text>
-                  </Text>
-                  <TextField
-                    style={{ paddingTop: 0}}
-                    inputStyle={{minHeight: Spacing[48]}}
-                    isRequired={false}
-                    value={strength}
-                    editable={!coachingStore.isDetail}
-                    isError={isError == "strength"}
-                    onChangeText={setStrength}
-                    secureTextEntry={false}
-                    isTextArea={true}
-                  />
-                </VStack>}
-                {coachingStore.isFormCoach &&<VStack top={Spacing[12]}>
-                  <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError == "improvement" ? styles.textError : null ]}>
-                    {`Sebagai coach, kualitas apa yang dapat saya `}
-                    <Text type={'body-bold'} style={[{color: Colors.BRIGHT_BLUE}, fieldError ? styles.textError : null]}>
-                      {'tingkatkan?'}
-                    </Text>
-                  </Text>
-                  <TextField
-                    style={{ paddingTop: 0}}
-                    inputStyle={{minHeight: Spacing[48]}}
-                    isRequired={false}
-                    secureTextEntry={false}
-                    isTextArea={true}
-                    editable={!coachingStore.isDetail}
-                    isError={isError == "improvement"}
-                    value={improvement}
-                    onChangeText={setImprovement}
-                  />
-                </VStack>}
-                {coachingStore.isDetail &&<VStack top={Spacing[12]}>
-                  <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError == "leassons" ? styles.textError : null ]}>
-                    {'Tulislah '}
-                    <Text type={'body-bold'} style={{color: Colors.BRIGHT_BLUE}}>
-                      {'"lessons learned"'}
-                    </Text>
-                    {`-mu dicoaching sessions ini.`}
-                  </Text>
-                  <TextField
-                    style={{ paddingTop: 0}}
-                    inputStyle={{minHeight: Spacing[128]}}
-                    isRequired={false}
-                    secureTextEntry={false}
-                    isTextArea={true}
-                    editable={!coachingStore.isDetail}
-                    value={leassons}
-                    isError={isError == "leassons"}
-                    onChangeText={setLeassons}
-                  />
-                </VStack>}
-                <VStack top={Spacing[12]}>
-                  <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError == "commitment" ? styles.textError : null ]}>
-                    Apa saja yang akan saya lakukan secara berbeda untuk
-                    <Text type={'body-bold'} style={{color: Colors.BRIGHT_BLUE}}>
-                      {' sesi selanjutnya?'}
-                    </Text>
-                  </Text>
-                  <TextField
-                    style={{ paddingTop: 0}}
-                    inputStyle={{minHeight: Spacing[128]}}
-                    isRequired={false}
-                    secureTextEntry={false}
-                    isTextArea={true}
-                    editable={!coachingStore.isDetail}
-                    value={commitment}
-                    isError={isError == "commitment"}
-                    onChangeText={setCommitment}
-                  />
-                </VStack>
-              </VStack>
+
+                    <Modal
+                      isOpen={isModalVisible}
+                      style={{
+                        height: '50%',
+                        width: dimensions.screenWidth - Spacing[24],
+                        backgroundColor: 'rgba(52, 52, 52, 0)'
+                      }}
+                    >
+                      <View style={{ flex: 1, justifyContent: 'center' }}>
+                        <VStack style={{backgroundColor: Colors.WHITE, borderRadius: Spacing[48], minHeight: Spacing[256], alignItems: 'center', justifyContent:'center'}} horizontal={Spacing[24]} vertical={Spacing[24]}>
+                          <VStack vertical={Spacing[12]}>
+                            <Spacer height={Spacing[24]} />
+                            <CalendarPicker
+                              onDateChange={(value)=> {
+                                onDateChange(value, setFieldValue)
+                              }}
+                              textStyle={{
+                                fontFamily: typography.primaryBold,
+                                colors: Colors.MAIN_BLUE
+                              }}
+                              selectedDayColor={Colors.MAIN_BLUE}
+                              selectedDayTextColor={Colors.WHITE}
+                              style={{padding: Spacing[20]}}
+                              width={dimensions.screenWidth - Spacing[64]}
+                            />
+                            <HStack style={[Layout.widthFull, {justifyContent: 'center'}]}>
+                              <Button
+                                type={"negative"}
+                                text={"Cancel"}
+                                onPress={toggleModal}
+                              />
+                              <Button
+                                type={"primary"}
+                                text={"Pilih"}
+                                onPress={toggleModal}
+                                style={{minWidth: Spacing[72]}}
+                              />
+                            </HStack>
+                          </VStack>
+                        </VStack>
+                      </View>
+                    </Modal>
+                  </>
+                )}
+              </Formik>
             </VStack>
             {coachingStore.isFormCoach && <VStack vertical={Spacing[16]}>
               <VStack bottom={Spacing[8]} horizontal={Spacing[128]}>
@@ -457,47 +562,6 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
             </VStack>
           </ScrollView>
         </SafeAreaView>
-
-        <Modal
-          isOpen={isModalVisible}
-          style={{
-            height: '50%',
-            width: dimensions.screenWidth - Spacing[24],
-            backgroundColor: 'rgba(52, 52, 52, 0)'
-          }}
-        >
-          <View style={{ flex: 1, justifyContent: 'center' }}>
-            <VStack style={{backgroundColor: Colors.WHITE, borderRadius: Spacing[48], minHeight: Spacing[256], alignItems: 'center', justifyContent:'center'}} horizontal={Spacing[24]} vertical={Spacing[24]}>
-              <VStack vertical={Spacing[12]}>
-                <Spacer height={Spacing[24]} />
-                <CalendarPicker
-                  onDateChange={onDateChange}
-                  textStyle={{
-                    fontFamily: typography.primaryBold,
-                    colors: Colors.MAIN_BLUE
-                  }}
-                  selectedDayColor={Colors.MAIN_BLUE}
-                  selectedDayTextColor={Colors.WHITE}
-                  style={{padding: Spacing[20]}}
-                  width={dimensions.screenWidth - Spacing[64]}
-                />
-                <HStack style={[Layout.widthFull, {justifyContent: 'center'}]}>
-                  <Button
-                    type={"negative"}
-                    text={"Cancel"}
-                    onPress={toggleModal}
-                  />
-                  <Button
-                    type={"primary"}
-                    text={"Pilih"}
-                    onPress={toggleModal}
-                    style={{minWidth: Spacing[72]}}
-                  />
-                </HStack>
-              </VStack>
-            </VStack>
-          </View>
-        </Modal>
         <Spinner
           visible={coachingStore.isLoading || mainStore.isLoading}
           textContent={'Memuat...'}
