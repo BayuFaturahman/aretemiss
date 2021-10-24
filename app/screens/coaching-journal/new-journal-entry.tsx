@@ -415,6 +415,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                             isRequired={false}
                             secureTextEntry={false}
                             isTextArea={true}
+                            charCounter={true}
                           />
                         </VStack>
                       </HStack>
@@ -436,6 +437,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                             onChangeText={handleChange('strength')}
                             secureTextEntry={false}
                             isTextArea={true}
+                            charCounter={true}
                           />
                         </VStack>
                       }
@@ -457,6 +459,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                             isError={isError === "improvement"}
                             value={values.improvement}
                             onChangeText={handleChange('improvement')}
+                            charCounter={true}
                           />
                         </VStack> }
                       {coachingStore.isDetail &&<VStack top={Spacing[12]}>
@@ -477,6 +480,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                           // value={leassons}
                           isError={isError === "leassons"}
                           onChangeText={handleChange('lessons')}
+                          charCounter={true}
                         />
                       </VStack>}
                       <VStack top={Spacing[12]}>
@@ -496,6 +500,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                           value={values.commitment}
                           isError={isError === "commitment"}
                           onChangeText={handleChange('commitment')}
+                          charCounter={true}
                         />
                       </VStack>
                     </VStack>
@@ -503,9 +508,9 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                     <Modal
                       isOpen={isModalVisible}
                       style={{
-                        height: '50%',
+                        // height: '50%',
                         width: dimensions.screenWidth - Spacing[24],
-                        backgroundColor: 'rgba(52, 52, 52, 0)'
+                        backgroundColor: 'rgba(52, 52, 52, 0)',
                       }}
                     >
                       <View style={{ flex: 1, justifyContent: 'center' }}>
@@ -580,94 +585,96 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
               )}
             </VStack>
           </ScrollView>
-          <Modal
-            isOpen={isEncouragementModalVisible}
-            style={{
-              height: "50%",
-              width: dimensions.screenWidth - Spacing[24],
-              backgroundColor: "rgba(52, 52, 52, 0)",
-            }}
-          >
-            <View style={{ flex: 1, justifyContent: "center" }}>
-              <VStack
-                style={{
-                  backgroundColor: Colors.WHITE,
-                  borderRadius: Spacing[48],
-                  minHeight: Spacing[256],
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-                horizontal={Spacing[24]}
-                vertical={Spacing[24]}
-              >
-                <VStack horizontal={Spacing[24]} top={Spacing[24]} style={Layout.widthFull}>
-                  <VStack style={{ alignItems: "flex-end" }}>
-                    <TouchableOpacity onPress={toggleEncouragementModal}>
-                      <Text type={"header"} >X</Text>
-                    </TouchableOpacity>
-                  </VStack>
-                  <VStack>
-                    <Text
-                      type={"body-bold"}
-                      style={{ fontSize: Spacing[18], textAlign: "center" }}
-                      text={"Nicely done! "}
-                    />
-                    <Spacer height={Spacing[24]} />
-                    <Text type={'body'} style={{textAlign: 'center', top: Spacing[4]}}>
-                          {`Sebelum catatan coaching-mu tersimpan \n`}
-                          <Text type={'body-bold'} >
-                            {'isi self-reflection feedback '}
-                          </Text>
-                          <Text>{`dulu yaa`}</Text>
-                      </Text>
-                    <Spacer height={Spacing[24]} />
-                    <Text
-                      type={"body"}
-                      style={{ textAlign: "center" }}
-                      text={
-                        "Feedback ini akan diisi juga oleh coachee-mu juga sehingga kamu dapat membandingkan penilaian dirimu sendiri dengan penilaian dari coachee-mu."
-                      }
-                    />
-
-                    <Spacer height={Spacing[24]} />
-                    <Text
-                      type={"body"}
-                      style={{ textAlign: "center", color: "red" }}
-                      text={
-                        "Penting! Catatan coaching-mu belum tersimpan sampai kamu klik “Submit” setelah melakukan feedback."
-                      }
-                    />
-                    <Spacer height={Spacing[20]} />
-
-                    <HStack bottom={Spacing[32]}>
-                      <Spacer />
-
-                      <Spacer />
-                    </HStack>
-                    <HStack bottom={Spacing[24]}>
-                      <Spacer />
-                      <VStack style={{ maxWidth: Spacing[256], minWidth: Spacing[128] }}>
-                        <Button
-                          type={"primary"}
-                          text={"Isi Feedback"}
-                          style={{ height: Spacing[32], paddingHorizontal: Spacing[8] }}
-                          textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
-                          onPress={goToFeedback}
-                        />
-                      </VStack>
-                      <Spacer />
-                    </HStack>
-                  </VStack>
-                </VStack>
-              </VStack>
-            </View>
-          </Modal>
         </SafeAreaView>
         <Spinner
           visible={coachingStore.isLoading || mainStore.isLoading}
           textContent={"Memuat..."}
-          textStyle={styles.spinnerTextStyle}
+          // textStyle={styles.spinnerTextStyle}
         />
+
+        <Modal
+          isOpen={isEncouragementModalVisible}
+          style={{
+            height: "50%",
+            width: dimensions.screenWidth - Spacing[24],
+            backgroundColor: "rgba(52, 52, 52, 0)",
+          }}
+        >
+          <View style={{ flex: 1, justifyContent: "center" }}>
+            <VStack
+              style={{
+                backgroundColor: Colors.WHITE,
+                borderRadius: Spacing[48],
+                minHeight: Spacing[256],
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              horizontal={Spacing[24]}
+              vertical={Spacing[24]}
+            >
+              <VStack horizontal={Spacing[24]} top={Spacing[24]} style={Layout.widthFull}>
+                <VStack style={{ alignItems: "flex-end" }}>
+                  <TouchableOpacity onPress={toggleEncouragementModal}>
+                    <Text type={"header"} >X</Text>
+                  </TouchableOpacity>
+                </VStack>
+                <VStack>
+                  <Text
+                    type={"body-bold"}
+                    style={{ fontSize: Spacing[18], textAlign: "center" }}
+                    text={"Nicely done! "}
+                  />
+                  <Spacer height={Spacing[24]} />
+                  <Text type={'body'} style={{textAlign: 'center', top: Spacing[4]}}>
+                    {`Sebelum catatan coaching-mu tersimpan \n`}
+                    <Text type={'body-bold'} >
+                      {'isi self-reflection feedback '}
+                    </Text>
+                    <Text>{`dulu yaa`}</Text>
+                  </Text>
+                  <Spacer height={Spacing[24]} />
+                  <Text
+                    type={"body"}
+                    style={{ textAlign: "center" }}
+                    text={
+                      "Feedback ini akan diisi juga oleh coachee-mu juga sehingga kamu dapat membandingkan penilaian dirimu sendiri dengan penilaian dari coachee-mu."
+                    }
+                  />
+
+                  <Spacer height={Spacing[24]} />
+                  <Text
+                    type={"body"}
+                    style={{ textAlign: "center", color: "red" }}
+                    text={
+                      "Penting! Catatan coaching-mu belum tersimpan sampai kamu klik “Submit” setelah melakukan feedback."
+                    }
+                  />
+                  <Spacer height={Spacing[20]} />
+
+                  <HStack bottom={Spacing[32]}>
+                    <Spacer />
+
+                    <Spacer />
+                  </HStack>
+                  <HStack bottom={Spacing[24]}>
+                    <Spacer />
+                    <VStack style={{ maxWidth: Spacing[256], minWidth: Spacing[128] }}>
+                      <Button
+                        type={"primary"}
+                        text={"Isi Feedback"}
+                        style={{ height: Spacing[32], paddingHorizontal: Spacing[8] }}
+                        textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
+                        onPress={goToFeedback}
+                      />
+                    </VStack>
+                    <Spacer />
+                  </HStack>
+                </VStack>
+              </VStack>
+            </VStack>
+          </View>
+        </Modal>
+
       </VStack>
     )
   },

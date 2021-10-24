@@ -1,9 +1,9 @@
 import { GeneralApiProblem } from "../api-problem"
 
 export interface LoginResponse {
-  userId: string
-  otpHash: string
-  otp: number
+  token: string
+  needChangePassword: boolean
+  isVerify: number
 }
 
 export interface ErrorFormResponse {

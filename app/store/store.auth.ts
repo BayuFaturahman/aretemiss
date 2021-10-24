@@ -98,11 +98,8 @@ export default class AuthStore {
       }
 
       if(response.kind === 'ok'){
-        console.log(response.response.otp)
-        console.log(response.response.userId)
-        console.log(response.response.otpHash)
-
-        this.loginSuccess(response.response, email)
+        console.log(response.response)
+        await this.loginSuccess(response.response, email)
       }
 
     } catch (e) {
@@ -146,10 +143,17 @@ export default class AuthStore {
     }
   }
 
-  loginSuccess (data: LoginResponse, email: string){
-    this.userId = data.userId
-    this.otpHash = data.otpHash
-    this.otp = data.otp
+  async loginSuccess (data: LoginResponse, email: string){
+    this.needChangePassword = data.needChangePassword
+    this.token = data.token
+
+    if(data.isVerify === 0){
+      this.isCreateProfile = true
+      await this.serviceStore.setHeaderToken(this.token)
+    } else {
+      this.isCreateProfile = false
+      await this.serviceStore.setToken(this.token)
+    }
     this.email = email
     this.isLoginFlow = true
   }
@@ -223,6 +227,7 @@ export default class AuthStore {
 
   async signupVerify(otpCode: string) {
     console.log('signup verify')
+    console.log(otpCode)
     this.isLoading = true
     try {
       const response = await this.apiAuth.signupVerify(this.email, otpCode, this.otpHash)
