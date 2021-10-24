@@ -31,9 +31,11 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
   ({ navigation }) => {
     const { authStore, mainStore } = useStores()
 
-    const [isEmailValid, setIsEmailValid] = useState(true)
+    const [isEmailValid, setIsEmailValid] = useState(false)
     const [isClickEditProfile, setIsClickEditProfile] = useState(false)
     const [isModalVisible, setModalVisible] = useState(false)
+
+    const [emailErrorMessage, setEmailErrorMessage] = useState('')
 
     const userProfile: ProfileUpdateForm = {
       fullname: mainStore.userProfile.user_fullname,
@@ -57,6 +59,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
       const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/
       if (reg.test(email) === false) {
         console.log("Email is Not Correct")
+        setEmailErrorMessage('Alamat email yang kamu ganti formatnya salah. Pastikan alamat emailnya sudah kamu tulis dengan benar ya!')
         setIsEmailValid(false)
         return false
       } else {
@@ -68,6 +71,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
 
     const onClickEditProfile = useCallback(async (data: ProfileUpdateForm) => {
       // console.log("click : ", data)
+      mainStore.formReset();
       userProfile.email = data.email
       userProfile.nickname = data.nickname
       validateEmail(data.email)
@@ -77,8 +81,15 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
     const submitEditProfile = useCallback(async (data: ProfileUpdateForm) => {
       console.log("Data to be submitted", userProfile)
       await mainStore.updateProfile(mainStore.userProfile.user_id, userProfile)
-      await mainStore.getProfile();
-      toggleModal()
+      if (mainStore.errorCode === null) {
+        await mainStore.getProfile();
+        toggleModal()
+      }
+      else {
+        setIsEmailValid(false)
+        setEmailErrorMessage(mainStore.errorMessage)
+      }
+
     }, [])
 
     useEffect(() => {
@@ -91,6 +102,11 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
       }
       // }, 100)
     }, [isEmailValid, isClickEditProfile])
+
+    useEffect(() => {
+      validateEmail(userProfile.email)
+      mainStore.formReset()
+    }, [])
 
     const ChangeProfilePicture = ({ isError = false }) => {
       const LABEL_STYLE = {
@@ -182,7 +198,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                           isRequired={false}
                           secureTextEntry={false}
                           onBlur={() => validateEmail(values.email)}
-                          isError={!isEmailValid}
+                          isError={!isEmailValid || (mainStore.errorCode === 35)}
                           value={values.email}
                           onChangeText={handleChange("email")}
                           // isError={isError && (authStore.formErrorCode === 3 || authStore.formErrorCode === 15)}
@@ -190,9 +206,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                         />
                         {!isEmailValid && (
                           <Text type={"warning"} style={{ textAlign: "center" }}>
-                            {
-                              "Alamat email yang kamu ganti formatnya salah. Pastikan alamat emailnya sudah kamu tulis dengan benar ya!"
-                            }
+                            {emailErrorMessage}
                           </Text>
                         )}
                         <Spacer height={Spacing[12]} />
