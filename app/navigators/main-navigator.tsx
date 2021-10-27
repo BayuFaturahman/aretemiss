@@ -8,6 +8,7 @@ import {
   overviewJournalEntry, fillFeedbackCoachee
 } from "@screens/coaching-journal";
 import {settings, myAccount, changePassword, changePhone, notification} from "@screens/settings";
+import {feedTimelineMain} from "@screens/feed";
 import {notifications} from "@screens/notification";
 import {homepage} from "@screens/homepage";
 import {createProfile} from "@screens";
@@ -69,10 +70,15 @@ const screens: AppRoute[] = [
     name: 'fillFeedbackCoachee',
     component: fillFeedbackCoachee,
   },
+  {
+    name: 'feedTimelineMain',
+    component: feedTimelineMain,
+  },
 ];
 
 export type NavigatorParamList = {
   coachingJournalMain: undefined;
+  feedTimelineMain: undefined;
   settingsPage: undefined;
   myAccount: undefined;
   changePhone: undefined;
