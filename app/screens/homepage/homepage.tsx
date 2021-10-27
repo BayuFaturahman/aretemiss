@@ -31,7 +31,7 @@ import RNAnimated from "react-native-animated-component";
 const FEED_EXAMPLE_DATA_ITEM:FeedItemType = {
   id: '0',
   imageUrl: 'https://www.gstatic.com/webp/gallery/4.jpg',
-  description: 'Today, I’m starting a new monthly task! I designed a new strategy to nudge my team members to be more active in our monthly meetings. ',
+  description: 'Today, lalaI’m starting a new monthly task! I designed a new strategy to nudge my team members to be more active in our monthly meetings. ',
   author: {
     fullname: 'Mrs. Geneva Herrings',
     nickname: 'Geneva',
@@ -66,6 +66,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
         navigation.navigate('fillFeedbackDetail')
       });
     }
+    
 
 
     const [, forceUpdate] = useReducer(x => x + 1, 0);
@@ -105,6 +106,11 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       await coachingStore.getJournal()
     },[])
 
+    useEffect(() => {
+      loadData()
+    },[])
+
+    
     useEffect(()=> {
       if(mainStore.userProfile){
         const data = MOOD_EXAMPLE_DATA
@@ -165,6 +171,8 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
     const goToJournalCoaching = () => navigation.navigate('coachingJournalMain')
 
+    const goToFeed = () => navigation.navigate('feedTimelineMain')
+
     const goToSettings = () => navigation.navigate("settingsPage")
 
     StatusBar.setBarStyle('light-content',false);
@@ -222,8 +230,8 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
           <HomepageCardWrapper animationDuration={700}>
             <FeedItemComponent
               // data={feedData}
-              data={null}
-              goToFeed={goToJournalCoaching}
+              data={FEED_EXAMPLE_DATA_ITEM}
+              goToFeed={goToFeed}
             />
           </HomepageCardWrapper>
           <Spacer height={Spacing[12]} />
