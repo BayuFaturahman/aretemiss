@@ -42,6 +42,10 @@ export interface ForgotPasswordResponse {
     passwordHash: string
   }
 }
+export interface ResendOTPResponse {
+  otp_hash: string
+  otp: number
+}
 
 export type LoginResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: LoginResponse }  | GeneralApiProblem
 
@@ -54,3 +58,5 @@ export type SignupVerifyResult = { kind: "form-error"; response: ErrorFormRespon
 export type ChangePasswordResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: ChangePasswordResponse }  | GeneralApiProblem
 
 export type ForgotPasswordResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: ForgotPasswordResponse }  | GeneralApiProblem
+
+export type ResendOTPResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: ResendOTPResponse }  | GeneralApiProblem
