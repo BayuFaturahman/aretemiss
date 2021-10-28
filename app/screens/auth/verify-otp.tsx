@@ -45,6 +45,10 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
       }
     }, [otpCode])
 
+    const resendOTP = useCallback(async () => {
+      await authStore.resendOTP(authStore.email)
+    }, [])
+
     const onInputCompleted = (otp) => {
       setOTPCode(otp)
       Keyboard.dismiss()
@@ -140,7 +144,7 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
                 <Button
                   type={"secondary"}
                   text={"Kirim ulang E-mail verifikasi "}
-                  onPress={goToLogin}
+                  onPress={resendOTP}
                 />
               </VStack>
               <Spacer />
