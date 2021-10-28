@@ -1,43 +1,46 @@
-import React, { FC, useCallback, useEffect, useState} from "react"
+import React, { FC, useCallback, useEffect, useState } from "react"
 import { SafeAreaView, StyleSheet } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
-import {
-  BackNavigation,
-  Button, DismissKeyboard,
-  Text,
-  TextField,
-} from "@components"
+import { BackNavigation, Button, DismissKeyboard, Text, TextField } from "@components"
 import { NavigatorParamList } from "@navigators/auth-navigator"
-import {VStack} from "@components/view-stack";
-import Spacer from "@components/spacer";
-import {Colors, Spacing} from "@styles";
-import logoBottom from "@assets/icons/ilead-bottom-logo.png";
-import FastImage from "react-native-fast-image";
+import { VStack } from "@components/view-stack"
+import Spacer from "@components/spacer"
+import { Colors, Spacing } from "@styles"
+import logoBottom from "@assets/icons/ilead-bottom-logo.png"
+import FastImage from "react-native-fast-image"
 
-import {useStores} from "../../bootstrap/context.boostrap";
+import { Formik } from "formik"
+import { useStores } from "../../bootstrap/context.boostrap"
 
-import Spinner from 'react-native-loading-spinner-overlay';
-import {useFocusEffect} from "@react-navigation/native";
+import Spinner from "react-native-loading-spinner-overlay"
+import { useFocusEffect } from "@react-navigation/native"
 
 const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = observer(
   ({ navigation }) => {
-
-    const [phoneNumber, setPhoneNumber] = useState<string>('')
-    const [phoneNumberVerify, setPhoneNumberVerify] = useState<string>('')
-    const [password, setPassword] = useState<string>('')
+    // const [phoneNumber, setPhoneNumber] = useState<string>("")
+    // const [phoneNumberVerify, setPhoneNumberVerify] = useState<string>("")
+    // const [password, setPassword] = useState<string>("")
     const [isError, setIsError] = useState<boolean>(false)
-    const [errorMessage, setErrorMessage] = useState<string | null>('')
+    const [errorMessage, setErrorMessage] = useState<string | null>("")
+    const [isEmailValid, setIsEmailValid] = useState<boolean>(true)
+    const [isConfirmEmailValid, setIsConfirmEmailValid] = useState<boolean>(true)
 
-    const {authStore} = useStores()
+    const [isEmailMatch, setIsEmailMatch] = useState<boolean>(true)
+    const [isPasswordValid, setIsPasswordValid] = useState<boolean>(true)
+
+    const { authStore } = useStores()
 
     const nextScreen = () => navigation.navigate("verifyOTP")
     const goToLogin = () => navigation.navigate("login")
 
-    const submitVerify = useCallback( async() =>{
+    const submitVerify = useCallback(async (data) => {
+      const { email, password } = data
+
       authStore.resetLoginState()
-      await authStore.signup(phoneNumber, password)
-    }, [phoneNumber, phoneNumberVerify, password])
+      console.log("Submit verify, masu ke authstore.signuo")
+      await authStore.signup(email, password)
+    }, [])
 
     useEffect(() => {
       authStore.formReset()
@@ -50,103 +53,228 @@ const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
     // }, [authStore.otp, authStore.token, authStore.isLoading]))
 
     useEffect(() => {
-      console.log('is loading')
+      console.log("is loading")
       console.log(authStore.isLoading)
     }, [authStore.isLoading])
 
     useEffect(() => {
-      console.log('is error')
-      if(authStore.errorMessage !== null){
+      console.log("is error")
+      if (authStore.errorMessage !== null) {
         setIsError(true)
       }
-    }, [authStore.errorMessage])
+      if (errorMessage !== "") {
+        setIsError(true)
+      }
+    }, [authStore.errorMessage, errorMessage])
 
     useEffect(() => {
-      console.log('register succeed')
-      if(authStore.otp !== null){
+      console.log("register succeed")
+      if (authStore.otp !== null) {
         setIsError(false)
         nextScreen()
       }
     }, [authStore.otp])
 
-    const styles = StyleSheet.create({
-
-    })
+    const styles = StyleSheet.create({})
 
     const goBack = () => {
       navigation.goBack()
     }
 
+    const validateEmail = (email) => {
+      const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/
+      if (reg.test(email) === false) {
+        console.log("Email is Not Correct")
+        setErrorMessage(
+          "Alamat email yang kamu tulis formatnya salah. Pastikan alamat emailnya sudah kamu tulis dengan benar ya!",
+        )
+        return false
+      } else {
+        console.log("Email Correct")
+        return true
+      }
+    }
+
+    const checkInputedData = (data) => {
+      authStore.formReset()
+      resetState()
+
+      const { email, confirmEmail, password } = data
+
+      if (email === "" || confirmEmail === "" || password === "") {
+        if (email === "") {
+          setIsEmailValid(false)
+        }
+
+        if (confirmEmail === "") {
+          setIsConfirmEmailValid(false)
+        }
+
+        if (password === "") {
+          setIsPasswordValid(false)
+        }
+        setIsError(true)
+        setErrorMessage('Kayaknya ada yang belum diisi nih. \nYuk isi semua kolomnya!')
+        return
+      }
+
+      if (!validateEmail(email) || !validateEmail(confirmEmail)) {
+        if (!validateEmail(email)) {
+          setIsEmailValid(false)
+        }
+  
+        if (!validateEmail(confirmEmail)) {
+          setIsConfirmEmailValid(false)
+        }
+        return
+      }
+
+    
+      if (email.toLowerCase() !== confirmEmail.toLowerCase()) {
+        setErrorMessage(
+          "Hmm. Kelihatannya kedua email yang kamu isi tidak sama. Coba samakan email-nya dulu yah, baru bisa diproses nih.",
+        )
+        setIsEmailMatch(false)
+        console.log(errorMessage)
+        return
+      }
+
+      if (password.length < 8) {
+        setIsPasswordValid(false)
+        setErrorMessage(
+          "Password minimal 8 karakter, memiliki huruf besar dan kecil, serta memiliki angka dan simbol (!, %, &, dkk.)",
+        )
+        return
+      }
+
+      submitVerify(data)
+    }
+
+    const resetState = () => {
+      setIsEmailMatch(true)
+      setIsEmailValid(true)
+      setIsConfirmEmailValid(true)
+      setIsPasswordValid(true)
+      setErrorMessage('')
+    }
+
     return (
       <DismissKeyboard>
-        <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.WHITE, flex: 1, justifyContent: 'center'}}>
+        <VStack
+          testID="CoachingJournalMain"
+          style={{ backgroundColor: Colors.WHITE, flex: 1, justifyContent: "center" }}
+        >
           {/* <GradientBackground colors={["#422443", "#281b34"]} /> */}
-          <SafeAreaView style={{flex: 1}}>
+          <SafeAreaView style={{ flex: 1 }}>
             <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
             <Spacer />
-            <VStack top={Spacing[24]} horizontal={Spacing[24]}>
-              <Text type={'header'} text="Selamat datang di iLEAD." />
-              <Spacer height={Spacing[24]} />
+            <Formik
+              initialValues={{ email: "", confirmEmail: "", password: "" }}
+              onSubmit={(values) => checkInputedData(values)}
+            >
+              {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+                // <View>
+                <>
+                  <VStack top={Spacing[24]} horizontal={Spacing[24]}>
+                    <Text type={"header"} text="Selamat datang di iLEAD." />
+                    <Spacer height={Spacing[24]} />
 
-               <Text type={'warning'} style={{textAlign: 'center'}}>
-                 {authStore.errorMessage}
-               </Text>
+                    {authStore.errorCode !== 37 && 
+                      <Text type={"warning"} style={{ textAlign: "center" }}>
+                        {errorMessage || authStore.errorMessage} 
+                      </Text>
+                    }
 
-              <Spacer height={Spacing[32]} />
-              <TextField
-                // value={'089123123123'}
-                // label="No. HP:"
-                label="Alamat E-mail:"
-                style={{ paddingTop: 0}}
-                isError={isError && (authStore.errorCode === 1 || authStore.errorCode === 10 || authStore.errorCode === 14)}
-                onChangeText={setPhoneNumber}
-              />
-              <TextField
-                // value={'089123123123'}
-                label="Masukan kembali alamat E-mail:"
-                style={{ paddingTop: 0}}
-                isError={isError && (authStore.errorCode === 1 || authStore.errorCode === 10 || authStore.errorCode === 14)}
-                onChangeText={setPhoneNumberVerify}
-              />
-              <TextField
-                // value={'089123123123'}
-                label="Password baru:"
-                style={{ paddingTop: 0}}
-                secureTextEntry={true}
-                isError={isError && (authStore.errorCode === 3 || authStore.errorCode === 15 || authStore.errorCode === 10)}
-                onChangeText={setPassword}
-              />
-            </VStack>
-            <VStack top={Spacing[32]} horizontal={Spacing[96]}>
-              <Button
-                type={"primary"}
-                // text={"Kirim SMS verifikasi"}
-                text={"Kirim verifikasi"}
-                onPress={submitVerify}
-              />
-              <Spacer height={Spacing[8]} />
-              <Button
-                type={"secondary"}
-                text={"Login"}
-                onPress={goToLogin}
-              />
-            </VStack>
+                    <Spacer height={Spacing[32]} />
+                    <TextField
+                      label="Alamat E-mail:"
+                      style={{ paddingTop: 0 }}
+                      isRequired={true}
+                      isError={
+                        // isError &&
+                        (authStore.errorCode === 1 ||
+                          authStore.errorCode === 10 ||
+                          authStore.errorCode === 14 ||
+                          authStore.errorCode === 4 ||
+                          !isEmailValid ||
+                          !isEmailMatch)
+                      }
+                      // onBlur={() => validateEmail(values.email)}
+                      onChangeText={handleChange("email")}
+                      value={values.email}
+                    />
+                    <TextField
+                      label="Masukan kembali alamat E-mail:"
+                      style={{ paddingTop: 0 }}
+                      isRequired={true}
+                      isError={
+                        // isError &&
+                        (authStore.errorCode === 1 ||
+                          authStore.errorCode === 10 ||
+                          authStore.errorCode === 14 ||
+                          authStore.errorCode === 4 ||
+                          !isConfirmEmailValid ||
+                          !isEmailMatch)
+                      }
+                      // onBlur={() => validateEmail(values.confirmEmail)}
+                      onChangeText={handleChange("confirmEmail")}
+                      value={values.confirmEmail}
+                    />
+                    <TextField
+                      label="Password baru:"
+                      style={{ paddingTop: 0 }}
+                      secureTextEntry={true}
+                      isRequired={true}
+                      isError={
+                        // isError &&
+                        (authStore.errorCode === 3 ||
+                          authStore.errorCode === 15 ||
+                          authStore.errorCode === 10 ||
+                          authStore.errorCode === 37 ||
+                          !isPasswordValid)
+                      }
+                      onChangeText={handleChange("password")}
+                      value={values.password}
+                    />
+                    {authStore.errorCode === 37 && (
+                      <Text type={"warning"} style={{ textAlign: "center" }}>
+                        {authStore.errorMessage}
+                      </Text>
+                    )}
+                  </VStack>
+                  <VStack top={Spacing[32]} horizontal={Spacing[96]}>
+                    <Button
+                      type={"primary"}
+                      // text={"Kirim SMS verifikasi"}
+                      text={"Kirim verifikasi"}
+                      onPress={() => handleSubmit()}
+                    />
+                    <Spacer height={Spacing[8]} />
+                    <Button type={"secondary"} text={"Login"} onPress={goToLogin} />
+                  </VStack>
+                </>
+              )}
+            </Formik>
             <Spacer />
-            <FastImage style={{
-              height: Spacing[96],
-              marginLeft: Spacing[48],
-              bottom: 0
-            }} source={logoBottom} resizeMode={"contain"}/>
+            <FastImage
+              style={{
+                height: Spacing[96],
+                marginLeft: Spacing[48],
+                bottom: 0,
+              }}
+              source={logoBottom}
+              resizeMode={"contain"}
+            />
           </SafeAreaView>
           <Spinner
-              visible={authStore.isLoading}
-              textContent={'Memuat...'}
-              // textStyle={styles.spinnerTextStyle}
-            />
+            visible={authStore.isLoading}
+            textContent={"Memuat..."}
+            // textStyle={styles.spinnerTextStyle}
+          />
         </VStack>
       </DismissKeyboard>
     )
   },
 )
 
-export default VerifyPhone;
+export default VerifyPhone
