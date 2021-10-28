@@ -16,6 +16,8 @@ import { dimensions } from "@config/platform.config"
 import Modal from "react-native-modalbox"
 import smileYellow from "@assets/icons/coachingJournal/empty/smile-yellow.png"
 
+import Spinner from 'react-native-loading-spinner-overlay';
+
 export type ProfileUpdateForm = {
   fullname: string
   nickname: string
@@ -243,6 +245,11 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
               </Formik>
             </ScrollView>
           </SafeAreaView>
+          <Spinner
+            visible={mainStore.isLoading}
+            textContent={'Memuat...'}
+            // textStyle={styles.spinnerTextStyle}
+          />
         </VStack>
         <Modal
           isOpen={isModalVisible}
