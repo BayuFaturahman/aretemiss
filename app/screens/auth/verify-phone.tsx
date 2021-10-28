@@ -4,11 +4,11 @@ import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { BackNavigation, Button, DismissKeyboard, Text, TextField } from "@components"
 import { NavigatorParamList } from "@navigators/auth-navigator"
-import { VStack } from "@components/view-stack"
-import Spacer from "@components/spacer"
-import { Colors, Spacing } from "@styles"
-import logoBottom from "@assets/icons/ilead-bottom-logo.png"
-import FastImage from "react-native-fast-image"
+import {VStack} from "@components/view-stack";
+import Spacer from "@components/spacer";
+import {Colors, Spacing} from "@styles";
+import logoBottom from "@assets/icons/ilead_abm.png";
+import FastImage from "react-native-fast-image";
 
 import { Formik } from "formik"
 import { useStores } from "../../bootstrap/context.boostrap"
@@ -122,14 +122,14 @@ const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
         if (!validateEmail(email)) {
           setIsEmailValid(false)
         }
-  
+
         if (!validateEmail(confirmEmail)) {
           setIsConfirmEmailValid(false)
         }
         return
       }
 
-    
+
       if (email.toLowerCase() !== confirmEmail.toLowerCase()) {
         setErrorMessage(
           "Hmm. Kelihatannya kedua email yang kamu isi tidak sama. Coba samakan email-nya dulu yah, baru bisa diproses nih.",
@@ -179,9 +179,9 @@ const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
                     <Text type={"header"} text="Selamat datang di iLEAD." />
                     <Spacer height={Spacing[24]} />
 
-                    {authStore.errorCode !== 37 && 
+                    {authStore.errorCode !== 37 &&
                       <Text type={"warning"} style={{ textAlign: "center" }}>
-                        {errorMessage || authStore.errorMessage} 
+                        {errorMessage || authStore.errorMessage}
                       </Text>
                     }
 
@@ -256,15 +256,10 @@ const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
               )}
             </Formik>
             <Spacer />
-            <FastImage
-              style={{
-                height: Spacing[96],
-                marginLeft: Spacing[48],
-                bottom: 0,
-              }}
-              source={logoBottom}
-              resizeMode={"contain"}
-            />
+            <FastImage style={{
+              height: Spacing[72],
+              bottom: 0
+            }} source={logoBottom} resizeMode={"contain"}/>
           </SafeAreaView>
           <Spinner
             visible={authStore.isLoading}

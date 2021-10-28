@@ -11,7 +11,7 @@ import { NavigatorParamList } from "@navigators/auth-navigator"
 import {VStack} from "@components/view-stack";
 import Spacer from "@components/spacer";
 import {Colors, Spacing} from "@styles";
-import logoBottom from "@assets/icons/ilead-bottom-logo.png";
+import logoBottom from "@assets/icons/ilead_abm.png";
 import FastImage from "react-native-fast-image";
 
 import SMSVerifyCode from 'react-native-sms-verifycode'
@@ -149,8 +149,7 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
               </VStack>
               <Spacer />
               <FastImage style={{
-                height: Spacing[96],
-                marginLeft: Spacing[48],
+                height: Spacing[72],
                 bottom: 0
               }} source={logoBottom} resizeMode={"contain"}/>
             </KeyboardAvoidingView>

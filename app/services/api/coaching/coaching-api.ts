@@ -1,6 +1,6 @@
 import { JournalUser } from "@models/coaching/journal-model";
 import { ApiResponse } from "apisauce"
-import { FeedbackDetail } from "app/store/store.coaching";
+import {FeedbackDetail, FeedbackJLSixth} from "app/store/store.coaching";
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
 import { CreateJournalResult, FeedbackDetailResult, JournalDetailResult, JournalListResult } from "./coaching-api.types";
@@ -99,15 +99,9 @@ export class CoachingApi {
     commitment: string,
     learnerIds: string[],
     type: string,
-    q1:number,
-    q2:number,
-    q3:number,
-    q4:number,
-    q5:number,
-    q6:number
+    feedback: FeedbackJLSixth
   ): Promise<CreateJournalResult> {
     try {
-      console.log('createJournal ap', coachId)
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.post(
         `/journal`,
@@ -122,17 +116,16 @@ export class CoachingApi {
           learnerIds,
           type,
           questions: {
-            q1,
-            q2,
-            q3,
-            q4,
-            q5,
-            q6
+            q1: feedback.q1,
+            q2: feedback.q2,
+            q3: feedback.q3,
+            q4: feedback.q4,
+            q5: feedback.q5,
+            q6: feedback.q6
           }
         },
       )
-      console.log('createJournal response', response)
-      console.log(response)
+      console.log('createJournal response', response.data)
       if(response.status === 400){
         const res = response.data
         return { kind: "form-error", response: res }

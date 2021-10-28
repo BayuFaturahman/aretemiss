@@ -11,6 +11,7 @@ import {settings, myAccount, changePassword, changePhone, notification} from "@s
 import {notifications} from "@screens/notification";
 import {homepage} from "@screens/homepage";
 import {createProfile} from "@screens";
+import {JournalEntryType} from "@screens/coaching-journal/new-journal-entry";
 
 const screens: AppRoute[] = [
   {
@@ -80,7 +81,10 @@ export type NavigatorParamList = {
   newJournalEntry: {
     isDetail: boolean
   };
-  fillFeedback: undefined;
+  fillFeedback: {
+    isDetail: boolean;
+    data: JournalEntryType;
+  };
   quizForm: undefined;
   notificationList: undefined;
   notificationSettings: undefined;

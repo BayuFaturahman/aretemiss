@@ -12,7 +12,7 @@ import { NavigatorParamList } from "@navigators/auth-navigator"
 import {VStack} from "@components/view-stack";
 import Spacer from "@components/spacer";
 import {Colors, Layout, Spacing} from "@styles";
-import logoBottom from "@assets/icons/ilead-bottom-logo.png";
+import logoBottom from "@assets/icons/ilead_abm.png";
 import FastImage from "react-native-fast-image";
 
 import { Formik } from 'formik';
@@ -205,8 +205,7 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
             </Formik>
             <Spacer height={Spacing[24]} />
             <FastImage style={{
-              height: Spacing[96],
-              marginLeft: Spacing[48],
+              height: Spacing[72],
               bottom: 0
             }} source={logoBottom} resizeMode={"contain"}/>
             </ScrollView>
