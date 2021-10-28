@@ -26,6 +26,25 @@ import moment from "moment"
 import Spinner from "react-native-loading-spinner-overlay"
 
 import { Formik } from 'formik';
+import {FeedbackJLSixth} from "../../store/store.coaching";
+
+// const JournalEntryTypeSchema = Yup.object().shape({
+//   title: Yup.string()
+//     .min(2, 'Too Short!')
+//     .required('Required'),
+//   content: Yup.string()
+//     .min(2, 'Too Short!')
+//     .required('Required'),
+//   strength: Yup.string()
+//     .min(2, 'Too Short!')
+//     .required('Required'),
+//   improvement: Yup.string()
+//     .min(2, 'Too Short!')
+//     .required('Required'),
+//   commitment: Yup.string()
+//     .min(2, 'Too Short!')
+//     .required('Required'),
+// });
 
 export type JournalEntryType = {
   coachId: string
@@ -37,14 +56,7 @@ export type JournalEntryType = {
   commitment: string
   type: string
   learnerIds: string[]
-  questions:{
-    q1:string
-    q2:string
-    q3:string
-    q4:string
-    q5:string
-    q6:string
-  }
+  questions:FeedbackJLSixth
 }
 
 const JournalEntryInitialValue: JournalEntryType = {
@@ -67,8 +79,11 @@ const JournalEntryInitialValue: JournalEntryType = {
   }
 };
 
-const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalMain">> = observer(
-  ({ navigation }) => {
+const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry">> = observer(
+  ({ navigation, route }) => {
+
+    const { isDetail } = route.params
+
     const { mainStore, coachingStore } = useStores()
 
     const styles = StyleSheet.create({
@@ -98,7 +113,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
     const [improvement, setImprovement] = useState<string>("")
     const [commitment, setCommitment] = useState<string>("")
     const [activity, setActivity] = useState<string>("")
-    const [isError, setError] = useState<string>("")
+    const [isError, setError] = useState<string>(null)
 
     const [isEncouragementModalVisible, setIsEncouragementModalVisible] = useState(false)
 
@@ -212,8 +227,6 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
       navigation.goBack()
     }
 
-    const goToFeedback = () => navigation.navigate("fillFeedback")
-
     const verifyData = async () => {
       if (coachingStore.isFormCoach) {
         if (title === "") {
@@ -271,8 +284,9 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
     }
 
     const holdActivitiesId = useCallback((selectedId, setFieldValue)=>{
+      console.log(selectedId)
       setSelectedActivities(selectedId)
-      // setFieldValue('type', selectedId)
+      setFieldValue('type', selectedId)
     }, [selectedActivities])
 
     const searchDataUser = (id: string) => {
@@ -282,25 +296,45 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
     }
 
     const onSubmit = useCallback(async (data: JournalEntryType)=>{
-      console.log(data)
+
+      if (data.title === '') {
+        setError('title')
+      }
+      else if (!data.learnerIds[0]) {
+        setError('learner')
+      }
+      else if (data.content === '') {
+        setError('content')
+      }
+      else if (data.strength === '') {
+        setError('strength')
+      }
+      else if (data.improvement === '') {
+        setError('improvement')
+      }
+      else if (data.commitment === '') {
+        setError('commitment')
+      }
+      else if (data.type === '') {
+        setError('type')
+      }
+      else if (data.date === '') {
+        setError('date')
+      } else {
+        setError("")
+        setJournalEntryForm(data)
+        toggleEncouragementModal()
+      }
     },[])
 
-    // Synchronous validation
-    const validate = (values) => {
-      const errors = {};
-
-      // console.log(values)
-
-      // if (!values.email) {
-      //   errors.email = 'Required';
-      // } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-      //   errors.email = 'Invalid email address';
-      // }
-      //
-      // // ...
-
-      return errors;
-    };
+    const goToFeedback = () => {
+      if(!isDetail){
+        navigation.navigate("fillFeedback",{
+          data: journalEntryForm,
+          isDetail: false
+        })
+      }
+    }
 
     const ActivityTypeSelector = ({onActivityPress = (item) => setActivity(item), selectedActivity = 'weekly_coaching', isError = false}) => {
 
@@ -345,6 +379,14 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
         testID="CoachingJournalMain"
         style={{ backgroundColor: Colors.WHITE, flex: 1, justifyContent: "center" }}
       >
+        <Formik
+          initialValues={journalEntryForm}
+          // validationSchema={JournalEntryTypeSchema}
+          onSubmit={onSubmit}
+          // validate={validate}
+        >
+          {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => (
+            <>
         <SafeAreaView style={Layout.flex}>
           <ScrollView>
             <VStack top={Spacing[32]} horizontal={Spacing[24]}>
@@ -356,13 +398,6 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                 </HStack>
               </HStack>
 
-              <Formik
-                initialValues={journalEntryForm}
-                onSubmit={onSubmit}
-                validate={validate}
-              >
-                {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => (
-                  <>
                     <VStack>
                       <TextField
                         value={values.title}
@@ -375,17 +410,17 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                       />
                       <HStack style={{zIndex: 100}}>
                         <VStack style={{width:Spacing[64]}}>
-                          <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError == "learner" ? styles.textError : null ]} text="dengan" />
+                          <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError === "learner" ? styles.textError : null ]} text="dengan" />
                         </VStack>
                         <Spacer/>
                         <VStack style={{maxWidth: dimensions.screenWidth - Spacing[128]}}>
                           { !coachingStore.isDetail ? <DropDownPicker
                             items={dataTeamMember}
                             isRequired={false}
-                            value={values.learnerIds[0]}
+                            // value={values.lea}
                             onValueChange={
                               (value:IOption)=> {
-                                setFieldValue('learnerIds', [value?.id ?? ''])
+                                setFieldValue('learnerIds', [value?.id])
                               }
                             }
                             placeholder={'Pilih salah satu'}
@@ -395,7 +430,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                           <TextField
                             style={{ paddingTop: 0, minWidth: dimensions.screenWidth - Spacing[128]}}
                             value={journalEntryForm.learnerIds.toString()}
-                            isError={isError === "content"}
+                            isError={isError === "learner"}
                             inputStyle={{minHeight: Spacing[48]}}
                             isRequired={false}
                             secureTextEntry={false}
@@ -416,7 +451,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                         </TouchableOpacity>
                          <Spacer />
                         <VStack top={Spacing[8]} style={{width: '75%'}}>
-                          <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError == "content" ? styles.textError : null ]}>
+                          <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError === "content" ? styles.textError : null ]}>
                             {`Apa yang `}
                             <Text type={'body-bold'} style={{color: Colors.BRIGHT_BLUE}}>
                               {'dibicarakan'}
@@ -526,9 +561,12 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                         <VStack vertical={Spacing[16]}>
                           <VStack bottom={Spacing[8]} horizontal={Spacing[96]}>
                             <ActivityTypeSelector
-                              onActivityPress={holdActivitiesId}
+                              onActivityPress={(item)=>{
+                                console.log(item)
+                                holdActivitiesId(item, setFieldValue)
+                              }}
                               selectedActivity={selectedActivities}
-                              isError={fieldError}
+                              isError={isError === 'type'}
                             />
                           </VStack>
                           <Text
@@ -556,55 +594,58 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                         )}
                       </VStack>
                     </VStack>
-
-                    <Modal
-                      isOpen={isModalVisible}
-                      style={{
-                        // height: '50%',
-                        width: dimensions.screenWidth - Spacing[24],
-                        backgroundColor: 'rgba(52, 52, 52, 0)',
-                      }}
-                    >
-                      <View style={{ flex: 1, justifyContent: 'center' }}>
-                        <VStack style={{backgroundColor: Colors.WHITE, borderRadius: Spacing[48], minHeight: Spacing[256], alignItems: 'center', justifyContent:'center'}} horizontal={Spacing[24]} vertical={Spacing[24]}>
-                          <VStack vertical={Spacing[12]}>
-                            <Spacer height={Spacing[24]} />
-                            <CalendarPicker
-                              onDateChange={(value)=> {
-                                onDateChange(value, setFieldValue)
-                              }}
-                              textStyle={{
-                                fontFamily: typography.primaryBold,
-                                colors: Colors.MAIN_BLUE
-                              }}
-                              selectedDayColor={Colors.MAIN_BLUE}
-                              selectedDayTextColor={Colors.WHITE}
-                              style={{padding: Spacing[20]}}
-                              width={dimensions.screenWidth - Spacing[64]}
-                            />
-                            <HStack style={[Layout.widthFull, {justifyContent: 'center'}]}>
-                              <Button
-                                type={"negative"}
-                                text={"Cancel"}
-                                onPress={toggleModal}
-                              />
-                              <Button
-                                type={"primary"}
-                                text={"Pilih"}
-                                onPress={toggleModal}
-                                style={{minWidth: Spacing[72]}}
-                              />
-                            </HStack>
-                          </VStack>
-                        </VStack>
-                      </View>
-                    </Modal>
-                  </>
-                )}
-              </Formik>
             </VStack>
           </ScrollView>
+          <Modal
+            isOpen={isModalVisible}
+            style={{
+              position: 'absolute',
+              width: dimensions.screenWidth - Spacing[24],
+              backgroundColor: 'rgba(52, 52, 52, 0)',
+            }}
+          >
+            <View style={{ flex: 1, justifyContent: 'center' }}>
+              <VStack style={{backgroundColor: Colors.WHITE, borderRadius: Spacing[48], minHeight: Spacing[256], alignItems: 'center', justifyContent:'center'}} horizontal={Spacing[24]} vertical={Spacing[24]}>
+                <VStack vertical={Spacing[12]}>
+                  <Spacer height={Spacing[24]} />
+                  <CalendarPicker
+                    onDateChange={(value)=> {
+                      onDateChange(value, setFieldValue)
+                    }}
+                    textStyle={{
+                      fontFamily: typography.primaryBold,
+                      colors: Colors.MAIN_BLUE
+                    }}
+                    selectedDayColor={Colors.MAIN_BLUE}
+                    selectedDayTextColor={Colors.WHITE}
+                    style={{padding: Spacing[20]}}
+                    width={dimensions.screenWidth - Spacing[64]}
+                  />
+                  <HStack style={[Layout.widthFull, {justifyContent: 'center'}]}>
+                    <Button
+                      type={"negative"}
+                      text={"Cancel"}
+                      onPress={toggleModal}
+                    />
+                    <Button
+                      type={"primary"}
+                      text={"Pilih"}
+                      onPress={toggleModal}
+                      style={{minWidth: Spacing[72]}}
+                    />
+                  </HStack>
+                </VStack>
+              </VStack>
+            </View>
+          </Modal>
+
         </SafeAreaView>
+
+                  </>
+                  )}
+              </Formik>
+
+
         <Spinner
           visible={coachingStore.isLoading || mainStore.isLoading}
           textContent={"Memuat..."}
@@ -659,7 +700,6 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                       "Feedback ini akan diisi juga oleh coachee-mu juga sehingga kamu dapat membandingkan penilaian dirimu sendiri dengan penilaian dari coachee-mu."
                     }
                   />
-
                   <Spacer height={Spacing[24]} />
                   <Text
                     type={"body"}
@@ -669,13 +709,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
                     }
                   />
                   <Spacer height={Spacing[20]} />
-
                   <HStack bottom={Spacing[32]}>
-                    <Spacer />
-
-                    <Spacer />
-                  </HStack>
-                  <HStack bottom={Spacing[24]}>
                     <Spacer />
                     <VStack style={{ maxWidth: Spacing[256], minWidth: Spacing[128] }}>
                       <Button
@@ -693,7 +727,6 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "coachingJournalM
             </VStack>
           </View>
         </Modal>
-
       </VStack>
     )
   },

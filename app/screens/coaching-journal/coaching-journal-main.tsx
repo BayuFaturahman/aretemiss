@@ -117,7 +117,9 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
     const newEntry = () => {
       coachingStore.isDetailJournal(false)
       coachingStore.setFormCoach(true)
-      navigation.navigate("newJournalEntry")
+      navigation.navigate("newJournalEntry", {
+        isDetail: false
+      })
     }
     const quizForm = () => navigation.navigate("quizForm")
 

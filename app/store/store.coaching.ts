@@ -8,6 +8,7 @@ import ServiceStore from "./store.service";
 import {AuthApi} from "@services/api/auth/auth-api";
 import {Api} from "@services/api";
 import { CoachingApi } from '@services/api/coaching/coaching-api';
+import {JournalEntryType} from "@screens/coaching-journal/new-journal-entry";
 
 // #region MAIN CLASS
 export type FeedbackJLSixth = {
@@ -210,12 +211,7 @@ export default class CoachingStore {
   }
 
   async createJournal(
-    q1:number,
-    q2:number,
-    q3:number,
-    q4:number,
-    q5:number,
-    q6:number
+    data: JournalEntryType
   ){
     console.log('createJournal')
     console.log(this.date)
@@ -223,21 +219,16 @@ export default class CoachingStore {
     this.isLoading = true
 
     const result = await this.coachingApi.createJournal(
-      this.coach_id,
-      this.date,
-      this.title,
-      this.content,
-      this.strength,
-      this.improvement,
-      this.commitment,
-      this.learnerIds,
-      this.type,
-      q1,
-      q2,
-      q3,
-      q4,
-      q5,
-      q6
+      this.mainStore.userProfile.user_id,
+      data.date,
+      data.title,
+      data.content,
+      data.strength,
+      data.improvement,
+      data.commitment,
+      data.learnerIds,
+      data.type,
+      data.questions
     )
 
     console.log(result)
