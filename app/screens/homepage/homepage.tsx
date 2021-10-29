@@ -27,6 +27,7 @@ import {MoodComponent, MoodItemType} from "@screens/homepage/components/mood-com
 import {HomepageErrorCard} from "@screens/homepage/components/homepage-error-card";
 
 import RNAnimated from "react-native-animated-component";
+import {debounce} from "lodash";
 
 const FEED_EXAMPLE_DATA_ITEM:FeedItemType = {
   id: '0',
@@ -66,7 +67,6 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
         navigation.navigate('fillFeedbackDetail')
       });
     }
-
 
     const [, forceUpdate] = useReducer(x => x + 1, 0);
 
@@ -122,11 +122,15 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       }
     }, [coachingStore.listJournal])
 
-    const loadData = async () => {
+    const loadData = debounce( async () => {
       setCoachingJournalData(null)
       await getUserProfile()
       await getJournalList()
-    }
+    }, 1000)
+
+    useEffect(()=> {
+      loadData()
+    }, [])
 
     const createList = () => {
       const id = mainStore.userProfile.user_id

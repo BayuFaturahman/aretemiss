@@ -105,6 +105,7 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
 
     const onRefresh = React.useCallback(async() => {
       setCoachingData([])
+      await coachingStore.clearJournal()
       await coachingStore.getJournal()
     }, []);
 

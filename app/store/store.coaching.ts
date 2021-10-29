@@ -206,6 +206,14 @@ export default class CoachingStore {
     }
   }
 
+  async clearJournal(){
+    this.listJournal = []
+    this.isLoading = false
+    this.errorCode = null
+    this.errorMessage = null
+    this.formErrorCode = null
+  }
+
   setRefreshData(data: boolean){
     this.refreshData = data
   }
