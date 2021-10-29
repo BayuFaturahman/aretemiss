@@ -123,8 +123,20 @@ export const CoachingJournalItemRender = (
                     <View style={{height: Spacing[16], width: Spacing[16], backgroundColor: statusColor, borderRadius: Spacing[128]}} />
                     <Spacer width={Spacing[12]}/>
                     <VStack>
-                      <Text type={'body'} style={{}} text={activitiesItem.title} numberOfLines={2} />
-                      {activitiesItem.coach_fullname ? <Text type={'body'} style={{fontSize: Spacing[12]}} text={`Coached by ${activitiesItem.coach_fullname}`} numberOfLines={1} /> : null}
+                      <Text type={'body'} style={{}} numberOfLines={2} >
+                        {activitiesItem.is_coached ?
+                          <VStack style={{backgroundColor: Colors.SOFT_GREEN, paddingHorizontal: Spacing[4], alignItems: 'center', justifyContent: 'center', borderRadius: Spacing[48]}}>
+                            <Text type={'body'} style={{}} text={activitiesItem.title} numberOfLines={2} />
+                          </VStack>
+                          : <Text type={'body'} style={{}} text={activitiesItem.title} numberOfLines={2} /> }
+                      </Text>
+                      {activitiesItem.coach_fullname ?
+                        <Text type={'body-bold'} style={{color: statusColor, fontSize: Spacing[12]}} numberOfLines={1} >
+                          {activitiesItem.is_coached ? `Coached by ` : 'You Coached '}
+                          <Text type={'body'} style={{color: Colors.UNDERTONE_BLUE}}>
+                            {`${activitiesItem.coach_fullname}`}
+                          </Text>
+                        </Text> : null}
                     </VStack>
                   </HStack>
                 </TouchableOpacity>
