@@ -5,7 +5,7 @@ import {
   fillFeedback,
   quizForm,
   fillFeedbackDetail,
-  overviewJournalEntry, fillFeedbackCoachee
+  overviewJournalEntry, fillFeedbackCoachee, overviewJournalEntryByCoachee
 } from "@screens/coaching-journal";
 import {settings, myAccount, changePassword, changePhone, notification} from "@screens/settings";
 import {notifications} from "@screens/notification";
@@ -67,6 +67,10 @@ const screens: AppRoute[] = [
     component: overviewJournalEntry,
   },
   {
+    name: 'overviewJournalEntryByCoachee',
+    component: overviewJournalEntryByCoachee,
+  },
+  {
     name: 'fillFeedbackCoachee',
     component: fillFeedbackCoachee,
   },
@@ -92,6 +96,12 @@ export type NavigatorParamList = {
   fillFeedbackDetail: undefined;
   overviewJournalEntry: {
     journalId: string
+  };
+  overviewJournalEntryByCoachee: {
+    title: string;
+    lessonLearned: string;
+    commitment: string;
+    content: string;
   };
   fillFeedbackCoachee: {
     isFilled: boolean,
