@@ -166,7 +166,7 @@ export function TextField(props: TextFieldProps) {
         {renderChangeButton()}
         <HStack>
           <Spacer />
-          {renderCharacterCount(props.value.length)}
+          {renderCharacterCount(props.value?.length ?? 0)}
         </HStack>
       </View>
     )
