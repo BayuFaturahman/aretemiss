@@ -110,18 +110,26 @@ const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = o
     },[])
 
   useEffect(() => {
-      if(coachingStore.messageCreateJournal == "Success" && !coachingStore.isDetail){
+      if(coachingStore.messageCreateJournal === "Success" && !coachingStore.isDetail){
         coachingStore.resetCoachingStore()
         coachingStore.setRefreshData(true)
-        navigation.navigate("coachingJournalMain")
+        coachingStore.clearJournal().then(()=>{
+          navigation.reset({
+            routes: [{ name: 'coachingJournalMain' }]
+          })
+        })
       }
   },[coachingStore.messageCreateJournal, coachingStore.createJournalSucceed])
 
   useEffect(() => {
-      if(coachingStore.messageCreateFeedback == "Success" && coachingStore.isDetail){
+      if(coachingStore.messageCreateFeedback === "Success" && coachingStore.isDetail){
         coachingStore.resetCoachingStore()
         coachingStore.setRefreshData(true)
-        navigation.navigate("coachingJournalMain")
+        coachingStore.clearJournal().then(()=>{
+          navigation.reset({
+            routes: [{ name: 'coachingJournalMain' }]
+          })
+        })
       }
   },[coachingStore.messageCreateFeedback, coachingStore.createFeedbackSucced])
 

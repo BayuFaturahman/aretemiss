@@ -3,7 +3,6 @@ apply plugin: "com.android.application"
 apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 
-
 import com.android.build.OutputFile
 
 /**
@@ -143,7 +142,7 @@ android {
         applicationId "com.ilead"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 4
+        versionCode 7
         versionName "1.0"
     }
     splits {

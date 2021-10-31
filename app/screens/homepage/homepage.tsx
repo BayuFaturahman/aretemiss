@@ -75,6 +75,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     const [feedData, setFeedDAta] = useState<FeedItemType>(FEED_EXAMPLE_DATA_ITEM);
 
     const [moodData, setMoodData] = useState<MoodItemType>(MOOD_EXAMPLE_DATA);
+
     const holdActivitiesId = useCallback((selectedId)=>{
       setSelectedActivities(selectedId)
     }, [selectedActivities])
@@ -145,12 +146,12 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     }, [coachingStore.listJournal])
 
     const loadData = debounce( async () => {
-      setCoachingJournalData(null)
       await getUserProfile()
       await getJournalList()
-    }, 1000)
+    }, 500)
 
     useEffect(()=> {
+      setCoachingJournalData(null)
       loadData()
     }, [])
 

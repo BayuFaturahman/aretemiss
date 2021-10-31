@@ -141,7 +141,7 @@ export const CoachingJournalItemRender = (
                 </TouchableOpacity>
               )
             }
-          },[selectedActivities])
+          },[selectedActivities, item, index])
 
           return(
             <VStack style={[Layout.widthFull,{minWidth: dimensions.screenWidth - Spacing[72]}]}>
