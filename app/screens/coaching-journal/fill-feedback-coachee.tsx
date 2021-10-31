@@ -138,7 +138,11 @@ const FillFeedbackCoachee: FC<StackScreenProps<NavigatorParamList, "fillFeedback
       if(coachingStore.messageCreateJournal == "Success" && !coachingStore.isDetail){
         coachingStore.resetCoachingStore()
         coachingStore.setRefreshData(true)
-        navigation.navigate("coachingJournalMain")
+        coachingStore.clearJournal().then(()=>{
+          navigation.reset({
+            routes: [{ name: 'coachingJournalMain' }]
+          })
+        })
       }
   },[coachingStore.messageCreateJournal, coachingStore.createJournalSucceed])
 
@@ -146,7 +150,11 @@ const FillFeedbackCoachee: FC<StackScreenProps<NavigatorParamList, "fillFeedback
       if(coachingStore.messageCreateFeedback == "Success" && coachingStore.isDetail){
         coachingStore.resetCoachingStore()
         coachingStore.setRefreshData(true)
-        navigation.navigate("coachingJournalMain")
+        coachingStore.clearJournal().then(()=>{
+          navigation.reset({
+            routes: [{ name: 'coachingJournalMain' }]
+          })
+        })
       }
   },[coachingStore.messageCreateFeedback, coachingStore.createFeedbackSucced])
 
