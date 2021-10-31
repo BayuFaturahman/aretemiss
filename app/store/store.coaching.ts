@@ -486,6 +486,7 @@ export default class CoachingStore {
     lessonsLearned: string,
     strength: string,
     type: string,
+    improvement: string
   ){
     this.isLoading = true
     console.log('updateJournal')
@@ -493,8 +494,8 @@ export default class CoachingStore {
     const result =  this.isFormCoach ? await this.coachingApi.updateJournalCoach(
       content,
       commitment,
-      lessonsLearned,
       strength,
+      improvement,
       type,
       this.detailId
     ) : await this.coachingApi.updateJournalLearner(
