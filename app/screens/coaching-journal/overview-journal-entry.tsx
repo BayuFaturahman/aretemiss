@@ -128,10 +128,10 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
    
     const getListDetail = useCallback(async ()=>{
       await coachingStore.getJournalDetail()
-      console.log('coachingStore.getListDetail', coachingStore.journalDetail)
-      console.log('coachingStore.isDetailCoach', coachingStore.isDetailCoach)
+      // console.log('coachingStore.getListDetail', coachingStore.journalDetail)
+      // console.log('coachingStore.isDetailCoach', coachingStore.isDetailCoach)
 
-      console.log('coachingStore.getListDetail.is_edited', coachingStore.journalDetail.is_edited)
+      // console.log('coachingStore.getListDetail.is_edited', coachingStore.journalDetail.is_edited)
 
       // if(coachingStore.isDetailCoach){
         
@@ -179,11 +179,11 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
 
 
 
-    useEffect(() => {
-        if(coachingStore.messageUpdatedJournal == "Success" && coachingStore.isDetail && !coachingStore.isDetailCoach){
-          navigation.navigate("fillFeedback")
-        }
-    },[coachingStore.messageUpdatedJournal])
+    // useEffect(() => {
+    //     if(coachingStore.messageUpdatedJournal == "Success" && coachingStore.isDetail && !coachingStore.isDetailCoach){
+    //       navigation.navigate("fillFeedback")
+    //     }
+    // },[coachingStore.messageUpdatedJournal])
 
     const goBack = () => {
       coachingStore.resetCoachingStore()
