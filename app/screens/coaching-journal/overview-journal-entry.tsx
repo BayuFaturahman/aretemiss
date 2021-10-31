@@ -4,7 +4,7 @@ import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {
   Text,
-  Button, TextField, DropDownPicker, BackNavigation
+  Button, TextField, BackNavigation, DismissKeyboard
 } from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
 import {HStack, VStack} from "@components/view-stack";
@@ -32,9 +32,10 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
   ({ navigation, route }) => {
     const {mainStore, coachingStore} = useStores()
 
-    const { journalId } = route.params
+    const { journalId, isCoachee } = route.params
 
     console.log('overview journal '+ journalId)
+    console.log('is coachee '+ isCoachee)
 
     const styles = StyleSheet.create({
       textError: {
@@ -58,11 +59,13 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
     const [jlContent, setJlContent] = useState<string>('');
     const [jlCommitment, setJlCommitment] = useState<string>('');
     const [jlLessonLearned, setJlLessonLearned] = useState<string>('');
-    
+
     const [activity, setActivity] = useState<string>('');
     const [isError, setError] = useState<string>('');
 
     const [isOnEditMode, setIsOnEditMode] = useState(true);
+
+    const [coach, setCoach] = useState<string>('');
 
     const journalEntryInitialValue = {
       // coachId: '',
@@ -125,16 +128,29 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
       // coachingStore.resetLoading()
     }, [])
 
-   
+
     const getListDetail = useCallback(async ()=>{
       await coachingStore.getJournalDetail()
-      // console.log('coachingStore.getListDetail', coachingStore.journalDetail)
-      // console.log('coachingStore.isDetailCoach', coachingStore.isDetailCoach)
 
-      // console.log('coachingStore.getListDetail.is_edited', coachingStore.journalDetail.is_edited)
+      if (isCoachee){
+        console.log('is coachee true')
+        console.log(coachingStore.journalDetail)
+        journalEntryInitialValue.learner = coachingStore.journalDetail.jl_learner_fullname;
+        journalEntryInitialValue.jlContent = coachingStore.journalDetail.jl_content;
+        journalEntryInitialValue.jlLessonLearned = coachingStore.journalDetail.jl_lesson_learned;
+        journalEntryInitialValue.jlCommitment = coachingStore.journalDetail.jl_commitment;
 
-      // if(coachingStore.isDetailCoach){
-        
+        setJlLessonLearned(coachingStore.journalDetail.jl_lesson_learned)
+        setJlCommitment(coachingStore.journalDetail.jl_commitment);
+        setJlContent(coachingStore.journalDetail.jl_content);
+        setTitle(`${coachingStore.journalDetail.journal_title}`)
+        setSelectedDate(coachingStore.journalDetail.journal_date)
+        setSelectedActivities(coachingStore.journalDetail.journal_type)
+        setCoach(coachingStore.journalDetail.coach_fullname)
+        if(coachingStore.journalDetail.is_edited){
+          setIsOnEditMode(false)
+        }
+      }else {
         journalEntryInitialValue.title = coachingStore.journalDetail.journal_title;
         journalEntryInitialValue.content = coachingStore.journalDetail.journal_content;
         journalEntryInitialValue.strength = coachingStore.journalDetail.journal_strength;
@@ -143,22 +159,14 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
         journalEntryInitialValue.learner = coachingStore.journalDetail.jl_learner_fullname[0];
 
         setJlLessonLearned(coachingStore.journalDetail.jl_lesson_learned[0].desc)
-        setJlCommitment(coachingStore.journalDetail.jl_commitment[0].desc);        
-        setJlContent(coachingStore.journalDetail.jl_content[0].desc);        
+        setJlCommitment(coachingStore.journalDetail.jl_commitment[0].desc);
+        setJlContent(coachingStore.journalDetail.jl_content[0].desc);
         setTitle(`${coachingStore.journalDetail.journal_title} with ${coachingStore.journalDetail.jl_learner_fullname[0]}`)
         setSelectedDate(coachingStore.journalDetail.journal_date)
+        setSelectedActivities(coachingStore.journalDetail.journal_type)
         forceUpdate()
         setIsOnEditMode(false)
-      // }else{
-      //   // setTitle(coachingStore.journalDetail.journal_title)
-      //   // setContent(coachingStore.journalDetail.jl_content)
-      //   // setCommitment(coachingStore.journalDetail.jl_commitment)
-      //   // setLeassons(coachingStore.journalDetail.jl_lesson_learned)
-      //   // setSelectedDate(coachingStore.journalDetail.journal_date)
-      //   // setSelectedActivities(coachingStore.journalDetail.journal_type)
-      //   // setLearnerDetail(coachingStore.journalDetail.coach_fullname)
-      //   // forceUpdate()
-      // }
+      }
 
     },[coachingStore.journalDetail, coachingStore.journalDetailSucced])
 
@@ -177,21 +185,11 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
       }
     }, [])
 
-
-
-    // useEffect(() => {
-    //     if(coachingStore.messageUpdatedJournal == "Success" && coachingStore.isDetail && !coachingStore.isDetailCoach){
-    //       navigation.navigate("fillFeedback")
-    //     }
-    // },[coachingStore.messageUpdatedJournal])
-
     const goBack = () => {
       coachingStore.resetCoachingStore()
       navigation.goBack()
     }
 
-    const goToFeedback = () => navigation.navigate("fillFeedback")
-      
     const goToOverviewJournalByCoachee = () => {
       console.log('journalEntryInitialValue : ', journalEntryInitialValue)
       navigation.navigate("overviewJournalEntryByCoachee", {
@@ -201,7 +199,14 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
         content: jlContent
       })
     }
-    
+
+    const goToFeedback = () => {
+      navigation.navigate("fillFeedbackCoachee",{
+        isFilled: false,
+        journalId: journalId
+      })
+    }
+
     const verifyData = async (data) => {
       console.log(coachingStore.journalDetail.is_coachee)
       console.log(coachingStore.journalDetail.is_edited)
@@ -209,31 +214,14 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
       console.log(coachingStore.isDetail)
       console.log('verify data: ',data)
 
-      // if (coachingStore.journalDetail.is_coachee){
-      //   if(coachingStore.journalDetail.is_edited){
-      //     console.log('is coachee && is edited')
-      //     console.log(journalId)
-      //     navigation.navigate("fillFeedbackCoachee", { isFilled: true, journalId: journalId })
-      //   } else {
-      //     if(data.content == "" || data.content === null){
-      //       setError("content")
-      //     }else if(data.strength == "" || data.strength === null){
-      //       setError("strength")
-      //     }else if(data.improvement == "" || data.improvement === null){
-      //       setError("improvement")
-      //     }else{
-      //       await coachingStore.updateJournal(data)
-      //     }
-      //   }
-      // } else 
       if(coachingStore.isFormCoach){
-        if(data.content == ""){
+        if(data.content === ""){
           setError("content")
-        }else if(data.strength == ""){
+        }else if(data.strength === ""){
           setError("strength")
-        }else if(data.improvement == ""){
+        }else if(data.improvement === ""){
           setError("improvement")
-        }else if(data.commitment == ""){
+        }else if(data.commitment === ""){
           setError("commitment")
         }else{
           if(coachingStore.isDetail){
@@ -241,11 +229,30 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
             await coachingStore.updateJournal(data.content,data.commitment,"",data.strength,selectedActivities,data.improvement)
             toggleModalEditEntry()
             setIsOnEditMode(false)
-          } 
+          }
         }
       }
 
+      if(isCoachee){
+        if (data.jlContent === '' || data.jlContent === null) {
+          setError('jlContent')
+        }
+        else if (data.jlLessonLearned === '' || data.jlLessonLearned === null) {
+          setError('jlLessonLearned')
+        }
+        else if (data.jlCommitment === '' || data.jlCommitment === null) {
+          setError('jlCommitment')
+        }
+        else {
+          setError('')
+          await coachingStore.updateJournalCoachee(
+            data.jlContent, data.jlLessonLearned, data.jlCommitment, journalId)
+          toggleModalEditEntry()
+          setIsOnEditMode(false)
+        }
+      }
     }
+
 
 
     const holdActivitiesId = useCallback((selectedId)=>{
@@ -293,179 +300,243 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
         setIsOnEditMode(false)
     }
 
-   
-
     return (
       <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.WHITE, flex: 1, justifyContent: 'center'}}>
         <SafeAreaView style={Layout.flex}>
         <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
-          <ScrollView>
-              
-            <Formik
-              initialValues={journalEntryInitialValue}
-              onSubmit={(values) =>{ 
-                verifyData(values)
-              }}
-            >
-              {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => (
-                <>
-                  <VStack top={Spacing[32]} horizontal={Spacing[24]}>
-                    <HStack>
-                      <Text type={'left-header'} style={{}} text="Overview journal entry" />
-                      <Spacer/>
+            <ScrollView>
+              <DismissKeyboard>
+              <Formik
+                initialValues={journalEntryInitialValue}
+                onSubmit={(values) =>{
+                  verifyData(values)
+                }}
+              >
+                {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => (
+                  <>
+                    <VStack top={Spacing[32]} horizontal={Spacing[24]}>
                       <HStack>
-                        {isOnEditMode ?
-                          <Button
-                            type={"negative"}
-                            text={"Cancel"}
-                            onPress={onClickCancel}
-                          />:
-                          <Button
-                            type={"negative"}
-                            text={"Edit Entry"}
-                            onPress={onClickEditEntry}
-                          />
-                        }
+                        <Text type={'left-header'} style={{}} text="Isi journal entry" />
+                        <Spacer/>
+                        <HStack>
+                          {isOnEditMode ?
+                            <Button
+                              type={"negative"}
+                              text={"Cancel"}
+                              onPress={onClickCancel}
+                            />:
+                            <Button
+                              type={"negative"}
+                              text={"Edit Entry"}
+                              onPress={onClickEditEntry}
+                            />
+                          }
+                        </HStack>
                       </HStack>
-                    </HStack>
 
-                    <VStack>
-                      <TextField
-                        value={title}
-                        isRequired={false}
-                        editable={false}
-                        inputStyle={{backgroundColor:Colors.MAIN_BLUE, color:Colors.WHITE, textAlign:'left', paddingHorizontal: 10, fontWeight:'bold'}}
-                        secureTextEntry={false}
-                      />
-                      <HStack style={{zIndex: 100}}>
-                      </HStack>
-                      <HStack>
-                        <TouchableOpacity
-                          style={{height: '100%', width: '20%'}}
-                          onPress={toggleModal}
-                          disabled={coachingStore.isDetail}
-                        >
-                          <VStack horizontal={Spacing[8]} vertical={Spacing[2]} style={{flex:1, width: '100%', borderRadius: Spacing[12], alignItems: 'flex-end', justifyContent: 'flex-end', backgroundColor: Colors.MAIN_BLUE}}>
-                            <Text type={'button'} style={{color:Colors.WHITE, bottom: -Spacing[8]}} text={`${moment(selectedDate).format('DD MMM')}`.split(' ')[0]} />
-                            <Text type={'button'} style={{color:Colors.WHITE}}>{`${moment(selectedDate).format('DD MMM')}`.split(' ')[1]}</Text>
-                          </VStack>
-                        </TouchableOpacity>
-                        <Spacer />
-                        <VStack style={{width: '75%'}}>
-                          <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError == "content" ? styles.textError : null ]}>
-                            {`Apa yang `}
-                            <Text type={'body-bold'} style={{color: Colors.BRIGHT_BLUE}}>
-                              {'dibicarakan'}
+                      <VStack>
+                        <TextField
+                          value={title}
+                          isRequired={false}
+                          editable={false}
+                          inputStyle={{backgroundColor:Colors.MAIN_BLUE, color:Colors.WHITE, textAlign:'left', paddingHorizontal: 10, fontWeight:'bold'}}
+                          style={{paddingVertical: 0}}
+                          secureTextEntry={false}
+                        />
+                        { isCoachee ?
+                        <HStack>
+                            <VStack left={Spacing[24]} right={Spacing[8]}>
+                                <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError === "title" ? styles.textError : null ]}>
+                                  {`dengan`}
+                                </Text>
+                            </VStack>
+                            <TextField
+                                value={coach}
+                                isRequired={false}
+                                editable={false}
+                                inputStyle={{backgroundColor:Colors.MAIN_BLUE, color:Colors.WHITE, textAlign:'left', paddingHorizontal: 10, fontWeight:'bold'}}
+                                style={{paddingVertical: 0, paddingBottom: Spacing[12], flex: 1, width: '100%'}}
+                                secureTextEntry={false}
+                            />
+                        </HStack> : <Spacer height={Spacing[12]} /> }
+                        <HStack>
+                          <TouchableOpacity
+                            style={{height: '100%', width: '20%'}}
+                            onPress={toggleModal}
+                            disabled={coachingStore.isDetail}
+                          >
+                            <VStack horizontal={Spacing[8]} vertical={Spacing[2]} style={{flex:1, width: '100%', borderRadius: Spacing[12], alignItems: 'flex-end', justifyContent: 'flex-end', backgroundColor: Colors.MAIN_BLUE}}>
+                              <Text type={'button'} style={{color:Colors.WHITE, bottom: -Spacing[8]}} text={`${moment(selectedDate).format('DD MMM')}`.split(' ')[0]} />
+                              <Text type={'button'} style={{color:Colors.WHITE}}>{`${moment(selectedDate).format('DD MMM')}`.split(' ')[1]}</Text>
+                            </VStack>
+                          </TouchableOpacity>
+                          <Spacer />
+                          <VStack style={{width: '75%'}}>
+                            <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError === "content" ? styles.textError : null ]}>
+                              {`Apa yang `}
+                              <Text type={'body-bold'} style={{color: Colors.BRIGHT_BLUE}}>
+                                {'dibicarakan'}
+                              </Text>
+                              {` saat coaching?`}
                             </Text>
-                            {` saat coaching?`}
+                            <TextField
+                              style={{ paddingTop: 0}}
+                              value={isCoachee ? values.jlContent : values.content}
+                              isError={isError === "content" || isError === "jlContent"}
+                              onChangeText={isCoachee ? handleChange('jlContent') : handleChange('content')}
+                              inputStyle={isOnEditMode? {minHeight: Spacing[72]} : {minHeight: Spacing[72], backgroundColor:Colors.LIGHT_GRAY} }
+                              editable={isOnEditMode}
+                              isRequired={false}
+                              secureTextEntry={false}
+                              isTextArea={true}
+                            />
+                          </VStack>
+                        </HStack>
+                        {coachingStore.isFormCoach && <VStack top={Spacing[12]}>
+                          <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError === "strength" ? styles.textError : null ]}>
+                            {`Sebagai coach, apa yang sudah saya lakukan dengan `}
+                            <Text type={'body-bold'} style={{color: Colors.BRIGHT_BLUE}}>
+                              {'efektif?'}
+                            </Text>
                           </Text>
                           <TextField
                             style={{ paddingTop: 0}}
-                            value={values.content}
-                            isError={isError == "content"}
-                            onChangeText={handleChange('content')}
-                            inputStyle={isOnEditMode? {minHeight: Spacing[72]} : {minHeight: Spacing[72], backgroundColor:Colors.LIGHT_GRAY} }
+                            inputStyle={isOnEditMode? {minHeight: Spacing[48]} : {minHeight: Spacing[48], backgroundColor:Colors.LIGHT_GRAY}}
+                            editable={isOnEditMode}
+                            isRequired={false}
+                            value={values.strength}
+                            isError={isError === "strength"}
+                            onChangeText={handleChange('strength')}
+                            secureTextEntry={false}
+                            isTextArea={true}
+                          />
+                        </VStack>}
+                        {coachingStore.isFormCoach &&<VStack top={Spacing[12]}>
+                          <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError == "improvement" ? styles.textError : null ]}>
+                            {`Sebagai coach, kualitas apa yang dapat saya `}
+                            <Text type={'body-bold'} style={[{color: Colors.BRIGHT_BLUE}, fieldError ? styles.textError : null]}>
+                              {'tingkatkan?'}
+                            </Text>
+                          </Text>
+                          <TextField
+                            style={{ paddingTop: 0}}
+                            inputStyle={isOnEditMode? {minHeight: Spacing[48]} : {minHeight: Spacing[48], backgroundColor:Colors.LIGHT_GRAY}}
                             editable={isOnEditMode}
                             isRequired={false}
                             secureTextEntry={false}
                             isTextArea={true}
+                            isError={isError === "improvement"}
+                            value={values.improvement}
+                            onChangeText={handleChange('improvement')}
                           />
-                        </VStack>
-                      </HStack>
-                      {coachingStore.isFormCoach && <VStack top={Spacing[12]}>
-                        <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError == "strength" ? styles.textError : null ]}>
-                          {`Sebagai coach, apa yang sudah saya lakukan dengan `}
-                          <Text type={'body-bold'} style={{color: Colors.BRIGHT_BLUE}}>
-                            {'efektif?'}
-                          </Text>
-                        </Text>
-                        <TextField
-                          style={{ paddingTop: 0}}
-                          inputStyle={isOnEditMode? {minHeight: Spacing[48]} : {minHeight: Spacing[48], backgroundColor:Colors.LIGHT_GRAY}} 
-                          editable={isOnEditMode}
-                          isRequired={false}
-                          value={values.strength}
-                          isError={isError == "strength"}
-                          onChangeText={handleChange('strength')}
-                          secureTextEntry={false}
-                          isTextArea={true}
-                        />
-                      </VStack>}
-                      {coachingStore.isFormCoach &&<VStack top={Spacing[12]}>
-                        <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError == "improvement" ? styles.textError : null ]}>
-                          {`Sebagai coach, kualitas apa yang dapat saya `}
-                          <Text type={'body-bold'} style={[{color: Colors.BRIGHT_BLUE}, fieldError ? styles.textError : null]}>
-                            {'tingkatkan?'}
-                          </Text>
-                        </Text>
-                        <TextField
-                          style={{ paddingTop: 0}}
-                          inputStyle={isOnEditMode? {minHeight: Spacing[48]} : {minHeight: Spacing[48], backgroundColor:Colors.LIGHT_GRAY}} 
-                          editable={isOnEditMode}
-                          isRequired={false}
-                          secureTextEntry={false}
-                          isTextArea={true}
-                          isError={isError == "improvement"}
-                          value={values.improvement}
-                          onChangeText={handleChange('improvement')}
-                        />
-                      </VStack>}
+                        </VStack>}
 
-                      {coachingStore.isFormCoach &&
-                      <>
-                        <VStack top={Spacing[12]} >
-                          <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError == "commitment" ? styles.textError : null ]}>
-                              {`Apa saja yang akan saya lakukan secara\nberbeda untuk`}
+                        {coachingStore.isFormCoach &&
+                        <>
+                          <VStack top={Spacing[12]} >
+                            <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError == "commitment" ? styles.textError : null ]}>
+                                {`Apa saja yang akan saya lakukan secara\nberbeda untuk`}
+                                <Text type={'body-bold'} style={{color: Colors.BRIGHT_BLUE}}>
+                                  {' sesi selanjutnya?'}
+                                </Text>
+                            </Text>
+                            <TextField
+                                style={{ paddingTop: 0}}
+                                inputStyle={isOnEditMode? {minHeight: Spacing[128]} : {minHeight: Spacing[128], backgroundColor:Colors.LIGHT_GRAY}}
+                                isRequired={false}
+                                secureTextEntry={false}
+                                isTextArea={true}
+                                editable={isOnEditMode}
+                                value={values.commitment}
+                                isError={isError === "commitment"}
+                                onChangeText={handleChange('commitment')}
+                            />
+                          </VStack>
+                        </>
+                        }
+                      </VStack>
+                      { isCoachee ?
+                        <>
+                          <VStack top={Spacing[8]}>
+                            <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError == "content" ? styles.textError : null ]}>
+                              {`Tulislah `}
                               <Text type={'body-bold'} style={{color: Colors.BRIGHT_BLUE}}>
-                                {' sesi selanjutnya?'}
+                                {'"lesson learned"'}
                               </Text>
-                          </Text>
-                          <TextField
+                              {`-mu di coaching session ini.`}
+                            </Text>
+                            <TextField
                               style={{ paddingTop: 0}}
-                              inputStyle={isOnEditMode? {minHeight: Spacing[128]} : {minHeight: Spacing[128], backgroundColor:Colors.LIGHT_GRAY}} 
+                              value={values.jlLessonLearned}
+                              isError={isError === "jlLessonLearned"}
+                              onChangeText={handleChange('jlLessonLearned')}
+                              inputStyle={isOnEditMode? {minHeight: Spacing[72]} : {minHeight: Spacing[72], backgroundColor:Colors.LIGHT_GRAY} }
+                              editable={isOnEditMode}
                               isRequired={false}
                               secureTextEntry={false}
                               isTextArea={true}
+                            />
+                          </VStack>
+                          <VStack>
+                            <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError == "content" ? styles.textError : null ]}>
+                              <Text type={'body-bold'} style={{color: Colors.BRIGHT_BLUE}}>
+                                {'Komitmen'}
+                              </Text>
+                              {` apa saja yang sudah disepakati bersama?`}
+                            </Text>
+                            <TextField
+                              style={{ paddingTop: 0}}
+                              value={values.jlCommitment}
+                              isError={isError === "jlCommitment"}
+                              onChangeText={handleChange('jlCommitment')}
+                              inputStyle={isOnEditMode? {minHeight: Spacing[72]} : {minHeight: Spacing[72], backgroundColor:Colors.LIGHT_GRAY} }
                               editable={isOnEditMode}
-                              value={values.commitment}
-                              isError={isError == "commitment"}
-                              onChangeText={handleChange('commitment')}
-                          />
-                        </VStack>
-                      </>
-                      }
+                              isRequired={false}
+                              secureTextEntry={false}
+                              isTextArea={true}
+                            />
+                          </VStack>
+                        </> : null }
                     </VStack>
-                  </VStack>
 
-                  {coachingStore.isFormCoach && <VStack vertical={Spacing[16]}>
-                    <VStack bottom={Spacing[8]} horizontal={Spacing[128]}>
-                      <ActivityTypeSelector onActivityPress={holdActivitiesId} selectedActivity={selectedActivities} isError={fieldError} />
+                    {coachingStore.isFormCoach && <VStack vertical={Spacing[16]}>
+                      <VStack bottom={Spacing[8]} horizontal={Spacing[128]}>
+                        <ActivityTypeSelector onActivityPress={holdActivitiesId} selectedActivity={selectedActivities} isError={fieldError} />
+                      </VStack>
+                    </VStack>}
+                    <VStack horizontal={Spacing[72]} vertical={Spacing[24]}>
+                      {isCoachee === false ?
+                        <ActivitiesTypeLegends showedItems={[1,2]} />:
+                        <ActivitiesTypeLegends showedItems={[3]} />
+                      }
+                      <Spacer height={Spacing[24]} />
+                      {/* {coachingStore.isDetail ? */}
+                          {!isOnEditMode ?
+                            <Button
+                              type={"primary"}
+                              text={isCoachee ? "Lakukan feedback" : "Lihat catatan coachee"}
+                              onPress={ isCoachee ? goToFeedback : goToOverviewJournalByCoachee}
+                            /> :
+                            <Button
+                              type={"warning"}
+                              text={"Save entry"}
+                              onPress={() => handleSubmit()}
+                            />
+                          }
                     </VStack>
-                  </VStack>}
-                  <VStack horizontal={Spacing[72]} vertical={Spacing[24]}>
-                    {coachingStore.isFormCoach ?
-                      <ActivitiesTypeLegends showedItems={[1,2]} />:
-                      <ActivitiesTypeLegends showedItems={[3]} />
-                    }
-                    <Spacer height={Spacing[24]} />
-                    {/* {coachingStore.isDetail ? */}
-                        {!isOnEditMode ?
-                          <Button
-                            type={"primary"}
-                            text={"Lihat catatan coachee"}
-                            onPress={goToOverviewJournalByCoachee}
-                          />:
-                          <Button
-                            type={"warning"}
-                            text={"Save entry"}
-                            onPress={() => handleSubmit()}
-                          />
-                        }
-                  </VStack>
-                </>
-              )}
-            </Formik>
-          </ScrollView>
+                    <VStack horizontal={Spacing[24]} bottom={Spacing[24]}>
+                      { isOnEditMode ?
+                      <Text
+                          type={"warning"}
+                          style={{ fontSize: Spacing[12], textAlign: "center" }}
+                          text={"Penting! Catatan coaching-mu belum tersimpan sampai kamu klik “Submit” setelah melakukan feedback."}
+                      /> : null }
+                    </VStack>
+                  </>
+                )}
+              </Formik>
+              </DismissKeyboard>
+            </ScrollView>
         </SafeAreaView>
 
         <Modal
@@ -576,7 +647,6 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
         <Spinner
           visible={coachingStore.isLoading || mainStore.isLoading}
           textContent={'Memuat...'}
-          // textStyle={styles.spinnerTextStyle}
         />
       </VStack>
     )

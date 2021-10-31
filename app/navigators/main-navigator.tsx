@@ -95,7 +95,8 @@ export type NavigatorParamList = {
   homepage: undefined;
   fillFeedbackDetail: undefined;
   overviewJournalEntry: {
-    journalId: string
+    journalId: string,
+    isCoachee: boolean
   };
   overviewJournalEntryByCoachee: {
     title: string;

@@ -92,19 +92,14 @@ export const CoachingJournalItemRender = (
 
           let statusColor:string = Colors.MAIN_BLUE
 
-          console.log(activitiesItem.type)
-          console.log(activitiesItem.coach_id)
-          console.log(activitiesItem.learner_id)
-          console.log(activitiesItem.is_coached)
-
-          if(activitiesItem.is_coached){
+          if(activitiesItem.is_coachee){
             statusColor = Colors.SOFT_GREEN;
           } else {
             switch (activitiesItem.type){
-              case "weekly_coaching":
+              case "formal_coaching":
                 statusColor = Colors.HONEY_YELLOW;
                 break;
-              case "kumpul_santai":
+              case "informal_coaching":
                 statusColor = Colors.SOFT_PURPLE;
                 break;
               case "coached":
@@ -124,7 +119,7 @@ export const CoachingJournalItemRender = (
                     <Spacer width={Spacing[12]}/>
                     <VStack>
                       <Text type={'body'} style={{}} numberOfLines={2} >
-                        {activitiesItem.is_coached ?
+                        {activitiesItem.is_coachee ?
                           <VStack style={{backgroundColor: Colors.SOFT_GREEN, paddingHorizontal: Spacing[4], alignItems: 'center', justifyContent: 'center', borderRadius: Spacing[48]}}>
                             <Text type={'body'} style={{}} text={activitiesItem.title} numberOfLines={2} />
                           </VStack>
@@ -132,10 +127,14 @@ export const CoachingJournalItemRender = (
                       </Text>
                       {activitiesItem.coach_fullname ?
                         <Text type={'body-bold'} style={{color: statusColor, fontSize: Spacing[12]}} numberOfLines={1} >
-                          {activitiesItem.is_coached ? `Coached by ` : 'You Coached '}
-                          <Text type={'body'} style={{color: Colors.UNDERTONE_BLUE}}>
+                          {activitiesItem.is_coachee ? `Coached by ` : 'You Coached '}
+                          {activitiesItem.is_coachee ? <Text type={'body'} style={{color: Colors.UNDERTONE_BLUE}}>
                             {`${activitiesItem.coach_fullname}`}
-                          </Text>
+                          </Text> :
+                            <Text type={'body'} style={{color: Colors.UNDERTONE_BLUE}}>
+                              {`${activitiesItem.learner_fullname}`}
+                            </Text>
+                          }
                         </Text> : null}
                     </VStack>
                   </HStack>

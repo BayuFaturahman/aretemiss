@@ -139,7 +139,8 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
       console.log('goToNote coach_id', coach_id)
       console.log('goToNote user_id', mainStore.userProfile.user_id)
       navigation.navigate("overviewJournalEntry", {
-        journalId: id
+        journalId: id,
+        isCoachee: false
       })
     }, [])
 
@@ -161,7 +162,8 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
       console.log('goToNoteFeedback user_id', mainStore.userProfile.user_id)
 
       navigation.navigate("overviewJournalEntry", {
-        journalId: id
+        journalId: id,
+        isCoachee: true
       })
     }, [])
 
@@ -198,7 +200,7 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
                   title: journalData.journal_title,
                   type: journalData.journal_type,
                   id: journalData.journal_id,
-                  isTagged: id != journalData.coach_id,
+                  isTagged: id !== journalData.coach_id,
                   coach_id: journalData.coach_id
                }
              );

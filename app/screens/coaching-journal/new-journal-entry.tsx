@@ -200,18 +200,6 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
     }, [coachingStore.journalDetail, coachingStore.journalDetailSucced])
 
     useEffect(()=>{
-      // console.log('coachingStore.isDetail', coachingStore.isDetail)
-      // if(coachingStore.isDetail){
-      //   setTimeout(()=>{
-      //     getListDetail()
-      //   }, 20)
-      // }else{
-      //   if(mainStore.userProfile  && mainStore.userProfile.team1_id){
-      //     setTimeout(()=>{
-      //       getListUser(mainStore.userProfile.team1_id)
-      //     }, 20)
-      //   }
-      // }
       getListUser(mainStore.userProfile.team1_id)
     }, [])
 
@@ -227,61 +215,61 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
       navigation.goBack()
     }
 
-    const verifyData = async () => {
-      if (coachingStore.isFormCoach) {
-        if (title === "") {
-          setError("title")
-        } else if (learner == {}) {
-          setError("learner")
-        } else if (content == "") {
-          setError("content")
-        } else if (strength == "") {
-          setError("strength")
-        } else if (improvement == "") {
-          setError("improvement")
-        } else if (commitment == "") {
-          setError("commitment")
-        } else if (selectedActivities == "") {
-          setError("selectedActivities")
-        } else if (selectedDate == "") {
-          setError("selectedDate")
-        } else {
-          if (coachingStore.isDetail) {
-            await coachingStore.updateJournal(
-              content,
-              commitment,
-              leassons,
-              strength,
-              selectedActivities,
-            )
-          } else {
-            coachingStore.saveFormJournal(
-              mainStore.userProfile.user_id,
-              moment(selectedDate).format("YYYY-MM-DDTHH:mm:ss.SSS\\Z"),
-              title,
-              content,
-              strength,
-              improvement,
-              commitment,
-              [`${learner && learner.id}`],
-              selectedActivities,
-            )
-            toggleEncouragementModal()
-            // goToFeedback()
-          }
-        }
-      } else {
-        if (content == "") {
-          setError("content")
-        } else if (commitment == "") {
-          setError("commitment")
-        } else if (leassons == "") {
-          setError("leassons")
-        } else {
-          await coachingStore.updateJournal(content, commitment, leassons, "", "")
-        }
-      }
-    }
+    // const verifyData = async () => {
+    //   if (coachingStore.isFormCoach) {
+    //     if (title === "") {
+    //       setError("title")
+    //     } else if (learner == {}) {
+    //       setError("learner")
+    //     } else if (content == "") {
+    //       setError("content")
+    //     } else if (strength == "") {
+    //       setError("strength")
+    //     } else if (improvement == "") {
+    //       setError("improvement")
+    //     } else if (commitment == "") {
+    //       setError("commitment")
+    //     } else if (selectedActivities == "") {
+    //       setError("selectedActivities")
+    //     } else if (selectedDate == "") {
+    //       setError("selectedDate")
+    //     } else {
+    //       if (coachingStore.isDetail) {
+    //         await coachingStore.updateJournal(
+    //           content,
+    //           commitment,
+    //           leassons,
+    //           strength,
+    //           selectedActivities,
+    //         )
+    //       } else {
+    //         coachingStore.saveFormJournal(
+    //           mainStore.userProfile.user_id,
+    //           moment(selectedDate).format("YYYY-MM-DDTHH:mm:ss.SSS\\Z"),
+    //           title,
+    //           content,
+    //           strength,
+    //           improvement,
+    //           commitment,
+    //           [`${learner && learner.id}`],
+    //           selectedActivities,
+    //         )
+    //         toggleEncouragementModal()
+    //         // goToFeedback()
+    //       }
+    //     }
+    //   } else {
+    //     if (content == "") {
+    //       setError("content")
+    //     } else if (commitment == "") {
+    //       setError("commitment")
+    //     } else if (leassons == "") {
+    //       setError("leassons")
+    //     } else {
+    //       await coachingStore.updateJournal(content, commitment, leassons, "", "")
+    //     }
+    //   }
+    // }
 
     const holdActivitiesId = useCallback((selectedId, setFieldValue)=>{
       console.log(selectedId)

@@ -357,16 +357,20 @@ export default class CoachingStore {
   async getFeedbackDetail(){
     this.isLoading = true
     console.log('getFeedbackDetail')
-    const result = await this.coachingApi.getFeedbackDetail(this.detailId)
-    console.log('getFeedbackDetail result', result.response)
-    console.log('getFeedbackDetail result my_feedback', result.response.my_feedback)
+    try {
+      const result = await this.coachingApi.getFeedbackDetail(this.detailId)
 
-    if (result.kind === "ok") {
-      this.feedbackDetailSucced(result.response)
-    } else if (result.kind === 'form-error'){
-      this.coachingFailed(result.response.errorCode)
-    } else {
-      __DEV__ && console.tron.log(result.kind)
+      if (result.kind === "ok") {
+        this.feedbackDetailSucced(result.response)
+      } else if (result.kind === 'form-error'){
+        this.coachingFailed(result.response.errorCode)
+      } else {
+        __DEV__ && console.tron.log(result.kind)
+      }
+    } catch (e) {
+      console.log(e)
+    } finally {
+      this.isLoading = false
     }
   }
 
@@ -479,31 +483,51 @@ export default class CoachingStore {
     this.detailId = ''
   }
 
-
   async updateJournal(
     content: string,
     commitment: string,
     lessonsLearned: string,
     strength: string,
     type: string,
-    improvement: string
+    improvement: string,
   ){
     this.isLoading = true
     console.log('updateJournal')
 
-    const result =  this.isFormCoach ? await this.coachingApi.updateJournalCoach(
+    const result = await this.coachingApi.updateJournalCoach(
       content,
       commitment,
       strength,
       improvement,
       type,
       this.detailId
-    ) : await this.coachingApi.updateJournalLearner(
+    )
+    console.log('updateJournal result', result)
+    if (result.kind === "ok") {
+      this.updateJournalSucced(result.response.message)
+    } else if (result.kind === 'form-error'){
+      this.coachingFailed(result.response.errorCode)
+    } else {
+      __DEV__ && console.tron.log(result.kind)
+    }
+  }
+
+  async updateJournalCoachee(
+    content: string,
+    lessonsLearned: string,
+    commitment: string,
+    journalId: string
+  ){
+    this.isLoading = true
+    console.log('updateJournal coachee')
+
+    const result = await this.coachingApi.updateJournalLearner(
       content,
-      commitment,
       lessonsLearned,
-      this.detailId
-    );
+      commitment,
+      journalId
+    )
+
     console.log('updateJournal result', result)
     if (result.kind === "ok") {
       this.updateJournalSucced(result.response.message)
@@ -529,20 +553,20 @@ export default class CoachingStore {
     this.isLoading = false
   }
 
-
   async createFeedback(
     q1:number,
     q2:number,
     q3:number,
     q4:number,
     q5:number,
-    q6:number
+    q6:number,
+    journalId: string
   ){
     this.isLoading = true
     console.log('updateJournal')
 
     const result =  await this.coachingApi.createFeedback(
-      this.detailId,
+      journalId,
       q1,
       q2,
       q3,

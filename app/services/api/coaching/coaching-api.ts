@@ -150,20 +150,20 @@ export class CoachingApi {
     content: string,
     commitment: string,
     lessonsLearned: string,
-    id: string
+    journalId: string
   ): Promise<CreateJournalResult> {
     try {
-      console.log('updateJournalLearner ap', id)
+      console.log('updateJournalLearner ', journalId)
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.patch(
-        `/journal/${id}`,
+        `/journal/${journalId}`,
         {
           content,
+          lessonsLearned,
           commitment,
-          lessonsLearned
         },
       )
-      console.log('createJournal response', response)
+      console.log('updateJournalLearner response', response)
       console.log(response)
       if(response.status === 400){
         const res = response.data

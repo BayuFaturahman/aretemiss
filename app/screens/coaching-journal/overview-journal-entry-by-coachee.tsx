@@ -77,7 +77,7 @@ const NewJournalEntry: FC<
                         fontWeight: "bold",
                       }}
                       secureTextEntry={false}
-                      
+
                     />
                     <TextField
                       value={'Yang dicatat oleh coachee-mu:'}
@@ -155,7 +155,7 @@ const NewJournalEntry: FC<
                   <Button
                     type={"primary"}
                     text={"Kembali"}
-                    onPress={(values) => console.log(values)}
+                    onPress={goBack}
                   />
                 </VStack>
               </>
