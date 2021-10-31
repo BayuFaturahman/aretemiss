@@ -152,7 +152,6 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
     }, [])
 
     const goToNoteFeedback = useCallback((id, coach_id)=>{
-
       coachingStore.isDetailJournal(true)
       const detailCoaching = coach_id == mainStore.userProfile.user_id
       coachingStore.setDetailCoaching(detailCoaching)

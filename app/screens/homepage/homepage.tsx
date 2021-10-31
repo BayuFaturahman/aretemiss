@@ -82,18 +82,40 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     const [coachingJournalData, setCoachingJournalData] = useState<CoachingJournalItem>(null);
     const {mainStore, coachingStore, serviceStore} = useStores()
 
-    const goToNote = useCallback(async (id, coach_id)=>{
+    const goToNote = useCallback((id, coach_id)=>{
       console.log(id)
-    }, [])
-
-    const goToFeedback = useCallback(async (id)=>{
-      console.log(id)
-    }, [])
-
-    const goToNoteFeedback = useCallback(async (id, coach_id)=>{
-      console.log(id)
+      coachingStore.isDetailJournal(true)
+      const detailCoaching = coach_id == mainStore.userProfile.user_id
+      coachingStore.setDetailCoaching(detailCoaching)
+      coachingStore.setDetailID(id)
+      coachingStore.setFormCoach(true)
+      console.log('goToNote coach_id', coach_id)
+      console.log('goToNote user_id', mainStore.userProfile.user_id)
       navigation.navigate("overviewJournalEntry", {
-        journalId: id
+        journalId: id,
+        isCoachee: false
+      })
+    }, [])
+
+    const goToFeedback = useCallback((id)=>{
+      coachingStore.isDetailJournal(true)
+      coachingStore.setDetailID(id)
+      navigation.navigate("fillFeedbackDetail")
+      console.log(id)
+    }, [])
+
+    const goToNoteFeedback = useCallback((id, coach_id)=>{
+      coachingStore.isDetailJournal(true)
+      const detailCoaching = coach_id == mainStore.userProfile.user_id
+      coachingStore.setDetailCoaching(detailCoaching)
+      coachingStore.setDetailID(id)
+      coachingStore.setFormCoach(false)
+      console.log('goToNoteFeedback coach_id', coach_id)
+      console.log('goToNoteFeedback user_id', mainStore.userProfile.user_id)
+
+      navigation.navigate("overviewJournalEntry", {
+        journalId: id,
+        isCoachee: true
       })
     }, [])
 
