@@ -102,7 +102,9 @@ export const AppNavigator = observer( (props: NavigationProps) => {
     } else if (serviceStore.accessToken === ''){
       setIsLogin(false)
     }
-  },[serviceStore.rehydrated, serviceStore.accessToken])
+    console.log('accessToken')
+    console.log(serviceStore.accessToken)
+  },[serviceStore.rehydrated, serviceStore.accessToken, serviceStore.clearTokens])
 
   useEffect(() => {
     if(serviceStore.rehydrated === true){
