@@ -312,7 +312,7 @@ export default class MainStore {
   }
 
   getProfileSuccess(data: ProfileModel) {
-    console.log('getProfileSuccess data', data[0])
+    console.log('getProfileSuccess data', data)
     this.userProfile =  {
       user_id: data.user_id,
       user_fullname: data.user_fullname,

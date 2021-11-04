@@ -1,9 +1,9 @@
 import { GeneralApiProblem } from "../api-problem"
 
 export interface LoginResponse {
-  userId: string
-  otpHash: string
-  otp: number
+  token: string
+  needChangePassword: boolean
+  isVerify: number
 }
 
 export interface ErrorFormResponse {
@@ -19,14 +19,14 @@ export interface LoginVerifyResponse {
 
 export interface SignupResponse {
   email: string
-  otpHash: string
+  otp_hash: string
   otp: number
 }
 
 export interface SignupVerifyResponse {
-  userId: string
+  user_id: string
   email: string
-  isVerify: number
+  is_verify: number
   token: string
 }
 export interface ChangePasswordResponse {
@@ -42,6 +42,10 @@ export interface ForgotPasswordResponse {
     passwordHash: string
   }
 }
+export interface ResendOTPResponse {
+  otp_hash: string
+  otp: number
+}
 
 export type LoginResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: LoginResponse }  | GeneralApiProblem
 
@@ -54,3 +58,5 @@ export type SignupVerifyResult = { kind: "form-error"; response: ErrorFormRespon
 export type ChangePasswordResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: ChangePasswordResponse }  | GeneralApiProblem
 
 export type ForgotPasswordResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: ForgotPasswordResponse }  | GeneralApiProblem
+
+export type ResendOTPResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: ResendOTPResponse }  | GeneralApiProblem

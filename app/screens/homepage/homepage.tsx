@@ -27,6 +27,7 @@ import {MoodComponent, MoodItemType} from "@screens/homepage/components/mood-com
 import {HomepageErrorCard} from "@screens/homepage/components/homepage-error-card";
 
 import RNAnimated from "react-native-animated-component";
+import {debounce} from "lodash";
 
 const FEED_EXAMPLE_DATA_ITEM:FeedItemType = {
   id: '0',
@@ -67,7 +68,6 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       });
     }
 
-
     const [, forceUpdate] = useReducer(x => x + 1, 0);
 
     const [selectedActivities, setSelectedActivities] = useState<string>('');
@@ -75,6 +75,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     const [feedData, setFeedDAta] = useState<FeedItemType>(FEED_EXAMPLE_DATA_ITEM);
 
     const [moodData, setMoodData] = useState<MoodItemType>(MOOD_EXAMPLE_DATA);
+
     const holdActivitiesId = useCallback((selectedId)=>{
       setSelectedActivities(selectedId)
     }, [selectedActivities])
@@ -82,18 +83,40 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     const [coachingJournalData, setCoachingJournalData] = useState<CoachingJournalItem>(null);
     const {mainStore, coachingStore, serviceStore} = useStores()
 
-    const goToNote = useCallback(async (id, coach_id)=>{
+    const goToNote = useCallback((id, coach_id)=>{
       console.log(id)
-    }, [])
-
-    const goToFeedback = useCallback(async (id)=>{
-      console.log(id)
-    }, [])
-
-    const goToNoteFeedback = useCallback(async (id, coach_id)=>{
-      console.log(id)
+      coachingStore.isDetailJournal(true)
+      const detailCoaching = coach_id == mainStore.userProfile.user_id
+      coachingStore.setDetailCoaching(detailCoaching)
+      coachingStore.setDetailID(id)
+      coachingStore.setFormCoach(true)
+      console.log('goToNote coach_id', coach_id)
+      console.log('goToNote user_id', mainStore.userProfile.user_id)
       navigation.navigate("overviewJournalEntry", {
-        journalId: id
+        journalId: id,
+        isCoachee: false
+      })
+    }, [])
+
+    const goToFeedback = useCallback((id)=>{
+      coachingStore.isDetailJournal(true)
+      coachingStore.setDetailID(id)
+      navigation.navigate("fillFeedbackDetail")
+      console.log(id)
+    }, [])
+
+    const goToNoteFeedback = useCallback((id, coach_id)=>{
+      coachingStore.isDetailJournal(true)
+      const detailCoaching = coach_id == mainStore.userProfile.user_id
+      coachingStore.setDetailCoaching(detailCoaching)
+      coachingStore.setDetailID(id)
+      coachingStore.setFormCoach(false)
+      console.log('goToNoteFeedback coach_id', coach_id)
+      console.log('goToNoteFeedback user_id', mainStore.userProfile.user_id)
+
+      navigation.navigate("overviewJournalEntry", {
+        journalId: id,
+        isCoachee: true
       })
     }, [])
 
@@ -122,11 +145,15 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       }
     }, [coachingStore.listJournal])
 
-    const loadData = async () => {
-      setCoachingJournalData(null)
+    const loadData = debounce( async () => {
       await getUserProfile()
       await getJournalList()
-    }
+    }, 500)
+
+    useEffect(()=> {
+      setCoachingJournalData(null)
+      loadData()
+    }, [])
 
     const createList = () => {
       const id = mainStore.userProfile.user_id

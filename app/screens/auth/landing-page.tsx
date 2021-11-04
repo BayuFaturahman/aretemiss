@@ -10,6 +10,7 @@ import {VStack} from "@components/view-stack";
 import Spacer from "@components/spacer";
 import {Colors, Spacing} from "@styles";
 import ileadLogo from "@assets/icons/ilead-logo.png";
+import abmLogo from "@assets/icons/abm.png";
 import FastImage from "react-native-fast-image";
 import RNAnimated from "react-native-animated-component";
 
@@ -26,6 +27,16 @@ const LandingPage: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
     return (
       <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.WHITE, flex: 1, justifyContent: 'center'}}>
         <SafeAreaView style={{flex: 1}}>
+          <RNAnimated
+            appearFrom="bottom"
+            animationDuration={500}
+          >
+            <Spacer height={Spacing[48]} />
+            <FastImage style={{
+              height: Spacing[48],
+              bottom: 0
+            }} source={abmLogo} resizeMode={"contain"}/>
+          </RNAnimated>
           <Spacer />
           <VStack horizontal={Spacing[24]}>
 
@@ -34,13 +45,13 @@ const LandingPage: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
               animationDuration={500}
             >
               <FastImage style={{
-                height: Spacing[256],
+                height: Spacing[256] - Spacing[24],
                 bottom: 0
               }} source={ileadLogo} resizeMode={"contain"}/>
             </RNAnimated>
 
           </VStack>
-          <VStack top={Spacing[32]} horizontal={Spacing[96]}>
+          <VStack top={Spacing[48]} horizontal={Spacing[96]} bottom={Spacing[48]}>
             <RNAnimated
               appearFrom="bottom"
               animationDuration={700}

@@ -15,6 +15,7 @@ import {EmptyList} from "@screens/coaching-journal/components/empty-list";
 import { useStores } from "../../bootstrap/context.boostrap"
 
 import Spinner from 'react-native-loading-spinner-overlay';
+import {FeedbackJLSixth} from "../../store/store.coaching";
 
 type ChoiceItemType = {
   id: string
@@ -25,88 +26,83 @@ type ChoiceItemType = {
 const EXAMPLE_DATA:Array<ChoiceItemType> = [
   {
     id: '0',
-    title: 'Dalam skala 1 - 5, seberapa baik coach-mu sudah membangun rapport atau kedekatan di awal sesi',
+    title: 'Dalam skala 1 - 5, seberapa baik saya sudah membangun rapport atau kedekatan di awal sesi',
     choice: 0
   },
   {
     id: '1',
-    title: 'Dalam skala 1 - 5, seberapa baik coach-mu sudah membantu saya sebagai coachee menentukan outcome?',
+    title: 'Dalam skala 1 - 5, seberapa baik saya sudah membantu saya sebagai coachee menentukan outcome?',
     choice: 0
   },
   {
     id: '2',
-    title: '“Dalam skala 1 - 5, seberapa baik coach-mu sudah mempraktekan active listening atau mendengar aktif saat sesi berlangsung?”',
+    title: '“Dalam skala 1 - 5, seberapa baik saya sudah mempraktekan active listening atau mendengar aktif saat sesi berlangsung?”',
     choice: 0
   },
   {
     id: '3',
-    title: '“Dalam skala 1 - 5, seberapa baik coach-mu sudah mengajukan powerful questions atau pertanyaan yang menggugah pada saat sesi berlangsung?”',
+    title: '“Dalam skala 1 - 5, seberapa baik saya sudah mengajukan powerful questions atau pertanyaan yang menggugah pada saat sesi berlangsung?”',
     choice: 0
   },
   {
     id: '4',
-    title: '“Dalam skala 1 - 5, seberapa baik coach-mu sudah menggali insights atau pembelajaran yang saya dapatkan selama sesi berlangsung?”',
+    title: '“Dalam skala 1 - 5, seberapa baik saya sudah menggali insights atau pembelajaran yang saya dapatkan selama sesi berlangsung?”',
     choice: 0
   },
   {
     id: '5',
-    title: '“Dalam skala 1 - 5, seberapa baik coach-mu sudah membantu saya sebagai coachee untuk menyampaikan komitmen di akhir sesi?”',
+    title: '“Dalam skala 1 - 5, seberapa baik saya sudah membantu kamu sebagai coachee untuk menyampaikan komitmen di akhir sesi?”',
     choice: 0
   }
 ]
 
 const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = observer(
-  ({ navigation }) => {
+  ({ navigation,route }) => {
+
+    const { data, isDetail } = route.params
 
     // empty list state
     const [feedbackData, setFeedbackData] = useState<Array<ChoiceItemType>>(EXAMPLE_DATA);
-    const [selectedActivities, setSelectedActivities] = useState<string>('');
+    const [isError, setError] = useState<string>(null)
     const [, forceUpdate] = useReducer(x => x + 1, 0);
+
     const { coachingStore, mainStore } = useStores()
 
     const goBack = () => navigation.goBack()
 
-    const newEntry = () => navigation.navigate("newJournalEntry")
-
-    const holdActivitiesId = useCallback((selectedId)=>{
-      setSelectedActivities(selectedId)
-      // forceUpdate()
-    }, [selectedActivities])
-
     const selectFeedbackItem = useCallback((id, choice)=>{
-
       const updated = feedbackData.map((item)=>{
         if(item.id === id){
           return { ...item, choice: choice}
         }
         return item;
       })
-
+      updated.map((item, index)=>{
+        console.log(data.questions[`q${index + 1}`])
+        return(
+          data.questions[`q${index + 1}`] = item.choice
+        )
+      })
       setFeedbackData(updated)
+      forceUpdate()
     }, [feedbackData])
 
-    const submit = () => {
-      console.log('coachingStore.isDetail', coachingStore.isDetail)
-      if(coachingStore.isDetail){
-        coachingStore.createFeedback(
-          feedbackData[0].choice,
-          feedbackData[1].choice,
-          feedbackData[2].choice,
-          feedbackData[3].choice,
-          feedbackData[4].choice,
-          feedbackData[5].choice
-        )
-      }else{
-        coachingStore.createJournal(
-          feedbackData[0].choice,
-          feedbackData[1].choice,
-          feedbackData[2].choice,
-          feedbackData[3].choice,
-          feedbackData[4].choice,
-          feedbackData[5].choice
-        )
+    const submit = useCallback(async ()=>{
+      let counter = 0
+      feedbackData.map((item, index) => {
+        if(item.choice === 0){
+          counter += 1
+        }
+      })
+      if(counter > 0) {
+        setError('choice')
+      } else {
+        setError(null)
       }
-    }
+      if(isError === null){
+        await coachingStore.createJournal(data)
+      }
+    }, [feedbackData, isError])
 
     useEffect(() => {
       coachingStore.resetLoading()
@@ -114,22 +110,30 @@ const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = o
     },[])
 
   useEffect(() => {
-      if(coachingStore.messageCreateJournal == "Success" && !coachingStore.isDetail){
+      if(coachingStore.messageCreateJournal === "Success" && !coachingStore.isDetail){
         coachingStore.resetCoachingStore()
         coachingStore.setRefreshData(true)
-        navigation.navigate("coachingJournalMain")
+        coachingStore.clearJournal().then(()=>{
+          navigation.reset({
+            routes: [{ name: 'coachingJournalMain' }]
+          })
+        })
       }
   },[coachingStore.messageCreateJournal, coachingStore.createJournalSucceed])
 
   useEffect(() => {
-      if(coachingStore.messageCreateFeedback == "Success" && coachingStore.isDetail){
+      if(coachingStore.messageCreateFeedback === "Success" && coachingStore.isDetail){
         coachingStore.resetCoachingStore()
         coachingStore.setRefreshData(true)
-        navigation.navigate("coachingJournalMain")
+        coachingStore.clearJournal().then(()=>{
+          navigation.reset({
+            routes: [{ name: 'coachingJournalMain' }]
+          })
+        })
       }
   },[coachingStore.messageCreateFeedback, coachingStore.createFeedbackSucced])
 
-    const ChoiceItem = ({item, index}) => {
+    const ChoiceItem = ({item, index, onPressItem}) => {
       return(
         <VStack vertical={Spacing[8]}>
           <Text type={'body'} style={{textAlign: 'center'}}>
@@ -138,7 +142,7 @@ const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = o
           <HStack top={Spacing[12]} style={{justifyContent: 'space-around'}}>
             {Array(5).fill(0).map((value, i, array)=>{
               return(
-                <TouchableOpacity onPress={()=> selectFeedbackItem(item.id, i + 1)}>
+                <TouchableOpacity onPress={()=> onPressItem(item.id, i + 1)}>
                   <VStack>
                     <View style={{
                       height: Spacing[24],
@@ -169,7 +173,9 @@ const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = o
               <Spacer height={Spacing[24]} />
               <Text type={"header"} style={{color: Colors.WHITE, textAlign:'center', fontSize: Spacing[12]}}>Berilah rating pada pernyataan berikut ini
                 sesuai dengan sesi coaching yang sudah kamu lakukan.</Text>
-              <Spacer height={Spacing[32]} />
+              <Spacer height={Spacing[12]} />
+              {isError !== null ? <Text type={"warning"} style={{textAlign:'center', fontSize: Spacing[12]}}>Ada yang belum diisi nih!</Text> : null}
+              <Spacer height={Spacing[12]} />
             </VStack>
             <VStack top={Spacing[32]} horizontal={Spacing[24]} style={[Layout.heightFull, {backgroundColor: Colors.WHITE, borderTopStartRadius: Spacing[48], borderTopEndRadius: Spacing[48]}]}>
               <FlatList
@@ -178,7 +184,7 @@ const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = o
                 ListEmptyComponent={()=>
                   <EmptyList />
                 }
-                renderItem={({item, index})=> <ChoiceItem item={item} index={index} />}
+                renderItem={({item, index})=> <ChoiceItem item={item} index={index} onPressItem={selectFeedbackItem} />}
                 keyExtractor={item => item.id}
                 ListFooterComponent={
                   feedbackData.length === 0 ?

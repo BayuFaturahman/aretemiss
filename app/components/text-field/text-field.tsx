@@ -69,6 +69,9 @@ export interface TextFieldProps extends TextInputProps {
   onPressChangeButton?(): void
 
   isTextArea?: boolean
+
+  charCounter?: boolean
+  maxChar?: number
 }
 
 const EYES_ICON =  {
@@ -95,6 +98,8 @@ export function TextField(props: TextFieldProps) {
     changeButton = false,
     onPressChangeButton = () => null,
     isTextArea = false,
+    charCounter = false,
+    maxChar = 500,
     ...rest
   } = props
 
@@ -120,6 +125,10 @@ export function TextField(props: TextFieldProps) {
   const actualPlaceholder = placeholderTx ? translate(placeholderTx) : placeholder
 
   const [showPassword, setShowPassword] = useState<boolean>(false)
+
+  const renderCharacterCount = (currentLength: number) => {
+    return charCounter === true ? <Text type={'body'} style={[{fontSize: Spacing[12]}, LABEL_STYLE]} text={`${currentLength.toString()}/${maxChar}`} /> : null
+  }
 
   const renderRequired = () => {
     return isRequired === true ? <Text type={'label'} style={[{fontSize: Spacing[14]}, LABEL_STYLE]} text={`*`} /> : null
@@ -152,8 +161,13 @@ export function TextField(props: TextFieldProps) {
           {...rest}
           style={inputStyles}
           ref={forwardedRef}
+          maxLength={maxChar}
         />
         {renderChangeButton()}
+        <HStack>
+          <Spacer />
+          {renderCharacterCount(props.value?.length ?? 0)}
+        </HStack>
       </View>
     )
   }
@@ -174,6 +188,7 @@ export function TextField(props: TextFieldProps) {
           style={inputStyles}
           ref={forwardedRef}
           secureTextEntry={!showPassword}
+          maxLength={maxChar}
         >
         </TextInput>
         <TouchableOpacity style={{ position: 'absolute', right: changeButton === true ? null : 0, bottom: Spacing[20]}} onPress={()=>setShowPassword(!showPassword)}>
@@ -198,6 +213,7 @@ export function TextField(props: TextFieldProps) {
         {...rest}
         style={inputStyles}
         ref={forwardedRef}
+        maxLength={maxChar}
       />
       {renderChangeButton()}
     </View>

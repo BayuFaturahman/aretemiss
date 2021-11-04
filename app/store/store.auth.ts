@@ -11,6 +11,7 @@ import {
   ErrorFormResponse, ForgotPasswordResponse,
   LoginResponse,
   LoginVerifyResponse,
+  ResendOTPResponse,
   SignupResponse,
   SignupVerifyResponse
 } from "@services/api/auth/auth-api.types";
@@ -98,11 +99,8 @@ export default class AuthStore {
       }
 
       if(response.kind === 'ok'){
-        console.log(response.response.otp)
-        console.log(response.response.userId)
-        console.log(response.response.otpHash)
-
-        this.loginSuccess(response.response, email)
+        console.log(response.response)
+        await this.loginSuccess(response.response, email)
       }
 
     } catch (e) {
@@ -146,10 +144,17 @@ export default class AuthStore {
     }
   }
 
-  loginSuccess (data: LoginResponse, email: string){
-    this.userId = data.userId
-    this.otpHash = data.otpHash
-    this.otp = data.otp
+  async loginSuccess (data: LoginResponse, email: string){
+    this.needChangePassword = data.needChangePassword
+    this.token = data.token
+
+    if(data.isVerify === 0){
+      this.isCreateProfile = true
+      await this.serviceStore.setHeaderToken(this.token)
+    } else {
+      this.isCreateProfile = false
+      await this.serviceStore.setToken(this.token)
+    }
     this.email = email
     this.isLoginFlow = true
   }
@@ -185,6 +190,15 @@ export default class AuthStore {
 
         console.log(response)
 
+        if (response.response.errorCode === 37) {
+          response.response.message = 'Password minimal 8 karakter, memiliki huruf besar dan kecil, serta memiliki angka dan simbol (!, %, &, dkk.)'
+        }
+
+        if (response.response.errorCode === 4) {
+          response.response.message = 'Waduh. Alamat e-mail ini sudah terdaftar. Kalau sudah pernah registrasi, langsung login aja ya!'
+        }
+        
+
         this.formError(response.response)
       }
 
@@ -211,7 +225,7 @@ export default class AuthStore {
 
   signupSuccess (data: SignupResponse) {
     this.email = data.email
-    this.otpHash = data.otpHash
+    this.otpHash = data.otp_hash
     this.otp = data.otp
     console.log('sign up oke')
   }
@@ -223,6 +237,7 @@ export default class AuthStore {
 
   async signupVerify(otpCode: string) {
     console.log('signup verify')
+    console.log(otpCode)
     this.isLoading = true
     try {
       const response = await this.apiAuth.signupVerify(this.email, otpCode, this.otpHash)
@@ -253,14 +268,54 @@ export default class AuthStore {
 
   async signupVerifySuccess (data: SignupVerifyResponse) {
     console.log('signupVerifySuccess')
-    this.userId = data.userId
+    this.userId = data.user_id
     this.token = data.token
-    this.isVerify = data.isVerify
+    this.isVerify = data.is_verify
     this.email = data.email
 
     this.isLoginFlow = false
     this.serviceStore.setHeaderToken(this.token)
     this.isCreateProfile = true
+  }
+
+  async resendOTP(email: string) {
+    console.log('resendOTP for ', email)
+    this.isLoading = true
+    try {
+      const response = await this.apiAuth.resendOTP(email)
+
+      console.log(response)
+
+      if(response.kind === 'form-error'){
+        console.log(response)        
+
+        this.formError(response.response)
+      }
+
+      if(response.kind === 'ok'){
+        // console.log(response.response.otp)
+        // console.log(response.response.otp_hash)
+
+        console.log(response)
+
+        this.resendOTPSuccess(response.response)
+      }
+
+    } catch (e) {
+      console.log('resend OTP error catch')
+      console.log(e)
+      this.signupFailed(e)
+      this.isLoading = false
+    } finally {
+      console.log('resend OTP done')
+      this.isLoading = false
+    }
+  }
+
+  resendOTPSuccess (data: ResendOTPResponse) {
+    this.otpHash = data.otp_hash
+    this.otp = data.otp
+    console.log('sign up oke')
   }
 
   async changePassword(currentPassword: string, password: string) {
@@ -275,6 +330,13 @@ export default class AuthStore {
         console.log(response.response.errorCode)
         console.log(response.response.message)
 
+        if (response.response.errorCode === 37) {
+          response.response.message = 'Password minimal 8 karakter, memiliki huruf besar dan kecil, serta memiliki angka dan simbol (!, %, &, dkk.)'
+        }
+
+        if (response.response.errorCode === 15) {
+          response.response.message = 'Waduh. Password yang kamu masukan salah. Coba cek lagi password-mu.'
+        }
         this.formError(response.response)
       }
 
@@ -361,7 +423,6 @@ export default class AuthStore {
     console.log(e)
     this.isForgotPasswordSuccess = false
   }
-
 
   // #endregion
 }
