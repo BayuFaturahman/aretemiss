@@ -240,7 +240,7 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
               </Text>
               <Spacer height={Spacing[32]} />
             </VStack>
-            <VStack top={Spacing[32]} horizontal={Spacing[24]} style={[Layout.heightFull, {backgroundColor: Colors.WHITE, borderTopStartRadius: Spacing[48], borderTopEndRadius: Spacing[48]}]}>
+            <VStack top={Spacing[32]} horizontal={Spacing[24]} style={[Layout.heightFull, {backgroundColor: Colors.WHITE, borderTopStartRadius: Spacing[48], borderTopEndRadius: Spacing[48], minHeight: dimensions.screenHeight}]}>
               <NewButton onPress={newEntry} />
               {coachingData.length === 0 ? <FastImage style={{
                 height: Spacing[96],
