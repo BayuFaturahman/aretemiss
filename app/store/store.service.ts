@@ -33,16 +33,17 @@ export default class ServiceStore {
 
     this.initToken();
 
-    this.api.apisauce.addMonitor(response => this.responseMonitor(response, this.clearHeaderToken, this.clearTokens))
+    // this.api.apisauce.addMonitor(response => this.responseMonitor(response, this.clearTokens))
   }
 
-  private async responseMonitor(response: any, clearHeaderToken, clearTokens) {
+  private async responseMonitor(response: any, clearTokens) {
     console.log('Response Monitor')
     console.log(response.status)
 
     const { ok, status } = response;
 
     if (!ok && status === 401) {
+      await this.initToken();
       console.log('Token Expired gan!')
       try {
         await clearTokens()
@@ -51,7 +52,7 @@ export default class ServiceStore {
         console.log('Clear Token Error')
       } finally {
         console.log('Token Cleared')
-        clearHeaderToken()
+        // clearHeaderToken()
       }
       // should be back to login screen
     }

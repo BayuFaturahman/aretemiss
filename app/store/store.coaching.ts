@@ -195,6 +195,12 @@ export default class CoachingStore {
         console.log('result.response.journal', result.response)
         await this.journalSucceed(result.response.journal)
       } else if (result.kind === 'form-error'){
+        console.log('journal failed')
+        console.log(result.response.errorCode)
+        this.coachingFailed(result.response.errorCode)
+      } else if (result.kind === 'unauthorized'){
+        console.log('token expired journal')
+        console.log(result)
         this.coachingFailed(result.response.errorCode)
       } else {
         __DEV__ && console.tron.log(result.kind)

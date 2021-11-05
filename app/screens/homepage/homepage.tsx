@@ -81,7 +81,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     }, [selectedActivities])
 
     const [coachingJournalData, setCoachingJournalData] = useState<CoachingJournalItem>(null);
-    const {mainStore, coachingStore, serviceStore} = useStores()
+    const {mainStore, coachingStore, authStore} = useStores()
 
     const goToNote = useCallback((id, coach_id)=>{
       console.log(id)
@@ -155,6 +155,12 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       loadData()
     }, [])
 
+    useEffect(()=> {
+      if(coachingStore.formErrorCode === 9){
+        authStore.resetAuthStore()
+      }
+    }, [coachingStore.formErrorCode])
+
     const createList = () => {
       const id = mainStore.userProfile.user_id
       let groupArrays = []
@@ -210,14 +216,14 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
       return(
         <VStack top={Spacing[48]} horizontal={Spacing[8]} bottom={Spacing[12]}>
-           <VStack horizontal={Spacing[12]}>
-            <RNAnimated
-              appearFrom="left"
-              animationDuration={500}
-            >
-             <NotificationButton goToNotifications={goToNotifications} />
-            </RNAnimated>
-           </VStack>
+            <VStack horizontal={Spacing[12]}>
+           {/* <RNAnimated */}
+           {/*   appearFrom="left" */}
+           {/*   animationDuration={500} */}
+           {/* > */}
+           {/*  <NotificationButton goToNotifications={goToNotifications} /> */}
+           {/* </RNAnimated> */}
+            </VStack>
           <Spacer height={Spacing[24]} />
           <RNAnimated
             appearFrom="right"
