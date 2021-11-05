@@ -37,6 +37,10 @@ export interface GetProfileResponse {
   token: string
 }
 
+export interface VerifyOTPResponse {
+  isValid: boolean
+}
+
 export type TeamListResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: TeamResponse }  | GeneralApiProblem
 
 export type UpdateProfileResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: UpdateProfileResponse }  | GeneralApiProblem
@@ -44,4 +48,6 @@ export type UpdateProfileResult = { kind: "form-error"; response: ErrorFormRespo
 export type GetProfileResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetProfileResponse }  | GeneralApiProblem
 
 export type GetTeamMemberResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: ListProfileModel[] }  | GeneralApiProblem
+
+export type VerifyOTPResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: VerifyOTPResponse }  | GeneralApiProblem
 

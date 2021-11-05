@@ -99,6 +99,8 @@ export default class MainStore {
   userProfile: ProfileModel
   listUserProfile: ListProfileModel[]
 
+  isOTPVerified: boolean
+
 
   // #region CONSTRUCTOR
 
@@ -379,9 +381,44 @@ export default class MainStore {
     this.isLoading = false
   }
 
+  async verifyOTP(otpCode: string, otpHash: string, email: string) {
+    this.isLoading = true
+    try {
+      const response = await this.profileApi.verifyOTP(otpCode, otpHash, email)
+
+      console.log(response)
+
+      if (response.kind === "form-error") {
+        
+        this.formError(response.response)
+      }
+
+      if (response.kind === "ok") {
+        this.setIsOTPVerified(true)
+        // await this.updateProfileSuccess(response.response)
+      }
+    } catch (e) {
+      console.log("verifyOTP error")
+      console.log(e)
+      this.verifyOTPFailed(e)
+    } finally {
+      console.log("verifyOTP done")
+      this.isLoading = false
+    }
+  }
+
+  verifyOTPFailed(e: any) {
+    this.setIsOTPVerified(false)
+    this.errorMessage = e
+  }
+
   getListProfileFailed(e: any) {
     this.errorMessage = e
   }
+  
+  setIsOTPVerified(status: boolean) {
+    this.isOTPVerified = status
+  } 
   // #endregion
 }
 

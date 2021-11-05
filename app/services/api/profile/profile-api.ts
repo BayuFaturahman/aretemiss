@@ -1,7 +1,7 @@
 import { ApiResponse } from "apisauce"
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
-import { GetProfileResult, GetTeamMemberResult, TeamListResult, UpdateProfileResult } from "./profile-api.types";
+import { GetProfileResult, GetTeamMemberResult, TeamListResult, UpdateProfileResult, VerifyOTPResult } from "./profile-api.types";
 import {ProfileUpdateForm} from "@screens/auth/create-profile";
 
 export class ProfileApi {
@@ -131,5 +131,41 @@ export class ProfileApi {
     }
   }
 
+  async verifyOTP(otpCode: string, otpHash: string, email: string): Promise<VerifyOTPResult> {
+    try {
+      // make the api call
+      const bodyRequest = {
+        otp_code: otpCode,
+        otp_hash: otpHash,
+        email: email
+      }
+      const response: ApiResponse<any> = await this.api.apisauce.post(
+        `/user/verify-otp`,
+        bodyRequest,
+      )
+
+      console.log('verifyOTP response', response)
+      
+      if(response.status === 400){
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data
+      console.log('response res', res)
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      console.log('error', e)
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data"}
+    }
+  }
 
 }
