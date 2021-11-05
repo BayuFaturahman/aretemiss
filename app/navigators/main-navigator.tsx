@@ -7,7 +7,7 @@ import {
   fillFeedbackDetail,
   overviewJournalEntry, fillFeedbackCoachee, overviewJournalEntryByCoachee
 } from "@screens/coaching-journal";
-import {settings, myAccount, changePassword, changePhone, notification} from "@screens/settings";
+import {settings, myAccount, myAccountVerifyOTP, changePassword, changePhone, notification} from "@screens/settings";
 import {notifications} from "@screens/notification";
 import {homepage} from "@screens/homepage";
 import {createProfile} from "@screens";
@@ -33,6 +33,10 @@ const screens: AppRoute[] = [
   {
     name: 'myAccount',
     component: myAccount,
+  },
+  {
+    name: 'myAccountVerifyOTP',
+    component: myAccountVerifyOTP,
   },
   {
     name: 'changePassword',
@@ -79,7 +83,14 @@ const screens: AppRoute[] = [
 export type NavigatorParamList = {
   coachingJournalMain: undefined;
   settingsPage: undefined;
-  myAccount: undefined;
+  myAccount:{
+    newEmail?: string,
+    newNickname?: string
+  };
+  myAccountVerifyOTP: {
+    newEmail: string,
+    newNickname: string
+  };
   changePhone: undefined;
   changePassword: undefined;
   newJournalEntry: {

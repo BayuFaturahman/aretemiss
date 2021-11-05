@@ -30,7 +30,7 @@ export type ProfileUpdateForm = {
 }
 
 const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observer(
-  ({ navigation }) => {
+  ({ navigation, route }) => {
     const { authStore, mainStore } = useStores()
 
     const [isEmailValid, setIsEmailValid] = useState(false)
@@ -55,7 +55,11 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
     const goToChangePassword = () => navigation.navigate("changePassword")
 
     const goToChangePhone = () => navigation.navigate("changePhone")
-
+    
+    const goToVerifyOTP = (email, nickname) => navigation.navigate("myAccountVerifyOTP", {
+      newEmail: email,
+      newNickname: nickname
+    })
     
     const validateEmail = (email) => {
       const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/
@@ -71,43 +75,100 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
       }
     }
 
+    const checkEmailChange = useCallback((newEmail) => {
+      return (userProfile.email.toLowerCase().trim() !== newEmail.toLowerCase().trim())
+    }, [userProfile])
+
     const onClickEditProfile = useCallback(async (data: ProfileUpdateForm) => {
       // console.log("click : ", data)
+      mainStore.setIsOTPVerified(false)
       mainStore.formReset();
-      userProfile.email = data.email
-      userProfile.nickname = data.nickname
-      validateEmail(data.email)
       setIsClickEditProfile(true)
-    }, [])
+      const isEmailChange = checkEmailChange(data.email)
+      // console.log('Email change? ', isEmailChange, ' old email: ', userProfile.email, ' new email: ', data.email)
+      if (isEmailChange || data.nickname !== userProfile.nickname) {
+        if (isEmailChange) {
+          if (validateEmail(data.email)) {
+            console.log("go to otp")
+            await authStore.resendOTP(userProfile.email)
+            if (authStore.otp !== null) {
+              // setIsError(false)
+              goToVerifyOTP(data.email, data.nickname)
+            }
+            return
+          }
+          return
+        }
+  
+        if (data.nickname !== userProfile.nickname) {
+            userProfile.email = data.email
+            userProfile.nickname = data.nickname
+  
+            submitEditProfile(userProfile);
+          return
+        }
+      }
+  
+      console.log("Ga ada perubahan")
+      
+    }, [userProfile])
 
     const submitEditProfile = useCallback(async (data: ProfileUpdateForm) => {
       console.log("Data to be submitted", userProfile)
       await mainStore.updateProfile(mainStore.userProfile.user_id, userProfile)
       if (mainStore.errorCode === null) {
         await mainStore.getProfile();
+        // console.log('USER PROFILE ', userProfile)
         toggleModal()
+        
       }
       else {
         setIsEmailValid(false)
         setEmailErrorMessage(mainStore.errorMessage)
       }
 
-    }, [])
+    }, [mainStore.errorCode, userProfile])
 
+    
     useEffect(() => {
-      // setTimeout(() => {
-      console.log("Is email valid ", isEmailValid)
-      // console.log("Mau edit profile")
-      if (isEmailValid && isClickEditProfile) {
-        submitEditProfile(userProfile)
-        setIsClickEditProfile(false)
+      if (mainStore.isOTPVerified && route.params?.newEmail && route.params?.newNickname) {
+        // console.log('OTP verified ok')
+        // console.log('User profile skrng: ', userProfile)
+        const { newEmail, newNickname } = route.params
+
+        userProfile.email = newEmail
+        userProfile.nickname = newNickname
+
+        submitEditProfile(userProfile);
+      } else {
+        console.log('OTP NOT verified')
       }
-      // }, 100)
-    }, [isEmailValid, isClickEditProfile])
+    }, [mainStore.isOTPVerified, route.params?.newNickname, route.params?.newEmail])
+    
+
+    // useEffect(() => {
+    //   console.log("go to verifyOTP")
+    //   if (authStore.otp !== null) {
+    //     // setIsError(false)
+    //     goToVerifyOTP()
+    //   }
+    // }, [authStore.otp])
+
+    // useEffect(() => {
+    //   // setTimeout(() => {
+    //   console.log("Is email valid ", isEmailValid)
+    //   // console.log("Mau edit profile")
+    //   if (isEmailValid && isClickEditProfile) {
+    //     submitEditProfile(userProfile)
+    //     setIsClickEditProfile(false)
+    //   }
+    //   // }, 100)
+    // }, [isEmailValid, isClickEditProfile])
 
     useEffect(() => {
       validateEmail(userProfile.email)
       mainStore.formReset()
+      authStore.otp = null
     }, [])
 
     const ChangeProfilePicture = ({ isError = false }) => {
@@ -246,7 +307,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
             </ScrollView>
           </SafeAreaView>
           <Spinner
-            visible={mainStore.isLoading}
+            visible={mainStore.isLoading || authStore.isLoading}
             textContent={'Memuat...'}
             // textStyle={styles.spinnerTextStyle}
           />
