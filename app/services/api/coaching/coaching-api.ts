@@ -28,8 +28,9 @@ export class CoachingApi {
       }
       // the typical ways to die when calling an api
       if (!response.ok) {
+        const res = response.data
         const problem = getGeneralApiProblem(response)
-        if (problem) return problem
+        if (problem) return {...problem, response: res}
       }
       const res = response.data.data
       console.log('getJournalList res', res)

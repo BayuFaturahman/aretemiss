@@ -40,6 +40,13 @@ export interface GetProfileResponse {
 export interface VerifyOTPResponse {
   isValid: boolean
 }
+export interface PostUploadFilesResponse {
+  "message": string
+  "token": string
+  "data": {
+    "urls": string
+  }
+}
 
 export type TeamListResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: TeamResponse }  | GeneralApiProblem
 
@@ -50,4 +57,6 @@ export type GetProfileResult = { kind: "form-error"; response: ErrorFormResponse
 export type GetTeamMemberResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: ListProfileModel[] }  | GeneralApiProblem
 
 export type VerifyOTPResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: VerifyOTPResponse }  | GeneralApiProblem
+
+export type PostUpdateProfile = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: PostUploadFilesResponse }  | GeneralApiProblem
 
