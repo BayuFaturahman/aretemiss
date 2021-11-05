@@ -6,7 +6,7 @@ import ServiceStore from "./store.service"
 import { Api } from "@services/api"
 import { ProfileApi } from "@services/api/profile/profile-api"
 import { ErrorFormResponse } from "@services/api/auth/auth-api.types"
-import { TeamResponse, UpdateProfileResponse } from "@services/api/profile/profile-api.types"
+import {PostUploadFilesResponse, TeamResponse, UpdateProfileResponse} from "@services/api/profile/profile-api.types"
 import { ProfileUpdateForm } from "@screens/auth/create-profile"
 
 // CONFIGS
@@ -383,6 +383,39 @@ export default class MainStore {
     this.errorMessage = e
   }
   // #endregion
+
+  uploadPhotoSuccess(data: PostUploadFilesResponse) {
+    this.userProfile.user_photo = data.data.urls
+  }
+
+  uploadPhotoFailed(e: any) {
+    this.errorMessage = e
+  }
+
+  async uploadPhoto(formData: FormData) {
+    console.log("Upload Photo")
+    this.isLoading = true
+    try {
+      const response = await this.profileApi.postUploadFiles(formData)
+
+      console.log(response)
+
+      if (response.kind === "form-error") {
+        this.formError(response.response)
+      }
+
+      if (response.kind === "ok") {
+        await this.uploadPhotoSuccess(response.response)
+      }
+    } catch (e) {
+      console.log("Upload error")
+      console.log(e)
+      this.uploadPhotoFailed(e)
+    } finally {
+      console.log("gUpload done")
+      this.isLoading = false
+    }
+  }
 }
 
 // #endregion

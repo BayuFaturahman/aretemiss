@@ -1,7 +1,13 @@
 import { ApiResponse } from "apisauce"
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
-import { GetProfileResult, GetTeamMemberResult, TeamListResult, UpdateProfileResult } from "./profile-api.types";
+import {
+  GetProfileResult,
+  GetTeamMemberResult,
+  PostUpdateProfile,
+  TeamListResult,
+  UpdateProfileResult
+} from "./profile-api.types";
 import {ProfileUpdateForm} from "@screens/auth/create-profile";
 
 export class ProfileApi {
@@ -131,5 +137,34 @@ export class ProfileApi {
     }
   }
 
+  async postUploadFiles(formData: FormData): Promise<PostUpdateProfile> {
+    try {
+      console.log('postUploadFiles data', formData)
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.post(
+        `/upload`,
+        formData,
+      )
 
+      if(response.status === 400){
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data
+      console.log('response postUploadFiles', res)
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      console.log('error', e)
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data"}
+    }
+  }
 }

@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useState } from "react"
-import { SafeAreaView, ScrollView, TouchableOpacity, View } from "react-native"
+import {Platform, SafeAreaView, ScrollView, TouchableOpacity, View} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Text, BackNavigation, Button, TextField } from "@components"
@@ -18,6 +18,8 @@ import smileYellow from "@assets/icons/coachingJournal/empty/smile-yellow.png"
 
 import Spinner from 'react-native-loading-spinner-overlay';
 
+import {launchImageLibrary, ImagePickerResponse, } from 'react-native-image-picker';
+
 export type ProfileUpdateForm = {
   fullname: string
   nickname: string
@@ -29,6 +31,10 @@ export type ProfileUpdateForm = {
   isAllowReminderNotification?: number
 }
 
+const qualityImage = Platform.OS === 'ios' ? 0.4 : 0.5;
+const maxWidthImage = 1024;
+const maxHeightImage = 1024;
+
 const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observer(
   ({ navigation }) => {
     const { authStore, mainStore } = useStores()
@@ -38,6 +44,8 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
     const [isModalVisible, setModalVisible] = useState(false)
 
     const [emailErrorMessage, setEmailErrorMessage] = useState('')
+
+    const [profilePicture, setProfilePicture] = useState(null)
 
     const userProfile: ProfileUpdateForm = {
       fullname: mainStore.userProfile.user_fullname,
@@ -56,7 +64,29 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
 
     const goToChangePhone = () => navigation.navigate("changePhone")
 
-    
+    const cameraHandler = useCallback(async (response: ImagePickerResponse) => {
+      if (!response.didCancel) {
+
+        const formData = new FormData()
+        formData.append('files', response.assets[0].base64 )
+
+        await mainStore.uploadPhoto(formData)
+
+        if (mainStore.errorCode === null){
+          setProfilePicture(response.assets[0].uri)
+        }
+
+        console.log(response.assets)
+
+      } else {
+        console.log('cancel')
+      }
+    }, []);
+
+    const openGallery = useCallback(() => {
+      launchImageLibrary({mediaType: 'photo', quality: qualityImage, maxWidth: maxWidthImage, maxHeight: maxHeightImage}, cameraHandler);
+    }, []);
+
     const validateEmail = (email) => {
       const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/
       if (reg.test(email) === false) {
@@ -127,13 +157,15 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                 />
               </HStack>
               <FastImage
-                style={{ height: Spacing[128], width: Spacing[128] }}
-                source={nullProfileIcon}
-                resizeMode={"contain"}
+                style={{ height: Spacing[128], width: Spacing[128], borderRadius: Spacing[24] }}
+                source={profilePicture !== null ? {
+                  uri: profilePicture
+                }: nullProfileIcon }
+                resizeMode={"cover"}
               />
             </VStack>
             <VStack style={{ width: Spacing[128] }} top={Spacing[20]}>
-              {/* <Button type={"primary"} text={"Ganti Foto"} /> */}
+             <Button onPress={openGallery} type={"primary"} text={"Ganti Foto"} />
             </VStack>
           </HStack>
         </VStack>
@@ -182,7 +214,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                       ]}
                     >
                       <VStack top={Spacing[24]}>
-                        {/* <ChangeProfilePicture /> */}
+                        <ChangeProfilePicture />
                         <Spacer height={Spacing[32]} />
                         <TextField
                           // value={phoneNumber}
@@ -243,6 +275,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                   </>
                 )}
               </Formik>
+              <Spacer height={Spacing[72]} />
             </ScrollView>
           </SafeAreaView>
           <Spinner

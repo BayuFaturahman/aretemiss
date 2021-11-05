@@ -37,6 +37,14 @@ export interface GetProfileResponse {
   token: string
 }
 
+export interface PostUploadFilesResponse {
+  "message": string
+  "token": string
+  "data": {
+    "urls": string
+  }
+}
+
 export type TeamListResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: TeamResponse }  | GeneralApiProblem
 
 export type UpdateProfileResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: UpdateProfileResponse }  | GeneralApiProblem
@@ -44,4 +52,6 @@ export type UpdateProfileResult = { kind: "form-error"; response: ErrorFormRespo
 export type GetProfileResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetProfileResponse }  | GeneralApiProblem
 
 export type GetTeamMemberResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: ListProfileModel[] }  | GeneralApiProblem
+
+export type PostUpdateProfile = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: PostUploadFilesResponse }  | GeneralApiProblem
 
