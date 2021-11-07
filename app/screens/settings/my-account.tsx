@@ -182,7 +182,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
       }
     }, [mainStore.isOTPVerified, route.params?.newNickname, route.params?.newEmail])
 
-    const handleValueChanges = useCallback((data: ProfileUpdateForm) => {
+    const handleValueChanges = useCallback(async (data: ProfileUpdateForm) => {
       setIsDisableEditBtn(true)
 
       const isEmailChange = checkDataChange(userProfile.email, data.email)
@@ -195,9 +195,21 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
       if (isEmailChange) {
         const isEmailValid = validateEmail(data.email)
         console.log('Email valid? ', isEmailValid)
+        if (isEmailValid) {
+          mainStore.formReset();
+          await mainStore.checkEmail(data.email)
+          if (mainStore.errorCode !== null) {
+            setIsEmailValid(false)
+            setEmailErrorMessage(mainStore.errorMessage)
+            setIsDisableEditBtn(true) 
+          } else {
+            setIsDisableEditBtn(false)
+          }
+        }
+     
       }
 
-    }, [isDisableEditBtn, userProfile])
+    }, [isDisableEditBtn, userProfile, mainStore.errorCode, emailErrorMessage, isEmailValid])
 
     useEffect(() => {
       const isProfileChange = checkDataChange(userProfile.photo, (profilePicture === null) ? "": profilePicture)
