@@ -85,11 +85,13 @@ export type NavigatorParamList = {
   settingsPage: undefined;
   myAccount:{
     newEmail?: string,
-    newNickname?: string
+    newNickname?: string,
+    photo?: string
   };
   myAccountVerifyOTP: {
     newEmail: string,
     newNickname: string
+    photo?: string
   };
   changePhone: undefined;
   changePassword: undefined;

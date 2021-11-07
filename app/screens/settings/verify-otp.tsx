@@ -28,7 +28,7 @@ const MyAccountVerifyOTP: FC<StackScreenProps<NavigatorParamList, "myAccountVeri
     const [isError, setIsError] = useState<boolean>(false)
     const [errorMessage, setErrorMessage] = useState<string | null>('')
 
-    const { newEmail, newNickname } = route.params
+    const { newEmail, newNickname, photo } = route.params
 
     const { authStore, mainStore } = useStores()
 
@@ -88,7 +88,8 @@ const MyAccountVerifyOTP: FC<StackScreenProps<NavigatorParamList, "myAccountVeri
     const goBack = () => {
       navigation.navigate("myAccount", {
         newEmail: newEmail,
-        newNickname: newNickname
+        newNickname: newNickname,
+        photo: photo
       })
     }
 

@@ -68,9 +68,10 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
 
     const goToChangePhone = () => navigation.navigate("changePhone")
     
-    const goToVerifyOTP = (email, nickname) => navigation.navigate("myAccountVerifyOTP", {
+    const goToVerifyOTP = (email, nickname, profile) => navigation.navigate("myAccountVerifyOTP", {
       newEmail: email,
-      newNickname: nickname
+      newNickname: nickname,
+      photo: profile
     })
     
 
@@ -132,7 +133,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
             await authStore.resendOTP(userProfile.email)
             if (authStore.otp !== null) {
               // setIsError(false)
-              goToVerifyOTP(data.email, data.nickname)
+              goToVerifyOTP(data.email, data.nickname, profilePicture)
             }
             return
           }
@@ -142,6 +143,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
         // if (data.nickname !== userProfile.nickname) {
         userProfile.email = data.email
         userProfile.nickname = data.nickname
+        userProfile.photo = profilePicture
 
         submitEditProfile(userProfile);
         //   return
@@ -170,17 +172,18 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
 
     
     useEffect(() => {
-      if (mainStore.isOTPVerified && route.params?.newEmail && route.params?.newNickname) {
-        const { newEmail, newNickname } = route.params
+      if (mainStore.isOTPVerified && route.params?.newEmail && route.params?.newNickname && route.params?.photo) {
+        const { newEmail, newNickname, photo } = route.params
 
         userProfile.email = newEmail
         userProfile.nickname = newNickname
+        userProfile.photo = photo
 
         submitEditProfile(userProfile);
       } else {
         console.log('OTP NOT verified')
       }
-    }, [mainStore.isOTPVerified, route.params?.newNickname, route.params?.newEmail])
+    }, [mainStore.isOTPVerified, route.params?.newNickname, route.params?.newEmail, route.params?.photo])
 
     const handleValueChanges = useCallback(async (data: ProfileUpdateForm) => {
       setIsDisableEditBtn(true)
