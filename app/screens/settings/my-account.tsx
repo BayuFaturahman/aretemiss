@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useState } from "react"
-import {Platform, SafeAreaView, ScrollView, TouchableOpacity, View} from "react-native"
+import {BackHandler, Platform, SafeAreaView, ScrollView, TouchableOpacity, View} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Text, BackNavigation, Button, TextField } from "@components"
@@ -27,6 +27,7 @@ export type ProfileUpdateForm = {
   team1Id: string
   team2Id: string
   team3Id: string
+  photo: string
   isAllowNotification?: number
   isAllowReminderNotification?: number
 }
@@ -47,6 +48,8 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
 
     const [profilePicture, setProfilePicture] = useState(null)
 
+    const [isDisableEditBtn, setIsDisableEditBtn] = useState(true)
+
     const userProfile: ProfileUpdateForm = {
       fullname: mainStore.userProfile.user_fullname,
       nickname: mainStore.userProfile.user_nickname,
@@ -54,6 +57,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
       team1Id: mainStore.userProfile.team1_id,
       team2Id: mainStore.userProfile.team2_id,
       team3Id: mainStore.userProfile.team3_id,
+      photo: mainStore.userProfile.user_photo,
       isAllowNotification: mainStore.userProfile.user_is_allow_notification,
       isAllowReminderNotification: mainStore.userProfile.user_is_allow_reminder_notification,
     }
@@ -107,8 +111,8 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
       }
     }
 
-    const checkEmailChange = useCallback((newEmail) => {
-      return (userProfile.email.toLowerCase().trim() !== newEmail.toLowerCase().trim())
+    const checkDataChange = useCallback((oldData, newData) => {
+      return (oldData.toLowerCase().trim() !== newData.toLowerCase().trim())
     }, [userProfile])
 
     const onClickEditProfile = useCallback(async (data: ProfileUpdateForm) => {
@@ -116,9 +120,12 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
       mainStore.setIsOTPVerified(false)
       mainStore.formReset();
       setIsClickEditProfile(true)
-      const isEmailChange = checkEmailChange(data.email)
-      // console.log('Email change? ', isEmailChange, ' old email: ', userProfile.email, ' new email: ', data.email)
-      if (isEmailChange || data.nickname !== userProfile.nickname) {
+      const isEmailChange = checkDataChange(userProfile.email, data.email)
+      // const isNicknameChange = checkDataChange(userProfile.nickname, data.nickname)
+
+      console.log('Email change? ', isEmailChange, ' old email: ', userProfile.email, ' new email: ', data.email)
+      console.log('foto change? ', userProfile.photo , ' new photo: ', profilePicture)
+      // if (isEmailChange || isNicknameChange) {
         if (isEmailChange) {
           if (validateEmail(data.email)) {
             console.log("go to otp")
@@ -132,18 +139,18 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
           return
         }
   
-        if (data.nickname !== userProfile.nickname) {
-            userProfile.email = data.email
-            userProfile.nickname = data.nickname
+        // if (data.nickname !== userProfile.nickname) {
+        userProfile.email = data.email
+        userProfile.nickname = data.nickname
+
+        submitEditProfile(userProfile);
+        //   return
+        // }
+      // }
   
-            submitEditProfile(userProfile);
-          return
-        }
-      }
-  
-      console.log("Ga ada perubahan")
+      // console.log("Ga ada perubahan")
       
-    }, [userProfile])
+    }, [userProfile, profilePicture])
 
     const submitEditProfile = useCallback(async (data: ProfileUpdateForm) => {
       console.log("Data to be submitted", userProfile)
@@ -164,8 +171,6 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
     
     useEffect(() => {
       if (mainStore.isOTPVerified && route.params?.newEmail && route.params?.newNickname) {
-        // console.log('OTP verified ok')
-        // console.log('User profile skrng: ', userProfile)
         const { newEmail, newNickname } = route.params
 
         userProfile.email = newEmail
@@ -176,26 +181,30 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
         console.log('OTP NOT verified')
       }
     }, [mainStore.isOTPVerified, route.params?.newNickname, route.params?.newEmail])
-    
 
-    // useEffect(() => {
-    //   console.log("go to verifyOTP")
-    //   if (authStore.otp !== null) {
-    //     // setIsError(false)
-    //     goToVerifyOTP()
-    //   }
-    // }, [authStore.otp])
+    const handleValueChanges = useCallback((data: ProfileUpdateForm) => {
+      setIsDisableEditBtn(true)
 
-    // useEffect(() => {
-    //   // setTimeout(() => {
-    //   console.log("Is email valid ", isEmailValid)
-    //   // console.log("Mau edit profile")
-    //   if (isEmailValid && isClickEditProfile) {
-    //     submitEditProfile(userProfile)
-    //     setIsClickEditProfile(false)
-    //   }
-    //   // }, 100)
-    // }, [isEmailValid, isClickEditProfile])
+      const isEmailChange = checkDataChange(userProfile.email, data.email)
+      const isNicknameChange = checkDataChange(userProfile.nickname, data.nickname)
+
+      if (isEmailChange || isNicknameChange) {
+        setIsDisableEditBtn(false)
+      } 
+
+      if (isEmailChange) {
+        const isEmailValid = validateEmail(data.email)
+        console.log('Email valid? ', isEmailValid)
+      }
+
+    }, [isDisableEditBtn, userProfile])
+
+    useEffect(() => {
+      const isProfileChange = checkDataChange(userProfile.photo, (profilePicture === null) ? "": profilePicture)
+      if (isProfileChange) {
+        setIsDisableEditBtn(false)
+      }
+    },[profilePicture, isDisableEditBtn])
 
     useEffect(() => {
       validateEmail(userProfile.email)
@@ -287,6 +296,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                           // isError={isError && (authStore.formErrorCode === 2 || authStore.formErrorCode === 1 || authStore.formErrorCode === 10 || authStore.formErrorCode === 15)}
                           value={values.nickname}
                           onChangeText={handleChange("nickname")}
+                          onBlur={() => {handleValueChanges(values)}}
                         />
                         <TextField
                           // value={password}
@@ -294,7 +304,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                           style={{ paddingTop: 0 }}
                           isRequired={false}
                           secureTextEntry={false}
-                          onBlur={() => validateEmail(values.email)}
+                          onBlur={() => {handleValueChanges(values)}}
                           isError={!isEmailValid || (mainStore.errorCode === 35)}
                           value={values.email}
                           onChangeText={handleChange("email")}
@@ -332,7 +342,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                       </VStack>
                       <Spacer height={Spacing[12]} />
                       <VStack horizontal={Spacing[96]} vertical={Spacing[20]}>
-                        <Button type={"primary"} text={"Edit"} onPress={() => handleSubmit()} />
+                        <Button type={isDisableEditBtn? "negative" : "primary"} text={"Edit"} onPress={() => handleSubmit()} disabled={isDisableEditBtn} />
                       </VStack>
                     </VStack>
                   </>
