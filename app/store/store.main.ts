@@ -407,6 +407,43 @@ export default class MainStore {
     }
   }
 
+
+  async checkEmail(email: string) {
+    this.isLoading = true
+    try {
+      const response = await this.profileApi.checkEmail(email)
+
+      if (response.kind === "form-error") {
+        this.formError(response.response)
+      }
+
+      if (response.kind === "ok") {
+        if (!response.response.data.is_allow_to_use) {
+          const errorCheckEmail: ErrorFormResponse = {
+            errorCode: 99,
+            message: 'Alamat email yang kamu ganti sudah dimiliki akun lain. Kamu yakin mau pakai alamat yang ini?'
+          }
+          this.formError(errorCheckEmail)
+        }
+
+      }
+    } catch (e) {
+      console.log("checkEmail error")
+      console.log(e)
+      this.checkEmailFailed(e)
+    } finally {
+      console.log("checkEmail done")
+      this.isLoading = false
+    }
+  }
+
+
+  checkEmailFailed(e: any) {
+    this.setIsOTPVerified(false)
+    this.errorMessage = e
+  }
+
+
   verifyOTPFailed(e: any) {
     this.setIsOTPVerified(false)
     this.errorMessage = e

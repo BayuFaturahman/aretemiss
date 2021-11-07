@@ -48,6 +48,16 @@ export interface PostUploadFilesResponse {
   }
 }
 
+export interface CheckEmailResponse {
+  message: string
+  token: string
+  data: {
+    email: string
+    message: string
+    is_allow_to_use: boolean
+  }
+}
+
 export type TeamListResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: TeamResponse }  | GeneralApiProblem
 
 export type UpdateProfileResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: UpdateProfileResponse }  | GeneralApiProblem
@@ -59,4 +69,6 @@ export type GetTeamMemberResult = { kind: "form-error"; response: ErrorFormRespo
 export type VerifyOTPResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: VerifyOTPResponse }  | GeneralApiProblem
 
 export type PostUpdateProfile = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: PostUploadFilesResponse }  | GeneralApiProblem
+
+export type CheckEmailResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CheckEmailResponse }  | GeneralApiProblem
 
