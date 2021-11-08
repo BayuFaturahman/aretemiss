@@ -412,7 +412,7 @@ export default class MainStore {
       console.log(e)
       this.uploadPhotoFailed(e)
     } finally {
-      console.log("gUpload done")
+      console.log("Upload done")
       this.isLoading = false
     }
   }

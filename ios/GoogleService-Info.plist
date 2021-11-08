@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>237516324749-ilb24l5sk3eda9jqidift94crkf8e20u.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.237516324749-ilb24l5sk3eda9jqidift94crkf8e20u</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBuIsuZxqHs_qbuuLaybW3Zdc9AE5q0L24</string>
+	<key>GCM_SENDER_ID</key>
+	<string>237516324749</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.kubik.ilead</string>
+	<key>PROJECT_ID</key>
+	<string>ilead-2021</string>
+	<key>STORAGE_BUCKET</key>
+	<string>ilead-2021.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:237516324749:ios:2d3c4b8c6ded2ed592c7c4</string>
+</dict>
+</plist>

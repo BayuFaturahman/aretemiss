@@ -139,7 +139,8 @@ export class ProfileApi {
 
   async postUploadFiles(formData: FormData): Promise<PostUpdateProfile> {
     try {
-      console.log('postUploadFiles data', formData)
+      // console.log('postUploadFiles data', formData)
+      console.log('postUploadFiles data api call')
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.post(
         `/upload`,

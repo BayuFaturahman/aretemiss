@@ -28,6 +28,7 @@ import {HomepageErrorCard} from "@screens/homepage/components/homepage-error-car
 
 import RNAnimated from "react-native-animated-component";
 import {debounce} from "lodash";
+import messaging from "@react-native-firebase/messaging";
 
 const FEED_EXAMPLE_DATA_ITEM:FeedItemType = {
   id: '0',
@@ -153,6 +154,16 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     useEffect(()=> {
       setCoachingJournalData(null)
       loadData()
+
+      const getToken = async () => {
+        const token = await messaging().getToken();
+
+        console.log('### FCM token ###')
+        console.log(token)
+      };
+
+      getToken();
+
     }, [])
 
     useEffect(()=> {

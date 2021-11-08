@@ -24,6 +24,7 @@ import {useNavigation} from "@react-navigation/native";
 import {StoreProvider} from "./bootstrap/context.boostrap";
 import RootStore from "./bootstrap/store.bootstrap";
 import {setupRootStore} from "./store/setup-store";
+import {requestUserPermissionForNotification} from "@utils";
 
 // This puts screens in a native ViewController or Activity. If you want fully native
 // stack navigation, use `createNativeStackNavigator` in place of `createStackNavigator`:
@@ -50,6 +51,8 @@ function App() {
       await initFonts() // expo
       setupRootStore().then(setRootStore)
     })()
+
+    requestUserPermissionForNotification();;
   }, [])
 
   if (__DEV__) {

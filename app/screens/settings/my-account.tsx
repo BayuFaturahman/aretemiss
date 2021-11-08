@@ -68,7 +68,19 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
       if (!response.didCancel) {
 
         const formData = new FormData()
-        formData.append('files', response.assets[0].base64 )
+        // formData.append('files', response.assets[0].base64 )
+        formData.append('files', {
+          ...response.assets[0],
+          // @ts-ignore
+          uri: Platform.OS === 'android'
+              ? response.assets[0].uri
+              : response.assets[0].uri.replace('file://', ''),
+          name: `profile-image-${
+            response.assets[0].fileName.toLowerCase().split(' ')[0]
+          }-${new Date().getTime()}.jpeg`,
+          type: response.assets[0].type ?? 'image/jpeg',
+          size: response.assets[0].fileSize,
+        } )
 
         await mainStore.uploadPhoto(formData)
 
@@ -76,7 +88,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
           setProfilePicture(response.assets[0].uri)
         }
 
-        console.log(response.assets)
+        console.log(response.assets[0])
 
       } else {
         console.log('cancel')
@@ -84,7 +96,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
     }, []);
 
     const openGallery = useCallback(() => {
-      launchImageLibrary({mediaType: 'photo', quality: qualityImage, maxWidth: maxWidthImage, maxHeight: maxHeightImage}, cameraHandler);
+      launchImageLibrary({mediaType: 'photo', quality: qualityImage, maxWidth: maxWidthImage, maxHeight: maxHeightImage, includeBase64: false, selectionLimit: 1}, cameraHandler);
     }, []);
 
     const validateEmail = (email) => {
