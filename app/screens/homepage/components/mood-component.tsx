@@ -25,7 +25,7 @@ export const MoodComponent = ({data}:{data: MoodItemType}) => {
           height: Spacing[64],
           width: Spacing[64],
           borderRadius: Spacing[8]
-        }} source={nullProfileIcon} resizeMode={"contain"}/>
+        }} source={data.avatarUrl === '' ? nullProfileIcon : {uri: data.avatarUrl}} resizeMode={"cover"}/>
         <VStack left={Spacing[8]} right={Spacing[128]}>
           <Text type={'body-bold'} text={data.user.name} />
           <Text type={'body'} text={data.user.title} />

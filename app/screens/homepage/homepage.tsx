@@ -46,7 +46,7 @@ const FEED_EXAMPLE_DATA_ITEM:FeedItemType = {
 }
 
 const MOOD_EXAMPLE_DATA:MoodItemType = {
-  avatarUrl: 'https://www.gstatic.com/webp/gallery3/2.png',
+  avatarUrl: '',
   user: {
     name: '',
     title: ''
@@ -134,6 +134,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
         const data = MOOD_EXAMPLE_DATA
         data.user.name = mainStore.userProfile.user_fullname
         data.user.title = mainStore.userProfile.team1_name
+        data.avatarUrl = mainStore.userProfile.user_photo
         setMoodData(data)
         forceUpdate()
       }
