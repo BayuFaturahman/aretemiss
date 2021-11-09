@@ -29,6 +29,7 @@ export type ProfileUpdateForm = {
   team3Id: string
   isAllowNotification?: number
   isAllowReminderNotification?: number
+  photo: string
 }
 
 const qualityImage = Platform.OS === 'ios' ? 0.4 : 0.5;
@@ -39,13 +40,10 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
   ({ navigation }) => {
     const { authStore, mainStore } = useStores()
 
-    const [isEmailValid, setIsEmailValid] = useState(false)
-    const [isClickEditProfile, setIsClickEditProfile] = useState(false)
-    const [isModalVisible, setModalVisible] = useState(false)
+    const [isEmailValid, setIsEmailValid] = useState<boolean>(false)
+    const [isModalVisible, setModalVisible] = useState<boolean>(false)
 
-    const [emailErrorMessage, setEmailErrorMessage] = useState('')
-
-    const [profilePicture, setProfilePicture] = useState(null)
+    const [emailErrorMessage, setEmailErrorMessage] = useState<string>('')
 
     const userProfile: ProfileUpdateForm = {
       fullname: mainStore.userProfile.user_fullname,
@@ -56,48 +54,14 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
       team3Id: mainStore.userProfile.team3_id,
       isAllowNotification: mainStore.userProfile.user_is_allow_notification,
       isAllowReminderNotification: mainStore.userProfile.user_is_allow_reminder_notification,
+      photo: mainStore.userProfile.user_photo
     }
+
+    const [profilePicture, setProfilePicture] = useState(userProfile.photo)
 
     const goBack = () => navigation.goBack()
 
     const goToChangePassword = () => navigation.navigate("changePassword")
-
-    const goToChangePhone = () => navigation.navigate("changePhone")
-
-    const cameraHandler = useCallback(async (response: ImagePickerResponse) => {
-      if (!response.didCancel) {
-
-        const formData = new FormData()
-        // formData.append('files', response.assets[0].base64 )
-        formData.append('files', {
-          ...response.assets[0],
-          // @ts-ignore
-          uri: Platform.OS === 'android'
-              ? response.assets[0].uri
-              : response.assets[0].uri.replace('file://', ''),
-          name: `profile-image-${
-            response.assets[0].fileName.toLowerCase().split(' ')[0]
-          }-${new Date().getTime()}.jpeg`,
-          type: response.assets[0].type ?? 'image/jpeg',
-          size: response.assets[0].fileSize,
-        } )
-
-        await mainStore.uploadPhoto(formData)
-
-        if (mainStore.errorCode === null){
-          setProfilePicture(response.assets[0].uri)
-        }
-
-        console.log(response.assets[0])
-
-      } else {
-        console.log('cancel')
-      }
-    }, []);
-
-    const openGallery = useCallback(() => {
-      launchImageLibrary({mediaType: 'photo', quality: qualityImage, maxWidth: maxWidthImage, maxHeight: maxHeightImage, includeBase64: false, selectionLimit: 1}, cameraHandler);
-    }, []);
 
     const validateEmail = (email) => {
       const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/
@@ -115,44 +79,72 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
 
     const onClickEditProfile = useCallback(async (data: ProfileUpdateForm) => {
       // console.log("click : ", data)
+      console.log('onClickEditProfile')
       mainStore.formReset();
       userProfile.email = data.email
       userProfile.nickname = data.nickname
-      validateEmail(data.email)
-      setIsClickEditProfile(true)
-    }, [])
-
-    const submitEditProfile = useCallback(async (data: ProfileUpdateForm) => {
+      userProfile.photo = data.photo
+      const isEmailValid = validateEmail(data.email)
+      // setIsClickEditProfile(true)
+      console.log(userProfile)
       console.log("Data to be submitted", userProfile)
-      await mainStore.updateProfile(mainStore.userProfile.user_id, userProfile)
-      if (mainStore.errorCode === null) {
-        await mainStore.getProfile();
-        toggleModal()
-      }
-      else {
-        setIsEmailValid(false)
-        setEmailErrorMessage(mainStore.errorMessage)
+      if(isEmailValid){
+        await mainStore.updateProfile(mainStore.userProfile.user_id, userProfile)
+        if (mainStore.errorCode === null) {
+          await mainStore.getProfile();
+          toggleModal()
+        }
+        else {
+          setIsEmailValid(false)
+          setEmailErrorMessage(mainStore.errorMessage)
+        }
       }
 
     }, [])
-
-    useEffect(() => {
-      // setTimeout(() => {
-      console.log("Is email valid ", isEmailValid)
-      // console.log("Mau edit profile")
-      if (isEmailValid && isClickEditProfile) {
-        submitEditProfile(userProfile)
-        setIsClickEditProfile(false)
-      }
-      // }, 100)
-    }, [isEmailValid, isClickEditProfile])
 
     useEffect(() => {
       validateEmail(userProfile.email)
       mainStore.formReset()
     }, [])
 
-    const ChangeProfilePicture = ({ isError = false }) => {
+    const ChangeProfilePicture = ({ isError = false, onPictureChange }) => {
+
+      const cameraHandler = useCallback(async (response: ImagePickerResponse) => {
+        if (!response.didCancel) {
+
+          const formData = new FormData()
+          // formData.append('files', response.assets[0].base64 )
+          formData.append('files', {
+            ...response.assets[0],
+            // @ts-ignore
+            uri: Platform.OS === 'android'
+              ? response.assets[0].uri
+              : response.assets[0].uri.replace('file://', ''),
+            name: `profile-image-${
+              response.assets[0].fileName.toLowerCase().split(' ')[0]
+            }-${new Date().getTime()}.jpeg`,
+            type: response.assets[0].type ?? 'image/jpeg',
+            size: response.assets[0].fileSize,
+          } )
+
+          await mainStore.uploadPhoto(formData)
+
+          if (mainStore.errorCode === null){
+            console.log('upload photo OK.')
+            console.log(mainStore.newProfilePhoto)
+            setProfilePicture(response.assets[0].uri)
+            onPictureChange(mainStore.newProfilePhoto)
+          }
+
+        } else {
+          console.log('cancel')
+        }
+      }, []);
+
+      const openGallery = useCallback(() => {
+        launchImageLibrary({mediaType: 'photo', quality: qualityImage, maxWidth: maxWidthImage, maxHeight: maxHeightImage, includeBase64: false, selectionLimit: 1}, cameraHandler);
+      }, []);
+
       const LABEL_STYLE = {
         color: isError ? Colors.MAIN_RED : Colors.UNDERTONE_BLUE,
       }
@@ -170,7 +162,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
               </HStack>
               <FastImage
                 style={{ height: Spacing[128], width: Spacing[128], borderRadius: Spacing[24] }}
-                source={profilePicture !== null ? {
+                source={profilePicture !== '' ? {
                   uri: profilePicture
                 }: nullProfileIcon }
                 resizeMode={"cover"}
@@ -187,7 +179,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
     const toggleModal = () => {
       setTimeout(() => {
         setModalVisible(!isModalVisible)
-        setIsClickEditProfile(false)
+        // setIsClickEditProfile(false)
       }, 100)
     }
 
@@ -201,7 +193,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
             <BackNavigation goBack={goBack} />
             <ScrollView>
               <Formik initialValues={userProfile} onSubmit={onClickEditProfile}>
-                {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+                {({ handleChange, handleBlur, handleSubmit, values, errors, touched, setFieldValue }) => (
                   // <View>
                   <>
                     <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
@@ -226,7 +218,9 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                       ]}
                     >
                       <VStack top={Spacing[24]}>
-                        <ChangeProfilePicture />
+                        <ChangeProfilePicture onPictureChange={(photoUrl)=> {
+                          setFieldValue('photo', photoUrl)
+                        }} />
                         <Spacer height={Spacing[32]} />
                         <TextField
                           // value={phoneNumber}

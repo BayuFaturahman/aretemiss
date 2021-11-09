@@ -99,6 +99,7 @@ export default class MainStore {
   userProfile: ProfileModel
   listUserProfile: ListProfileModel[]
 
+  newProfilePhoto: string
 
   // #region CONSTRUCTOR
 
@@ -152,6 +153,8 @@ export default class MainStore {
       team3_id: '',
       team3_name: '',
     }
+
+    this.newProfilePhoto = ''
 
     makeAutoObservable(this);
 
@@ -385,7 +388,7 @@ export default class MainStore {
   // #endregion
 
   uploadPhotoSuccess(data: PostUploadFilesResponse) {
-    this.userProfile.user_photo = data.data.urls
+    this.newProfilePhoto = data.data.urls
   }
 
   uploadPhotoFailed(e: any) {
@@ -405,7 +408,7 @@ export default class MainStore {
       }
 
       if (response.kind === "ok") {
-        await this.uploadPhotoSuccess(response.response)
+        this.uploadPhotoSuccess(response.response)
       }
     } catch (e) {
       console.log("Upload error")
