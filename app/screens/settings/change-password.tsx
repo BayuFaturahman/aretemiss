@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useState, useEffect } from "react"
-import { SafeAreaView } from "react-native"
+import {KeyboardAvoidingView, Platform, SafeAreaView, ScrollView} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Text, BackNavigation, Button, TextField } from "@components"
@@ -72,111 +72,119 @@ const ChangePassword: FC<StackScreenProps<NavigatorParamList, "changePassword">>
         console.log('change password success')
         goBack()
       }
-      
+
     }, [])
 
     return (
-      <VStack
-        testID="CoachingJournalMain"
-        style={{ backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: "center" }}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={Layout.flex}
       >
-        <SafeAreaView style={Layout.flex}>
-          <BackNavigation goBack={goBack} />
-          <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
-            <Spacer height={Spacing[24]} />
-            <Text
-              type={"header"}
-              style={{ color: Colors.WHITE, fontSize: Spacing[16] }}
-              text="Change Password"
-            />
-            <Spacer height={Spacing[32]} />
-          </VStack>
-          <VStack
-            top={Spacing[32]}
-            horizontal={Spacing[24]}
-            style={[
-              Layout.heightFull,
-              {
-                backgroundColor: Colors.WHITE,
-                borderTopStartRadius: Spacing[48],
-                borderTopEndRadius: Spacing[48],
-              },
-            ]}
-          >
-            {isSubmitPasswordChange && (
-              <Text type={"warning"} style={{ textAlign: "center" }}>
-                {errorMessage}
-              </Text>
-            )}
-            <VStack top={Spacing[32]} horizontal={Spacing[24]}>
-             {authStore.errorCode===15 && 
-                <Text type={'warning'} style={{textAlign: 'center'}}>
-                  {authStore.errorMessage}
-                </Text>
-              }
-            
-              <Formik
-                initialValues={{ oldPassword: "", newPassword: "", confirmNewPassword: "" }}
-                onSubmit={(values) => checkPassword(values)}
-              >
-                {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
-                  // <View>
-                  <>
-                    <VStack top={Spacing[32]} horizontal={Spacing[24]}>
-                      <Spacer height={Spacing[16]} />
-                      <TextField
-                        label="Password saat ini:"
-                        style={{ paddingTop: 0 }}
-                        isRequired={false}
-                        secureTextEntry={true}
-                        isError={isSubmitPasswordChange && (isNewPasswordDuplicate || (authStore.errorCode === 15))}
-                        value={values.oldPassword}
-                        onChangeText={handleChange("oldPassword")}
-                      />
-                      <Spacer height={Spacing[16]} />
-                      <TextField
-                        label="Password baru:"
-                        style={{ paddingTop: 0 }}
-                        isRequired={false}
-                        secureTextEntry={true}
-                        isError={
-                          isSubmitPasswordChange && (!isNewPasswordMatch || isNewPasswordDuplicate || (authStore.errorCode === 37))
-                        }
-                        value={values.newPassword}
-                        onChangeText={handleChange("newPassword")}
-                      />
-                      <Spacer height={Spacing[16]} />
-                      <TextField
-                        label="Tulis ulang password barumu:"
-                        style={{ paddingTop: 0 }}
-                        isRequired={false}
-                        secureTextEntry={true}
-                        isError={isSubmitPasswordChange && (!isNewPasswordMatch || (authStore.errorCode === 37))}
-                        value={values.confirmNewPassword}
-                        onChangeText={handleChange("confirmNewPassword")}
-                      />
-                    </VStack>
-                    {authStore.errorCode===37 && 
-                      <Text type={'warning'} style={{textAlign: 'center'}}>
-                        {authStore.errorMessage}
-                      </Text>
-                    }
-                    <Spacer height={Spacing[12]} />
-                    <VStack horizontal={Spacing[84]} vertical={Spacing[20]}>
-                      <Button
-                        type={"primary"}
-                        text={"Ganti Password"}
-                        onPress={() => handleSubmit()}
-                      />
-                    </VStack>
-                  </>
-                )}
-              </Formik>
+        <VStack
+          testID="CoachingJournalMain"
+          style={{ backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: "center" }}
+        >
+          <SafeAreaView style={Layout.flex}>
+            <BackNavigation goBack={goBack} />
+            <ScrollView>
+            <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
+              <Spacer height={Spacing[24]} />
+              <Text
+                type={"header"}
+                style={{ color: Colors.WHITE, fontSize: Spacing[16] }}
+                text="Change Password"
+              />
+              <Spacer height={Spacing[32]} />
             </VStack>
-          </VStack>
-        </SafeAreaView>
-        <Spinner visible={authStore.isLoading} textContent={"Memuat..."} />
-      </VStack>
+            <VStack
+              top={Spacing[32]}
+              horizontal={Spacing[24]}
+              style={[
+                Layout.heightFull,
+                {
+                  backgroundColor: Colors.WHITE,
+                  borderTopStartRadius: Spacing[48],
+                  borderTopEndRadius: Spacing[48],
+                },
+              ]}
+            >
+              {isSubmitPasswordChange && (
+                <Text type={"warning"} style={{ textAlign: "center" }}>
+                  {errorMessage}
+                </Text>
+              )}
+              <VStack top={Spacing[32]} horizontal={Spacing[24]}>
+               {authStore.errorCode===15 &&
+                  <Text type={'warning'} style={{textAlign: 'center'}}>
+                    {authStore.errorMessage}
+                  </Text>
+                }
+
+                <Formik
+                  initialValues={{ oldPassword: "", newPassword: "", confirmNewPassword: "" }}
+                  onSubmit={(values) => checkPassword(values)}
+                >
+                  {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+                    // <View>
+                    <>
+                      <VStack top={Spacing[32]} horizontal={Spacing[24]}>
+                        <Spacer height={Spacing[16]} />
+                        <TextField
+                          label="Password saat ini:"
+                          style={{ paddingTop: 0 }}
+                          isRequired={false}
+                          secureTextEntry={true}
+                          isError={isSubmitPasswordChange && (isNewPasswordDuplicate || (authStore.errorCode === 15))}
+                          value={values.oldPassword}
+                          onChangeText={handleChange("oldPassword")}
+                        />
+                        <Spacer height={Spacing[16]} />
+                        <TextField
+                          label="Password baru:"
+                          style={{ paddingTop: 0 }}
+                          isRequired={false}
+                          secureTextEntry={true}
+                          isError={
+                            isSubmitPasswordChange && (!isNewPasswordMatch || isNewPasswordDuplicate || (authStore.errorCode === 37))
+                          }
+                          value={values.newPassword}
+                          onChangeText={handleChange("newPassword")}
+                        />
+                        <Spacer height={Spacing[16]} />
+                        <TextField
+                          label="Tulis ulang password barumu:"
+                          style={{ paddingTop: 0 }}
+                          isRequired={false}
+                          secureTextEntry={true}
+                          isError={isSubmitPasswordChange && (!isNewPasswordMatch || (authStore.errorCode === 37))}
+                          value={values.confirmNewPassword}
+                          onChangeText={handleChange("confirmNewPassword")}
+                        />
+                      </VStack>
+                      {authStore.errorCode===37 &&
+                        <Text type={'warning'} style={{textAlign: 'center'}}>
+                          {authStore.errorMessage}
+                        </Text>
+                      }
+                      <Spacer height={Spacing[12]} />
+                      <VStack horizontal={Spacing[84]} vertical={Spacing[20]}>
+                        <Button
+                          type={"primary"}
+                          text={"Ganti Password"}
+                          onPress={() => handleSubmit()}
+                        />
+                      </VStack>
+                    </>
+                  )}
+                </Formik>
+              </VStack>
+            </VStack>
+            <Spacer height={Spacing[48]} />
+            </ScrollView>
+          </SafeAreaView>
+          <Spinner visible={authStore.isLoading} textContent={"Memuat..."} />
+        </VStack>
+      </KeyboardAvoidingView>
     )
   },
 )
