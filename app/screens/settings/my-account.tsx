@@ -46,7 +46,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
 
     const [emailErrorMessage, setEmailErrorMessage] = useState('')
 
-    const [profilePicture, setProfilePicture] = useState(null)
+    const [profilePicture, setProfilePicture] = useState(mainStore.userProfile.user_photo)
 
     const [isDisableEditBtn, setIsDisableEditBtn] = useState(true)
 
@@ -186,12 +186,14 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
     }, [mainStore.isOTPVerified, route.params?.newNickname, route.params?.newEmail, route.params?.photo])
 
     const handleValueChanges = useCallback(async (data: ProfileUpdateForm) => {
+      // console.log('setIsDisableEditBtn to true 189')
       setIsDisableEditBtn(true)
 
       const isEmailChange = checkDataChange(userProfile.email, data.email)
       const isNicknameChange = checkDataChange(userProfile.nickname, data.nickname)
 
       if (isEmailChange || isNicknameChange) {
+        // console.log('setIsDisableEditBtn to false 196')
         setIsDisableEditBtn(false)
       } 
 
@@ -204,10 +206,15 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
           if (mainStore.errorCode !== null) {
             setIsEmailValid(false)
             setEmailErrorMessage(mainStore.errorMessage)
+            // console.log('setIsDisableEditBtn to true 209')
             setIsDisableEditBtn(true) 
           } else {
+            // console.log('setIsDisableEditBtn to false 212')
             setIsDisableEditBtn(false)
           }
+        } else {
+          // console.log('setIsDisableEditBtn to true 216')
+          setIsDisableEditBtn(true)
         }
      
       }
@@ -216,7 +223,10 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
 
     useEffect(() => {
       const isProfileChange = checkDataChange(userProfile.photo, (profilePicture === null) ? "": profilePicture)
+      console.log('profilePicture ', profilePicture);
+      console.log('userProfile.photo ', userProfile.photo);
       if (isProfileChange) {
+        // console.log('setIsDisableEditBtn to false 227')
         setIsDisableEditBtn(false)
       }
     },[profilePicture, isDisableEditBtn])
