@@ -18,6 +18,7 @@ import FastImage from "react-native-fast-image";
 import {useStores} from "../../bootstrap/context.boostrap";
 
 import Spinner from 'react-native-loading-spinner-overlay';
+import messaging from "@react-native-firebase/messaging";
 
 
 const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
@@ -35,7 +36,13 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
     const nextScreen = () => navigation.navigate("verifyOTP")
 
     const submitLogin = useCallback( async()=>{
-      await authStore.login(phoneNumber , password)
+
+      const token = await messaging().getToken();
+
+      console.log('### FCM token login ###')
+      console.log(token)
+
+      await authStore.login(phoneNumber , password, token)
     }, [phoneNumber, password])
 
     useEffect(() => {

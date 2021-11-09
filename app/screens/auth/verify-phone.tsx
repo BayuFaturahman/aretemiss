@@ -15,6 +15,7 @@ import { useStores } from "../../bootstrap/context.boostrap"
 
 import Spinner from "react-native-loading-spinner-overlay"
 import { useFocusEffect } from "@react-navigation/native"
+import messaging from "@react-native-firebase/messaging";
 
 const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = observer(
   ({ navigation }) => {
@@ -37,9 +38,14 @@ const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
     const submitVerify = useCallback(async (data) => {
       const { email, password } = data
 
-      authStore.resetLoginState()
-      console.log("Submit verify, masu ke authstore.signuo")
-      await authStore.signup(email, password)
+      const token = await messaging().getToken();
+
+      console.log('### FCM token register ###');
+      console.log(token);
+
+      authStore.resetLoginState();
+      console.log("Submit verify, masuk ke authstore.signup");
+      await authStore.signup(email, password, token)
     }, [])
 
     useEffect(() => {

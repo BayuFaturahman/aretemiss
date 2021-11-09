@@ -154,16 +154,6 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     useEffect(()=> {
       setCoachingJournalData(null)
       loadData()
-
-      const getToken = async () => {
-        const token = await messaging().getToken();
-
-        console.log('### FCM token ###')
-        console.log(token)
-      };
-
-      getToken();
-
     }, [])
 
     useEffect(()=> {

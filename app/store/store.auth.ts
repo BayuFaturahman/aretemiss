@@ -85,11 +85,11 @@ export default class AuthStore {
 
   }
 
-  async login(email: string, password: string) {
+  async login(email: string, password: string, fcmToken: string) {
     console.log('login')
     this.isLoading = true
     try {
-      const response = await this.apiAuth.login(email,password)
+      const response = await this.apiAuth.login(email, password, fcmToken)
 
       if(response.kind === 'form-error'){
         console.log(response.response.errorCode)
@@ -176,11 +176,11 @@ export default class AuthStore {
     }
   }
 
-  async signup(email: string, password: string) {
+  async signup(email: string, password: string, fcmToken: string) {
     console.log('signup')
     this.isLoading = true
     try {
-      const response = await this.apiAuth.signup(email, password)
+      const response = await this.apiAuth.signup(email, password, fcmToken)
 
       console.log(response)
 
@@ -197,7 +197,7 @@ export default class AuthStore {
         if (response.response.errorCode === 4) {
           response.response.message = 'Waduh. Alamat e-mail ini sudah terdaftar. Kalau sudah pernah registrasi, langsung login aja ya!'
         }
-        
+
 
         this.formError(response.response)
       }
@@ -287,7 +287,7 @@ export default class AuthStore {
       console.log(response)
 
       if(response.kind === 'form-error'){
-        console.log(response)        
+        console.log(response)
 
         this.formError(response.response)
       }

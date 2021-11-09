@@ -18,12 +18,13 @@ export class AuthApi {
     this.api = api
   }
 
-  async login(email: string, password: string): Promise<LoginResult> {
+  async login(email: string, password: string, fcmToken: string): Promise<LoginResult> {
     try {
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.post("/signin", {
         email: email,
         password: password,
+        fcm_token: fcmToken
       })
 
       if (response.status === 400) {
@@ -81,12 +82,16 @@ export class AuthApi {
     }
   }
 
-  async signup(email: string, password: string): Promise<SignupResult> {
+  async signup(email: string, password: string, fcmToken: string): Promise<SignupResult> {
     try {
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.post(
         "/signup",
-        { email: email, password: password }
+        {
+          email: email,
+          password: password,
+          fcm_token: fcmToken
+        }
       )
 
       if(response.status === 400){
