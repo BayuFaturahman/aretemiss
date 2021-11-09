@@ -100,6 +100,7 @@ export default class MainStore {
   listUserProfile: ListProfileModel[]
 
   newProfilePhoto: string
+  isOTPVerified: boolean
 
   // #region CONSTRUCTOR
 
@@ -382,8 +383,80 @@ export default class MainStore {
     this.isLoading = false
   }
 
+  async verifyOTP(otpCode: string, otpHash: string, email: string) {
+    this.isLoading = true
+    try {
+      const response = await this.profileApi.verifyOTP(otpCode, otpHash, email)
+
+      console.log(response)
+
+      if (response.kind === "form-error") {
+
+        this.formError(response.response)
+      }
+
+      if (response.kind === "ok") {
+        this.setIsOTPVerified(true)
+        // await this.updateProfileSuccess(response.response)
+      }
+    } catch (e) {
+      console.log("verifyOTP error")
+      console.log(e)
+      this.verifyOTPFailed(e)
+    } finally {
+      console.log("verifyOTP done")
+      this.isLoading = false
+    }
+  }
+
+
+  async checkEmail(email: string) {
+    this.isLoading = true
+    try {
+      const response = await this.profileApi.checkEmail(email)
+
+      if (response.kind === "form-error") {
+        this.formError(response.response)
+      }
+
+      if (response.kind === "ok") {
+        if (!response.response.data.is_allow_to_use) {
+          const errorCheckEmail: ErrorFormResponse = {
+            errorCode: 99,
+            message: 'Alamat email yang kamu ganti sudah dimiliki akun lain. Kamu yakin mau pakai alamat yang ini?'
+          }
+          this.formError(errorCheckEmail)
+        }
+
+      }
+    } catch (e) {
+      console.log("checkEmail error")
+      console.log(e)
+      this.checkEmailFailed(e)
+    } finally {
+      console.log("checkEmail done")
+      this.isLoading = false
+    }
+  }
+
+
+  checkEmailFailed(e: any) {
+    this.setIsOTPVerified(false)
+    this.errorMessage = e
+  }
+
+
+  verifyOTPFailed(e: any) {
+    this.setIsOTPVerified(false)
+    this.errorMessage = e
+  }
+
   getListProfileFailed(e: any) {
     this.errorMessage = e
+  }
+
+  setIsOTPVerified(status: boolean) {
+    this.isOTPVerified = status
   }
   // #endregion
 

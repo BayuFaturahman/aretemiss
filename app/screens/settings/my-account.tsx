@@ -1,8 +1,16 @@
 import React, { FC, useCallback, useEffect, useState } from "react"
-import {Platform, SafeAreaView, ScrollView, TouchableOpacity, View} from "react-native"
+import {
+  BackHandler,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  TouchableOpacity,
+  View
+} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
-import { Text, BackNavigation, Button, TextField } from "@components"
+import {Text, BackNavigation, Button, TextField, DismissKeyboard} from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
 import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
@@ -27,6 +35,7 @@ export type ProfileUpdateForm = {
   team1Id: string
   team2Id: string
   team3Id: string
+  photo: string
   isAllowNotification?: number
   isAllowReminderNotification?: number
   photo: string
@@ -37,13 +46,15 @@ const maxWidthImage = 1024;
 const maxHeightImage = 1024;
 
 const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observer(
-  ({ navigation }) => {
+  ({ navigation, route }) => {
     const { authStore, mainStore } = useStores()
 
     const [isEmailValid, setIsEmailValid] = useState<boolean>(false)
     const [isModalVisible, setModalVisible] = useState<boolean>(false)
 
     const [emailErrorMessage, setEmailErrorMessage] = useState<string>('')
+
+    const [isDisableEditBtn, setIsDisableEditBtn] = useState(true)
 
     const userProfile: ProfileUpdateForm = {
       fullname: mainStore.userProfile.user_fullname,
@@ -52,6 +63,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
       team1Id: mainStore.userProfile.team1_id,
       team2Id: mainStore.userProfile.team2_id,
       team3Id: mainStore.userProfile.team3_id,
+      photo: mainStore.userProfile.user_photo,
       isAllowNotification: mainStore.userProfile.user_is_allow_notification,
       isAllowReminderNotification: mainStore.userProfile.user_is_allow_reminder_notification,
       photo: mainStore.userProfile.user_photo
@@ -62,6 +74,12 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
     const goBack = () => navigation.goBack()
 
     const goToChangePassword = () => navigation.navigate("changePassword")
+
+    const goToVerifyOTP = (email, nickname, profile) => navigation.navigate("myAccountVerifyOTP", {
+      newEmail: email,
+      newNickname: nickname,
+      photo: profile
+    })
 
     const validateEmail = (email) => {
       const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/
@@ -77,34 +95,133 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
       }
     }
 
+    const checkDataChange = useCallback((oldData, newData) => {
+      return (oldData.toLowerCase().trim() !== newData.toLowerCase().trim())
+    }, [userProfile])
+
     const onClickEditProfile = useCallback(async (data: ProfileUpdateForm) => {
       // console.log("click : ", data)
-      console.log('onClickEditProfile')
+      mainStore.setIsOTPVerified(false)
       mainStore.formReset();
-      userProfile.email = data.email
-      userProfile.nickname = data.nickname
-      userProfile.photo = data.photo
-      const isEmailValid = validateEmail(data.email)
       // setIsClickEditProfile(true)
-      console.log(userProfile)
+      const isEmailChange = checkDataChange(userProfile.email, data.email)
+      // const isNicknameChange = checkDataChange(userProfile.nickname, data.nickname)
+
+      console.log('Email change? ', isEmailChange, ' old email: ', userProfile.email, ' new email: ', data.email)
+      console.log('foto change? ', userProfile.photo , ' new photo: ', data.photo)
+      // if (isEmailChange || isNicknameChange) {
+        if (isEmailChange) {
+          if (validateEmail(data.email)) {
+            console.log("go to otp")
+            await authStore.resendOTP(userProfile.email)
+            if (authStore.otp !== null) {
+              // setIsError(false)
+              goToVerifyOTP(data.email, data.nickname, data.photo)
+            }
+          }
+        } else {
+          userProfile.email = data.email
+          userProfile.nickname = data.nickname
+          userProfile.photo = data.photo
+
+          console.log('onClickEditProfile')
+          const isEmailValid = validateEmail(data.email)
+          console.log(userProfile)
+          console.log("Data to be submitted", userProfile)
+          if(isEmailValid) {
+            await mainStore.updateProfile(mainStore.userProfile.user_id, userProfile)
+            if (mainStore.errorCode === null) {
+              await mainStore.getProfile();
+              toggleModal()
+            } else {
+              setIsEmailValid(false)
+              setEmailErrorMessage(mainStore.errorMessage)
+            }
+          }
+        }
+
+    }, [userProfile, profilePicture])
+
+    const submitEditProfile = useCallback(async (data: ProfileUpdateForm) => {
       console.log("Data to be submitted", userProfile)
-      if(isEmailValid){
-        await mainStore.updateProfile(mainStore.userProfile.user_id, userProfile)
-        if (mainStore.errorCode === null) {
-          await mainStore.getProfile();
-          toggleModal()
-        }
-        else {
-          setIsEmailValid(false)
-          setEmailErrorMessage(mainStore.errorMessage)
-        }
+      await mainStore.updateProfile(mainStore.userProfile.user_id, userProfile)
+      if (mainStore.errorCode === null) {
+        await mainStore.getProfile();
+        // console.log('USER PROFILE ', userProfile)
+        toggleModal()
+
+      }
+      else {
+        setIsEmailValid(false)
+        setEmailErrorMessage(mainStore.errorMessage)
+      }
+    }, [mainStore.errorCode, userProfile])
+
+
+    useEffect(() => {
+      if (mainStore.isOTPVerified && route.params?.newEmail && route.params?.newNickname && route.params?.photo) {
+        const { newEmail, newNickname, photo } = route.params
+
+        userProfile.email = newEmail
+        userProfile.nickname = newNickname
+        userProfile.photo = photo
+
+        submitEditProfile(userProfile);
+      } else {
+        console.log('OTP NOT verified')
+      }
+    }, [mainStore.isOTPVerified, route.params?.newNickname, route.params?.newEmail, route.params?.photo])
+
+    const handleValueChanges = useCallback(async (data: ProfileUpdateForm) => {
+      // console.log('setIsDisableEditBtn to true 189')
+      setIsDisableEditBtn(true)
+
+      const isEmailChange = checkDataChange(userProfile.email, data.email)
+      const isNicknameChange = checkDataChange(userProfile.nickname, data.nickname)
+
+      if (isEmailChange || isNicknameChange) {
+        // console.log('setIsDisableEditBtn to false 196')
+        setIsDisableEditBtn(false)
       }
 
-    }, [])
+      if (isEmailChange) {
+        const isEmailValid = validateEmail(data.email)
+        console.log('Email valid? ', isEmailValid)
+        if (isEmailValid) {
+          mainStore.formReset();
+          await mainStore.checkEmail(data.email)
+          if (mainStore.errorCode !== null) {
+            setIsEmailValid(false)
+            setEmailErrorMessage(mainStore.errorMessage)
+            // console.log('setIsDisableEditBtn to true 209')
+            setIsDisableEditBtn(true)
+          } else {
+            // console.log('setIsDisableEditBtn to false 212')
+            setIsDisableEditBtn(false)
+          }
+        } else {
+          // console.log('setIsDisableEditBtn to true 216')
+          setIsDisableEditBtn(true)
+        }
+
+      }
+
+    }, [isDisableEditBtn, userProfile, mainStore.errorCode, emailErrorMessage, isEmailValid])
+
+    useEffect(() => {
+      const isProfileChange = checkDataChange(userProfile.photo, (profilePicture === null) ? "": profilePicture)
+      console.log('profilePicture ', profilePicture);
+      console.log('userProfile.photo ', userProfile.photo);
+      if (isProfileChange) {
+        // console.log('setIsDisableEditBtn to false 227')
+        setIsDisableEditBtn(false)
+      }
+    },[profilePicture, isDisableEditBtn])
 
     useEffect(() => {
       validateEmail(userProfile.email)
       mainStore.formReset()
+      authStore.otp = null
     }, [])
 
     const ChangeProfilePicture = ({ isError = false, onPictureChange }) => {
@@ -185,111 +302,117 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
 
     return (
       <>
-        <VStack
-          testID="CoachingJournalMain"
-          style={{ backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: "center" }}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={Layout.flex}
         >
-          <SafeAreaView style={Layout.flex}>
-            <BackNavigation goBack={goBack} />
-            <ScrollView>
-              <Formik initialValues={userProfile} onSubmit={onClickEditProfile}>
-                {({ handleChange, handleBlur, handleSubmit, values, errors, touched, setFieldValue }) => (
-                  // <View>
-                  <>
-                    <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
-                      <Spacer height={Spacing[24]} />
-                      <Text
-                        type={"header"}
-                        style={{ color: Colors.WHITE, fontSize: Spacing[16] }}
-                        text="My Account"
-                      />
-                      <Spacer height={Spacing[32]} />
-                    </VStack>
-                    <VStack
-                      top={Spacing[32]}
-                      horizontal={Spacing[24]}
-                      style={[
-                        Layout.heightFull,
-                        {
-                          backgroundColor: Colors.WHITE,
-                          borderTopStartRadius: Spacing[48],
-                          borderTopEndRadius: Spacing[48],
-                        },
-                      ]}
-                    >
-                      <VStack top={Spacing[24]}>
-                        <ChangeProfilePicture onPictureChange={(photoUrl)=> {
-                          setFieldValue('photo', photoUrl)
-                        }} />
+          <VStack
+            testID="CoachingJournalMain"
+            style={{ backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: "center" }}
+          >
+            <SafeAreaView style={Layout.flex}>
+              <BackNavigation goBack={goBack} />
+              <ScrollView>
+                <Formik initialValues={userProfile} onSubmit={onClickEditProfile}>
+                  {({ handleChange, handleBlur, handleSubmit, values, errors, touched, setFieldValue }) => (
+                    // <View>
+                    <>
+                      <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
+                        <Spacer height={Spacing[24]} />
+                        <Text
+                          type={"header"}
+                          style={{ color: Colors.WHITE, fontSize: Spacing[16] }}
+                          text="My Account"
+                        />
                         <Spacer height={Spacing[32]} />
-                        <TextField
-                          // value={phoneNumber}
-                          label="Nama panggilan:"
-                          isRequired={false}
-                          style={{ paddingTop: 0 }}
-                          // isError={isError && (authStore.formErrorCode === 2 || authStore.formErrorCode === 1 || authStore.formErrorCode === 10 || authStore.formErrorCode === 15)}
-                          value={values.nickname}
-                          onChangeText={handleChange("nickname")}
-                        />
-                        <TextField
-                          // value={password}
-                          label="Alamat e-mail:"
-                          style={{ paddingTop: 0 }}
-                          isRequired={false}
-                          secureTextEntry={false}
-                          onBlur={() => validateEmail(values.email)}
-                          isError={!isEmailValid || (mainStore.errorCode === 35)}
-                          value={values.email}
-                          onChangeText={handleChange("email")}
-                          // isError={isError && (authStore.formErrorCode === 3 || authStore.formErrorCode === 15)}
-                          // onChangeText={setPassword}
-                        />
-                        {!isEmailValid && (
-                          <Text type={"warning"} style={{ textAlign: "center" }}>
-                            {emailErrorMessage}
-                          </Text>
-                        )}
+                      </VStack>
+                      <VStack
+                        top={Spacing[32]}
+                        horizontal={Spacing[24]}
+                        style={[
+                          Layout.heightFull,
+                          {
+                            backgroundColor: Colors.WHITE,
+                            borderTopStartRadius: Spacing[48],
+                            borderTopEndRadius: Spacing[48],
+                          },
+                        ]}
+                      >
+                        <VStack top={Spacing[24]}>
+                          <ChangeProfilePicture onPictureChange={(photoUrl)=> {
+                            setFieldValue('photo', photoUrl)
+                          }} />
+                          <Spacer height={Spacing[32]} />
+                          <TextField
+                            // value={phoneNumber}
+                            label="Nama panggilan:"
+                            isRequired={false}
+                            style={{ paddingTop: 0 }}
+                            // isError={isError && (authStore.formErrorCode === 2 || authStore.formErrorCode === 1 || authStore.formErrorCode === 10 || authStore.formErrorCode === 15)}
+                            value={values.nickname}
+                            onChangeText={handleChange("nickname")}
+                            onBlur={() => {handleValueChanges(values)}}
+                          />
+                          <TextField
+                            // value={password}
+                            label="Alamat e-mail:"
+                            style={{ paddingTop: 0 }}
+                            isRequired={false}
+                            secureTextEntry={false}
+                            onBlur={() => {handleValueChanges(values)}}
+                            isError={!isEmailValid || (mainStore.errorCode === 35)}
+                            value={values.email}
+                            onChangeText={handleChange("email")}
+                            // isError={isError && (authStore.formErrorCode === 3 || authStore.formErrorCode === 15)}
+                            // onChangeText={setPassword}
+                          />
+                          {!isEmailValid && (
+                            <Text type={"warning"} style={{ textAlign: "center" }}>
+                              {emailErrorMessage}
+                            </Text>
+                          )}
+                          <Spacer height={Spacing[12]} />
+                          <TextField
+                            // value={password}
+                            label="Password:"
+                            style={{ paddingTop: 0 }}
+                            isRequired={false}
+                            secureTextEntry={false}
+                            changeButton={true}
+                            editable={false}
+                            value={"******"}
+                            onPressChangeButton={goToChangePassword}
+                          />
+                          {/* <TextField
+                    // value={password}
+                    label="No. HP:"
+                    style={{ paddingTop: 0}}
+                    isRequired={false}
+                    secureTextEntry={false}
+                    // isError={isError && (authStore.formErrorCode === 3 || authStore.formErrorCode === 15)}
+                    // onChangeText={setPassword}
+                    changeButton={true}
+                    onPressChangeButton={goToChangePhone}
+                  /> */}
+                        </VStack>
                         <Spacer height={Spacing[12]} />
-                        <TextField
-                          // value={password}
-                          label="Password:"
-                          style={{ paddingTop: 0 }}
-                          isRequired={false}
-                          secureTextEntry={false}
-                          changeButton={true}
-                          editable={false}
-                          value={"******"}
-                          onPressChangeButton={goToChangePassword}
-                        />
-                        {/* <TextField
-                  // value={password}
-                  label="No. HP:"
-                  style={{ paddingTop: 0}}
-                  isRequired={false}
-                  secureTextEntry={false}
-                  // isError={isError && (authStore.formErrorCode === 3 || authStore.formErrorCode === 15)}
-                  // onChangeText={setPassword}
-                  changeButton={true}
-                  onPressChangeButton={goToChangePhone}
-                /> */}
+                        <VStack horizontal={Spacing[96]} vertical={Spacing[20]}>
+                          <Button type={isDisableEditBtn? "negative" : "primary"} text={"Edit"} onPress={() => handleSubmit()} disabled={isDisableEditBtn} />
+                        </VStack>
                       </VStack>
-                      <Spacer height={Spacing[12]} />
-                      <VStack horizontal={Spacing[96]} vertical={Spacing[20]}>
-                        <Button type={"primary"} text={"Edit"} onPress={() => handleSubmit()} />
-                      </VStack>
-                    </VStack>
-                  </>
-                )}
-              </Formik>
-              <Spacer height={Spacing[72]} />
-            </ScrollView>
-          </SafeAreaView>
-          <Spinner
-            visible={mainStore.isLoading}
-            textContent={'Memuat...'}
-            // textStyle={styles.spinnerTextStyle}
-          />
-        </VStack>
+                    </>
+                  )}
+                </Formik>
+                <Spacer height={Spacing[24]} />
+              </ScrollView>
+            </SafeAreaView>
+            <Spinner
+              visible={mainStore.isLoading || authStore.isLoading}
+              textContent={'Memuat...'}
+              // textStyle={styles.spinnerTextStyle}
+            />
+          </VStack>
+        </KeyboardAvoidingView>
         <Modal
           isOpen={isModalVisible}
           style={{
