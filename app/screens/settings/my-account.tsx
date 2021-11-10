@@ -38,7 +38,7 @@ export type ProfileUpdateForm = {
   photo: string
   isAllowNotification?: number
   isAllowReminderNotification?: number
-  photo: string
+  // photo: string
 }
 
 const qualityImage = Platform.OS === 'ios' ? 0.4 : 0.5;
@@ -66,7 +66,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
       photo: mainStore.userProfile.user_photo,
       isAllowNotification: mainStore.userProfile.user_is_allow_notification,
       isAllowReminderNotification: mainStore.userProfile.user_is_allow_reminder_notification,
-      photo: mainStore.userProfile.user_photo
+      // photo: mainStore.userProfile.user_photo
     }
 
     const [profilePicture, setProfilePicture] = useState(userProfile.photo)
@@ -140,7 +140,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
           }
         }
 
-    }, [userProfile, profilePicture])
+    }, [userProfile, profilePicture, mainStore.errorCode])
 
     const submitEditProfile = useCallback(async (data: ProfileUpdateForm) => {
       console.log("Data to be submitted", userProfile)
