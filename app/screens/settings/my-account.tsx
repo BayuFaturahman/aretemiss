@@ -131,6 +131,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
           if(isEmailValid) {
             await mainStore.updateProfile(mainStore.userProfile.user_id, userProfile)
             if (mainStore.errorCode === null) {
+              setIsDisableEditBtn(true);
               await mainStore.getProfile();
               toggleModal()
             } else {
@@ -140,12 +141,13 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
           }
         }
 
-    }, [userProfile, profilePicture, mainStore.errorCode])
+    }, [userProfile, profilePicture, mainStore.errorCode, isDisableEditBtn])
 
     const submitEditProfile = useCallback(async (data: ProfileUpdateForm) => {
       console.log("Data to be submitted", userProfile)
       await mainStore.updateProfile(mainStore.userProfile.user_id, userProfile)
       if (mainStore.errorCode === null) {
+        setIsDisableEditBtn(true);
         await mainStore.getProfile();
         // console.log('USER PROFILE ', userProfile)
         toggleModal()
@@ -155,7 +157,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
         setIsEmailValid(false)
         setEmailErrorMessage(mainStore.errorMessage)
       }
-    }, [mainStore.errorCode, userProfile])
+    }, [mainStore.errorCode, userProfile, isDisableEditBtn])
 
 
     useEffect(() => {
