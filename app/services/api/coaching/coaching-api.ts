@@ -1,6 +1,6 @@
 import { JournalUser } from "@models/coaching/journal-model";
 import { ApiResponse } from "apisauce"
-import { FeedbackDetail } from "app/store/store.coaching";
+import {FeedbackDetail, FeedbackJLSixth} from "app/store/store.coaching";
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
 import { CreateJournalResult, FeedbackDetailResult, JournalDetailResult, JournalListResult } from "./coaching-api.types";
@@ -28,8 +28,9 @@ export class CoachingApi {
       }
       // the typical ways to die when calling an api
       if (!response.ok) {
+        const res = response.data
         const problem = getGeneralApiProblem(response)
-        if (problem) return problem
+        if (problem) return {...problem, response: res}
       }
       const res = response.data.data
       console.log('getJournalList res', res)
@@ -99,15 +100,9 @@ export class CoachingApi {
     commitment: string,
     learnerIds: string[],
     type: string,
-    q1:number,
-    q2:number,
-    q3:number,
-    q4:number,
-    q5:number,
-    q6:number
+    feedback: FeedbackJLSixth
   ): Promise<CreateJournalResult> {
     try {
-      console.log('createJournal ap', coachId)
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.post(
         `/journal`,
@@ -122,17 +117,16 @@ export class CoachingApi {
           learnerIds,
           type,
           questions: {
-            q1,
-            q2,
-            q3,
-            q4,
-            q5,
-            q6
+            q1: feedback.q1,
+            q2: feedback.q2,
+            q3: feedback.q3,
+            q4: feedback.q4,
+            q5: feedback.q5,
+            q6: feedback.q6
           }
         },
       )
-      console.log('createJournal response', response)
-      console.log(response)
+      console.log('createJournal response', response.data)
       if(response.status === 400){
         const res = response.data
         return { kind: "form-error", response: res }
@@ -157,20 +151,20 @@ export class CoachingApi {
     content: string,
     commitment: string,
     lessonsLearned: string,
-    id: string
+    journalId: string
   ): Promise<CreateJournalResult> {
     try {
-      console.log('updateJournalLearner ap', id)
+      console.log('updateJournalLearner ', journalId)
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.patch(
-        `/journal/${id}`,
+        `/journal/${journalId}`,
         {
           content,
+          lessonsLearned,
           commitment,
-          lessonsLearned
         },
       )
-      console.log('createJournal response', response)
+      console.log('updateJournalLearner response', response)
       console.log(response)
       if(response.status === 400){
         const res = response.data
@@ -195,23 +189,25 @@ export class CoachingApi {
   async updateJournalCoach(
     content: string,
     commitment: string,
-    lessonsLearned: string,
     strength: string,
+    improvement: string,
     type: string,
     id: string
   ): Promise<CreateJournalResult> {
     try {
       console.log('updateJournalCoach ap', id)
       // make the api call
+      const bodyRequest = {
+          content: content,
+          commitment: commitment,
+          strength: strength,
+          improvement: improvement,
+          type: type
+      }
+      console.log("REQUEST ", bodyRequest)
       const response: ApiResponse<any> = await this.api.apisauce.patch(
         `/journal/${id}`,
-        {
-          content,
-          commitment,
-          lessonsLearned,
-          strength,
-          type
-        },
+        bodyRequest,
       )
       console.log('updateJournalCoach response', response)
       console.log(response)

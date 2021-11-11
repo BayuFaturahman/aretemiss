@@ -87,7 +87,7 @@ export const AppNavigator = observer( (props: NavigationProps) => {
 
   const [isLogin, setIsLogin] = useState(false)
 
-  const { serviceStore, mainStore } = useStores()
+  const { serviceStore, mainStore, authStore } = useStores()
 
   const loadData = useCallback(debounce(async () => await mainStore.getProfile(), 500), []);
 
@@ -96,12 +96,41 @@ export const AppNavigator = observer( (props: NavigationProps) => {
   //   await mainStore.getProfile()
   // }
 
+  // useEffect(() => {
+  //   serviceStore.api.apisauce.addMonitor(response => responseMonitor(response))
+  // }, [])
+  //
+  // const responseMonitor = async (response: any) => {
+  //   console.log('Response Monitor')
+  //   console.log(response.status)
+  //
+  //   const { ok, status } = response;
+  //
+  //   if (!ok && status === 401) {
+  //     console.log('Token Expired gan!')
+  //     try {
+  //       await authStore.resetAuthStore()
+  //     } catch (e){
+  //       console.log(e)
+  //       console.log('Clear Token Error')
+  //     } finally {
+  //       console.log('Token Cleared')
+  //       // clearHeaderToken()
+  //     }
+  //     // should be back to login screen
+  //   }
+  //
+  //   // TODO Add network error or timeout state (?)
+  // }
+
   useEffect(()=>{
     if(serviceStore.accessToken){
       setIsLogin(true)
     } else if (serviceStore.accessToken === ''){
       setIsLogin(false)
     }
+    console.log('accessToken appnavigator')
+    console.log(serviceStore.accessToken)
   },[serviceStore.rehydrated, serviceStore.accessToken])
 
   useEffect(() => {

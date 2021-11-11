@@ -7,7 +7,7 @@ import {
   Button, DismissKeyboard,
   Text,
 } from "@components"
-import { NavigatorParamList } from "@navigators/auth-navigator"
+import { NavigatorParamList } from "@navigators/main-navigator"
 import {VStack} from "@components/view-stack";
 import Spacer from "@components/spacer";
 import {Colors, Spacing} from "@styles";
@@ -21,32 +21,28 @@ import Spinner from 'react-native-loading-spinner-overlay';
 
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 40 : 0
 
-const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observer(
-  ({ navigation }) => {
+const MyAccountVerifyOTP: FC<StackScreenProps<NavigatorParamList, "myAccountVerifyOTP">> = observer(
+  ({ navigation, route }) => {
 
     const [otpCode, setOTPCode] = useState<number | null>(null)
     const [isError, setIsError] = useState<boolean>(false)
     const [errorMessage, setErrorMessage] = useState<string | null>('')
 
+    const { newEmail, newNickname, photo } = route.params
+
     const { authStore, mainStore } = useStores()
 
-    const goToLogin = () => navigation.navigate("login")
-
     const verifyNumber = useCallback( async () => {
-      console.log('verify number')
+      mainStore.formReset()
+      console.log('verify number for ', otpCode,  authStore.otpHash, mainStore.userProfile.user_email)
       if(authStore.otp === Number(otpCode)){
         console.log('otp match')
       }
-      if(authStore.isLoginFlow) {
-        await authStore.loginVerify(otpCode ? otpCode.toString() : '')
-        // await mainStore.setProfile()
-      } else {
-        await authStore.signupVerify(otpCode ? otpCode.toString() : '')
-      }
+      await mainStore.verifyOTP(otpCode ? otpCode.toString() : '', authStore.otpHash, mainStore.userProfile.user_email)
     }, [otpCode])
 
     const resendOTP = useCallback(async () => {
-      await authStore.resendOTP(authStore.email)
+      await authStore.resendOTP(mainStore.userProfile.user_email)
     }, [])
 
     const onInputCompleted = (otp) => {
@@ -55,7 +51,7 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
     }
 
     useEffect(() => {
-      authStore.formReset()
+      mainStore.formReset()
     }, [])
 
     useEffect(() => {
@@ -66,55 +62,48 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
 
     useEffect(() => {
       console.log('is loading')
-      console.log(authStore.isLoading)
-    }, [authStore.isLoading])
+      console.log(mainStore.isLoading)
+    }, [mainStore.isLoading])
 
     useEffect(() => {
       console.log('is error')
-      if(authStore.errorMessage !== null){
+      if(mainStore.errorMessage !== null){
         setIsError(true)
       }
-    }, [authStore.errorMessage])
+    }, [mainStore.errorMessage])
 
     useEffect(() => {
-      console.log('succeed')
-      if(authStore.isCreateProfile === true){
-        setIsError(false)
-        navigation.navigate("createProfile")
-      }
-    }, [authStore.isCreateProfile])
+      console.log("otp verified succeed")
+      if (mainStore.isOTPVerified) {
+        // setIsError(false)
+        // goToVerifyOTP()
 
-    // useEffect(() => {
-    //   if(authStore.){
-    //     // console.log(authStore.formErrorCode)
-    //     setIsError(true)
-    //     setErrorMessage(errorCollection.find(i => i.errorCode === authStore.formErrorCode).message)
-    //   }else{
-    //     setIsError(false)
-    //   }
-    // }, [authStore.formErrorCode, authStore.login, isError])
+        goBack()
 
-    const styles = StyleSheet.create({
+    }}, [mainStore.isOTPVerified])
 
-    })
 
     const goBack = () => {
-      navigation.goBack()
+      navigation.navigate("myAccount", {
+        newEmail: newEmail,
+        newNickname: newNickname,
+        photo: photo
+      })
     }
 
     return (
-      <DismissKeyboard>
+      // <DismissKeyboard>
         <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.WHITE, flex: 1, justifyContent: 'center'}}>
           <SafeAreaView style={{flex: 1}}>
             <KeyboardAvoidingView behavior='padding' keyboardVerticalOffset={keyboardVerticalOffset} style={{flex: 1}}>
               <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
               <Spacer />
               <VStack top={Spacing[24]} horizontal={Spacing[24]}>
-                <Text type={'header'} text="Selamat datang di iLEAD." />
-                <Spacer height={Spacing[32]} />
+                {/* <Text type={'header'} text="Selamat datang di iLEAD." /> */}
+                {/* <Spacer height={Spacing[32]} /> */}
 
                  <Text type={'warning'} style={{textAlign: 'center'}}>
-                   {authStore.errorMessage}
+                   {mainStore.errorMessage}
                  </Text>
 
                 { __DEV__ === true ?  <Text type={'body'} style={{textAlign: 'center'}}>{authStore.otp}</Text> : null}
@@ -134,7 +123,7 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
                   onInputCompleted={onInputCompleted}
                 />
               </VStack>
-              <VStack top={Spacing[32]} horizontal={Spacing[96]}>
+              <VStack top={Spacing[32]} horizontal={Spacing[96]} bottom={Spacing[72]}>
                 <Button
                   type={"primary"}
                   text={"Verifikasi E-mail ini"}
@@ -148,10 +137,10 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
                 />
               </VStack>
               <Spacer />
-              <FastImage style={{
+              {/* <FastImage style={{
                 height: Spacing[72],
                 bottom: 0
-              }} source={logoBottom} resizeMode={"contain"}/>
+              }} source={logoBottom} resizeMode={"contain"}/> */}
             </KeyboardAvoidingView>
           </SafeAreaView>
           <Spinner
@@ -160,9 +149,9 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
             // textStyle={styles.spinnerTextStyle}
           />
         </VStack>
-      </DismissKeyboard>
+      // {/* </DismissKeyboard> */}
     )
   },
 )
 
-export default VerifyOTP;
+export default MyAccountVerifyOTP;

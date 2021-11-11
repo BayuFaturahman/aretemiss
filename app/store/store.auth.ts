@@ -11,6 +11,7 @@ import {
   ErrorFormResponse, ForgotPasswordResponse,
   LoginResponse,
   LoginVerifyResponse,
+  ResendOTPResponse,
   SignupResponse,
   SignupVerifyResponse
 } from "@services/api/auth/auth-api.types";
@@ -84,11 +85,11 @@ export default class AuthStore {
 
   }
 
-  async login(email: string, password: string) {
+  async login(email: string, password: string, fcmToken: string) {
     console.log('login')
     this.isLoading = true
     try {
-      const response = await this.apiAuth.login(email,password)
+      const response = await this.apiAuth.login(email, password, fcmToken)
 
       if(response.kind === 'form-error'){
         console.log(response.response.errorCode)
@@ -175,11 +176,11 @@ export default class AuthStore {
     }
   }
 
-  async signup(email: string, password: string) {
+  async signup(email: string, password: string, fcmToken: string) {
     console.log('signup')
     this.isLoading = true
     try {
-      const response = await this.apiAuth.signup(email, password)
+      const response = await this.apiAuth.signup(email, password, fcmToken)
 
       console.log(response)
 
@@ -188,6 +189,15 @@ export default class AuthStore {
         console.log(response.response.message)
 
         console.log(response)
+
+        if (response.response.errorCode === 37) {
+          response.response.message = 'Password minimal 8 karakter, memiliki huruf besar dan kecil, serta memiliki angka dan simbol (!, %, &, dkk.)'
+        }
+
+        if (response.response.errorCode === 4) {
+          response.response.message = 'Waduh. Alamat e-mail ini sudah terdaftar. Kalau sudah pernah registrasi, langsung login aja ya!'
+        }
+
 
         this.formError(response.response)
       }
@@ -266,6 +276,46 @@ export default class AuthStore {
     this.isLoginFlow = false
     this.serviceStore.setHeaderToken(this.token)
     this.isCreateProfile = true
+  }
+
+  async resendOTP(email: string) {
+    console.log('resendOTP for ', email)
+    this.isLoading = true
+    try {
+      const response = await this.apiAuth.resendOTP(email)
+
+      console.log(response)
+
+      if(response.kind === 'form-error'){
+        console.log(response)
+
+        this.formError(response.response)
+      }
+
+      if(response.kind === 'ok'){
+        // console.log(response.response.otp)
+        // console.log(response.response.otp_hash)
+
+        console.log(response)
+
+        this.resendOTPSuccess(response.response)
+      }
+
+    } catch (e) {
+      console.log('resend OTP error catch')
+      console.log(e)
+      this.signupFailed(e)
+      this.isLoading = false
+    } finally {
+      console.log('resend OTP done')
+      this.isLoading = false
+    }
+  }
+
+  resendOTPSuccess (data: ResendOTPResponse) {
+    this.otpHash = data.otp_hash
+    this.otp = data.otp
+    console.log('sign up oke')
   }
 
   async changePassword(currentPassword: string, password: string) {
@@ -373,7 +423,6 @@ export default class AuthStore {
     console.log(e)
     this.isForgotPasswordSuccess = false
   }
-
 
   // #endregion
 }

@@ -6,7 +6,7 @@ import ServiceStore from "./store.service"
 import { Api } from "@services/api"
 import { ProfileApi } from "@services/api/profile/profile-api"
 import { ErrorFormResponse } from "@services/api/auth/auth-api.types"
-import { TeamResponse, UpdateProfileResponse } from "@services/api/profile/profile-api.types"
+import {PostUploadFilesResponse, TeamResponse, UpdateProfileResponse} from "@services/api/profile/profile-api.types"
 import { ProfileUpdateForm } from "@screens/auth/create-profile"
 
 // CONFIGS
@@ -99,6 +99,8 @@ export default class MainStore {
   userProfile: ProfileModel
   listUserProfile: ListProfileModel[]
 
+  newProfilePhoto: string
+  isOTPVerified: boolean
 
   // #region CONSTRUCTOR
 
@@ -152,6 +154,8 @@ export default class MainStore {
       team3_id: '',
       team3_name: '',
     }
+
+    this.newProfilePhoto = ''
 
     makeAutoObservable(this);
 
@@ -379,10 +383,115 @@ export default class MainStore {
     this.isLoading = false
   }
 
+  async verifyOTP(otpCode: string, otpHash: string, email: string) {
+    this.isLoading = true
+    try {
+      const response = await this.profileApi.verifyOTP(otpCode, otpHash, email)
+
+      console.log(response)
+
+      if (response.kind === "form-error") {
+
+        this.formError(response.response)
+      }
+
+      if (response.kind === "ok") {
+        this.setIsOTPVerified(true)
+        // await this.updateProfileSuccess(response.response)
+      }
+    } catch (e) {
+      console.log("verifyOTP error")
+      console.log(e)
+      this.verifyOTPFailed(e)
+    } finally {
+      console.log("verifyOTP done")
+      this.isLoading = false
+    }
+  }
+
+
+  async checkEmail(email: string) {
+    this.isLoading = true
+    try {
+      const response = await this.profileApi.checkEmail(email)
+
+      if (response.kind === "form-error") {
+        this.formError(response.response)
+      }
+
+      if (response.kind === "ok") {
+        if (!response.response.data.is_allow_to_use) {
+          const errorCheckEmail: ErrorFormResponse = {
+            errorCode: 99,
+            message: 'Alamat email yang kamu ganti sudah dimiliki akun lain. Kamu yakin mau pakai alamat yang ini?'
+          }
+          this.formError(errorCheckEmail)
+        }
+
+      }
+    } catch (e) {
+      console.log("checkEmail error")
+      console.log(e)
+      this.checkEmailFailed(e)
+    } finally {
+      console.log("checkEmail done")
+      this.isLoading = false
+    }
+  }
+
+
+  checkEmailFailed(e: any) {
+    this.setIsOTPVerified(false)
+    this.errorMessage = e
+  }
+
+
+  verifyOTPFailed(e: any) {
+    this.setIsOTPVerified(false)
+    this.errorMessage = e
+  }
+
   getListProfileFailed(e: any) {
     this.errorMessage = e
   }
+
+  setIsOTPVerified(status: boolean) {
+    this.isOTPVerified = status
+  }
   // #endregion
+
+  uploadPhotoSuccess(data: PostUploadFilesResponse) {
+    this.newProfilePhoto = data.data.urls
+  }
+
+  uploadPhotoFailed(e: any) {
+    this.errorMessage = e
+  }
+
+  async uploadPhoto(formData: FormData) {
+    console.log("Upload Photo")
+    this.isLoading = true
+    try {
+      const response = await this.profileApi.postUploadFiles(formData)
+
+      console.log(response)
+
+      if (response.kind === "form-error") {
+        this.formError(response.response)
+      }
+
+      if (response.kind === "ok") {
+        this.uploadPhotoSuccess(response.response)
+      }
+    } catch (e) {
+      console.log("Upload error")
+      console.log(e)
+      this.uploadPhotoFailed(e)
+    } finally {
+      console.log("Upload done")
+      this.isLoading = false
+    }
+  }
 }
 
 // #endregion

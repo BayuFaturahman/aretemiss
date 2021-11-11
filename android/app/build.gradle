@@ -1,6 +1,8 @@
 apply plugin: "com.android.application"
+apply plugin: 'com.google.gms.google-services'
 // Unimodules: https://docs.expo.io/bare/installing-unimodules/#configuration-for-android
 apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 
 import com.android.build.OutputFile
 
@@ -141,7 +143,7 @@ android {
         applicationId "com.ilead"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 4
+        versionCode 9
         versionName "1.0"
     }
     splits {

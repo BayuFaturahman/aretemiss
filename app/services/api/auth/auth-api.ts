@@ -8,6 +8,7 @@ import {
   SignupResult,
   SignupVerifyResult,
   ChangePasswordResult,
+  ResendOTPResult
 } from "@services/api/auth/auth-api.types"
 
 export class AuthApi {
@@ -17,12 +18,13 @@ export class AuthApi {
     this.api = api
   }
 
-  async login(email: string, password: string): Promise<LoginResult> {
+  async login(email: string, password: string, fcmToken: string): Promise<LoginResult> {
     try {
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.post("/signin", {
         email: email,
         password: password,
+        fcm_token: fcmToken
       })
 
       if (response.status === 400) {
@@ -80,12 +82,16 @@ export class AuthApi {
     }
   }
 
-  async signup(email: string, password: string): Promise<SignupResult> {
+  async signup(email: string, password: string, fcmToken: string): Promise<SignupResult> {
     try {
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.post(
         "/signup",
-        { email: email, password: password }
+        {
+          email: email,
+          password: password,
+          fcm_token: fcmToken
+        }
       )
 
       if(response.status === 400){
@@ -173,6 +179,33 @@ export class AuthApi {
       const response: ApiResponse<any> = await this.api.apisauce.patch("/change-password", {
         oldPassword: currentPassword,
         password: password,
+      })
+
+      if (response.status === 400) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data.data
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data" }
+    }
+  }
+
+  async resendOTP(email: string): Promise<ResendOTPResult> {
+    try {
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.post("/user/resend-otp", {
+        email: email
       })
 
       if (response.status === 400) {

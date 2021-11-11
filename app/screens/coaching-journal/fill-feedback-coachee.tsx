@@ -63,6 +63,7 @@ const FillFeedbackCoachee: FC<StackScreenProps<NavigatorParamList, "fillFeedback
     // empty list state
     const [feedbackData, setFeedbackData] = useState<Array<ChoiceItemType>>(EXAMPLE_DATA);
     const [selectedActivities, setSelectedActivities] = useState<string>('');
+    const [isAlreadyFilled, setIsAlreadyFilled] = useState<boolean>(false);
     const [, forceUpdate] = useReducer(x => x + 1, 0);
     const { coachingStore, mainStore } = useStores()
 
@@ -80,39 +81,68 @@ const FillFeedbackCoachee: FC<StackScreenProps<NavigatorParamList, "fillFeedback
       setFeedbackData(updated)
     }, [feedbackData])
 
-    const submit = () => {
+    const submit = async () => {
       console.log('coachingStore.isDetail', coachingStore.isDetail)
-      if(coachingStore.isDetail){
-        coachingStore.createFeedback(
+      console.log(feedbackData)
+
+      let isError = false
+
+      for (const item of feedbackData) {
+        if(item.choice === "" || item.choice === 0) {
+          isError = true
+          break;
+        }
+        console.log(item.choice);
+      }
+
+      if(isError === false){
+        await coachingStore.createFeedback(
           feedbackData[0].choice,
           feedbackData[1].choice,
           feedbackData[2].choice,
           feedbackData[3].choice,
           feedbackData[4].choice,
-          feedbackData[5].choice
-        )
-      }else{
-        coachingStore.createJournal(
-          feedbackData[0].choice,
-          feedbackData[1].choice,
-          feedbackData[2].choice,
-          feedbackData[3].choice,
-          feedbackData[4].choice,
-          feedbackData[5].choice
+          feedbackData[5].choice,
+          journalId
         )
       }
+
+      // if(coachingStore.isDetail){
+      //   coachingStore.createFeedback(
+      //     feedbackData[0].choice,
+      //     feedbackData[1].choice,
+      //     feedbackData[2].choice,
+      //     feedbackData[3].choice,
+      //     feedbackData[4].choice,
+      //     feedbackData[5].choice,
+      //     journalId
+      //   )
+      // }else{
+      //   coachingStore.createJournal(
+      //     feedbackData[0].choice,
+      //     feedbackData[1].choice,
+      //     feedbackData[2].choice,
+      //     feedbackData[3].choice,
+      //     feedbackData[4].choice,
+      //     feedbackData[5].choice
+      //   )
+      // }
     }
 
     useEffect(() => {
-      coachingStore.resetLoading()
-      mainStore.resetLoading()
+      // coachingStore.resetLoading()
+      // mainStore.resetLoading()
     },[])
 
   useEffect(() => {
       if(coachingStore.messageCreateJournal == "Success" && !coachingStore.isDetail){
         coachingStore.resetCoachingStore()
         coachingStore.setRefreshData(true)
-        navigation.navigate("coachingJournalMain")
+        coachingStore.clearJournal().then(()=>{
+          navigation.reset({
+            routes: [{ name: 'coachingJournalMain' }]
+          })
+        })
       }
   },[coachingStore.messageCreateJournal, coachingStore.createJournalSucceed])
 
@@ -120,7 +150,11 @@ const FillFeedbackCoachee: FC<StackScreenProps<NavigatorParamList, "fillFeedback
       if(coachingStore.messageCreateFeedback == "Success" && coachingStore.isDetail){
         coachingStore.resetCoachingStore()
         coachingStore.setRefreshData(true)
-        navigation.navigate("coachingJournalMain")
+        coachingStore.clearJournal().then(()=>{
+          navigation.reset({
+            routes: [{ name: 'coachingJournalMain' }]
+          })
+        })
       }
   },[coachingStore.messageCreateFeedback, coachingStore.createFeedbackSucced])
 
@@ -131,6 +165,9 @@ const FillFeedbackCoachee: FC<StackScreenProps<NavigatorParamList, "fillFeedback
         const myFeedback = coachingStore.my_feedback
 
         const updated = feedbackData.map((item, index) => {
+          if(myFeedback[`q${index + 1}`]){
+            setIsAlreadyFilled(true)
+          }
           return {
             title: item.title,
             id: item.id,
@@ -155,14 +192,14 @@ const FillFeedbackCoachee: FC<StackScreenProps<NavigatorParamList, "fillFeedback
           <HStack top={Spacing[12]} style={{justifyContent: 'space-around'}}>
             {Array(5).fill(0).map((value, i, array)=>{
               return(
-                <TouchableOpacity onPress={()=> selectFeedbackItem(item.id, i + 1)} disabled={true}>
+                <TouchableOpacity onPress={()=> selectFeedbackItem(item.id, i + 1)} disabled={isAlreadyFilled}>
                   <VStack>
                     <View style={{
                       height: Spacing[24],
                       width: Spacing[24],
-                      backgroundColor: item.choice === i + 1 ? Colors.BRIGHT_BLUE : Colors.CLOUD_GRAY,
+                      backgroundColor: item.choice === i + 1 ? Colors.MAIN_RED : Colors.CLOUD_GRAY,
                       borderRadius: Spacing[128], borderWidth: Spacing[2],
-                      borderColor: item.choice === i + 1 ? Colors.BRIGHT_BLUE : Colors.MAIN_RED
+                      borderColor: item.choice === i + 1 ? Colors.MAIN_RED : Colors.MAIN_RED
                     }} />
                     <Text type={'body'} style={{textAlign: 'center'}}>
                       {i + 1}
@@ -197,19 +234,20 @@ const FillFeedbackCoachee: FC<StackScreenProps<NavigatorParamList, "fillFeedback
                 }
                 renderItem={({item, index})=> <ChoiceItem item={item} index={index} />}
                 keyExtractor={item => item.id}
-                // ListFooterComponent={
-                //   feedbackData.length === 0 ?
-                //     null :
-                //     <VStack horizontal={Spacing[72]} vertical={Spacing[24]}>
-                //       <Button
-                //         type={"primary"}
-                //         text={"Submit"}
-                //         onPress={submit}
-                //         style={{minWidth: Spacing[72]}}
-                //       />
-                //     </VStack>
-                // }
+                ListFooterComponent={
+                  isAlreadyFilled ?
+                    null :
+                    <VStack horizontal={Spacing[72]} vertical={Spacing[24]}>
+                      <Button
+                        type={"primary"}
+                        text={"Submit"}
+                        onPress={submit}
+                        style={{minWidth: Spacing[72]}}
+                      />
+                    </VStack>
+                }
               />
+              <Spacer height={Spacing[32]} />
             </VStack>
           </ScrollView>
         </SafeAreaView>

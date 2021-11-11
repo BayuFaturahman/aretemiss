@@ -12,12 +12,13 @@ import { NavigatorParamList } from "@navigators/auth-navigator"
 import {VStack} from "@components/view-stack";
 import Spacer from "@components/spacer";
 import {Colors, Spacing} from "@styles";
-import logoBottom from "@assets/icons/ilead-bottom-logo.png";
+import logoBottom from "@assets/icons/ilead_abm.png";
 import FastImage from "react-native-fast-image";
 
 import {useStores} from "../../bootstrap/context.boostrap";
 
 import Spinner from 'react-native-loading-spinner-overlay';
+import messaging from "@react-native-firebase/messaging";
 
 
 const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
@@ -35,7 +36,13 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
     const nextScreen = () => navigation.navigate("verifyOTP")
 
     const submitLogin = useCallback( async()=>{
-      await authStore.login(phoneNumber , password)
+
+      const token = await messaging().getToken();
+
+      console.log('### FCM token login ###')
+      console.log(token)
+
+      await authStore.login(phoneNumber , password, token)
     }, [phoneNumber, password])
 
     useEffect(() => {
@@ -144,8 +151,7 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
             </VStack>
             <Spacer />
             <FastImage style={{
-              height: Spacing[96],
-              marginLeft: Spacing[48],
+              height: Spacing[72],
               bottom: 0
             }} source={logoBottom} resizeMode={"contain"}/>
           </SafeAreaView>

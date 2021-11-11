@@ -27,6 +27,8 @@ import {MoodComponent, MoodItemType} from "@screens/homepage/components/mood-com
 import {HomepageErrorCard} from "@screens/homepage/components/homepage-error-card";
 
 import RNAnimated from "react-native-animated-component";
+import {debounce} from "lodash";
+import messaging from "@react-native-firebase/messaging";
 
 const FEED_EXAMPLE_DATA_ITEM:FeedItemType = {
   id: '0',
@@ -44,7 +46,7 @@ const FEED_EXAMPLE_DATA_ITEM:FeedItemType = {
 }
 
 const MOOD_EXAMPLE_DATA:MoodItemType = {
-  avatarUrl: 'https://www.gstatic.com/webp/gallery3/2.png',
+  avatarUrl: '',
   user: {
     name: '',
     title: ''
@@ -68,7 +70,6 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     }
     
 
-
     const [, forceUpdate] = useReducer(x => x + 1, 0);
 
     const [selectedActivities, setSelectedActivities] = useState<string>('');
@@ -76,25 +77,48 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     const [feedData, setFeedDAta] = useState<FeedItemType>(FEED_EXAMPLE_DATA_ITEM);
 
     const [moodData, setMoodData] = useState<MoodItemType>(MOOD_EXAMPLE_DATA);
+
     const holdActivitiesId = useCallback((selectedId)=>{
       setSelectedActivities(selectedId)
     }, [selectedActivities])
 
     const [coachingJournalData, setCoachingJournalData] = useState<CoachingJournalItem>(null);
-    const {mainStore, coachingStore, serviceStore} = useStores()
+    const {mainStore, coachingStore, authStore} = useStores()
 
-    const goToNote = useCallback(async (id, coach_id)=>{
+    const goToNote = useCallback((id, coach_id)=>{
       console.log(id)
-    }, [])
-
-    const goToFeedback = useCallback(async (id)=>{
-      console.log(id)
-    }, [])
-
-    const goToNoteFeedback = useCallback(async (id, coach_id)=>{
-      console.log(id)
+      coachingStore.isDetailJournal(true)
+      const detailCoaching = coach_id == mainStore.userProfile.user_id
+      coachingStore.setDetailCoaching(detailCoaching)
+      coachingStore.setDetailID(id)
+      coachingStore.setFormCoach(true)
+      console.log('goToNote coach_id', coach_id)
+      console.log('goToNote user_id', mainStore.userProfile.user_id)
       navigation.navigate("overviewJournalEntry", {
-        journalId: id
+        journalId: id,
+        isCoachee: false
+      })
+    }, [])
+
+    const goToFeedback = useCallback((id)=>{
+      coachingStore.isDetailJournal(true)
+      coachingStore.setDetailID(id)
+      navigation.navigate("fillFeedbackDetail")
+      console.log(id)
+    }, [])
+
+    const goToNoteFeedback = useCallback((id, coach_id)=>{
+      coachingStore.isDetailJournal(true)
+      const detailCoaching = coach_id == mainStore.userProfile.user_id
+      coachingStore.setDetailCoaching(detailCoaching)
+      coachingStore.setDetailID(id)
+      coachingStore.setFormCoach(false)
+      console.log('goToNoteFeedback coach_id', coach_id)
+      console.log('goToNoteFeedback user_id', mainStore.userProfile.user_id)
+
+      navigation.navigate("overviewJournalEntry", {
+        journalId: id,
+        isCoachee: true
       })
     }, [])
 
@@ -116,6 +140,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
         const data = MOOD_EXAMPLE_DATA
         data.user.name = mainStore.userProfile.user_fullname
         data.user.title = mainStore.userProfile.team1_name
+        data.avatarUrl = mainStore.userProfile.user_photo
         setMoodData(data)
         forceUpdate()
       }
@@ -128,11 +153,21 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       }
     }, [coachingStore.listJournal])
 
-    const loadData = async () => {
-      setCoachingJournalData(null)
+    const loadData = debounce( async () => {
       await getUserProfile()
       await getJournalList()
-    }
+    }, 500)
+
+    useEffect(()=> {
+      setCoachingJournalData(null)
+      loadData()
+    }, [])
+
+    useEffect(()=> {
+      if(coachingStore.formErrorCode === 9){
+        authStore.resetAuthStore()
+      }
+    }, [coachingStore.formErrorCode])
 
     const createList = () => {
       const id = mainStore.userProfile.user_id
@@ -191,14 +226,14 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
       return(
         <VStack top={Spacing[48]} horizontal={Spacing[8]} bottom={Spacing[12]}>
-           <VStack horizontal={Spacing[12]}>
-            <RNAnimated
-              appearFrom="left"
-              animationDuration={500}
-            >
-             <NotificationButton goToNotifications={goToNotifications} />
-            </RNAnimated>
-           </VStack>
+            <VStack horizontal={Spacing[12]}>
+           {/* <RNAnimated */}
+           {/*   appearFrom="left" */}
+           {/*   animationDuration={500} */}
+           {/* > */}
+           {/*  <NotificationButton goToNotifications={goToNotifications} /> */}
+           {/* </RNAnimated> */}
+            </VStack>
           <Spacer height={Spacing[24]} />
           <RNAnimated
             appearFrom="right"
