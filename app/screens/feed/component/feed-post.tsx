@@ -13,6 +13,57 @@ export const FeedPost = ({data}:{data: FeedTimelineItem}) => {
   if (data === null) {
     return {}
   }
+
+  const listImage = data.imageUrl.split(';')
+  // console.log('list image: ', listImage, ' total: ', listImage.length)
+
+  const coverImage = () => {
+    const listImage = data.imageUrl.split(';')
+    // console.log('list image: ', listImage, ' total: ', listImage.length)
+    if (listImage.length === 2 ) {
+      return (
+        <HStack>
+          <View
+            style={{
+              flexDirection: 'row',
+              marginTop: 20,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+              {listImage.map((data) => {
+                return (
+                  <FastImage
+                  style={{ 
+                    height: Spacing[144],
+                    width: '50%',
+                    marginRight: 10,
+                    borderRadius: Spacing[12],
+                  }}
+                  source={{
+                    uri: data,
+                   }}
+                />
+                )
+              })}
+          </View>
+        </HStack>
+      )
+
+    } else {
+      return (
+        <FastImage
+          style={{
+            height: Spacing[128],
+            borderRadius: Spacing[12],
+          }}
+          source={{ uri: data.imageUrl }}
+          resizeMode={"cover"}
+        />
+      )
+    }
+
+  }
+
   return (
     <Fragment>
       <HStack>
@@ -33,14 +84,8 @@ export const FeedPost = ({data}:{data: FeedTimelineItem}) => {
         />
       </HStack>
       <Spacer height={Spacing[2]} />
-      <FastImage
-        style={{
-          height: Spacing[128],
-          borderRadius: Spacing[12],
-        }}
-        source={{ uri: data.imageUrl }}
-        resizeMode={"cover"}
-      />
+      {coverImage()}
+
       <Spacer height={Spacing[8]} />
       <HStack
         style={{ backgroundColor: Colors.LIGHT_GRAY, borderRadius: Spacing[8] }}

@@ -30,6 +30,7 @@ import { dimensions } from "@config/platform.config"
 import { EmptyList } from "@screens/coaching-journal/components/empty-list"
 import { FeedPost } from "./component/feed-post"
 import { FeedTimelineItem, FeedTimelineItems } from "./feed.type"
+import { FeedButton } from "./component/feed-button"
 
 const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMain">> = observer(
   ({ navigation }) => {
@@ -38,7 +39,7 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
     // const [coachingData, setCoachingData] = useState<Array<CoachingJournalItem>>([]);
     // const [selectedActivities, setSelectedActivities] = useState<string>('');
     // const [, forceUpdate] = useReducer(x => x + 1, 0);
-    // const {mainStore, coachingStore} = useStores()
+    const { feedStore } = useStores()
 
     // const onRefresh = React.useCallback(async() => {
     //   setCoachingData([])
@@ -54,7 +55,8 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
     const feedData: FeedTimelineItem[] = [
       {
         id: "0",
-        imageUrl: "https://www.gstatic.com/webp/gallery/4.jpg",
+        imageUrl:
+          "https://www.gstatic.com/webp/gallery/4.jpg;https://www.gstatic.com/webp/gallery/4.jpg",
         description:
           "Today, I’m starting a new monthly task! I designed a new strategy to nudge my team members to be more active in our monthly meetings. ",
         author: {
@@ -85,106 +87,12 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
         comments: [],
       },
     ]
-    // const newEntry = () => {
-    //   coachingStore.isDetailJournal(false)
-    //   coachingStore.setFormCoach(true)
-    //   navigation.navigate("newJournalEntry")
-    // }
-    // const quizForm = () => navigation.navigate("quizForm")
 
-    // const holdActivitiesId = useCallback((selectedId)=>{
-    //   setSelectedActivities(selectedId)
-    //   // forceUpdate()
-    // }, [selectedActivities])
+    const getListFeed = useCallback(async () => {
+      await feedStore.getListFeeds()
+    }, [])
 
-    // const goToNote = useCallback((id, coach_id)=>{
-    //   console.log(id)
-    //   coachingStore.isDetailJournal(true)
-    //   const detailCoaching = coach_id == mainStore.userProfile.user_id
-    //   coachingStore.setDetailCoaching(detailCoaching)
-    //   coachingStore.setDetailID(id)
-    //   coachingStore.setFormCoach(true)
-    //   console.log('goToNote coach_id', coach_id)
-    //   console.log('goToNote user_id', mainStore.userProfile.user_id)
-    //   navigation.navigate("overviewJournalEntry", {
-    //     journalId: id
-    //   })
-    // }, [])
-
-    // const goToFeedback = useCallback((id)=>{
-    //   coachingStore.isDetailJournal(true)
-    //   coachingStore.setDetailID(id)
-    //   navigation.navigate("fillFeedbackDetail")
-    //   console.log(id)
-    // }, [])
-
-    // const goToNoteFeedback = useCallback((id, coach_id)=>{
-
-    //   coachingStore.isDetailJournal(true)
-    //   const detailCoaching = coach_id == mainStore.userProfile.user_id
-    //   coachingStore.setDetailCoaching(detailCoaching)
-    //   coachingStore.setDetailID(id)
-    //   coachingStore.setFormCoach(false)
-    //   console.log('goToNoteFeedback coach_id', coach_id)
-    //   console.log('goToNoteFeedback user_id', mainStore.userProfile.user_id)
-
-    //   navigation.navigate("overviewJournalEntry", {
-    //     journalId: id
-    //   })
-    // }, [])
-
-    // useEffect(()=>{
-    //   if(coachingStore.listJournal){
-    //     createList()
-    //   }
-    // },[coachingStore.listJournal, coachingStore.journalSucceed])
-
-    // useEffect(()=>{
-    //   console.log('coachingStore.refreshData', coachingStore.refreshData)
-
-    //   if(coachingStore.refreshData){
-    //     setTimeout(()=>{
-    //       coachingStore.getJournal()
-    //     }, 20)
-    //   }
-    // },[coachingStore.refreshData, coachingStore.createJournalSucceed, coachingStore.createFeedbackSucced])
-
-    // const createList = () => {
-    //   const id = mainStore.userProfile.user_id
-    //   let groupArrays = []
-    //   if(coachingStore.listJournal){
-    //     console.log('create list')
-    //     console.log(coachingStore.listJournal)
-    //     const groups = coachingStore.listJournal.reduce((groups, journalData) => {
-    //       const date = journalData.journal_date.split('T')[0];
-    //          if (!groups[date]) {
-    //           groups[date] = [];
-    //          }
-    //          groups[date].push(
-    //            {
-    //              ...journalData,
-    //               title: journalData.journal_title,
-    //               type: journalData.journal_type,
-    //               id: journalData.journal_id,
-    //               isTagged: id != journalData.coach_id,
-    //               coach_id: journalData.coach_id
-    //            }
-    //          );
-    //          return groups;
-    //       }, {});
-    //       groupArrays = Object.keys(groups).map((date) => {
-    //          return {
-    //          date: moment(date).format('DD MMM'),
-    //          activities: groups[date]
-    //          };
-    //       });
-    //   }
-    //   if(groupArrays){
-    //     setCoachingData(groupArrays)
-    //     coachingStore.setRefreshData(false)
-    //     forceUpdate()
-    //   }
-    // }
+    
 
     return (
       <VStack
@@ -227,6 +135,7 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
             </VStack>
           </ScrollView>
         </SafeAreaView>
+        <FeedButton goToNewPost={() => console.log('goToNewPost')} goToMyFeed={() => console.log('goToMyFeed')} />
       </VStack>
     )
   },

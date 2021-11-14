@@ -86,19 +86,21 @@ export const FeedItemComponent = ({data, goToFeed = ()=> null}:{data: FeedItemTy
 
   return(
     <VStack>
-      <Text type={'left-header'} style={{fontSize: Spacing[16]}} underlineWidth={Spacing[72]} text="Feed." />
-      <FeedPost data={data} key={data.id}/>
-      <HStack>
-        <Spacer/>
-        <TouchableOpacity onPress={goToFeed}>
-          <FastImage style={{
-            height: Spacing[24],
-            width: Spacing[24],
-            borderRadius: Spacing[8]
-          }} source={downArrow} resizeMode={"contain"}/>
-        </TouchableOpacity>
-        <Spacer/>
-      </HStack>
+      <TouchableOpacity onPress={goToFeed}>
+        <Text type={'left-header'} style={{fontSize: Spacing[16]}} underlineWidth={Spacing[72]} text="Feed." />
+        <FeedPost data={data} key={data.id}/>
+        <HStack>
+          <Spacer/>
+          {/* <TouchableOpacity onPress={goToFeed}> */}
+            <FastImage style={{
+              height: Spacing[24],
+              width: Spacing[24],
+              borderRadius: Spacing[8]
+            }} source={downArrow} resizeMode={"contain"}/>
+          {/* </TouchableOpacity> */}
+          <Spacer/>
+        </HStack>
+      </TouchableOpacity>
     </VStack>
   )
 
