@@ -52,6 +52,8 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
       })
     }
 
+    const goToNewPost = () => navigation.navigate("newPost")
+
     const feedData: FeedTimelineItem[] = [
       {
         id: "0",
@@ -91,8 +93,6 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
     const getListFeed = useCallback(async () => {
       await feedStore.getListFeeds()
     }, [])
-
-    
 
     return (
       <VStack
@@ -135,7 +135,10 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
             </VStack>
           </ScrollView>
         </SafeAreaView>
-        <FeedButton goToNewPost={() => console.log('goToNewPost')} goToMyFeed={() => console.log('goToMyFeed')} />
+        <FeedButton
+          goToNewPost={goToNewPost}
+          goToMyFeed={() => console.log("goToMyFeed")}
+        />
       </VStack>
     )
   },

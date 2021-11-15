@@ -207,6 +207,8 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     const goToJournalCoaching = () => navigation.navigate('coachingJournalMain')
 
     const goToFeed = () => navigation.navigate('feedTimelineMain')
+    
+    const goToNewPost = () => navigation.navigate('newPost')
 
     const goToSettings = () => navigation.navigate("settingsPage")
 
@@ -264,9 +266,10 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
           <Spacer height={Spacing[12]} />
           <HomepageCardWrapper animationDuration={700}>
             <FeedItemComponent
-              // data={feedData}
+              // data={null}
               data={FEED_EXAMPLE_DATA_ITEM}
               goToFeed={goToFeed}
+              goToNewPost={goToNewPost}
             />
           </HomepageCardWrapper>
           <Spacer height={Spacing[12]} />

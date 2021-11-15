@@ -45,31 +45,33 @@ export const EmptyList = ({
           <Spacer/>
         </HStack>
         <Text type={'body'} style={{textAlign: 'center'}} >
-          Fitur ini masih
-          <Text type={'body'} style={[{textAlign: 'center', fontStyle: 'italic'}, presets.italic]} > under construction</Text>
-          , nih. Tunggu tanggal mainnya, ya!
+          Belum ada yang 
+          <Text type={'body'} style={[{textAlign: 'center', fontStyle: 'italic'}, presets.italic]} > update</Text>
+          {`, di Feed nih.\nJadi orang pertama yang`}
+          <Text type={'body'} style={[{textAlign: 'center', fontStyle: 'italic'}, presets.italic]} > update</Text>
+          {` yuk? `}
         </Text>
         <Spacer height={Spacing[12]} />
-        {/*<HStack top={Spacing[12]}>*/}
-        {/*  <Spacer />*/}
-        {/*  <VStack style={{maxWidth: Spacing[256], minWidth: Spacing[128]}}>*/}
-        {/*    <Button*/}
-        {/*      type={"primary"}*/}
-        {/*      text={buttonLabel}*/}
-        {/*      style={{height:Spacing[32], paddingHorizontal: Spacing[8]}}*/}
-        {/*      textStyle={{fontSize: Spacing[14], lineHeight: Spacing[18]}}*/}
-        {/*      onPress={navigateTo}*/}
-        {/*    />*/}
-        {/*  </VStack>*/}
-        {/*  <Spacer />*/}
-        {/*</HStack>*/}
+        <HStack top={Spacing[12]}>
+         <Spacer />
+         <VStack style={{maxWidth: Spacing[256], minWidth: Spacing[128]}}>
+           <Button
+              type={"primary"}
+              text={buttonLabel}
+              style={{height:Spacing[32], paddingHorizontal: Spacing[8]}}
+              textStyle={{fontSize: Spacing[14], lineHeight: Spacing[18]}}
+              onPress={navigateTo}
+            />
+          </VStack>
+          <Spacer />
+        </HStack>
       </VStack>
     </VStack>
   )
 }
 
 
-export const FeedItemComponent = ({data, goToFeed = ()=> null}:{data: FeedItemType; goToFeed(): void}) => {
+export const FeedItemComponent = ({data, goToFeed = ()=> null, goToNewPost = ()=> null}:{data: FeedItemType; goToFeed(): void; goToNewPost(): void}) => {
 
   if(data === null){
     return(
@@ -78,7 +80,8 @@ export const FeedItemComponent = ({data, goToFeed = ()=> null}:{data: FeedItemTy
         <Spacer height={Spacing[12]} />
         <Spacer width={Spacing[24]} />
         <EmptyList buttonLabel={'Mau berbagi kisah apa hari ini?'}
-                   imageSource={surprised}/>
+                   imageSource={surprised}
+                   navigateTo={goToNewPost}/>
         <Spacer height={Spacing[32]} />
       </VStack>
     )
