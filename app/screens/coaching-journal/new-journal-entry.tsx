@@ -620,6 +620,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                       selectedDayTextColor={Colors.WHITE}
                       style={{padding: Spacing[20]}}
                       width={dimensions.screenWidth - Spacing[64]}
+                      maxDate={new Date()}
                     />
                     <HStack style={[Layout.widthFull, {justifyContent: 'center'}]}>
                       <Button
