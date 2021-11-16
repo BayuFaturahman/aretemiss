@@ -101,6 +101,8 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
 
     const onClickEditProfile = useCallback(async (data: ProfileUpdateForm) => {
       // console.log("click : ", data)
+      navigation.setParams({ isPasswordChange: undefined })
+
       mainStore.setIsOTPVerified(false)
       mainStore.formReset();
       // setIsClickEditProfile(true)
