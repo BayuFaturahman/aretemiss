@@ -78,7 +78,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
     const goToVerifyOTP = (email, nickname, profile) => navigation.navigate("myAccountVerifyOTP", {
       newEmail: email,
       newNickname: nickname,
-      photo: profile
+      photo: profile || ''
     })
 
     const validateEmail = (email) => {
@@ -116,7 +116,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
             await authStore.resendOTP(userProfile.email)
             if (authStore.otp !== null) {
               // setIsError(false)
-              goToVerifyOTP(data.email, data.nickname, data.photo)
+              goToVerifyOTP(data.email, data.nickname, data.photo )
             }
           }
         } else {
@@ -161,7 +161,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
 
 
     useEffect(() => {
-      if (mainStore.isOTPVerified && route.params?.newEmail && route.params?.newNickname && route.params?.photo) {
+      if (mainStore.isOTPVerified && route.params?.newEmail && route.params?.newNickname ) {
         const { newEmail, newNickname, photo } = route.params
 
         userProfile.email = newEmail
@@ -173,6 +173,12 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
         console.log('OTP NOT verified')
       }
     }, [mainStore.isOTPVerified, route.params?.newNickname, route.params?.newEmail, route.params?.photo])
+
+    useEffect(() => {
+      if (route.params?.isPasswordChange) {
+        toggleModal()  
+      }
+    }, [route.params?.isPasswordChange])
 
     const handleValueChanges = useCallback(async (data: ProfileUpdateForm) => {
       // console.log('setIsDisableEditBtn to true 189')
@@ -446,7 +452,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                   <Text
                     type={"body"}
                     style={{ textAlign: "center" }}
-                    text={"Profil kamu sudah berhasil diganti."}
+                    text={`${route.params?.isPasswordChange ? `Password` : `Profil`} kamu sudah berhasil diganti.`}
                   />
                   <Spacer height={Spacing[20]} />
                   <HStack bottom={Spacing[32]}>
