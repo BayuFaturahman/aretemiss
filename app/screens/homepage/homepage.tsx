@@ -66,7 +66,7 @@ const FEED_EXAMPLE_DATA_ITEM: FeedItemType[] = [
     comments: [],
   },
   {
-    id: "1",
+    id: "2",
     imageUrl: "https://www.gstatic.com/webp/gallery/4.jpg",
     description:
       "Tmr, I’m starting a new monthly task! I designed a new strategy to nudge my team members to be more active in our monthly meetings. ",
@@ -82,7 +82,7 @@ const FEED_EXAMPLE_DATA_ITEM: FeedItemType[] = [
     comments: [],
   },
   {
-    id: "0",
+    id: "3",
     imageUrl:
       "https://www.gstatic.com/webp/gallery/4.jpg;https://www.gstatic.com/webp/gallery/4.jpg;https://www.gstatic.com/webp/gallery/4.jpg;https://www.gstatic.com/webp/gallery/4.jpg",
     description:

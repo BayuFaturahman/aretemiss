@@ -1,36 +1,66 @@
-import React, { useEffect, Fragment } from "react"
+import React, { Fragment } from "react"
 import { HStack, VStack } from "@components/view-stack"
 import { Colors, Layout, Spacing } from "@styles"
-import { View } from "react-native"
+import {TouchableOpacity, View} from "react-native"
 import FastImage from "react-native-fast-image"
 import { Text } from "@components"
 import Spacer from "@components/spacer"
 import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png"
 import { FeedTimelineItem } from "../feed.type"
 
-export const FeedPost = ({ data }: { data: FeedTimelineItem }) => {
+type FeedPostProps = {
+  data: FeedTimelineItem;
+  onImageTap(index, imageList): void;
+}
+
+export const FeedPost = ({ data, onImageTap }:FeedPostProps) => {
+
+  const listImage = data.imageUrl.split(";")
+
+  const imageListViewer = listImage.map((item)=>{
+    return(
+      {
+        url : item
+      }
+    )
+  })
+
+  const imageBeingTap = React.useCallback((index) => {
+    onImageTap(index, imageListViewer)
+    console.log(index)
+    console.log(imageListViewer)
+  }, []);
+
   if (data === null) {
-    return {}
+    return null
   }
 
-  const getImage = (height, width, marginRight, marginBottom, image) => {
+  const getImage = (height, width, marginRight, marginBottom, image, imageIndex) => {
     return (
-      <FastImage
+      <TouchableOpacity
+        activeOpacity={0.8}
         style={{
+          marginBottom: marginBottom,
           height: height,
           width: width,
-          marginRight: marginRight,
-          borderRadius: Spacing[12],
-          marginBottom: marginBottom,
         }}
-        source={{
-          uri: image,
-        }}
-      />
+        onPress={()=>{
+          imageBeingTap(imageIndex)
+      }}>
+        <FastImage
+          style={{
+            flex: 1,
+            borderRadius: Spacing[12]
+          }}
+          source={{
+            uri: image,
+          }}
+        />
+      </TouchableOpacity>
     )
   }
 
-  const verticalImages = (containerWidth, image1, image2) => {
+  const verticalImages = (containerWidth, image1, image2, imageIndex) => {
     return (
       <VStack
         top={0}
@@ -38,14 +68,13 @@ export const FeedPost = ({ data }: { data: FeedTimelineItem }) => {
           width: containerWidth,
         }}
       >
-        {getImage(Spacing[67], "100%", 0, 10, image1)}
-        {getImage(Spacing[67], "100%", 0, 0, image2)}
+        {getImage(Spacing[67], "100%", 0, 10, image1, imageIndex[0])}
+        {getImage(Spacing[67], "100%", 0, 0, image2, imageIndex[1])}
       </VStack>
     )
   }
 
   const coverImage = () => {
-    const listImage = data.imageUrl.split(";")
     // console.log('list image: ', listImage, ' total: ', listImage.length)
     if (listImage.length === 2) {
       return (
@@ -55,8 +84,8 @@ export const FeedPost = ({ data }: { data: FeedTimelineItem }) => {
             justifyContent: "space-between",
           }}
         >
-          {listImage.map((data) => {
-            return getImage(Spacing[144], "48%", 0, 0, data)
+          {listImage.map((data, index) => {
+            return getImage(Spacing[144], "49%", 0, 0, data, index)
           })}
         </HStack>
       )
@@ -68,8 +97,8 @@ export const FeedPost = ({ data }: { data: FeedTimelineItem }) => {
             justifyContent: "space-between",
           }}
         >
-          {getImage(Spacing[144], "60%", 10, 0, listImage[0])}
-          {verticalImages("40%", listImage[1], listImage[2])}
+          {getImage(Spacing[144], "57%", 10, 0, listImage[0], 0)}
+          {verticalImages("40%", listImage[1], listImage[2], [1,2])}
         </HStack>
       )
     } else if (listImage.length === 4) {
@@ -80,20 +109,30 @@ export const FeedPost = ({ data }: { data: FeedTimelineItem }) => {
             justifyContent: "space-around",
           }}
         >
-          {verticalImages("47%", listImage[0], listImage[1])}
-          {verticalImages("47%", listImage[2], listImage[3])}
+          {verticalImages("48%", listImage[0], listImage[1], [0,1])}
+          {verticalImages("48%", listImage[2], listImage[3], [2,3])}
         </HStack>
       )
     } else {
       return (
-        <FastImage
+        <TouchableOpacity
+          activeOpacity={0.8}
           style={{
             height: Spacing[128],
             borderRadius: Spacing[12],
           }}
-          source={{ uri: data.imageUrl }}
-          resizeMode={"cover"}
-        />
+          onPress={()=>{
+            imageBeingTap(0)
+          }}>
+          <FastImage
+            style={{
+              height: Spacing[128],
+              borderRadius: Spacing[12],
+            }}
+            source={{ uri: data.imageUrl }}
+            resizeMode={"cover"}
+          />
+        </TouchableOpacity>
       )
     }
   }
@@ -117,10 +156,11 @@ export const FeedPost = ({ data }: { data: FeedTimelineItem }) => {
           text="40min ago"
         />
       </HStack>
+
       <Spacer height={Spacing[2]} />
       {coverImage()}
-
       <Spacer height={Spacing[8]} />
+
       <HStack
         style={{ backgroundColor: Colors.LIGHT_GRAY, borderRadius: Spacing[8] }}
         horizontal={Spacing[12]}
