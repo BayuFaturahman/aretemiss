@@ -109,6 +109,22 @@ export function Button(props: ButtonProps) {
     )
   }
 
+  if (type === 'transparent') {
+    return (
+      <TouchableOpacity style={[{
+        // backgroundColor: Colors.WH,
+        paddingVertical: Spacing[8],
+        borderRadius: Spacing[20]
+      }, styleOverride]} {...rest}>
+        <Text type={'button'} tx={tx} text={text} style={[{
+          textAlign: 'center',
+          color: Colors.MAIN_BLUE,
+          fontSize: Spacing[14]
+        }, textStyleOverride]} />
+      </TouchableOpacity>
+    )
+  }
+
   return (
     <TouchableOpacity style={viewStyles} {...rest}>
       {content}

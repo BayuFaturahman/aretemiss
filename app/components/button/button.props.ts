@@ -33,5 +33,5 @@ export interface ButtonProps extends TouchableOpacityProps {
    */
   children?: React.ReactNode
 
-  type?: 'primary' | 'primary-dark' | 'secondary' | 'negative' | 'warning'
+  type?: 'primary' | 'primary-dark' | 'secondary' | 'negative' | 'warning' | 'transparent'
 }
