@@ -1,8 +1,8 @@
 // Use this import if you want to use "env.js" file
 // const { API_URL } = require("../../config/env")z
 // Or just specify it directly like this:
-// import Config from 'react-native-config';
-const API_URL = "https://hermes-dot-ilead-2021.et.r.appspot.com"
+import Config from 'react-native-config';
+// const API_URL = "https://hermes-dot-ilead-2021.et.r.appspot.com"
 // const API_URL = "https://ilead-2021.et.r.appspot.com/"
 
 /**
@@ -24,7 +24,11 @@ export interface ApiConfig {
  * The default configuration for the app.
  */
 export const DEFAULT_API_CONFIG: ApiConfig = {
-  // url:  Config.API_URL || API_URL,
-  url: API_URL,
+  url:  Config.API_URL,
+  // url: API_URL,
   timeout: 10000,
 }
+
+
+console.log('### CONFIG FILE ###')
+console.log(Config)

@@ -61,3 +61,6 @@ buck-out/
 /ios/Pods/
 
 *.hprof
+
+# react-native-config codegen
+ios/tmp.xcconfig

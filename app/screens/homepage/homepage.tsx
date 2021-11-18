@@ -68,7 +68,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
         navigation.navigate('fillFeedbackDetail')
       });
     }
-    
+
 
     const [, forceUpdate] = useReducer(x => x + 1, 0);
 
@@ -134,7 +134,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       loadData()
     },[])
 
-    
+
     useEffect(()=> {
       if(mainStore.userProfile){
         const data = MOOD_EXAMPLE_DATA
@@ -207,7 +207,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     const goToJournalCoaching = () => navigation.navigate('coachingJournalMain')
 
     const goToFeed = () => navigation.navigate('feedTimelineMain')
-    
+
     const goToNewPost = () => navigation.navigate('newPost')
 
     const goToSettings = () => navigation.navigate("settingsPage")
@@ -229,12 +229,12 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       return(
         <VStack top={Spacing[48]} horizontal={Spacing[8]} bottom={Spacing[12]}>
             <VStack horizontal={Spacing[12]}>
-           {/* <RNAnimated */}
-           {/*   appearFrom="left" */}
-           {/*   animationDuration={500} */}
-           {/* > */}
-           {/*  <NotificationButton goToNotifications={goToNotifications} /> */}
-           {/* </RNAnimated> */}
+            <RNAnimated
+              appearFrom="left" 
+              animationDuration={500}
+            >
+             <NotificationButton goToNotifications={goToNotifications} />
+            </RNAnimated>
             </VStack>
           <Spacer height={Spacing[24]} />
           <RNAnimated
