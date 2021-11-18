@@ -128,6 +128,9 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
         <FeedButton
           goToNewPost={goToNewPost}
           goToMyFeed={() => console.log("goToMyFeed")}
+          goToMyProfile={() => console.log("goToMyFeed")}
+          leftCounter={10}
+          rightCounter={20}
         />
         <Modal
           visible={modal}

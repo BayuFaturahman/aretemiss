@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useCallback} from "react";
 import {HStack, VStack} from "@components/view-stack";
 import {Colors, Layout, Spacing} from "@styles";
 import {TouchableOpacity, View} from "react-native";
@@ -45,7 +45,7 @@ export const EmptyList = ({
           <Spacer/>
         </HStack>
         <Text type={'body'} style={{textAlign: 'center'}} >
-          Belum ada yang 
+          Belum ada yang
           <Text type={'body'} style={[{textAlign: 'center', fontStyle: 'italic'}, presets.italic]} > update</Text>
           {`, di Feed nih.\nJadi orang pertama yang`}
           <Text type={'body'} style={[{textAlign: 'center', fontStyle: 'italic'}, presets.italic]} > update</Text>
@@ -73,6 +73,11 @@ export const EmptyList = ({
 
 export const FeedItemComponent = ({data, goToFeed = ()=> null, goToNewPost = ()=> null}:{data: FeedItemType; goToFeed(): void; goToNewPost(): void}) => {
 
+  const onImageFeedTap = useCallback( (index, imageList) => {
+    console.log(index)
+    console.log(imageList)
+  }, [])
+
   if(data === null){
     return(
       <VStack>
@@ -91,7 +96,7 @@ export const FeedItemComponent = ({data, goToFeed = ()=> null, goToNewPost = ()=
     <VStack>
       <TouchableOpacity onPress={goToFeed}>
         <Text type={'left-header'} style={{fontSize: Spacing[16]}} underlineWidth={Spacing[72]} text="Feed." />
-        <FeedPost data={data} key={data.id}/>
+        <FeedPost data={data} key={data.id} onImageTap={onImageFeedTap}/>
         <HStack>
           <Spacer/>
           {/* <TouchableOpacity onPress={goToFeed}> */}

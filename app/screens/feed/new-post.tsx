@@ -1,4 +1,4 @@
-import React, { FC, useCallback } from "react"
+import React, {createRef, FC, useCallback} from "react"
 import {
   Platform,
   RefreshControl,
@@ -16,12 +16,13 @@ import Spacer from "@components/spacer"
 import { Colors, Layout, Spacing } from "@styles"
 
 import FastImage from "react-native-fast-image"
-import { launchImageLibrary, ImagePickerResponse } from "react-native-image-picker"
+import {launchImageLibrary, ImagePickerResponse, launchCamera} from "react-native-image-picker"
 import { useStores } from "../../bootstrap/context.boostrap"
 
 import insertPict from "@assets/icons/feed/insertPict.png"
 import smileYellow from "@assets/icons/coachingJournal/empty/smile-yellow.png"
 import { FeedTimelineItem } from "./feed.type"
+import ActionSheet from "react-native-actions-sheet/index";
 
 const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({ navigation }) => {
   // empty list state
@@ -36,6 +37,8 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
   // }, []);
 
   const goBack = () => navigation.goBack()
+
+  const actionSheetRef = createRef();
 
   const cameraHandler = useCallback(async (response: ImagePickerResponse) => {
     if (!response.didCancel) {
@@ -54,8 +57,6 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
         type: response.assets[0].type ?? "image/jpeg",
         size: response.assets[0].fileSize,
       })
-
-
     } else {
       console.log("cancel")
     }
@@ -69,11 +70,15 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
         maxWidth: maxWidthImage,
         maxHeight: maxHeightImage,
         includeBase64: false,
-        selectionLimit: 1,
+        selectionLimit: 4,
       },
       cameraHandler,
     )
   }, [])
+
+  const openCamera = useCallback(() => {
+    launchCamera({mediaType: 'photo', quality: qualityImage, maxWidth: maxWidthImage, maxHeight: maxHeightImage, includeBase64: false}, cameraHandler);
+  }, []);
 
   const getListFeed = useCallback(async () => {
     await feedStore.getListFeeds()
@@ -122,7 +127,9 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
             </VStack>
             <HStack>
               <HStack>
-                <TouchableOpacity onPress={openGallery}>
+                <TouchableOpacity onPress={()=>{
+                  actionSheetRef.current?.setModalVisible(true);
+                }}>
                   <View
                     style={{
                       backgroundColor: Colors.MAIN_BLUE,
@@ -193,6 +200,17 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
           </VStack>
         </ScrollView>
       </SafeAreaView>
+      <ActionSheet ref={actionSheetRef}>
+        <VStack style={{ justifyContent: 'center' }} vertical={Spacing[24]} horizontal={Spacing[24]}>
+          <Button onPress={()=>{
+            openGallery()
+          }} type={"primary"} text={"Galeri Foto 🖼️"} />
+          <Spacer height={Spacing[12]} />
+          <Button onPress={()=>{
+            openCamera()
+          }} type={"primary"} text={"Kamera 📸"} />
+        </VStack>
+      </ActionSheet>
     </VStack>
   )
 })
