@@ -37,6 +37,8 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>iLead akan membaca data pada galeri anda</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>BrandonGrotesque-Regular.otf</string>
@@ -59,6 +61,11 @@
 		<string>BrandonGrotesque-Bold.otf</string>
 		<string>BrandonGrotesque-Medium.otf</string>
 		<string>BrandonGrotesque-RegularItalic.otf</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

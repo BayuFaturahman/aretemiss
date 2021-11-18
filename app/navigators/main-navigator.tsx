@@ -99,7 +99,8 @@ export type NavigatorParamList = {
   myAccount:{
     newEmail?: string,
     newNickname?: string,
-    photo?: string
+    photo?: string,
+    isPasswordChange?: boolean
   };
   myAccountVerifyOTP: {
     newEmail: string,

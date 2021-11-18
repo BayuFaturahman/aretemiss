@@ -25,7 +25,7 @@ export class ProfileApi {
     try {
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.get(
-        "/team")
+        "/team?search=&limit=20")
       if(response.status === 400){
         const res = response.data
         return { kind: "form-error", response: res }

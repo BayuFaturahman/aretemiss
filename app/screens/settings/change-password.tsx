@@ -70,10 +70,16 @@ const ChangePassword: FC<StackScreenProps<NavigatorParamList, "changePassword">>
       // setIsSubmitPasswordChange(false)
       if (authStore.errorCode===null) {
         console.log('change password success')
-        goBack()
+        goBackSuccess()
       }
 
     }, [])
+
+    const goBackSuccess = () => {
+      navigation.navigate("myAccount", {
+        isPasswordChange: true
+      })
+    }
 
     return (
       <KeyboardAvoidingView
