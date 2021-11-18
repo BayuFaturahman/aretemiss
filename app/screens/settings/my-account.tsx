@@ -38,7 +38,7 @@ export type ProfileUpdateForm = {
   photo: string
   isAllowNotification?: number
   isAllowReminderNotification?: number
-  photo: string
+  // photo: string
 }
 
 const qualityImage = Platform.OS === 'ios' ? 0.4 : 0.5;
@@ -66,7 +66,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
       photo: mainStore.userProfile.user_photo,
       isAllowNotification: mainStore.userProfile.user_is_allow_notification,
       isAllowReminderNotification: mainStore.userProfile.user_is_allow_reminder_notification,
-      photo: mainStore.userProfile.user_photo
+      // photo: mainStore.userProfile.user_photo
     }
 
     const [profilePicture, setProfilePicture] = useState(userProfile.photo)
@@ -78,7 +78,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
     const goToVerifyOTP = (email, nickname, profile) => navigation.navigate("myAccountVerifyOTP", {
       newEmail: email,
       newNickname: nickname,
-      photo: profile
+      photo: profile || ''
     })
 
     const validateEmail = (email) => {
@@ -101,6 +101,8 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
 
     const onClickEditProfile = useCallback(async (data: ProfileUpdateForm) => {
       // console.log("click : ", data)
+      navigation.setParams({ isPasswordChange: undefined })
+
       mainStore.setIsOTPVerified(false)
       mainStore.formReset();
       // setIsClickEditProfile(true)
@@ -116,7 +118,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
             await authStore.resendOTP(userProfile.email)
             if (authStore.otp !== null) {
               // setIsError(false)
-              goToVerifyOTP(data.email, data.nickname, data.photo)
+              goToVerifyOTP(data.email, data.nickname, data.photo )
             }
           }
         } else {
@@ -131,6 +133,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
           if(isEmailValid) {
             await mainStore.updateProfile(mainStore.userProfile.user_id, userProfile)
             if (mainStore.errorCode === null) {
+              setIsDisableEditBtn(true);
               await mainStore.getProfile();
               toggleModal()
             } else {
@@ -140,12 +143,13 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
           }
         }
 
-    }, [userProfile, profilePicture])
+    }, [userProfile, profilePicture, mainStore.errorCode, isDisableEditBtn])
 
     const submitEditProfile = useCallback(async (data: ProfileUpdateForm) => {
       console.log("Data to be submitted", userProfile)
       await mainStore.updateProfile(mainStore.userProfile.user_id, userProfile)
       if (mainStore.errorCode === null) {
+        setIsDisableEditBtn(true);
         await mainStore.getProfile();
         // console.log('USER PROFILE ', userProfile)
         toggleModal()
@@ -155,11 +159,11 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
         setIsEmailValid(false)
         setEmailErrorMessage(mainStore.errorMessage)
       }
-    }, [mainStore.errorCode, userProfile])
+    }, [mainStore.errorCode, userProfile, isDisableEditBtn])
 
 
     useEffect(() => {
-      if (mainStore.isOTPVerified && route.params?.newEmail && route.params?.newNickname && route.params?.photo) {
+      if (mainStore.isOTPVerified && route.params?.newEmail && route.params?.newNickname ) {
         const { newEmail, newNickname, photo } = route.params
 
         userProfile.email = newEmail
@@ -171,6 +175,12 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
         console.log('OTP NOT verified')
       }
     }, [mainStore.isOTPVerified, route.params?.newNickname, route.params?.newEmail, route.params?.photo])
+
+    useEffect(() => {
+      if (route.params?.isPasswordChange) {
+        toggleModal()  
+      }
+    }, [route.params?.isPasswordChange])
 
     const handleValueChanges = useCallback(async (data: ProfileUpdateForm) => {
       // console.log('setIsDisableEditBtn to true 189')
@@ -444,7 +454,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                   <Text
                     type={"body"}
                     style={{ textAlign: "center" }}
-                    text={"Profil kamu sudah berhasil diganti."}
+                    text={`${route.params?.isPasswordChange ? `Password` : `Profil`} kamu sudah berhasil diganti.`}
                   />
                   <Spacer height={Spacing[20]} />
                   <HStack bottom={Spacing[32]}>
