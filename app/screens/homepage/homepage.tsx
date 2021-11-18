@@ -30,20 +30,75 @@ import RNAnimated from "react-native-animated-component";
 import {debounce} from "lodash";
 import messaging from "@react-native-firebase/messaging";
 
-const FEED_EXAMPLE_DATA_ITEM:FeedItemType = {
-  id: '0',
-  imageUrl: 'https://www.gstatic.com/webp/gallery/4.jpg',
-  description: 'Today, lalaI’m starting a new monthly task! I designed a new strategy to nudge my team members to be more active in our monthly meetings. ',
-  author: {
-    fullname: 'Mrs. Geneva Herrings',
-    nickname: 'Geneva',
-    title: 'Head of Accounting Dept.'
+const FEED_EXAMPLE_DATA_ITEM: FeedItemType[] = [
+  {
+    id: "0",
+    imageUrl:
+      "https://www.gstatic.com/webp/gallery/4.jpg;https://www.gstatic.com/webp/gallery/4.jpg",
+    description:
+      "Today, I’m starting a new monthly task! I designed a new strategy to nudge my team members to be more active in our monthly meetings. ",
+    author: {
+      fullname: "Mrs. Geneva Herrings",
+      nickname: "Geneva",
+      title: "Head of Accounting Dept.",
+    },
+    commentCount: 4,
+    isNew: true,
+    createdAt: "2021-09-24T10:39:39.000Z",
+    updatedAt: "2021-09-24T10:39:39.000Z",
+    comments: [],
   },
-  commentCount: 4,
-  isNew: true,
-  createdAt: '2021-09-24T10:39:39.000Z',
-  updatedAt: '2021-09-24T10:39:39.000Z'
-}
+  {
+    id: "1",
+    imageUrl:
+      "https://www.gstatic.com/webp/gallery/4.jpg;https://www.gstatic.com/webp/gallery/4.jpg;https://www.gstatic.com/webp/gallery/4.jpg",
+    description:
+      "Today, I’m starting a new monthly task! I designed a new strategy to nudge my team members to be more active in our monthly meetings. ",
+    author: {
+      fullname: "Mrs. Geneva Herrings",
+      nickname: "Geneva",
+      title: "Head of Accounting Dept.",
+    },
+    commentCount: 4,
+    isNew: true,
+    createdAt: "2021-09-24T10:39:39.000Z",
+    updatedAt: "2021-09-24T10:39:39.000Z",
+    comments: [],
+  },
+  {
+    id: "1",
+    imageUrl: "https://www.gstatic.com/webp/gallery/4.jpg",
+    description:
+      "Tmr, I’m starting a new monthly task! I designed a new strategy to nudge my team members to be more active in our monthly meetings. ",
+    author: {
+      fullname: "Mr. Herrings",
+      nickname: "Herri",
+      title: "Manager of Accounting Dept.",
+    },
+    commentCount: 4,
+    isNew: true,
+    createdAt: "2021-09-24T10:39:39.000Z",
+    updatedAt: "2021-09-24T10:39:39.000Z",
+    comments: [],
+  },
+  {
+    id: "0",
+    imageUrl:
+      "https://www.gstatic.com/webp/gallery/4.jpg;https://www.gstatic.com/webp/gallery/4.jpg;https://www.gstatic.com/webp/gallery/4.jpg;https://www.gstatic.com/webp/gallery/4.jpg",
+    description:
+      "Today, I’m starting a new monthly task! I designed a new strategy to nudge my team members to be more active in our monthly meetings. ",
+    author: {
+      fullname: "Mrs. Geneva Herrings",
+      nickname: "Geneva",
+      title: "Head of Accounting Dept.",
+    },
+    commentCount: 4,
+    isNew: true,
+    createdAt: "2021-09-24T10:39:39.000Z",
+    updatedAt: "2021-09-24T10:39:39.000Z",
+    comments: [],
+  },
+]
 
 const MOOD_EXAMPLE_DATA:MoodItemType = {
   avatarUrl: '',
@@ -206,7 +261,9 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
     const goToJournalCoaching = () => navigation.navigate('coachingJournalMain')
 
-    const goToFeed = () => navigation.navigate('feedTimelineMain')
+    const goToFeed = () => navigation.navigate('feedTimelineMain', {
+      listFeeds: FEED_EXAMPLE_DATA_ITEM
+    })
 
     const goToNewPost = () => navigation.navigate('newPost')
 
@@ -230,7 +287,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
         <VStack top={Spacing[48]} horizontal={Spacing[8]} bottom={Spacing[12]}>
             <VStack horizontal={Spacing[12]}>
             <RNAnimated
-              appearFrom="left" 
+              appearFrom="left"
               animationDuration={500}
             >
              <NotificationButton goToNotifications={goToNotifications} />
@@ -267,7 +324,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
           <HomepageCardWrapper animationDuration={700}>
             <FeedItemComponent
               // data={null}
-              data={FEED_EXAMPLE_DATA_ITEM}
+              data={FEED_EXAMPLE_DATA_ITEM[0]}
               goToFeed={goToFeed}
               goToNewPost={goToNewPost}
             />

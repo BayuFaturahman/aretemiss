@@ -8,47 +8,82 @@ import Spacer from "@components/spacer"
 import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png"
 import { FeedTimelineItem } from "../feed.type"
 
-export const FeedPost = ({data}:{data: FeedTimelineItem}) => {
-
+export const FeedPost = ({ data }: { data: FeedTimelineItem }) => {
   if (data === null) {
     return {}
   }
 
-  const listImage = data.imageUrl.split(';')
-  // console.log('list image: ', listImage, ' total: ', listImage.length)
+  const getImage = (height, width, marginRight, marginBottom, image) => {
+    return (
+      <FastImage
+        style={{
+          height: height,
+          width: width,
+          marginRight: marginRight,
+          borderRadius: Spacing[12],
+          marginBottom: marginBottom,
+        }}
+        source={{
+          uri: image,
+        }}
+      />
+    )
+  }
+
+  const verticalImages = (containerWidth, image1, image2) => {
+    return (
+      <VStack
+        top={0}
+        style={{
+          width: containerWidth,
+        }}
+      >
+        {getImage(Spacing[67], "100%", 0, 10, image1)}
+        {getImage(Spacing[67], "100%", 0, 0, image2)}
+      </VStack>
+    )
+  }
 
   const coverImage = () => {
-    const listImage = data.imageUrl.split(';')
+    const listImage = data.imageUrl.split(";")
     // console.log('list image: ', listImage, ' total: ', listImage.length)
-    if (listImage.length === 2 ) {
+    if (listImage.length === 2) {
       return (
-        <HStack>
-          <View
-            style={{
-              flexDirection: 'row',
-              marginTop: 20,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-              {listImage.map((data) => {
-                return (
-                  <FastImage
-                  style={{ 
-                    height: Spacing[144],
-                    width: '50%',
-                    marginRight: 10,
-                    borderRadius: Spacing[12],
-                  }}
-                  source={{
-                    uri: data,
-                   }}
-                />
-                )
-              })}
-          </View>
+        <HStack
+          style={{
+            marginTop: 20,
+            justifyContent: "space-between",
+          }}
+        >
+          {listImage.map((data) => {
+            return getImage(Spacing[144], "48%", 0, 0, data)
+          })}
         </HStack>
       )
-
+    } else if (listImage.length === 3) {
+      return (
+        <HStack
+          style={{
+            marginTop: 20,
+            justifyContent: "space-between",
+          }}
+        >
+          {getImage(Spacing[144], "60%", 10, 0, listImage[0])}
+          {verticalImages("40%", listImage[1], listImage[2])}
+        </HStack>
+      )
+    } else if (listImage.length === 4) {
+      return (
+        <HStack
+          style={{
+            marginTop: 20,
+            justifyContent: "space-around",
+          }}
+        >
+          {verticalImages("47%", listImage[0], listImage[1])}
+          {verticalImages("47%", listImage[2], listImage[3])}
+        </HStack>
+      )
     } else {
       return (
         <FastImage
@@ -61,7 +96,6 @@ export const FeedPost = ({data}:{data: FeedTimelineItem}) => {
         />
       )
     }
-
   }
 
   return (

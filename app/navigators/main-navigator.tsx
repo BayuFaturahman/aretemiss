@@ -13,6 +13,7 @@ import {notifications} from "@screens/notification";
 import {homepage} from "@screens/homepage";
 import {createProfile} from "@screens";
 import {JournalEntryType} from "@screens/coaching-journal/new-journal-entry";
+import { FeedItemType } from "@screens/homepage/components/feed-homepage-component";
 
 const screens: AppRoute[] = [
   {
@@ -91,7 +92,9 @@ const screens: AppRoute[] = [
 
 export type NavigatorParamList = {
   coachingJournalMain: undefined;
-  feedTimelineMain: undefined;
+  feedTimelineMain: {
+    listFeeds: FeedItemType[]
+  }
   settingsPage: undefined;
   myAccount:{
     newEmail?: string,

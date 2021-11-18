@@ -23,10 +23,6 @@ const screens: AppRoute[] = [
 export type NavigatorParamList = {
   newPost: undefined;
   feedTimelineMain: undefined;
-  fillFeedbackCoachee: {
-    isFilled: boolean,
-    journalId: string
-  }
 };
 
 export default screens
