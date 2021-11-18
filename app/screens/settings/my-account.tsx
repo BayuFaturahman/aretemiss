@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from "react"
+import React, { FC, useCallback, useEffect, useState, createRef } from "react"
 import {
   BackHandler,
   KeyboardAvoidingView,
@@ -26,7 +26,9 @@ import smileYellow from "@assets/icons/coachingJournal/empty/smile-yellow.png"
 
 import Spinner from 'react-native-loading-spinner-overlay';
 
-import {launchImageLibrary, ImagePickerResponse, } from 'react-native-image-picker';
+import {launchImageLibrary, launchCamera, ImagePickerResponse, } from 'react-native-image-picker';
+
+import ActionSheet from "react-native-actions-sheet";
 
 export type ProfileUpdateForm = {
   fullname: string
@@ -68,6 +70,8 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
       isAllowReminderNotification: mainStore.userProfile.user_is_allow_reminder_notification,
       // photo: mainStore.userProfile.user_photo
     }
+
+    const actionSheetRef = createRef();
 
     const [profilePicture, setProfilePicture] = useState(userProfile.photo)
 
@@ -178,7 +182,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
 
     useEffect(() => {
       if (route.params?.isPasswordChange) {
-        toggleModal()  
+        toggleModal()
       }
     }, [route.params?.isPasswordChange])
 
@@ -266,10 +270,15 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
         } else {
           console.log('cancel')
         }
+        actionSheetRef.current?.setModalVisible(false);
       }, []);
 
       const openGallery = useCallback(() => {
         launchImageLibrary({mediaType: 'photo', quality: qualityImage, maxWidth: maxWidthImage, maxHeight: maxHeightImage, includeBase64: false, selectionLimit: 1}, cameraHandler);
+      }, []);
+
+      const openCamera = useCallback(() => {
+        launchCamera({mediaType: 'photo', quality: qualityImage, maxWidth: maxWidthImage, maxHeight: maxHeightImage, includeBase64: false}, cameraHandler);
       }, []);
 
       const LABEL_STYLE = {
@@ -296,9 +305,22 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
               />
             </VStack>
             <VStack style={{ width: Spacing[128] }} top={Spacing[20]}>
-             <Button onPress={openGallery} type={"primary"} text={"Ganti Foto"} />
+             <Button onPress={()=>{
+               actionSheetRef.current?.setModalVisible(true);
+             }} type={"primary"} text={"Ganti Foto"} />
             </VStack>
           </HStack>
+          <ActionSheet ref={actionSheetRef}>
+            <VStack style={{ justifyContent: 'center' }} vertical={Spacing[24]} horizontal={Spacing[24]}>
+              <Button onPress={()=>{
+                openGallery()
+              }} type={"primary"} text={"Galeri Foto 🖼️"} />
+              <Spacer height={Spacing[12]} />
+               <Button onPress={()=>{
+                 openCamera()
+               }} type={"primary"} text={"Kamera 📸"} />
+            </VStack>
+          </ActionSheet>
         </VStack>
       )
     }
@@ -349,7 +371,8 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                         ]}
                       >
                         <VStack top={Spacing[24]}>
-                          <ChangeProfilePicture onPictureChange={(photoUrl)=> {
+                          <ChangeProfilePicture
+                            onPictureChange={(photoUrl)=> {
                             setFieldValue('photo', photoUrl)
                           }} />
                           <Spacer height={Spacing[32]} />
@@ -423,6 +446,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
             />
           </VStack>
         </KeyboardAvoidingView>
+
         <Modal
           isOpen={isModalVisible}
           style={{
