@@ -1,9 +1,10 @@
-import React, {createRef, FC, useCallback} from "react"
+import React, { createRef, FC, useCallback, useEffect, useState } from "react"
 import {
   Platform,
   RefreshControl,
   SafeAreaView,
   ScrollView,
+  StyleProp,
   TouchableOpacity,
   View,
 } from "react-native"
@@ -16,13 +17,28 @@ import Spacer from "@components/spacer"
 import { Colors, Layout, Spacing } from "@styles"
 
 import FastImage from "react-native-fast-image"
-import {launchImageLibrary, ImagePickerResponse, launchCamera} from "react-native-image-picker"
+import { launchImageLibrary, ImagePickerResponse, launchCamera } from "react-native-image-picker"
 import { useStores } from "../../bootstrap/context.boostrap"
 
 import insertPict from "@assets/icons/feed/insertPict.png"
 import smileYellow from "@assets/icons/coachingJournal/empty/smile-yellow.png"
 import { FeedTimelineItem } from "./feed.type"
-import ActionSheet from "react-native-actions-sheet/index";
+import ActionSheet from "react-native-actions-sheet/index"
+
+const NEW_ITEM_CONTAINER: StyleProp<any> = {
+  zIndex: 10,
+  height: Spacing[18],
+  width: Spacing[18],
+  borderRadius: 999,
+  alignItems: "center",
+  justifyContent: "center",
+  backgroundColor: Colors.MAIN_RED,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  right: 0,
+  // alignSelf: "flex-end",
+}
 
 const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({ navigation }) => {
   // empty list state
@@ -32,14 +48,39 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
   const maxWidthImage = 1024
   const maxHeightImage = 1024
 
+  const [selectedPicture, setSelectedPicture] = useState([])
+  const [isAddPictDisabled, setIsAddPictDisabled] = useState(false)
+  const [selectionPictLimit, setSelectionPictLimit] = useState(4)
   // const onRefresh = React.useCallback(async() => {
   //   setCoachingData([])
   // }, []);
 
   const goBack = () => navigation.goBack()
 
-  const actionSheetRef = createRef();
+  const actionSheetRef = createRef()
 
+  const NotificationCounter = ({ id }: { id: number }) => {
+    return (
+      <TouchableOpacity style={NEW_ITEM_CONTAINER} onPress={() => {removeSelectedPict(id)}}>
+        {/* <VStack > */}
+          <Text
+            type={"label"}
+            style={{ fontSize: Spacing[12], color: "white" }}
+            /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
+            // @ts-ignore
+            text={"X"}
+          />
+        {/* </VStack> */}
+      </TouchableOpacity>
+    )
+  }
+
+  const removeSelectedPict = (id) => {
+    const tempSelected = [...selectedPicture];
+    tempSelected.splice(id, 1);
+    setSelectedPicture(tempSelected)
+  }
+ 
   const cameraHandler = useCallback(async (response: ImagePickerResponse) => {
     if (!response.didCancel) {
       const formData = new FormData()
@@ -57,6 +98,10 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
         type: response.assets[0].type ?? "image/jpeg",
         size: response.assets[0].fileSize,
       })
+      console.log("RESPONSE ASET: ", response.assets)
+
+      setSelectedPicture((selectedPicture) => [...selectedPicture, ...response.assets])
+      actionSheetRef.current?.setModalVisible(false)
     } else {
       console.log("cancel")
     }
@@ -70,19 +115,50 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
         maxWidth: maxWidthImage,
         maxHeight: maxHeightImage,
         includeBase64: false,
-        selectionLimit: 4,
+        selectionLimit: selectionPictLimit,
       },
       cameraHandler,
     )
   }, [])
 
   const openCamera = useCallback(() => {
-    launchCamera({mediaType: 'photo', quality: qualityImage, maxWidth: maxWidthImage, maxHeight: maxHeightImage, includeBase64: false}, cameraHandler);
-  }, []);
+    launchCamera(
+      {
+        mediaType: "photo",
+        quality: qualityImage,
+        maxWidth: maxWidthImage,
+        maxHeight: maxHeightImage,
+        includeBase64: false,
+      },
+      cameraHandler,
+    )
+  }, [])
 
   const getListFeed = useCallback(async () => {
     await feedStore.getListFeeds()
   }, [])
+
+  useEffect(() => {
+    if (selectedPicture.length === 4) {
+      setIsAddPictDisabled(true)
+    } else {
+      setIsAddPictDisabled(false)
+    }
+
+    console.log("selectedPicture.length ", selectedPicture.length)
+    let maxSelectPict = 4 - selectedPicture.length
+    // console.log('maxSelectPict ', maxSelectPict)
+    setSelectionPictLimit(maxSelectPict)
+    // console.log("selected pict: ", selectedPicture)
+  }, [
+    selectedPicture,
+    isAddPictDisabled,
+    setIsAddPictDisabled,
+    setSelectionPictLimit,
+    selectionPictLimit,
+  ])
+
+  
 
   return (
     <VStack
@@ -127,9 +203,12 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
             </VStack>
             <HStack>
               <HStack>
-                <TouchableOpacity onPress={()=>{
-                  actionSheetRef.current?.setModalVisible(true);
-                }}>
+                <TouchableOpacity
+                  disabled={isAddPictDisabled}
+                  onPress={() => {
+                    actionSheetRef.current?.setModalVisible(true)
+                  }}
+                >
                   <View
                     style={{
                       backgroundColor: Colors.MAIN_BLUE,
@@ -155,11 +234,26 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
                   </View>
                 </TouchableOpacity>
 
-                <ScrollView
-                  style={{ backgroundColor: Colors.BLACK, maxWidth: "50%" }}
-                  horizontal={true}
-                >
-                  <FastImage
+                <ScrollView style={{ maxWidth: "65%" }} horizontal={true}>
+                  {selectedPicture.map((pic, id) => {
+                    return (
+                      <VStack>
+                        <NotificationCounter id={id} />
+                        <FastImage
+                          key={id}
+                          style={{
+                            height: Spacing[54],
+                            width: Spacing[96],
+                            borderRadius: Spacing[16],
+                            marginRight: Spacing[10],
+                          }}
+                          source={pic}
+                          resizeMode={"cover"}
+                        />
+                      </VStack>
+                    )
+                  })}
+                  {/* <FastImage
                     style={{
                       height: Spacing[24],
                       width: Spacing[24],
@@ -177,7 +271,7 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
                     }}
                     source={smileYellow}
                     resizeMode={"cover"}
-                  />
+                  /> */}
                 </ScrollView>
               </HStack>
               <Button
@@ -201,14 +295,26 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
         </ScrollView>
       </SafeAreaView>
       <ActionSheet ref={actionSheetRef}>
-        <VStack style={{ justifyContent: 'center' }} vertical={Spacing[24]} horizontal={Spacing[24]}>
-          <Button onPress={()=>{
-            openGallery()
-          }} type={"primary"} text={"Galeri Foto 🖼️"} />
+        <VStack
+          style={{ justifyContent: "center" }}
+          vertical={Spacing[24]}
+          horizontal={Spacing[24]}
+        >
+          <Button
+            onPress={() => {
+              openGallery()
+            }}
+            type={"primary"}
+            text={"Galeri Foto 🖼️"}
+          />
           <Spacer height={Spacing[12]} />
-          <Button onPress={()=>{
-            openCamera()
-          }} type={"primary"} text={"Kamera 📸"} />
+          <Button
+            onPress={() => {
+              openCamera()
+            }}
+            type={"primary"}
+            text={"Kamera 📸"}
+          />
         </VStack>
       </ActionSheet>
     </VStack>
