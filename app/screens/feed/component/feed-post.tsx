@@ -1,19 +1,22 @@
 import React, { Fragment } from "react"
 import { HStack, VStack } from "@components/view-stack"
-import { Colors, Layout, Spacing } from "@styles"
+import { Colors, Spacing } from "@styles"
 import {TouchableOpacity, View} from "react-native"
 import FastImage from "react-native-fast-image"
 import { Text } from "@components"
 import Spacer from "@components/spacer"
 import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png"
 import { FeedTimelineItem } from "../feed.type"
+import trash from "@assets/icons/trash.png";
 
 type FeedPostProps = {
   data: FeedTimelineItem;
   onImageTap(index, imageList): void;
+  ownPost: boolean
+  deletePost?(id): void;
 }
 
-export const FeedPost = ({ data, onImageTap }:FeedPostProps) => {
+export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost }:FeedPostProps) => {
 
   const listImage = data.imageUrl.split(";")
 
@@ -183,25 +186,43 @@ export const FeedPost = ({ data, onImageTap }:FeedPostProps) => {
         <Text type={"body"} text={data.description} />
       </HStack>
       <HStack left={Spacing[24]} top={Spacing[8]}>
-        <HStack>
-          <FastImage
-            style={{
-              height: Spacing[42],
-              width: Spacing[42],
-              borderRadius: Spacing[8],
-            }}
-            source={nullProfileIcon}
-            resizeMode={"contain"}
-          />
-          <VStack left={Spacing[8]}>
-            <Text
-              type={"body-bold"}
-              style={{ fontSize: Spacing[12] }}
-              text={data.author.fullname}
+        { !ownPost ?
+          <HStack>
+            <FastImage
+              style={{
+                height: Spacing[42],
+                width: Spacing[42],
+                borderRadius: Spacing[8],
+              }}
+              source={nullProfileIcon}
+              resizeMode={"contain"}
             />
-            <Text type={"body"} style={{ fontSize: Spacing[12] }} text={data.author.title} />
-          </VStack>
-        </HStack>
+            <VStack left={Spacing[8]}>
+              <Text
+                type={"body-bold"}
+                style={{ fontSize: Spacing[12] }}
+                text={data.author.fullname}
+              />
+              <Text type={"body"} style={{ fontSize: Spacing[12] }} text={data.author.title} />
+            </VStack>
+          </HStack>
+          :
+          <TouchableOpacity
+            style={{
+              height: Spacing[24],
+            }}
+            onPress={()=>{deletePost(data.id)}}>
+            <Spacer height={Spacing[4]} />
+            <FastImage
+              style={{
+                height: Spacing[16],
+                width: Spacing[12]
+              }}
+              source={trash}
+              resizeMode={"cover"}
+            />
+          </TouchableOpacity>
+        }
         <Spacer />
         <VStack>
           <Text

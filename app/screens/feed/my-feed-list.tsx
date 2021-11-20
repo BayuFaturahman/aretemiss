@@ -1,37 +1,23 @@
-import React, { FC, useCallback, useState } from "react"
-import {
-  FlatList,
-  RefreshControl,
-  SafeAreaView,
-  Modal
-} from "react-native"
+import React, {FC, useCallback, useState,} from "react"
+import {FlatList, Modal, RefreshControl, SafeAreaView } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
-import {Text, BackNavigation} from "@components"
+import {
+  Text,
+  BackNavigation
+} from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
-import { VStack } from "@components/view-stack"
-import Spacer from "@components/spacer"
-import { Colors, Layout, Spacing } from "@styles"
+import { VStack} from "@components/view-stack";
+import Spacer from "@components/spacer";
+import {Colors, Layout, Spacing} from "@styles";
 
-import { useStores } from "../../bootstrap/context.boostrap"
+import {useStores} from "../../bootstrap/context.boostrap";
+import {EmptyList} from "@screens/notification/components/empty-list";
 
-import { EmptyList } from "@screens/coaching-journal/components/empty-list"
-import { FeedPost } from "./component/feed-post"
-import { FeedButton } from "./component/feed-button"
+import {FeedPost} from "@screens/feed/component/feed-post";
+import {FeedButton} from "@screens/feed/component/feed-button";
 import ImageViewer from "react-native-image-zoom-viewer";
 import {FeedItemType} from "@screens/homepage/components/feed-homepage-component";
-
-
-const images = [
-  {
-    url: "https://avatars2.githubusercontent.com/u/7970947?v=3&s=460",
-    freeHeight: true
-  },
-  {
-    url: "https://avatars2.githubusercontent.com/u/7970947?v=3&s=460",
-    freeHeight: true
-  }
-];
 
 const FEED_EXAMPLE_DATA_ITEM: FeedItemType[] = [
   {
@@ -103,23 +89,40 @@ const FEED_EXAMPLE_DATA_ITEM: FeedItemType[] = [
   },
 ]
 
-const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMain">> = observer(
+const images = [
+  {
+    url: "https://avatars2.githubusercontent.com/u/7970947?v=3&s=460",
+    freeHeight: true
+  },
+  {
+    url: "https://avatars2.githubusercontent.com/u/7970947?v=3&s=460",
+    freeHeight: true
+  }
+];
+
+const MyFeedList: FC<StackScreenProps<NavigatorParamList, "myFeedList">> = observer(
   ({ navigation, route }) => {
     const { feedStore } = useStores()
 
     const [modal, setModal] = useState<boolean>(false);
+
     const [listFeeds, setListFeeds] = useState<Array<FeedItemType>>(FEED_EXAMPLE_DATA_ITEM);
 
     const [listImageViewer, setListImageViewer] = useState(images);
     const [activeViewerIndex, setActiveViewerIndex] = useState<number>(0);
 
-   const toggleModal = (value: boolean) =>{
-     setModal(value)
-   }
+    const toggleModal = (value: boolean) =>{
+      setModal(value)
+    }
 
     const onRefresh = React.useCallback(async() => {
       // setCoachingData([])
       // await coachingStore.getJournal()
+    }, []);
+
+    const deletePost = React.useCallback(async(id) => {
+      console.log('delete post')
+      console.log(id)
     }, []);
 
     const goBack = () => navigation.goBack()
@@ -161,7 +164,7 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
                   type={"left-header"}
                   style={{ fontSize: Spacing[16] }}
                   underlineWidth={Spacing[72]}
-                  text="Feed."
+                  text="My Feed."
                 />
               </VStack>
             }
@@ -179,19 +182,14 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
                 <FeedPost
                   data={item}
                   onImageTap={onImageFeedTap}
+                  ownPost={true}
+                  deletePost={deletePost}
                 />)
             }}
             style={{paddingHorizontal: Spacing[24]}}
             keyExtractor={item => item.id}
           />
         </SafeAreaView>
-        <FeedButton
-          goToNewPost={goToNewPost}
-          goToMyFeed={goToMyfeed}
-          goToCommentList={goToCommentList}
-          leftCounter={10}
-          rightCounter={20}
-        />
         <Modal
           visible={modal}
           transparent={true}
@@ -213,4 +211,4 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
   },
 )
 
-export default FeedTimelineMain
+export default MyFeedList;
