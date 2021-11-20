@@ -118,12 +118,12 @@ export const CoachingJournalItemRender = (
                     <View style={{height: Spacing[16], width: Spacing[16], backgroundColor: statusColor, borderRadius: Spacing[128]}} />
                     <Spacer width={Spacing[12]}/>
                     <VStack>
-                      <Text type={'body'} style={{}} numberOfLines={2} >
+                      <Text type={'body'} style={{}} numberOfLines={1} >
                         {activitiesItem.is_coachee ?
-                          <VStack style={{backgroundColor: Colors.SOFT_GREEN, paddingHorizontal: Spacing[4], alignItems: 'center', justifyContent: 'center', borderRadius: Spacing[48]}}>
-                            <Text type={'body'} style={{}} text={activitiesItem.title} numberOfLines={2} />
+                          <VStack style={{backgroundColor: Colors.SOFT_GREEN, paddingHorizontal: Spacing[8], alignItems: 'center', justifyContent: 'center', borderRadius: Spacing[48], minWidth: Spacing[64]}}>
+                            <Text type={'body'} text={activitiesItem.title} numberOfLines={1} />
                           </VStack>
-                          : <Text type={'body'} style={{}} text={activitiesItem.title} numberOfLines={2} /> }
+                          : <Text type={'body'} text={activitiesItem.title} numberOfLines={1} /> }
                       </Text>
                       {activitiesItem.coach_fullname ?
                         <Text type={'body-bold'} style={{color: statusColor, fontSize: Spacing[12]}} numberOfLines={1} >

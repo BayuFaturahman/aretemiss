@@ -308,7 +308,7 @@ PODS:
     - react-native-config/App (= 1.4.5)
   - react-native-config/App (1.4.5):
     - React-Core
-  - react-native-image-picker (4.1.2):
+  - react-native-image-picker (4.3.0):
     - React-Core
   - react-native-netinfo (5.9.10):
     - React-Core
@@ -715,7 +715,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 80c46bd381fd06e418e0d4f53672dc1d1945c4c3
   React-jsinspector: cc614ec18a9ca96fd275100c16d74d62ee11f0ae
   react-native-config: 6502b1879f97ed5ac570a029961fc35ea606cd14
-  react-native-image-picker: 9c8a2687b69300ad9e95cec5d38f35ab9d32467d
+  react-native-image-picker: 869530859570f2af86ae57bc48886a5e2367a825
   react-native-netinfo: 30fb89fa913c342be82a887b56e96be6d71201dd
   react-native-safe-area-context: 79fea126c6830c85f65947c223a5e3058a666937
   React-perflogger: 25373e382fed75ce768a443822f07098a15ab737

@@ -39,6 +39,8 @@
 	<string></string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>iLead akan membaca data pada galeri anda</string>
+    <key>NSCameraUsageDescription</key>
+    <string>iLead akan mengakses kamera anda</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>BrandonGrotesque-Regular.otf</string>
