@@ -3,8 +3,6 @@ import { HStack, VStack } from "@components/view-stack"
 import { Colors, Spacing } from "@styles"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import FastImage from "react-native-fast-image"
-import addFeed from "@assets/icons/feed/addFeed.png"
-import timeline from "@assets/icons/feed/timeline.png"
 
 import conversation from "@assets/icons/feed/conversation.png"
 import newPost from "@assets/icons/feed/newPost.png"
@@ -62,12 +60,12 @@ const NEW_ITEM_CONTAINER:StyleProp<any> = {
 type FeedButtonProps = {
   goToNewPost(): void
   goToMyFeed(): void
-  goToMyProfile(): void
+  goToCommentList(): void
   leftCounter: number
   rightCounter: number
 }
 
-export const FeedButton = ({ goToNewPost = () => null, goToMyFeed = () => null, goToMyProfile = () => null, leftCounter = 0, rightCounter = 10 }: FeedButtonProps) => {
+export const FeedButton = ({ goToNewPost = () => null, goToMyFeed = () => null, goToCommentList = () => null, leftCounter = 0, rightCounter = 10 }: FeedButtonProps) => {
 
   const NotificationCounter = ({text}:{text: number}) => {
 
@@ -135,7 +133,7 @@ export const FeedButton = ({ goToNewPost = () => null, goToMyFeed = () => null, 
             />
           </VStack>
         </TouchableOpacity>
-        <TouchableOpacity onPress={goToNewPost} style={[{ zIndex: 1 }, SHADOW_CONTAINER]}>
+        <TouchableOpacity onPress={goToCommentList} style={[{ zIndex: 1 }, SHADOW_CONTAINER]}>
           <VStack
             style={SIDE_CONTAINER}
           >

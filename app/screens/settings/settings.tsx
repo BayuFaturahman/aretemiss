@@ -38,7 +38,7 @@ const Settings: FC<StackScreenProps<NavigatorParamList, "settingsPage">> = obser
           <BackNavigation goBack={goBack} />
           <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
             <Spacer height={Spacing[24]} />
-            <Text type={'header'} style={{color: Colors.WHITE, fontSize: Spacing[16]}} text="Notifications" />
+            <Text type={'header'} style={{color: Colors.WHITE, fontSize: Spacing[16]}} text="Settings" />
             <Spacer height={Spacing[32]} />
           </VStack>
           <VStack top={Spacing[32]} horizontal={Spacing[24]} style={[Layout.heightFull, {backgroundColor: Colors.WHITE, borderTopStartRadius: Spacing[48], borderTopEndRadius: Spacing[48]}]}>

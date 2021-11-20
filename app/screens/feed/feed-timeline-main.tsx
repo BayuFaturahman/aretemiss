@@ -70,6 +70,8 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
 
     const goToNewPost = () => navigation.navigate("newPost")
 
+    const goToCommentList = () => navigation.navigate("commentList")
+
     const getListFeed = useCallback(async () => {
       await feedStore.getListFeeds()
     }, [])
@@ -128,7 +130,7 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
         <FeedButton
           goToNewPost={goToNewPost}
           goToMyFeed={() => console.log("goToMyFeed")}
-          goToMyProfile={() => console.log("goToMyFeed")}
+          goToCommentList={goToCommentList}
           leftCounter={10}
           rightCounter={20}
         />
