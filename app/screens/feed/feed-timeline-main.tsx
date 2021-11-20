@@ -20,6 +20,7 @@ import { FeedPost } from "./component/feed-post"
 import { FeedButton } from "./component/feed-button"
 import ImageViewer from "react-native-image-zoom-viewer";
 import {FeedItemType} from "@screens/homepage/components/feed-homepage-component";
+import {FeedTimelineItem} from "@screens/feed/feed.type";
 
 
 const images = [
@@ -33,7 +34,7 @@ const images = [
   }
 ];
 
-const FEED_EXAMPLE_DATA_ITEM: FeedItemType[] = [
+const FEED_EXAMPLE_DATA_ITEM: FeedTimelineItem[] = [
   {
     id: "0",
     imageUrl:
@@ -108,7 +109,7 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
     const { feedStore } = useStores()
 
     const [modal, setModal] = useState<boolean>(false);
-    const [listFeeds, setListFeeds] = useState<Array<FeedItemType>>(FEED_EXAMPLE_DATA_ITEM);
+    const [listFeeds, setListFeeds] = useState<Array<FeedTimelineItem>>(FEED_EXAMPLE_DATA_ITEM);
 
     const [listImageViewer, setListImageViewer] = useState(images);
     const [activeViewerIndex, setActiveViewerIndex] = useState<number>(0);
@@ -138,6 +139,12 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
       setActiveViewerIndex(index)
       setListImageViewer(imageList)
       toggleModal(true);
+    }, [])
+
+    const goToDetails = useCallback(async (data: FeedTimelineItem) => {
+      navigation.navigate("postDetails", {
+        data
+      })
     }, [])
 
     return (
@@ -179,6 +186,8 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
                 <FeedPost
                   data={item}
                   onImageTap={onImageFeedTap}
+                  goToDetail={goToDetails}
+                  ownPost={false}
                 />)
             }}
             style={{paddingHorizontal: Spacing[24]}}
