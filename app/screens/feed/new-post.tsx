@@ -21,9 +21,9 @@ import { launchImageLibrary, ImagePickerResponse, launchCamera } from "react-nat
 import { useStores } from "../../bootstrap/context.boostrap"
 
 import insertPict from "@assets/icons/feed/insertPict.png"
-import smileYellow from "@assets/icons/coachingJournal/empty/smile-yellow.png"
-import { FeedTimelineItem } from "./feed.type"
 import ActionSheet from "react-native-actions-sheet/index"
+
+import Spinner from "react-native-loading-spinner-overlay"
 
 const NEW_ITEM_CONTAINER: StyleProp<any> = {
   zIndex: 10,
@@ -36,8 +36,32 @@ const NEW_ITEM_CONTAINER: StyleProp<any> = {
   overflow: "hidden",
   position: "absolute",
   bottom: 0,
+  right: Spacing[4],
+}
+
+const updateButtonStyle: StyleProp<any> = {
+  height: Spacing[32],
+  paddingHorizontal: Spacing[16],
   right: 0,
-  // alignSelf: "flex-end",
+  position: "absolute",
+}
+
+const feedImageStyle: StyleProp<any> = {
+  height: Spacing[54],
+  width: Spacing[96],
+  borderRadius: Spacing[16],
+  marginRight: Spacing[10],
+}
+
+const addImageStyle: StyleProp<any> = {
+  backgroundColor: Colors.MAIN_BLUE,
+  padding: Spacing[4],
+  borderRadius: 5,
+  width: Spacing[36],
+  height: Spacing[36],
+  justifyContent: "center",
+  alignItems: "center",
+  marginRight: Spacing[14],
 }
 
 const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({ navigation }) => {
@@ -62,15 +86,12 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
   const NotificationCounter = ({ id }: { id: number }) => {
     return (
       <TouchableOpacity style={NEW_ITEM_CONTAINER} onPress={() => {removeSelectedPict(id)}}>
-        {/* <VStack > */}
           <Text
             type={"label"}
             style={{ fontSize: Spacing[12], color: "white" }}
-            /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
-            // @ts-ignore
             text={"X"}
           />
-        {/* </VStack> */}
+        
       </TouchableOpacity>
     )
   }
@@ -85,22 +106,31 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
     if (!response.didCancel) {
       const formData = new FormData()
       // formData.append('files', response.assets[0].base64 )
-      formData.append("files", {
-        ...response.assets[0],
-        // @ts-ignore
-        uri:
-          Platform.OS === "android"
-            ? response.assets[0].uri
-            : response.assets[0].uri.replace("file://", ""),
-        name: `profile-image-${
-          response.assets[0].fileName.toLowerCase().split(" ")[0]
-        }-${new Date().getTime()}.jpeg`,
-        type: response.assets[0].type ?? "image/jpeg",
-        size: response.assets[0].fileSize,
+      response.assets.forEach((asset, id) => {
+        formData.append("files", {
+          ...response.assets[id],
+          // @ts-ignore
+          uri:
+            Platform.OS === "android"
+              ? response.assets[id].uri
+              : response.assets[id].uri.replace("file://", ""),
+          name: `feed-image-${
+            response.assets[0].fileName.toLowerCase().split(" ")[0]
+          }-${new Date().getTime()}.jpeg`,
+          type: response.assets[id].type ?? "image/jpeg",
+          size: response.assets[id].fileSize,
+        })
       })
       console.log("RESPONSE ASET: ", response.assets)
 
-      setSelectedPicture((selectedPicture) => [...selectedPicture, ...response.assets])
+      const responseUpload = await feedStore.uploadImage(formData)
+      console.log('responseUpload ',responseUpload)
+
+      if (feedStore.errorCode === null  && responseUpload !== undefined) {
+        console.log('upload photo OK.')
+        setSelectedPicture((selectedPicture) => [...selectedPicture, ...response.assets])
+      }
+      
       actionSheetRef.current?.setModalVisible(false)
     } else {
       console.log("cancel")
@@ -193,9 +223,6 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
                 isRequired={false}
                 secureTextEntry={false}
                 isTextArea={true}
-                // editable={!coachingStore.isDetail}
-                // value={values.commitment}
-                // isError={isError === "commitment"}
                 placeholder={"Mau cerita tentang apa nih?"}
                 onChangeText={() => console.log("alala")}
                 charCounter={false}
@@ -210,16 +237,7 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
                   }}
                 >
                   <View
-                    style={{
-                      backgroundColor: Colors.MAIN_BLUE,
-                      padding: Spacing[4],
-                      borderRadius: 5,
-                      width: Spacing[36],
-                      height: Spacing[36],
-                      justifyContent: "center",
-                      alignItems: "center",
-                      marginRight: Spacing[14],
-                    }}
+                    style={addImageStyle}
                   >
                     <FastImage
                       style={{
@@ -237,52 +255,23 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
                 <ScrollView style={{ maxWidth: "65%" }} horizontal={true}>
                   {selectedPicture.map((pic, id) => {
                     return (
-                      <VStack>
+                      <VStack key={id}>
                         <NotificationCounter id={id} />
                         <FastImage
                           key={id}
-                          style={{
-                            height: Spacing[54],
-                            width: Spacing[96],
-                            borderRadius: Spacing[16],
-                            marginRight: Spacing[10],
-                          }}
+                          style={feedImageStyle}
                           source={pic}
                           resizeMode={"cover"}
                         />
                       </VStack>
                     )
                   })}
-                  {/* <FastImage
-                    style={{
-                      height: Spacing[24],
-                      width: Spacing[24],
-                      borderRadius: Spacing[24],
-                      marginRight: Spacing[10],
-                    }}
-                    source={smileYellow}
-                    resizeMode={"cover"}
-                  />
-                  <FastImage
-                    style={{
-                      height: Spacing[24],
-                      width: Spacing[24],
-                      borderRadius: Spacing[24],
-                    }}
-                    source={smileYellow}
-                    resizeMode={"cover"}
-                  /> */}
                 </ScrollView>
               </HStack>
               <Button
                 type={"primary"}
                 text={"Update"}
-                style={{
-                  height: Spacing[32],
-                  paddingHorizontal: Spacing[16],
-                  right: 0,
-                  position: "absolute",
-                }}
+                style={updateButtonStyle}
                 textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
                 onPress={() => console.log("lele")}
               />
@@ -294,6 +283,7 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
           </VStack>
         </ScrollView>
       </SafeAreaView>
+      <Spinner visible={feedStore.isLoading} textContent={"Memuat..."} />
       <ActionSheet ref={actionSheetRef}>
         <VStack
           style={{ justifyContent: "center" }}
