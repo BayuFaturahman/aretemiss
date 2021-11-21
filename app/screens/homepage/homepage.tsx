@@ -261,9 +261,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
     const goToJournalCoaching = () => navigation.navigate('coachingJournalMain')
 
-    const goToFeed = () => navigation.navigate('feedTimelineMain', {
-      listFeeds: FEED_EXAMPLE_DATA_ITEM
-    })
+    const goToFeed = () => navigation.navigate('feedTimelineMain')
 
     const goToNewPost = () => navigation.navigate('newPost')
 

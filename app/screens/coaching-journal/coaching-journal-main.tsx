@@ -259,7 +259,7 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
                 ListEmptyComponent={()=>
                   <EmptyList />
                 }
-                renderItem={({item, index})=><CoachingJournalItemRender
+                renderItem={({item, index})=> <CoachingJournalItemRender
                   {...{item, index}}
                   onPressActivity={holdActivitiesId}
                   selectedActivities={selectedActivities}

@@ -15,20 +15,21 @@ export type FeedTimelineItem = {
 }
 
 export type FeedPostComment = {
-    id: string
-    commend: string
-    isDeleted: number
-    createdAt: string
-    updatedAt: string
-    author: {
-        fullname: string
-        nickname: string
-        title: string
-    }
-    feedId: string
+  id: string
+  comment: string
+  isOwnComment: boolean
+  isDeleted: number
+  createdAt: string
+  updatedAt: string
+  author: {
+      fullname: string
+      nickname: string
+      title: string
+  }
+  feedId: string
 }
 
 export type FeedTimelineItems = {
     // date: string
-    posts: Array<FeedTimelineItem> 
+    posts: Array<FeedTimelineItem>
 }

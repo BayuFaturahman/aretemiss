@@ -7,7 +7,7 @@ import {
   fillFeedbackDetail,
   overviewJournalEntry, fillFeedbackCoachee, overviewJournalEntryByCoachee
 } from "@screens/coaching-journal";
-import {feedTimelineMain, newPost} from "@screens/feed";
+import {commentList, feedTimelineMain, myFeedList, newPost, postDetails} from "@screens/feed";
 import {settings, myAccount, myAccountVerifyOTP, changePassword, changePhone, notification} from "@screens/settings";
 import {notifications} from "@screens/notification";
 import {homepage} from "@screens/homepage";
@@ -88,13 +88,23 @@ const screens: AppRoute[] = [
     name: 'newPost',
     component: newPost,
   },
+  {
+    name: 'commentList',
+    component: commentList,
+  },
+  {
+    name: 'myFeedList',
+    component: myFeedList,
+  },
+  {
+    name: 'postDetails',
+    component: postDetails,
+  },
 ];
 
 export type NavigatorParamList = {
   coachingJournalMain: undefined;
-  feedTimelineMain: {
-    listFeeds: FeedItemType[]
-  }
+  feedTimelineMain: undefined;
   settingsPage: undefined;
   myAccount:{
     newEmail?: string,
@@ -135,7 +145,12 @@ export type NavigatorParamList = {
     isFilled: boolean,
     journalId: string
   };
-  newPost: undefined
+  newPost: undefined;
+  commentList: undefined;
+  myFeedList: undefined;
+  postDetails: {
+    data: FeedItemType
+  };
 };
 
 export default screens
