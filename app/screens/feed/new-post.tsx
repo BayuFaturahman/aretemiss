@@ -21,7 +21,6 @@ import { useStores } from "../../bootstrap/context.boostrap"
 
 import insertPict from "@assets/icons/feed/insertPict.png"
 import smileYellow from "@assets/icons/coachingJournal/empty/smile-yellow.png"
-import { FeedTimelineItem } from "./feed.type"
 import ActionSheet from "react-native-actions-sheet/index";
 
 const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({ navigation }) => {
