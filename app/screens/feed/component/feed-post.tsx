@@ -6,13 +6,13 @@ import FastImage from "react-native-fast-image"
 import { Text } from "@components"
 import Spacer from "@components/spacer"
 import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png"
-import { FeedTimelineItem } from "../feed.type"
+import { FeedItemType } from "../feed.type"
 import trash from "@assets/icons/trash.png";
 
 type FeedPostProps = {
-  data: FeedTimelineItem;
+  data: FeedItemType;
   onImageTap(index, imageList): void;
-  goToDetail(data: FeedTimelineItem): void;
+  goToDetail(data: FeedItemType): void;
   ownPost: boolean;
   deletePost?(id): void;
 }
@@ -56,9 +56,9 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
             flex: 1,
             borderRadius: Spacing[12]
           }}
-          source={{
-            uri: image,
-          }}
+          source={image !== '' ? {
+            uri: image
+          }: nullProfileIcon }
         />
       </TouchableOpacity>
     )
@@ -133,7 +133,9 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
               height: Spacing[128],
               borderRadius: Spacing[12],
             }}
-            source={{ uri: data.imageUrl }}
+            source={data.imageUrl !== '' ? {
+              uri: data.imageUrl
+            }: null }
             resizeMode={"cover"}
           />
         </TouchableOpacity>
@@ -199,14 +201,16 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
                   width: Spacing[42],
                   borderRadius: Spacing[8],
                 }}
-                source={nullProfileIcon}
+                source={data.author.photo !== '' ? {
+                  uri: data.author.photo
+                }: nullProfileIcon}
                 resizeMode={"contain"}
               />
               <VStack left={Spacing[8]}>
                 <Text
                   type={"body-bold"}
                   style={{ fontSize: Spacing[12] }}
-                  text={data.author.fullname}
+                  text={data.author.nickname}
                 />
                 <Text type={"body"} style={{ fontSize: Spacing[12] }} text={data.author.title} />
               </VStack>

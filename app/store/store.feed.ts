@@ -5,31 +5,9 @@ import { makeAutoObservable } from "mobx"
 import ServiceStore from "./store.service"
 import { Api } from "@services/api"
 import { FeedApi } from "@services/api/feed/feed-api"
-import { CommentApiModel, ErrorFormResponse, FeedApiModel } from "@services/api/feed/feed-api.types"
+import { ErrorFormResponse, FeedApiModel } from "@services/api/feed/feed-api.types"
+import { FeedItemType } from "@screens/feed/feed.type"
 
-export type Feed = {
-  id: string
-  description: string
-  images: string
-  authorId: string
-  isDeleted: number
-  createdAt: string
-  updatedAt: string
-  comments: CommentApiModel[]
-}
-
-export type Comment = {
-  id: string
-  comment: string
-  feedId: string
-  authorId: string
-  isDeleted: number
-  createdAt: string
-  updatedAt: string
-  // commentAuthorId: string
-  // commentFeedId: string
-  commentAuthor: null
-}
 
 export default class FeedStore {
   // #region PROPERTIES
@@ -38,11 +16,13 @@ export default class FeedStore {
   api: Api
   isLoading: boolean
 
+  refreshData: boolean
+
   errorCode: number
   errorMessage: string
 
   feedApi: FeedApi
-  listFeeds: Feed[]
+  listFeeds: FeedItemType[]
 
   constructor(serviceStore: ServiceStore, api: Api) {
     this.serviceStore = serviceStore
@@ -52,6 +32,7 @@ export default class FeedStore {
     this.errorCode = null
     this.errorMessage = null
 
+    this.listFeeds = []
     this.feedApi = new FeedApi(this.api)
   }
 
@@ -65,20 +46,45 @@ export default class FeedStore {
       }
 
       if (response.kind === "ok") {
-        this.getListFeedsSuccess(response.response.data.feeds)
-        // this.getProfileSuccess(response.response.data)
+        this.getListFeedsSuccess(response.response.data)
       }
     } catch (e) {
       console.log(e)
       this.setErrorMessage(e)
     } finally {
-      console.log("getProfile done")
+      console.log("getListFeeds done")
       this.isLoading = false
     }
   }
 
   getListFeedsSuccess(data: FeedApiModel[]) {
     console.log("getListFeedsSuccess data", data)
+    this.listFeeds = []
+    data.forEach(post => {
+      this.listFeeds.push({
+        id: post.feed_id,
+        description: post.feed_description,
+        imageUrl: post.feed_images_url,
+        author: {
+          id: post.feed_author_id,
+          nickname: post.feed_author_nickname,
+          title: 'Head of something',
+          photo: post.feed_author_photo,
+        },
+        commentCount: post.feed_comment_count,
+        isNew: true,
+        createdAt: post.feed_created_at,
+        updatedAt: post.feed_updated_at,
+        isDeleted: (post.feed_is_deleted === 1),
+        deletedAt: post.feed_deleted_at
+      })
+    })
+    
+    console.log("list feed: ", this.listFeeds)
+  }
+
+  clearListFeed() {
+    this.listFeeds = []
     console.log("list feed: ", this.listFeeds)
   }
 
@@ -96,7 +102,6 @@ export default class FeedStore {
 
       if (response.kind === "ok") {
         return response.response;
-        console.log(response.response)
       }
     } catch (e) {
       console.log("Upload Feed Image error")

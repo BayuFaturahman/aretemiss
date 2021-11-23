@@ -11,21 +11,7 @@ import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png";
 import sick from "@assets/icons/notifications/sick.png";
 import {presets} from "@components/text/text.presets";
 import { FeedPost } from "@screens/feed/component/feed-post";
-
-export type FeedItemType = {
-  id: string
-  imageUrl: string
-  author: {
-    fullname: string
-    nickname: string
-    title: string
-  }
-  description: string
-  commentCount: number
-  isNew: boolean
-  createdAt: string
-  updatedAt: string
-}
+import { FeedItemType } from "@screens/feed/feed.type";
 
 
 export const EmptyList = ({

@@ -20,7 +20,7 @@ export class FeedApi {
         return { kind: "form-error", response: res }
       }
 
-      console.log(response.data)
+      // console.log(response.data)
 
       // the typical ways to die when calling an api
       if (!response.ok) {

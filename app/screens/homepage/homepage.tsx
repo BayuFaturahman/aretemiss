@@ -129,7 +129,6 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
     const [selectedActivities, setSelectedActivities] = useState<string>('');
     const [isHomepageError, setHomepageError] = useState<boolean>(false);
-    const [feedData, setFeedDAta] = useState<FeedItemType>(FEED_EXAMPLE_DATA_ITEM);
 
     const [moodData, setMoodData] = useState<MoodItemType>(MOOD_EXAMPLE_DATA);
 
@@ -137,8 +136,10 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       setSelectedActivities(selectedId)
     }, [selectedActivities])
 
+    // const [feedData, setFeedDAta] = useState<FeedItemType>(FEED_EXAMPLE_DATA_ITEM);
+    const [feedData, setFeedData] = useState<FeedItemType>(null);
     const [coachingJournalData, setCoachingJournalData] = useState<CoachingJournalItem>(null);
-    const {mainStore, coachingStore, authStore} = useStores()
+    const {mainStore, coachingStore, authStore, feedStore} = useStores()
 
     const goToNote = useCallback((id, coach_id)=>{
       console.log(id)
@@ -185,6 +186,10 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       await coachingStore.getJournal()
     },[])
 
+    const getListFeed = useCallback(async () => {
+      await feedStore.getListFeeds()
+    }, [])
+
     useEffect(() => {
       loadData()
     },[])
@@ -211,10 +216,13 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     const loadData = debounce( async () => {
       await getUserProfile()
       await getJournalList()
+      await getListFeed()
+      setFeedData(feedStore.listFeeds[0])
     }, 500)
 
     useEffect(()=> {
       setCoachingJournalData(null)
+      setFeedData(null)
       loadData()
     }, [])
 
@@ -321,8 +329,8 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
           <Spacer height={Spacing[12]} />
           <HomepageCardWrapper animationDuration={700}>
             <FeedItemComponent
-              // data={null}
-              data={FEED_EXAMPLE_DATA_ITEM[0]}
+              data={feedData}
+              // data={FEED_EXAMPLE_DATA_ITEM[0]}
               goToFeed={goToFeed}
               goToNewPost={goToNewPost}
             />
