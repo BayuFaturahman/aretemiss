@@ -39,4 +39,13 @@ export interface GetListFeedsResponse {
   
 }
 
+export interface PostUploadFeedImagesResponse {
+  message: string
+  token: string
+  data: {
+    urls: string
+  }
+}
+
 export type GetListFeedsResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListFeedsResponse }  | GeneralApiProblem
+export type PostUploadFeedImagesResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: PostUploadFeedPhotoResponse }  | GeneralApiProblem

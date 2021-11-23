@@ -85,6 +85,32 @@ export default class FeedStore {
 
   clearListFeed() {
     this.listFeeds = []
+    console.log("list feed: ", this.listFeeds)
+  }
+
+  async uploadImage(formData: FormData) {
+    console.log("Upload Photo")
+    this.isLoading = true
+    try {
+      const response = await this.feedApi.PostUploadFeedImages(formData)
+
+      console.log(response)
+
+      if (response.kind === "form-error") {
+        this.formError(response.response)
+      }
+
+      if (response.kind === "ok") {
+        return response.response;
+      }
+    } catch (e) {
+      console.log("Upload Feed Image error")
+      console.log(e)
+      this.setErrorMessage(e)
+    } finally {
+      console.log("Upload Feed Image done")
+      this.isLoading = false
+    }
   }
 
   formError(data: ErrorFormResponse) {

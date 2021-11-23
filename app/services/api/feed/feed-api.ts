@@ -1,7 +1,7 @@
 import { ApiResponse } from "apisauce"
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
-import { GetListFeedsResult } from "@services/api/feed/feed-api.types"
+import { GetListFeedsResult, PostUploadFeedImagesResult } from "@services/api/feed/feed-api.types"
 
 export class FeedApi {
   private api: Api
@@ -39,6 +39,38 @@ export class FeedApi {
       console.log("error")
       __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data" }
+    }
+  }
+
+  async PostUploadFeedImages(formData: FormData): Promise<PostUploadFeedImagesResult> {
+    try {
+      // console.log('postUploadFiles data', formData)
+      console.log('PostUploadFeedPhoto data api call')
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.post(
+        `/upload`,
+        formData,
+      )
+
+      if(response.status === 400){
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data
+      console.log('response PostUploadFeedImages', res)
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      console.log('error', e)
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data"}
     }
   }
 }
