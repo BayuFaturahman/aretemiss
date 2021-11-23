@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from "react"
+import React, { FC, useCallback, useEffect, useState } from "react"
 import {
   FlatList,
   RefreshControl,
@@ -19,8 +19,8 @@ import { EmptyList } from "@screens/coaching-journal/components/empty-list"
 import { FeedPost } from "./component/feed-post"
 import { FeedButton } from "./component/feed-button"
 import ImageViewer from "react-native-image-zoom-viewer";
-import {FeedItemType} from "@screens/homepage/components/feed-homepage-component";
-import {FeedTimelineItem} from "@screens/feed/feed.type";
+import {debounce} from "lodash";
+import {FeedItemType} from "@screens/feed/feed.type";
 
 
 const images = [
@@ -109,7 +109,7 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
     const { feedStore } = useStores()
 
     const [modal, setModal] = useState<boolean>(false);
-    const [listFeeds, setListFeeds] = useState<Array<FeedTimelineItem>>(FEED_EXAMPLE_DATA_ITEM);
+    const [listFeeds, setListFeeds] = useState<Array<FeedItemType>>(feedStore.listFeeds);
 
     const [listImageViewer, setListImageViewer] = useState(images);
     const [activeViewerIndex, setActiveViewerIndex] = useState<number>(0);
@@ -119,10 +119,28 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
    }
 
     const onRefresh = React.useCallback(async() => {
-      // setCoachingData([])
-      // await coachingStore.getJournal()
+      setListFeeds([])
+      feedStore.clearListFeed()
+      await feedStore.getListFeeds()
     }, []);
 
+    // useEffect(()=>{
+    //   console.log('feedStore.refreshData', feedStore.refreshData)
+
+    //   if(feedStore.refreshData){
+    //     setTimeout(()=>{
+    //       feedStore.getListFeeds()
+    //     }, 20)
+    //   }
+    // },[feedStore.refreshData, feedStore.getListFeedsSuccess])
+
+    useEffect(() => {
+      if(feedStore.listFeeds){
+        setListFeeds(feedStore.listFeeds)
+      }
+    }, [ feedStore.listFeeds, feedStore.getListFeedsSuccess])
+
+   
     const goBack = () => navigation.goBack()
 
     const goToNewPost = () => navigation.navigate("newPost")
