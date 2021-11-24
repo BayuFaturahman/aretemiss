@@ -23,7 +23,9 @@ export interface ErrorFormResponse {
 export interface GetListNotificationsResponse {
   message: string
   token: string
-  data: NotificationItemModel[]
+  data: {
+    notifications: NotificationItemModel[]
+  }
 }
 
 export type GetNotificationsListResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListNotificationsResponse } | GeneralApiProblem

@@ -52,12 +52,14 @@ export default class NotificationStore {
     try {
       const response = await this.notificationApi.getListNotifications()
 
+      console.log("getListNotifications response.kind", response.kind)
+
       if (response.kind === "form-error") {
         this.formError(response.response)
       }
 
       if (response.kind === "ok") {
-        this.getNotificationsSuccess(response.response.data)
+        this.getNotificationsSuccess(response.response.data.notifications)
       }
     } catch (e) {
       console.log(e)

@@ -9,6 +9,7 @@ import MainStore from "../store/store.main";
 import AuthStore from "../store/store.auth"
 import CoachingStore from "../store/store.coaching"
 import FeedStore from "../store/store.feed";
+import NotificationStore from "../store/store.notification";
 
 import {Api} from "@services/api";
 
@@ -19,6 +20,7 @@ export default class RootStore {
   api: Api;
   coachingStore: CoachingStore;
   feedStore: FeedStore;
+  notificationStore: NotificationStore
 
   constructor(api: Api) {
 
@@ -29,6 +31,6 @@ export default class RootStore {
     this.authStore = new AuthStore(this.serviceStore, this.mainStore, this.api);
     this.coachingStore = new CoachingStore(this.serviceStore, this.mainStore, this.api);
     this.feedStore = new FeedStore(this.serviceStore, this.api);
-
+    this.notificationStore = new NotificationStore(this.api)
   }
 }
