@@ -499,15 +499,15 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                         </> : null }
                     </VStack>
 
-                    {coachingStore.isFormCoach && <VStack vertical={Spacing[16]}>
+                    {/* {coachingStore.isFormCoach && <VStack vertical={Spacing[16]}>
                       <VStack bottom={Spacing[8]} horizontal={Spacing[128]}>
                         <ActivityTypeSelector onActivityPress={holdActivitiesId} selectedActivity={selectedActivities} isError={fieldError} />
                       </VStack>
-                    </VStack>}
+                    </VStack>} */}
                     <VStack horizontal={Spacing[72]} vertical={Spacing[24]}>
                       {isCoachee === false ?
-                        <ActivitiesTypeLegends showedItems={[1,2]} />:
-                        <ActivitiesTypeLegends showedItems={[3]} />
+                        <ActivitiesTypeLegends showedItems={[1]} />:
+                        <ActivitiesTypeLegends showedItems={[2]} />
                       }
                       <Spacer height={Spacing[24]} />
                       {/* {coachingStore.isDetail ? */}

@@ -95,17 +95,17 @@ export const CoachingJournalItemRender = (
           if(activitiesItem.is_coachee){
             statusColor = Colors.SOFT_GREEN;
           } else {
-            switch (activitiesItem.type){
-              case "formal_coaching":
+            // switch (activitiesItem.type){
+            //   case "formal_coaching":
                 statusColor = Colors.HONEY_YELLOW;
-                break;
-              case "informal_coaching":
-                statusColor = Colors.SOFT_PURPLE;
-                break;
-              case "coached":
-                statusColor = Colors.SOFT_GREEN;
-                break;
-            }
+              //   break;
+              // case "informal_coaching":
+              //   statusColor = Colors.SOFT_PURPLE;
+              //   break;
+              // case "coached":
+              //   statusColor = Colors.SOFT_GREEN;
+                // break;
+            // }
           }
 
           const renderContent = useMemo(()=>{
@@ -120,7 +120,7 @@ export const CoachingJournalItemRender = (
                     <VStack>
                       <Text type={'body'} style={{}} numberOfLines={1} >
                         {activitiesItem.is_coachee ?
-                          <VStack style={{backgroundColor: Colors.SOFT_GREEN, paddingHorizontal: Spacing[8], alignItems: 'center', justifyContent: 'center', borderRadius: Spacing[48], minWidth: Spacing[64]}}>
+                          <VStack style={{backgroundColor: Colors.SOFT_GREEN, paddingHorizontal: Spacing[8], alignItems: 'center', justifyContent: 'center', borderRadius: Spacing[48], maxWidth: Spacing[64]}}>
                             <Text type={'body'} text={activitiesItem.title} numberOfLines={1} />
                           </VStack>
                           : <Text type={'body'} text={activitiesItem.title} numberOfLines={1} /> }

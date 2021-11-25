@@ -311,9 +311,9 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
       else if (data.commitment === '') {
         setError('commitment')
       }
-      else if (data.type === '') {
-        setError('type')
-      }
+      // else if (data.type === '') {
+      //   setError('type')
+      // }
       else if (data.date === '') {
         setError('date')
       } else {
@@ -324,6 +324,8 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
     },[])
 
     const goToFeedback = () => {
+      journalEntryForm.type = 'coaching' 
+      console.log('journalEntryForm ', journalEntryForm)
       if(!isDetail){
         navigation.navigate("fillFeedback",{
           data: journalEntryForm,
@@ -557,9 +559,9 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                           />
                         </VStack>
 
-                        {coachingStore.isFormCoach && (
+                        {/* {coachingStore.isFormCoach && (
                           <VStack vertical={Spacing[16]}>
-                            <VStack bottom={Spacing[8]} horizontal={Spacing[96]}>
+                             <VStack bottom={Spacing[8]} horizontal={Spacing[96]}>
                               <ActivityTypeSelector
                                 onActivityPress={(item)=>{
                                   console.log(item)
@@ -568,8 +570,8 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                                 selectedActivity={selectedActivities}
                                 isError={isError === 'type'}
                               />
-                            </VStack>
-                            <Text
+                            </VStack> 
+                             <Text
                               type={"body-bold"}
                               style={[
                                 { color: Colors.BRIGHT_BLUE, textAlign: "center" },
@@ -577,16 +579,16 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                               ]}
                             >
                               {"Pilihlah kategori sesi coaching-mu."}
-                            </Text>
-                          </VStack>
-                        )}
+                            </Text> 
+                           </VStack>
+                        )} */}
                         <VStack horizontal={Spacing[72]} vertical={Spacing[24]}>
-                          {coachingStore.isFormCoach ? (
-                            <ActivitiesTypeLegends showedItems={[1, 2]} />
+                          {/* {coachingStore.isFormCoach ? (
+                            <ActivitiesTypeLegends showedItems={[1]} />
                           ) : (
-                            <ActivitiesTypeLegends showedItems={[3]} />
+                            <ActivitiesTypeLegends showedItems={[2]} />
                           )}
-                          <Spacer height={Spacing[24]} />
+                          <Spacer height={Spacing[24]} /> */}
                           {coachingStore.isDetail ? (
                             <Button type={"primary"} text={"Hasil Feedback"} onPress={handleSubmit} />
                           ) : (
