@@ -430,7 +430,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                         </VStack>
                         <Spacer height={Spacing[12]} />
                         <VStack horizontal={Spacing[96]} vertical={Spacing[20]}>
-                          <Button type={isDisableEditBtn? "negative" : "primary"} text={"Edit"} onPress={() => handleSubmit()} disabled={isDisableEditBtn} />
+                          <Button type={isDisableEditBtn? "negative" : "primary"} text={"Update"} onPress={() => handleSubmit()} disabled={isDisableEditBtn} />
                         </VStack>
                       </VStack>
                     </>
