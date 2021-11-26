@@ -119,10 +119,18 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
    }
 
     const onRefresh = React.useCallback(async() => {
-      setListFeeds([])
+      console.log('masuk refresh')
+      // setListFeeds([])
       feedStore.clearListFeed()
-      await feedStore.getListFeeds()
+      getListFeed()
     }, []);
+
+    useEffect(() => {
+      // setListFeeds([])
+      feedStore.clearListFeed()
+      getListFeed()
+    }, [])
+
 
     // useEffect(()=>{
     //   console.log('feedStore.refreshData', feedStore.refreshData)
@@ -135,10 +143,12 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
     // },[feedStore.refreshData, feedStore.getListFeedsSuccess])
 
     useEffect(() => {
-      if(feedStore.listFeeds){
+      if(feedStore.listFeeds.length > 0){
+        console.log('masuk list feed ga kosong')
         setListFeeds(feedStore.listFeeds)
+        console.log('ini list feed skrng ', listFeeds)
       }
-    }, [ feedStore.listFeeds, feedStore.getListFeedsSuccess])
+    }, [ feedStore.listFeeds, setListFeeds, listFeeds])
 
    
     const goBack = () => navigation.goBack()
