@@ -8,15 +8,15 @@ import Spacer from "@components/spacer";
 
 export const ACTIVITIES_TYPE = [
   {
-    label: 'formal coaching',
+    label: 'coaching',
     value: 'formal_coaching',
     color: Colors.HONEY_YELLOW
   },
-  {
-    label: 'informal coaching',
-    value: 'informal_coaching',
-    color: Colors.SOFT_PURPLE
-  },
+  // {
+  //   label: 'informal coaching',
+  //   value: 'informal_coaching',
+  //   color: Colors.SOFT_PURPLE
+  // },
   {
     label: 'coached',
     value: 'coached',

@@ -79,16 +79,15 @@ export type FeedbackResultItemType = {
 export const FEEDBACK_DETAIL_TYPE_CHOICE:Array<FeedbackResultItemType> = [
   {
     type: 'same_answer',
-    value: 'Jawaban\n' +
-      'yang sama'
+    value: 'Jawaban yang sama'
   },
-  {
-    type: 'my_answer',
-    value: 'Jawaban Anda'
-  },
+  // {
+  //   type: 'my_answer',
+  //   value: 'Jawaban Anda'
+  // },
   {
     type: 'coachee_answer',
-    value: 'Jawaban coachee'
+    value: 'Jawaban Anda dan Coache'
   }
 ]
 
