@@ -113,13 +113,21 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
       onRefresh()
     },[])
 
-    const goToFeedback = (journalId, authorId) => {
+    const goToFeedback = useCallback((id)=>{
       coachingStore.isDetailJournal(true)
-      const detailCoaching = journalId === mainStore.userProfile.user_id
+      coachingStore.setDetailID(id)
+      navigation.navigate("fillFeedbackDetail")
+      console.log(id)
+    }, [])
+
+    const goToNoteFeedback = (authorId, journalId) => {
+      coachingStore.isDetailJournal(true)
+      const detailCoaching = authorId === mainStore.userProfile.user_id
       coachingStore.setDetailCoaching(detailCoaching)
-      coachingStore.setDetailID(authorId)
+      coachingStore.setDetailID(journalId)
       coachingStore.setFormCoach(false)
-      console.log('goToNoteFeedback coach_id', journalId)
+      console.log('goToNoteFeedback journalId', journalId)
+      console.log('goToNoteFeedback authorId', authorId)
       console.log('goToNoteFeedback user_id', mainStore.userProfile.user_id)
 
       navigation.navigate("overviewJournalEntry", {
@@ -186,24 +194,28 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
                               style={{height:Spacing[32], backgroundColor: Colors.MAIN_RED}}
                               textStyle={{fontSize: Spacing[14], lineHeight: Spacing[18]}}
                               onPress={()=>{
-                                goToFeedback(item.authorId, item.data.journalId)}
+                                goToNoteFeedback(item.authorId, item.data.journalId)}
                               }
                             />
-                            {/* <Button */}
-                            {/*  type={"primary"} */}
-                            {/*  text={"Lihat feedback di sini."} */}
-                            {/*  style={{height:Spacing[32]}} */}
-                            {/*  textStyle={{fontSize: Spacing[14], lineHeight: Spacing[18]}} */}
-                            {/* /> */}
                           </VStack>
                         </VStack> : null }
-                      {item.type === 'comment' ?
+                      {item.type === 'submitted_feedback' ?
                         <VStack>
-                          <Text type={'body-bold'}>
-                            <Text type={'body-bold'} text={`${item.user.name} `} />
-                            meninggalkan komentar di post Feed-mu!
+                          <Text type={'body'}>
+                            <Text type={'body-bold'} text={`${item.content} `} />
                           </Text>
                           <Spacer height={Spacing[4]} />
+                          <VStack right={Spacing[48]}>
+                             <Button
+                              type={"primary"}
+                              text={"Lihat feedback di sini."}
+                              style={{height:Spacing[32]}}
+                              textStyle={{fontSize: Spacing[14], lineHeight: Spacing[18]}}
+                              onPress={()=>{
+                                goToFeedback(item.data.journalId)}
+                              }
+                             />
+                          </VStack>
                         </VStack> : null }
                       {item.type === 'tagged' ?
                         <VStack>
