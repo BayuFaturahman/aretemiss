@@ -169,6 +169,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       coachingStore.setDetailCoaching(detailCoaching)
       coachingStore.setDetailID(id)
       coachingStore.setFormCoach(false)
+      console.log('goToNoteFeedback id', id)
       console.log('goToNoteFeedback coach_id', coach_id)
       console.log('goToNoteFeedback user_id', mainStore.userProfile.user_id)
 
@@ -296,7 +297,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
               appearFrom="left"
               animationDuration={500}
             >
-             <NotificationButton goToNotifications={goToNotifications} />
+             <NotificationButton goToNotifications={goToNotifications} isNewNotification={false} />
             </RNAnimated>
             </VStack>
           <Spacer height={Spacing[24]} />

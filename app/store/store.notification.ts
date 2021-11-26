@@ -18,6 +18,7 @@ export type NotificationItem = {
   "updatedAt": string;
   "authorId": string;
   "authorPhoto": string;
+  isNew: boolean;
 }
 
 export default class NotificationStore {
@@ -84,7 +85,8 @@ export default class NotificationStore {
         createdAt: item.notification_created_at,
         updatedAt: item.notification_updated_at,
         authorId: item.notification_author_id,
-        authorPhoto: item.notification_author_photo
+        authorPhoto: item.notification_author_photo,
+        isNew: item.notification_is_new !== 0
       })
     })
 
