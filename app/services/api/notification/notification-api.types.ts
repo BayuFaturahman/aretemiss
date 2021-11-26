@@ -13,6 +13,7 @@ export type NotificationItemModel = {
   "notification_updated_at": string;
   "notification_author_id": string;
   "notification_author_photo": string;
+  notification_is_new: number;
 }
 
 export interface ErrorFormResponse {

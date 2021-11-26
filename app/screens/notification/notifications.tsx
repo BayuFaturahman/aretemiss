@@ -109,8 +109,11 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
       await notificationStore.getListNotifications()
     }, []);
 
-    const goToFeedback = (authorId, journalId) => {
+    useEffect(()=>{
+      onRefresh()
+    },[])
 
+    const goToFeedback = (journalId, authorId) => {
       coachingStore.isDetailJournal(true)
       const detailCoaching = journalId === mainStore.userProfile.user_id
       coachingStore.setDetailCoaching(detailCoaching)
@@ -164,7 +167,8 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
                       <Spacer height={Spacing[4]}/>
                       <FastImage style={{
                         height: Spacing[48],
-                        width: Spacing[48]
+                        width: Spacing[48],
+                        borderRadius: Spacing[8]
                       }} source={item.authorPhoto === '' ? nullProfileIcon : {uri: item.authorPhoto}} resizeMode={"cover"}/>
                       <Spacer/>
                     </VStack>
@@ -182,7 +186,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
                               style={{height:Spacing[32], backgroundColor: Colors.MAIN_RED}}
                               textStyle={{fontSize: Spacing[14], lineHeight: Spacing[18]}}
                               onPress={()=>{
-                                goToFeedback(item.data.journalId)}
+                                goToFeedback(item.authorId, item.data.journalId)}
                               }
                             />
                             {/* <Button */}
