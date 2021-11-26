@@ -331,6 +331,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
             <FeedItemComponent
               data={feedData}
               // data={FEED_EXAMPLE_DATA_ITEM[0]}
+              // data={null}
               goToFeed={goToFeed}
               goToNewPost={goToNewPost}
             />
