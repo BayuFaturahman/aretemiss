@@ -15,10 +15,10 @@ import { FeedItemType } from "@screens/feed/feed.type";
 
 
 export const EmptyList = ({
-                            navigateTo = () => null,
-                            imageSource = sick,
-                            buttonLabel = 'Kembali'
-                          }) => {
+    navigateTo = () => null,
+    imageSource = sick,
+    buttonLabel = 'Kembali'
+  }) => {
   return(
     <VStack horizontal={Spacing[24]} top={Spacing[24]} style={Layout.widthFull}>
       <VStack>

@@ -217,31 +217,31 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
                              />
                           </VStack>
                         </VStack> : null }
-                      {item.type === 'tagged' ?
-                        <VStack>
-                          <Text type={'body'}>
-                            <Text type={'body-bold'} text={`${item.user.name} `} />
-                            telah menandaimu dalam sesi
-                            <Text type={'body-bold'} text={` ${item.session}`} />
-                          </Text>
-                          <Spacer height={Spacing[4]} />
-                          <VStack right={Spacing[48]}>
-                            <Button
-                              type={"primary"}
-                              text={"Isi feedback untuknya."}
-                              style={{height:Spacing[32], backgroundColor: Colors.MAIN_RED}}
-                              textStyle={{fontSize: Spacing[14], lineHeight: Spacing[18]}}
-                            />
-                          </VStack>
-                        </VStack> : null }
-                      {item.type === 'liked' ?
-                        <VStack>
-                          <Text type={'body-bold'}>
-                            <Text type={'body-bold'} text={`${item.user.name} `} />
-                            menyukai post Feed-mu!
-                          </Text>
-                          <Spacer height={Spacing[4]} />
-                        </VStack> : null }
+                      {/*{item.type === 'tagged' ?*/}
+                      {/*  <VStack>*/}
+                      {/*    <Text type={'body'}>*/}
+                      {/*      <Text type={'body-bold'} text={`${item.user.name} `} />*/}
+                      {/*      telah menandaimu dalam sesi*/}
+                      {/*      <Text type={'body-bold'} text={` ${item.session}`} />*/}
+                      {/*    </Text>*/}
+                      {/*    <Spacer height={Spacing[4]} />*/}
+                      {/*    <VStack right={Spacing[48]}>*/}
+                      {/*      <Button*/}
+                      {/*        type={"primary"}*/}
+                      {/*        text={"Isi feedback untuknya."}*/}
+                      {/*        style={{height:Spacing[32], backgroundColor: Colors.MAIN_RED}}*/}
+                      {/*        textStyle={{fontSize: Spacing[14], lineHeight: Spacing[18]}}*/}
+                      {/*      />*/}
+                      {/*    </VStack>*/}
+                      {/*  </VStack> : null }*/}
+                      {/*{item.type === 'liked' ?*/}
+                      {/*  <VStack>*/}
+                      {/*    <Text type={'body-bold'}>*/}
+                      {/*      <Text type={'body-bold'} text={`${item.user.name} `} />*/}
+                      {/*      menyukai post Feed-mu!*/}
+                      {/*    </Text>*/}
+                      {/*    <Spacer height={Spacing[4]} />*/}
+                      {/*  </VStack> : null }*/}
                     </HStack>
                   </HStack>
                 )
