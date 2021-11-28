@@ -321,7 +321,10 @@ export default class CoachingStore {
 
   async journalSucceed (journal: JournalModel[]) {
     console.log('journalSucceed', journal)
-    this.listJournal = journal
+    this.listJournal = [
+      ...this.listJournal,
+      ...(journal ?? [])
+    ]
     this.formErrorCode = null
     this.isLoading = false
   }
