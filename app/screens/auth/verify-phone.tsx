@@ -1,12 +1,12 @@
 import React, { FC, useCallback, useEffect, useState } from "react"
-import { SafeAreaView, StyleSheet } from "react-native"
+import {SafeAreaView, ScrollView, StyleSheet} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { BackNavigation, Button, DismissKeyboard, Text, TextField } from "@components"
 import { NavigatorParamList } from "@navigators/auth-navigator"
 import {VStack} from "@components/view-stack";
 import Spacer from "@components/spacer";
-import {Colors, Spacing} from "@styles";
+import {Colors, Layout, Spacing} from "@styles";
 import logoBottom from "@assets/icons/ilead_abm.png";
 import FastImage from "react-native-fast-image";
 
@@ -171,6 +171,7 @@ const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
           style={{ backgroundColor: Colors.WHITE, flex: 1, justifyContent: "center" }}
         >
           {/* <GradientBackground colors={["#422443", "#281b34"]} /> */}
+          <ScrollView bounces={false} style={[Layout.flex, Layout.heightFull]}>
           <SafeAreaView style={{ flex: 1 }}>
             <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
             <Spacer />
@@ -267,6 +268,7 @@ const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
               bottom: 0
             }} source={logoBottom} resizeMode={"contain"}/>
           </SafeAreaView>
+          </ScrollView>
           <Spinner
             visible={authStore.isLoading}
             textContent={"Memuat..."}
