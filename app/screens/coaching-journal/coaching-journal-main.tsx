@@ -1,5 +1,5 @@
 import React, {FC, useCallback, useReducer, useState, useEffect} from "react"
-import {FlatList, RefreshControl, SafeAreaView, ScrollView, StyleSheet, View} from "react-native"
+import {ActivityIndicator, FlatList, RefreshControl, SafeAreaView} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {
@@ -25,95 +25,29 @@ import surprissedPurple from "@assets/icons/coachingJournal/empty/surprised-purp
 import {dimensions} from "@config/platform.config";
 import {EmptyList} from "@screens/coaching-journal/components/empty-list";
 
-const EXAMPLE_COACHING_DATA:Array<CoachingJournalItem> = [
-  {
-    date: '02 AUG',
-    activities: [
-      {
-        title: 'Weekly coaching with Agus Surya Pradana.',
-        type: 'weekly_coaching',
-        id: '1',
-        isTagged: false
-      },
-      {
-        title: 'Coffee time dengan semua anggota tim.',
-        type: 'gathering',
-        id: '2',
-        isTagged: false
-      },
-    ]
-  },
-  {
-    date: '03 AUG',
-    activities: [
-      {
-        title: 'Weekly coaching with Dewi Permata Kurnia.',
-        type: 'weekly_coaching',
-        id: '3',
-        isTagged: false
-      },
-      {
-        title: 'Weekly coaching with Arjuna Haryono.',
-        type: 'weekly_coaching',
-        id: '4',
-        isTagged: false
-      },
-      {
-        title: 'Weekly coaching #2',
-        type: 'coached',
-        coachedBy: 'Indrawan Kresna',
-        id: '5',
-        isTagged: true
-      },
-    ]
-  },
-  {
-    date: '04 AUG',
-    activities: [
-      {
-        title: 'Weekly coaching with Dewi Permata Kurnia.',
-        type: 'weekly_coaching',
-        id: '6',
-        isTagged: false
-      },
-      {
-        title: 'Weekly coaching with Arjuna Haryono.',
-        type: 'weekly_coaching',
-        id: '7',
-        isTagged: false
-      },
-      {
-        title: 'Weekly coaching #2',
-        type: 'coached',
-        coachedBy: 'Indrawan Kresna',
-        id: '8',
-        isTagged: false
-      },
-    ]
-  }
-]
-
 const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJournalMain">> = observer(
   ({ navigation }) => {
 
-    // empty list state
-    // const [coachingData, setCoachingData] = useState<Array<CoachingJournalItem>>([]);
     const [coachingData, setCoachingData] = useState<Array<CoachingJournalItem>>([]);
     const [selectedActivities, setSelectedActivities] = useState<string>('');
     const [, forceUpdate] = useReducer(x => x + 1, 0);
     const {mainStore, coachingStore} = useStores()
 
-    const [currentPage, setCurrentPage] = useState<number>(0);
+    const [currentPage, setCurrentPage] = useState<number>(2);
 
     const onLoadMore = React.useCallback(async () => {
       console.log('load more journal')
-      console.log(currentPage)
+      await loadJournal(currentPage)
       setCurrentPage(currentPage + 1)
-      await coachingStore.getJournal(currentPage)
     }, [currentPage]);
+
+    const loadJournal = async (page: number) => {
+      await coachingStore.getJournal(page)
+    }
 
     const onRefresh = React.useCallback(async() => {
       setCoachingData([])
+      setCurrentPage(2)
       await coachingStore.clearJournal()
       await coachingStore.getJournal()
     }, []);
@@ -131,7 +65,6 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
         isDetail: false
       })
     }
-    const quizForm = () => navigation.navigate("quizForm")
 
     const holdActivitiesId = useCallback((selectedId)=>{
       setSelectedActivities(selectedId)
@@ -141,7 +74,7 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
     const goToNote = useCallback((id, coach_id)=>{
       console.log(id)
       coachingStore.isDetailJournal(true)
-      const detailCoaching = coach_id == mainStore.userProfile.user_id
+      const detailCoaching = coach_id === mainStore.userProfile.user_id
       coachingStore.setDetailCoaching(detailCoaching)
       coachingStore.setDetailID(id)
       coachingStore.setFormCoach(true)
@@ -162,7 +95,7 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
 
     const goToNoteFeedback = useCallback((id, coach_id)=>{
       coachingStore.isDetailJournal(true)
-      const detailCoaching = coach_id == mainStore.userProfile.user_id
+      const detailCoaching = coach_id === mainStore.userProfile.user_id
       coachingStore.setDetailCoaching(detailCoaching)
       coachingStore.setDetailID(id)
       coachingStore.setFormCoach(false)
@@ -174,6 +107,17 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
         isCoachee: true
       })
     }, [])
+
+    useEffect(()=>{
+
+      const firstLoadJournal = async () => {
+        await coachingStore.clearJournal()
+        await loadJournal(1)
+      }
+
+      firstLoadJournal()
+
+    },[])
 
     useEffect(()=>{
       if(coachingStore.listJournal){
@@ -232,9 +176,10 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
       <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: 'center'}}>
         <SafeAreaView style={Layout.flex}>
           <FlatList
+            style={{backgroundColor: Colors.WHITE}}
             refreshControl={
               <RefreshControl
-                refreshing={false}
+                refreshing={coachingStore.isLoading}
                 onRefresh={onRefresh}
                 tintColor={Colors.MAIN_RED}
               />
@@ -296,6 +241,14 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
             onEndReached={onLoadMore}
             onEndReachedThreshold={0.1}
           />
+          {
+            coachingStore.isLoading ?
+              <VStack vertical={Spacing[12]} style={{position:'absolute',bottom: 0, width: dimensions.screenWidth}}>
+                <ActivityIndicator
+                  animating={coachingStore.isLoading}
+                />
+              </VStack> : null
+          }
         </SafeAreaView>
       </VStack>
     )

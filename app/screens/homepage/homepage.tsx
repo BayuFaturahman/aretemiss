@@ -184,6 +184,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     },[])
 
     const getJournalList = useCallback(async ()=>{
+      await coachingStore.clearJournal()
       await coachingStore.getJournal()
     },[])
 
