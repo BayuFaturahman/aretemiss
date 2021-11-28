@@ -87,10 +87,6 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
 
   const actionSheetRef = createRef()
 
-  useEffect(() => {
-    feedStore.formReset()
-  }, [])
-
   const NotificationCounter = ({ id }: { id: number }) => {
     return (
       <TouchableOpacity style={NEW_ITEM_CONTAINER} onPress={() => {removeSelectedPict(id)}}>
@@ -135,14 +131,12 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
           size: response.assets[id].fileSize,
         })
       })
-      console.log("RESPONSE ASET: ", response.assets)
+      // console.log("RESPONSE ASET: ", response.assets)
 
       const responseUpload = await feedStore.uploadImage(formData)
       console.log('responseUpload ',responseUpload)
       const listResponseUpload = responseUpload.data.urls.split(';')
-     
-      
-    
+      console.log('listResponseUpload ', listResponseUpload)
 
       if (feedStore.errorCode === null  && responseUpload !== undefined) {
         console.log('upload photo OK.')
@@ -154,8 +148,8 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
     } else {
       console.log("cancel")
     }
-  }, [])
-
+  }, [selectedPicture, setSelectedPicture, uploadedPicture, setUploadedPicture])
+  
   const openGallery = useCallback(() => {
     launchImageLibrary(
       {
@@ -195,7 +189,7 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
     }
 
     console.log("selectedPicture.length ", selectedPicture.length)
-    let maxSelectPict = 4 - selectedPicture.length
+    const maxSelectPict = 4 - selectedPicture.length
     // console.log('maxSelectPict ', maxSelectPict)
     setSelectionPictLimit(maxSelectPict)
     // console.log("selected pict: ", selectedPicture)
@@ -208,18 +202,12 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
   ])
 
   const submitNewPost = useCallback(async () => {
-    feedStore.formReset()
-    console.log('deskripsi ', description)
-    console.log('selected ', selectedPicture)
-    console.log('upload  ', uploadedPicture)
-    const images = selectedPicture.map((pic) => {
-      return (pic.fileName)
-    })
+    const imagesUrl = uploadedPicture.join(';')
+    console.log('imagesUrl ', imagesUrl)
 
-    console.log('images ', images)
     await feedStore.createPost({ 
       "description": description,
-      "images_url": uploadedPicture.join(';')
+      "images_url": imagesUrl
     });
 
     if (feedStore.errorCode === null) {
@@ -228,7 +216,7 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
       setErrorMessage(feedStore.errorMessage)
       console.log(feedStore.errorCode, ' : ', feedStore.errorMessage )
     }
-  }, [description, setDescription, feedStore.errorCode, selectedPicture])
+  }, [description, setDescription, feedStore.errorCode, selectedPicture, uploadedPicture, setUploadedPicture])
 
 
   return (

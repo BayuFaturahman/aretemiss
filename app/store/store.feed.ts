@@ -86,12 +86,12 @@ export default class FeedStore {
   }
 
   async createPost(data: CreatePostType) {
-    console.log('createPost ',data)
+    console.log('createPost with body request',data)
     this.isLoading = true
     try {
       const result = await this.feedApi.createPost(data)
 
-      console.log(result)
+      console.log('result create Post: ', result)
       if (result.kind === "ok") {
         this.refreshData = true
       } else if (result.kind === 'form-error'){

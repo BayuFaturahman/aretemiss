@@ -148,7 +148,7 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
         setListFeeds(feedStore.listFeeds)
         console.log('ini list feed skrng ', listFeeds)
       }
-    }, [ feedStore.listFeeds, setListFeeds, listFeeds])
+    }, [ feedStore.listFeeds, setListFeeds, listFeeds, feedStore.getListFeedsSuccess])
 
    
     const goBack = () => navigation.goBack()

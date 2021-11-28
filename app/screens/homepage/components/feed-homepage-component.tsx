@@ -64,7 +64,7 @@ export const FeedItemComponent = ({data, goToFeed = ()=> null, goToNewPost = ()=
     console.log(imageList)
   }, [])
 
-  if(data === null){
+  if(data === null || data === undefined){
     return(
       <VStack>
         <Text type={'left-header'} style={{fontSize: Spacing[16]}} underlineWidth={Spacing[72]} text="Feed." />

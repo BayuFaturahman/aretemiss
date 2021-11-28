@@ -82,8 +82,8 @@ export class FeedApi {
         `/feed`, data
       )
 
-      console.log('createJournal response', response)
-      console.log('createJournal response.data', response.data)
+      console.log('createPost response', response)
+      console.log('createPost response.data', response.data)
       if(response.status === 400){
         const res = response.data
         return { kind: "form-error", response: res }
