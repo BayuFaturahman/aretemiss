@@ -319,10 +319,12 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
       } else {
         setError("")
         setJournalEntryForm(data)
+        console.log('journal entry to be passed ', data)
+        
         goToFeedback()
         // toggleEncouragementModal()
       }
-    },[])
+    },[setJournalEntryForm, journalEntryForm])
 
     const goToFeedback = () => {
       journalEntryForm.type = 'coaching' 
