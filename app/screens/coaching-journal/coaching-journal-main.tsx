@@ -213,7 +213,7 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
                   </Text>
                   <Spacer height={Spacing[32]} />
                 </VStack>
-                <VStack style={{backgroundColor: Colors.WHITE, borderTopStartRadius: Spacing[48], borderTopEndRadius: Spacing[48]}}>
+                <VStack style={{backgroundColor: Colors.WHITE, borderTopStartRadius: Spacing[48], borderTopEndRadius: Spacing[48], bottom: -1}}>
                   <NewButton onPress={newEntry} />
                   { coachingData.length === 0 ? <FastImage style={{
                     height: Spacing[96],
