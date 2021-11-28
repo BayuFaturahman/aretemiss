@@ -21,7 +21,6 @@ import {
 export default class AuthStore {
   // #region PROPERTIES
 
-  mainStore: MainStore
   serviceStore: ServiceStore
   apiAuth: AuthApi
   isLoading: boolean
@@ -52,9 +51,8 @@ export default class AuthStore {
   api: Api
 
   // #region CONSTRUCTOR
-  constructor(serviceStore:ServiceStore, mainStore: MainStore, api: Api) {
+  constructor(serviceStore:ServiceStore, api: Api) {
 
-    this.mainStore = mainStore;
     this.serviceStore = serviceStore;
 
     this.api = api

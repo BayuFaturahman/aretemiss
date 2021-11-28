@@ -103,6 +103,15 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
     const [, forceUpdate] = useReducer(x => x + 1, 0);
     const {mainStore, coachingStore} = useStores()
 
+    const [currentPage, setCurrentPage] = useState<number>(0);
+
+    const onLoadMore = React.useCallback(async () => {
+      console.log('load more journal')
+      console.log(currentPage)
+      setCurrentPage(currentPage + 1)
+      await coachingStore.getJournal(currentPage)
+    }, [currentPage]);
+
     const onRefresh = React.useCallback(async() => {
       setCoachingData([])
       await coachingStore.clearJournal()
@@ -170,14 +179,14 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
       if(coachingStore.listJournal){
         createList()
       }
-    },[coachingStore.listJournal, coachingStore.journalSucceed])
+    },[coachingStore.listJournal])
 
     useEffect(()=>{
       console.log('coachingStore.refreshData', coachingStore.refreshData)
 
       if(coachingStore.refreshData){
         setTimeout(()=>{
-          coachingStore.getJournal()
+          coachingStore.getJournal(currentPage)
         }, 20)
       }
     },[coachingStore.refreshData, coachingStore.createJournalSucceed, coachingStore.createFeedbackSucced])
@@ -222,62 +231,71 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
     return (
       <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: 'center'}}>
         <SafeAreaView style={Layout.flex}>
-          <BackNavigation goBack={goBack} />
-          <ScrollView
+          <FlatList
             refreshControl={
               <RefreshControl
-                refreshing={coachingStore.isLoading}
+                refreshing={false}
                 onRefresh={onRefresh}
                 tintColor={Colors.MAIN_RED}
               />
             }
-          >
-            <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
-              <Text type={'header'} style={{color: Colors.WHITE}} text="Coaching Journal" />
-              <Spacer height={Spacing[24]} />
-              <Text type={'body'} style={{textAlign: 'center', color: Colors.WHITE}}>
-                Setiap journal entry yang kamu catat di iLEAD akan memberikan kesempatan bagi anggota tim kamu untuk memberikan <Text type={"label"} style={{color: Colors.WHITE}}>feedback</Text> kepadamu juga lho! Anggota tim bisa memberikan feedback untuk setiap journal entry yang kamu catat.
-              </Text>
-              <Spacer height={Spacing[32]} />
-            </VStack>
-            <VStack top={Spacing[32]} horizontal={Spacing[24]} style={[Layout.heightFull, {backgroundColor: Colors.WHITE, borderTopStartRadius: Spacing[48], borderTopEndRadius: Spacing[48], minHeight: dimensions.screenHeight}]}>
-              <NewButton onPress={newEntry} />
-              {coachingData.length === 0 ? <FastImage style={{
-                height: Spacing[96],
-                width: Spacing[96],
-                left: (dimensions.screenWidth / 2) + Spacing[32],
-                top: Spacing[24],
-                zIndex: 20,
-                position: 'absolute'
-              }} source={arrowYellow} resizeMode={"contain"}/> : null}
-              <Spacer height={Spacing[12]} />
-              <Text type={'left-header'} style={{}} text="Catatan jurnal coaching" />
-              <Spacer height={Spacing[12]} />
-              <FlatList
-                ItemSeparatorComponent={()=><Spacer height={Spacing[24]} />}
-                data={coachingData}
-                ListEmptyComponent={()=>
-                  <EmptyList />
-                }
-                renderItem={({item, index})=> <CoachingJournalItemRender
+            ItemSeparatorComponent={()=> <VStack style={{backgroundColor: Colors.WHITE}}><Spacer height={Spacing[24]} /></VStack>}
+            data={coachingData}
+            ListEmptyComponent={()=>
+              <EmptyList />
+            }
+            renderItem={({item, index})=>
+              <VStack horizontal={Spacing[24]} style={{backgroundColor: Colors.WHITE}}>
+                <CoachingJournalItemRender
                   {...{item, index}}
                   onPressActivity={holdActivitiesId}
                   selectedActivities={selectedActivities}
                   onPressNote={goToNote}
                   onPressFeedback={goToFeedback}
                   onPressNoteFeedback={goToNoteFeedback}
-                />}
-                keyExtractor={item => item.date}
-                ListFooterComponent={
-                  coachingData.length === 0 ?
-                  null :
-                    <VStack vertical={Spacing[24]}>
-                      <ActivitiesTypeLegends />
-                    </VStack>
-                  }
-              />
-            </VStack>
-          </ScrollView>
+                />
+              </VStack>
+            }
+            keyExtractor={item => item.date}
+            ListHeaderComponent={
+              <VStack style={{backgroundColor: Colors.UNDERTONE_BLUE}}>
+                <BackNavigation goBack={goBack} />
+                <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]} >
+                  <Text type={'header'} style={{color: Colors.WHITE}} text="Coaching Journal" />
+                  <Spacer height={Spacing[24]} />
+                  <Text type={'body'} style={{textAlign: 'center', color: Colors.WHITE}}>
+                    Setiap journal entry yang kamu catat di iLEAD akan memberikan kesempatan bagi anggota tim kamu untuk memberikan <Text type={"label"} style={{color: Colors.WHITE}}>feedback</Text> kepadamu juga lho! Anggota tim bisa memberikan feedback untuk setiap journal entry yang kamu catat.
+                  </Text>
+                  <Spacer height={Spacing[32]} />
+                </VStack>
+                <VStack style={{backgroundColor: Colors.WHITE, borderTopStartRadius: Spacing[48], borderTopEndRadius: Spacing[48]}}>
+                  <NewButton onPress={newEntry} />
+                  { coachingData.length === 0 ? <FastImage style={{
+                    height: Spacing[96],
+                    width: Spacing[96],
+                    left: (dimensions.screenWidth / 2) + Spacing[32],
+                    top: Spacing[24],
+                    zIndex: 20,
+                    position: 'absolute'
+                  }} source={arrowYellow} resizeMode={"contain"}/> : null }
+                  <Spacer height={Spacing[42]} />
+                  <HStack horizontal={Spacing[24]}>
+                    <Text type={'left-header'} text="Catatan jurnal coaching" />
+                  </HStack>
+                  <Spacer height={Spacing[24]} />
+                </VStack>
+              </VStack>
+            }
+            ListFooterComponent={
+              coachingData.length === 0 ?
+                null :
+                <VStack vertical={Spacing[24]} style={{backgroundColor: Colors.WHITE}}>
+                  <ActivitiesTypeLegends />
+                </VStack>
+            }
+            onEndReached={onLoadMore}
+            onEndReachedThreshold={0.1}
+          />
         </SafeAreaView>
       </VStack>
     )
