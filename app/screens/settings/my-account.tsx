@@ -119,7 +119,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
         if (isEmailChange) {
           if (validateEmail(data.email)) {
             console.log("go to otp")
-            await authStore.resendOTP(userProfile.email)
+            await mainStore.resendOTP(userProfile.email, data.email)
             if (authStore.otp !== null) {
               // setIsError(false)
               goToVerifyOTP(data.email, data.nickname, data.photo )

@@ -36,6 +36,10 @@ export interface GetProfileResponse {
   data: ProfileModel[]
   token: string
 }
+export interface ResendOTPResponse {
+  "otp_hash": string
+  otp: number
+}
 
 export interface VerifyOTPResponse {
   isValid: boolean
@@ -65,6 +69,8 @@ export type UpdateProfileResult = { kind: "form-error"; response: ErrorFormRespo
 export type GetProfileResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetProfileResponse }  | GeneralApiProblem
 
 export type GetTeamMemberResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: ListProfileModel[] }  | GeneralApiProblem
+
+export type ResendOTPResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: ResendOTPResponse }  | GeneralApiProblem
 
 export type VerifyOTPResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: VerifyOTPResponse }  | GeneralApiProblem
 

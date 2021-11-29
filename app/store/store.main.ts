@@ -6,9 +6,14 @@ import ServiceStore from "./store.service"
 import { Api } from "@services/api"
 import { ProfileApi } from "@services/api/profile/profile-api"
 import { ErrorFormResponse } from "@services/api/auth/auth-api.types"
-import {PostUploadFilesResponse, TeamResponse, UpdateProfileResponse} from "@services/api/profile/profile-api.types"
+import {
+  PostUploadFilesResponse,
+  TeamResponse,
+  UpdateProfileResponse,
+  ResendOTPResponse
+} from "@services/api/profile/profile-api.types"
 import { ProfileUpdateForm } from "@screens/auth/create-profile"
-import AuthStore from "./store.auth";
+import AuthStore from "./store.auth"
 
 // CONFIGS
 
@@ -57,7 +62,6 @@ export type ProfileModel = {
   team3_id: string
   team3_name: string
 }
-
 
 export type ListProfileModel = {
   id: string
@@ -118,50 +122,49 @@ export default class MainStore {
     this.profileApi = new ProfileApi(this.api)
     this.teamResponse = null
     this.updatingProfile = {
-      userId: '',
-      fullName: '',
-      nickName: '',
-      email:'',
-      team1Id: '',
-      team2Id: '',
-      team3Id: ''
+      userId: "",
+      fullName: "",
+      nickName: "",
+      email: "",
+      team1Id: "",
+      team2Id: "",
+      team3Id: "",
     }
 
-    this.userProfile =  {
-      user_id: '',
-      user_fullname: '',
-      user_nickname: '',
-      user_email: '',
-      user_phone_number: '',
-      user_password: '',
-      user_team_1_id: '',
-      user_team_2_id: '',
-      user_team_3_id: '',
-      user_status: '',
+    this.userProfile = {
+      user_id: "",
+      user_fullname: "",
+      user_nickname: "",
+      user_email: "",
+      user_phone_number: "",
+      user_password: "",
+      user_team_1_id: "",
+      user_team_2_id: "",
+      user_team_3_id: "",
+      user_status: "",
       is_deleted: 0,
-      user_role: '',
+      user_role: "",
       user_is_verify: 0,
-      user_forgot_password_hash: '',
-      user_created_at: '',
-      user_updated_at: '',
+      user_forgot_password_hash: "",
+      user_created_at: "",
+      user_updated_at: "",
       user_forgot_pass: 0,
-      user_mood: '',
-      user_photo: '',
+      user_mood: "",
+      user_photo: "",
       user_is_allow_notification: 0,
       user_is_allow_reminder_notification: 0,
-      user_fcm_token: '',
-      team1_id: '',
-      team1_name: '',
-      team2_id: '',
-      team2_name: '',
-      team3_id: '',
-      team3_name: '',
+      user_fcm_token: "",
+      team1_id: "",
+      team1_name: "",
+      team2_id: "",
+      team2_name: "",
+      team3_id: "",
+      team3_name: "",
     }
 
-    this.newProfilePhoto = ''
+    this.newProfilePhoto = ""
 
-    makeAutoObservable(this);
-
+    makeAutoObservable(this)
   }
   // #endregion
 
@@ -172,12 +175,12 @@ export default class MainStore {
     this.errorMessage = data.message
   }
 
-  formReset () {
+  formReset() {
     this.errorCode = null
     this.errorMessage = null
   }
 
-  resetLoading(){
+  resetLoading() {
     this.isLoading = false
   }
 
@@ -224,7 +227,8 @@ export default class MainStore {
 
       if (response.kind === "form-error") {
         if (response.response.errorCode === 35) {
-          response.response.message = 'Alamat email yang kamu ganti sudah dimiliki akun lain. Kamu yakin mau pakai alamat yang ini?'
+          response.response.message =
+            "Alamat email yang kamu ganti sudah dimiliki akun lain. Kamu yakin mau pakai alamat yang ini?"
         }
         this.formError(response.response)
       }
@@ -297,35 +301,34 @@ export default class MainStore {
     this.errorMessage = e
   }
 
-  async getProfile(){
-     this.isLoading = true
-     try {
+  async getProfile() {
+    this.isLoading = true
+    try {
       const response = await this.profileApi.getProfile()
 
-       if(response.kind === 'unauthorized'){
-         await this.authStore.resetAuthStore()
-       }
+      if (response.kind === "unauthorized") {
+        await this.authStore.resetAuthStore()
+      }
 
-       if(response.kind === 'form-error'){
-         this.formError(response.response)
-       }
+      if (response.kind === "form-error") {
+        this.formError(response.response)
+      }
 
-       if(response.kind === 'ok'){
-         this.getProfileSuccess(response.response.data)
-       }
-
-     } catch (e) {
-       console.log(e)
-       this.updateProfileFailed(e)
-     } finally {
-       console.log('getProfile done')
-       this.isLoading = false
+      if (response.kind === "ok") {
+        this.getProfileSuccess(response.response.data)
+      }
+    } catch (e) {
+      console.log(e)
+      this.updateProfileFailed(e)
+    } finally {
+      console.log("getProfile done")
+      this.isLoading = false
     }
   }
 
   getProfileSuccess(data: ProfileModel) {
-    console.log('getProfileSuccess data', data)
-    this.userProfile =  {
+    console.log("getProfileSuccess data", data)
+    this.userProfile = {
       user_id: data.user_id,
       user_fullname: data.user_fullname,
       user_nickname: data.user_nickname,
@@ -361,34 +364,72 @@ export default class MainStore {
     this.errorMessage = e
   }
 
-  async getListUser(id: string){
+  async getListUser(id: string) {
     this.isLoading = true
     try {
-     const result = await this.profileApi.getTeamMember(id)
-     console.log('getListUser result', result)
+      const result = await this.profileApi.getTeamMember(id)
+      console.log("getListUser result", result)
 
-      if(result.kind === 'form-error'){
+      if (result.kind === "form-error") {
         this.formError(result.response)
       }
 
-      if(result.kind === 'ok'){
+      if (result.kind === "ok") {
         await this.listUserTeamSucceed(result.response)
       }
-
     } catch (e) {
       console.log(e)
       this.getListProfileFailed(e)
     } finally {
-      console.log('getListUser done')
+      console.log("getListUser done")
       this.isLoading = false
-   }
- }
+    }
+  }
 
- async listUserTeamSucceed (ListUser: ListProfileModel[]) {
-    console.log('journalSucceed', ListUser)
+  async listUserTeamSucceed(ListUser: ListProfileModel[]) {
+    console.log("journalSucceed", ListUser)
     this.listUserProfile = ListUser
     this.errorMessage = null
     this.isLoading = false
+  }
+
+  async resendOTP(oldEmail: string, email: string) {
+    console.log("resendOTP for main", oldEmail,email)
+    this.isLoading = true
+    try {
+      const response = await this.profileApi.resendOTP(oldEmail, email)
+
+      console.log(response)
+
+      if (response.kind === "form-error") {
+        console.log(response)
+
+        this.formError(response.response)
+      }
+
+      if (response.kind === "ok") {
+        // console.log(response.response.otp)
+        // console.log(response.response.otp_hash)
+
+        console.log(response)
+
+        this.resendOTPSuccess(response.response)
+      }
+    } catch (e) {
+      console.log("resend OTP error catch")
+      console.log(e)
+      this.resendOTPFailed(e)
+      this.isLoading = false
+    } finally {
+      console.log("resend OTP done")
+      this.isLoading = false
+    }
+  }
+
+  resendOTPSuccess(data: ResendOTPResponse) {
+    this.authStore.otpHash = data.otp_hash
+    this.authStore.otp = data.otp
+    console.log("resend otp up oke")
   }
 
   async verifyOTP(otpCode: string, otpHash: string, email: string) {
@@ -399,7 +440,6 @@ export default class MainStore {
       console.log(response)
 
       if (response.kind === "form-error") {
-
         this.formError(response.response)
       }
 
@@ -417,7 +457,6 @@ export default class MainStore {
     }
   }
 
-
   async checkEmail(email: string) {
     this.isLoading = true
     try {
@@ -431,11 +470,11 @@ export default class MainStore {
         if (!response.response.data.is_allow_to_use) {
           const errorCheckEmail: ErrorFormResponse = {
             errorCode: 99,
-            message: 'Alamat email yang kamu ganti sudah dimiliki akun lain. Kamu yakin mau pakai alamat yang ini?'
+            message:
+              "Alamat email yang kamu ganti sudah dimiliki akun lain. Kamu yakin mau pakai alamat yang ini?",
           }
           this.formError(errorCheckEmail)
         }
-
       }
     } catch (e) {
       console.log("checkEmail error")
@@ -447,12 +486,10 @@ export default class MainStore {
     }
   }
 
-
   checkEmailFailed(e: any) {
     this.setIsOTPVerified(false)
     this.errorMessage = e
   }
-
 
   verifyOTPFailed(e: any) {
     this.setIsOTPVerified(false)
@@ -460,6 +497,10 @@ export default class MainStore {
   }
 
   getListProfileFailed(e: any) {
+    this.errorMessage = e
+  }
+
+  resendOTPFailed(e: any) {
     this.errorMessage = e
   }
 

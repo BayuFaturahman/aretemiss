@@ -7,6 +7,7 @@ import {
   PostUpdateProfile,
   TeamListResult,
   UpdateProfileResult,
+  ResendOTPResult,
   VerifyOTPResult,
   CheckEmailResult
 } from "./profile-api.types";
@@ -136,6 +137,35 @@ export class ProfileApi {
 
       __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
+    }
+  }
+
+  async resendOTP(oldEmail: string, email: string): Promise<ResendOTPResult> {
+    try {
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.post("/user/resend-otp", {
+        action: "change-email",
+        email: oldEmail,
+        newEmail: email
+      })
+
+      if (response.status === 400) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data.data
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data" }
     }
   }
 
