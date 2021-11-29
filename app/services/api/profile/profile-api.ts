@@ -58,7 +58,7 @@ export class ProfileApi {
       console.log('updateProfile response', response.data)
       console.log('updateProfile response', response.status)
 
-      if(response.status === 400){
+      if(response.status === 400 || response.status === 500 ) {
         const res = response.data
         return { kind: "form-error", response: res }
       }

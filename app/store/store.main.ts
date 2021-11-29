@@ -230,6 +230,11 @@ export default class MainStore {
           response.response.message =
             "Alamat email yang kamu ganti sudah dimiliki akun lain. Kamu yakin mau pakai alamat yang ini?"
         }
+
+        if (response.response['code'] === 500) {
+          response.response.errorCode = 500
+        }
+
         this.formError(response.response)
       }
 

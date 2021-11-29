@@ -23,7 +23,7 @@ import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png"
 import { dimensions } from "@config/platform.config"
 import Modal from "react-native-modalbox"
 import smileYellow from "@assets/icons/coachingJournal/empty/smile-yellow.png"
-
+import angry from "@assets/icons/mood/angry.png"
 import Spinner from 'react-native-loading-spinner-overlay';
 
 import {launchImageLibrary, launchCamera, ImagePickerResponse, } from 'react-native-image-picker';
@@ -51,11 +51,14 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
   ({ navigation, route }) => {
     const { authStore, mainStore } = useStores()
 
-    const [isEmailValid, setIsEmailValid] = useState<boolean>(false)
     const [isModalVisible, setModalVisible] = useState<boolean>(false)
+    const [modalTitle, setModalTitle] = useState<string>('')
+    const [modalDesc, setModalDesc] = useState<string>('')
+    const [modalIcon, setModalIcon] = useState(smileYellow)
 
+    const [isEmailValid, setIsEmailValid] = useState<boolean>(false)
     const [emailErrorMessage, setEmailErrorMessage] = useState<string>('')
-
+    const [generalErrorMessage, setGeneralErrorMessage] = useState<string>('')
     const [isDisableEditBtn, setIsDisableEditBtn] = useState(true)
 
     const userProfile: ProfileUpdateForm = {
@@ -138,16 +141,33 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
             await mainStore.updateProfile(mainStore.userProfile.user_id, userProfile)
             if (mainStore.errorCode === null) {
               setIsDisableEditBtn(true);
+              setModalTitle('Hore!')
+              setModalDesc(`${route.params?.isPasswordChange ? `Password` : `Profil`} kamu sudah berhasil diganti.`)
+              setModalIcon(smileYellow)
+              
+
               await mainStore.getProfile();
               toggleModal()
             } else {
-              setIsEmailValid(false)
-              setEmailErrorMessage(mainStore.errorMessage)
+              setModalTitle('Oh no! :(')
+              setModalDesc(`Perubahannya gagal diproses.\nCoba lagi ya!`)
+              setModalIcon(angry)
+
+              console.log('error code ', mainStore.errorCode)
+              if (mainStore.errorCode === 500) {
+                setGeneralErrorMessage(mainStore.errorMessage)
+              } else {
+                setIsEmailValid(false)
+                setEmailErrorMessage(mainStore.errorMessage)
+                setGeneralErrorMessage(null)
+              }
+              
+              toggleModal()
             }
           }
         }
 
-    }, [userProfile, profilePicture, mainStore.errorCode, isDisableEditBtn])
+    }, [userProfile, profilePicture, mainStore.errorCode, isDisableEditBtn, mainStore.updateProfileSuccess, mainStore.updateProfileFailed])
 
     const submitEditProfile = useCallback(async (data: ProfileUpdateForm) => {
       console.log("Data to be submitted", userProfile)
@@ -416,6 +436,11 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                             value={"******"}
                             onPressChangeButton={goToChangePassword}
                           />
+                           {generalErrorMessage !== null && (
+                            <Text type={"warning"} style={{ textAlign: "center" }}>
+                              {generalErrorMessage}
+                            </Text>
+                          )}
                           {/* <TextField
                     // value={password}
                     label="No. HP:"
@@ -440,7 +465,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
               </ScrollView>
             </SafeAreaView>
             <Spinner
-              visible={mainStore.isLoading || authStore.isLoading}
+              visible={mainStore.isLoading}
               textContent={'Memuat...'}
               // textStyle={styles.spinnerTextStyle}
             />
@@ -472,13 +497,13 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                   <Text
                     type={"body-bold"}
                     style={{ fontSize: Spacing[18], textAlign: "center" }}
-                    text={"Hore!"}
+                    text={modalTitle}
                   />
                   <Spacer height={Spacing[24]} />
                   <Text
                     type={"body"}
                     style={{ textAlign: "center" }}
-                    text={`${route.params?.isPasswordChange ? `Password` : `Profil`} kamu sudah berhasil diganti.`}
+                    text={modalDesc}
                   />
                   <Spacer height={Spacing[20]} />
                   <HStack bottom={Spacing[32]}>
@@ -488,7 +513,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                         height: Spacing[64],
                         width: Spacing[64],
                       }}
-                      source={smileYellow}
+                      source={modalIcon}
                       resizeMode={"contain"}
                     />
                     <Spacer />
