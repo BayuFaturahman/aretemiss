@@ -13,14 +13,14 @@ export class CoachingApi {
     this.api = api
   }
 
-  async getJournalList(page: number): Promise<JournalListResult> {
+  async getJournalList(page: number, limit: number): Promise<JournalListResult> {
     try {
       console.log('request getJournalList')
 
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.get(
         "/journal", {
-          limit: 5,
+          limit: limit,
           page: page
         })
         console.log('getJournalList response', response.data)

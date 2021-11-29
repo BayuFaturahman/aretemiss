@@ -7,7 +7,7 @@ import notFeedbackIcon from "@assets/icons/coachingJournal/note-feedback.png";
 import Spacer from "@components/spacer";
 import {Text} from "@components";
 import notIcon from "@assets/icons/coachingJournal/note.png";
-import React, {useMemo} from "react";
+import React from "react";
 import {CoachingJournalItem} from "@screens/coaching-journal/coaching-journal.type";
 
 type CoachingJournalItemRenderProps = {
