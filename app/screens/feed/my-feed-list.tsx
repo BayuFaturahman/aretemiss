@@ -145,10 +145,12 @@ const MyFeedList: FC<StackScreenProps<NavigatorParamList, "myFeedList">> = obser
     }, 500)
 
     useEffect(() => {
+      console.log('Use effect tanpa []')
       loadData()
     },[])
 
     const onRefresh = React.useCallback(async() => {
+      console.log('ON REFRESH')
       await loadData()
     }, []);
 
@@ -156,15 +158,13 @@ const MyFeedList: FC<StackScreenProps<NavigatorParamList, "myFeedList">> = obser
     useEffect(() => {
       console.log('Use effect dengan []')
       setListFeeds(feedStore.listMyFeed)
-    }, [setListFeeds, listFeeds,feedStore.getListMyFeedsSuccess])
+    }, [setListFeeds, listFeeds, feedStore.getListMyFeedsSuccess, feedStore.listMyFeed])
 
     const deletePost = React.useCallback(async(id) => {
       console.log('delete post')
       console.log(id)
       toggleModalDeletePost()
     }, []);
-
-    
     const getListFeeds = useCallback(async () => {
       await feedStore.getListMyFeeds(mainStore.userProfile.user_id)
     }, [])
@@ -222,6 +222,13 @@ const MyFeedList: FC<StackScreenProps<NavigatorParamList, "myFeedList">> = obser
             keyExtractor={item => item.id}
           />
         </SafeAreaView>
+        <FeedButton
+          goToNewPost={goToNewPost}
+          goToMyFeed={goToMyfeed}
+          goToCommentList={goToCommentList}
+          leftCounter={10}
+          rightCounter={20}
+        />
         <ModalReact
           visible={modal}
           transparent={true}
