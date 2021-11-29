@@ -215,11 +215,19 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       }
     }, [coachingStore.listJournal])
 
+    useEffect(()=> {
+      if(feedStore.listFeeds){
+        setFeedData(feedStore.listFeeds[0])
+      }
+    }, [feedStore.listFeeds])
+
     const loadData = debounce( async () => {
       await getUserProfile()
       await getJournalList()
       await getListFeed()
-      setFeedData(feedStore.listFeeds[0])
+      if(feedStore.listFeeds){
+        setFeedData(feedStore.listFeeds[0])
+      }
     }, 500)
 
     useEffect(()=> {
