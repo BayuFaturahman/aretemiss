@@ -11,7 +11,7 @@ import { CreatePostType, FeedItemType } from "@screens/feed/feed.type"
 
 export default class FeedStore {
   // #region PROPERTIES
-
+  
   serviceStore: ServiceStore
   api: Api
   isLoading: boolean
@@ -23,6 +23,7 @@ export default class FeedStore {
 
   feedApi: FeedApi
   listFeeds: FeedItemType[]
+  listMyFeed: FeedItemType[]
 
   constructor(serviceStore: ServiceStore, api: Api) {
     this.serviceStore = serviceStore
@@ -33,6 +34,7 @@ export default class FeedStore {
     this.errorMessage = null
 
     this.listFeeds = []
+    this.listMyFeed = []
     this.feedApi = new FeedApi(this.api)
   }
 
@@ -115,6 +117,61 @@ export default class FeedStore {
     this.listFeeds = []
     console.log("list feed: ", this.listFeeds)
   }
+
+
+  async getListMyFeeds(id) {
+    this.isLoading = true
+    try {
+      const response = await this.feedApi.getListMyFeed(id)
+
+      if (response.kind === "form-error") {
+        this.formError(response.response)
+      }
+
+      if (response.kind === "ok") {
+        this.getListMyFeedsSuccess(response.response.data)
+      }
+    } catch (e) {
+      console.log(e)
+      this.setErrorMessage(e)
+    } finally {
+      console.log("getListMyFeeds done")
+      this.isLoading = false
+    }
+  }
+
+  getListMyFeedsSuccess(data: FeedApiModel[]) {
+    console.log("getListMyFeedsSuccess data", data)
+    const tempListMyFeeds: FeedItemType[] = []
+    data.forEach(post => {
+      tempListMyFeeds.push({
+        id: post.feed_id,
+        description: post.feed_description,
+        imageUrl: post.feed_images_url,
+        author: {
+          id: post.feed_author_id,
+          nickname: post.feed_author_nickname,
+          title: '',
+          photo: post.feed_author_photo,
+        },
+        commentCount: post.feed_comment_count,
+        isNew: true,
+        createdAt: post.feed_created_at,
+        updatedAt: post.feed_updated_at,
+        isDeleted: (post.feed_is_deleted === 1),
+        deletedAt: post.feed_deleted_at
+      })
+    })
+    
+    this.listMyFeed = tempListMyFeeds
+    console.log("list my feed: ", this.listMyFeed)
+  }
+
+  clearListMyFeed() {
+    this.listMyFeed = []
+    console.log("list MY feed: ", this.listMyFeed)
+  }
+
 
   async uploadImage(formData: FormData) {
     console.log("Upload Photo")
