@@ -43,7 +43,7 @@ export interface ForgotPasswordResponse {
   }
 }
 export interface ResendOTPResponse {
-  otp_hash: string
+  "otp_hash": string
   otp: number
 }
 
