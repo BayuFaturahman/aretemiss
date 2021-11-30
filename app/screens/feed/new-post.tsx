@@ -72,9 +72,13 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
   const maxWidthImage = 1024
   const maxHeightImage = 1024
 
+  const [description, setDescription] = useState<string>('')
   const [selectedPicture, setSelectedPicture] = useState([])
-  const [isAddPictDisabled, setIsAddPictDisabled] = useState(false)
-  const [selectionPictLimit, setSelectionPictLimit] = useState(4)
+  const [uploadedPicture, setUploadedPicture] = useState([])
+  const [isAddPictDisabled, setIsAddPictDisabled] = useState<boolean>(false)
+  const [selectionPictLimit, setSelectionPictLimit] = useState<number>(4)
+  const [errorMessage, setErrorMessage] = useState<string>('')
+
   // const onRefresh = React.useCallback(async() => {
   //   setCoachingData([])
   // }, []);
@@ -100,6 +104,12 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
     const tempSelected = [...selectedPicture];
     tempSelected.splice(id, 1);
     setSelectedPicture(tempSelected)
+
+
+    const tempUploaded = [...uploadedPicture];
+    tempUploaded.splice(id, 1);
+    setUploadedPicture(tempUploaded)
+    
   }
  
   const cameraHandler = useCallback(async (response: ImagePickerResponse) => {
@@ -121,22 +131,25 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
           size: response.assets[id].fileSize,
         })
       })
-      console.log("RESPONSE ASET: ", response.assets)
+      // console.log("RESPONSE ASET: ", response.assets)
 
       const responseUpload = await feedStore.uploadImage(formData)
       console.log('responseUpload ',responseUpload)
+      const listResponseUpload = responseUpload.data.urls.split(';')
+      console.log('listResponseUpload ', listResponseUpload)
 
       if (feedStore.errorCode === null  && responseUpload !== undefined) {
         console.log('upload photo OK.')
         setSelectedPicture((selectedPicture) => [...selectedPicture, ...response.assets])
+        setUploadedPicture((uploadedPicture) => [...uploadedPicture, ...listResponseUpload])
       }
       
       actionSheetRef.current?.setModalVisible(false)
     } else {
       console.log("cancel")
     }
-  }, [])
-
+  }, [selectedPicture, setSelectedPicture, uploadedPicture, setUploadedPicture])
+  
   const openGallery = useCallback(() => {
     launchImageLibrary(
       {
@@ -176,7 +189,7 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
     }
 
     console.log("selectedPicture.length ", selectedPicture.length)
-    let maxSelectPict = 4 - selectedPicture.length
+    const maxSelectPict = 4 - selectedPicture.length
     // console.log('maxSelectPict ', maxSelectPict)
     setSelectionPictLimit(maxSelectPict)
     // console.log("selected pict: ", selectedPicture)
@@ -188,7 +201,23 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
     selectionPictLimit,
   ])
 
-  
+  const submitNewPost = useCallback(async () => {
+    const imagesUrl = uploadedPicture.join(';')
+    console.log('imagesUrl ', imagesUrl)
+
+    await feedStore.createPost({ 
+      "description": description,
+      "images_url": imagesUrl
+    });
+
+    if (feedStore.errorCode === null) {
+      navigation.navigate("feedTimelineMain")
+    } else {
+      setErrorMessage(feedStore.errorMessage)
+      console.log(feedStore.errorCode, ' : ', feedStore.errorMessage )
+    }
+  }, [description, setDescription, feedStore.errorCode, selectedPicture, uploadedPicture, setUploadedPicture])
+
 
   return (
     <VStack
@@ -224,10 +253,15 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
                 secureTextEntry={false}
                 isTextArea={true}
                 placeholder={"Mau cerita tentang apa nih?"}
-                onChangeText={() => console.log("alala")}
+                onChangeText={(value) => setDescription(value)}
                 charCounter={false}
+                value={description}
               />
+              
             </VStack>
+            <Text type={"warning"} style={{ textAlign: "center" }}>
+                {errorMessage}
+            </Text>
             <HStack>
               <HStack>
                 <TouchableOpacity
@@ -273,7 +307,7 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
                 text={"Update"}
                 style={updateButtonStyle}
                 textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
-                onPress={() => console.log("lele")}
+                onPress={submitNewPost}
               />
             </HStack>
             <HStack>

@@ -64,7 +64,7 @@ export const FeedItemComponent = ({data, goToFeed = ()=> null, goToNewPost = ()=
     console.log(imageList)
   }, [])
 
-  if(data === null){
+  if(data === null || data === undefined){
     return(
       <VStack>
         <Text type={'left-header'} style={{fontSize: Spacing[16]}} underlineWidth={Spacing[72]} text="Feed." />
@@ -82,19 +82,19 @@ export const FeedItemComponent = ({data, goToFeed = ()=> null, goToNewPost = ()=
     <VStack>
       <TouchableOpacity onPress={goToFeed}>
         <Text type={'left-header'} style={{fontSize: Spacing[16]}} underlineWidth={Spacing[72]} text="Feed." />
-        <FeedPost data={data} key={'feed-post-01'} onImageTap={onImageFeedTap}/>
-        <HStack>
-          <Spacer/>
-          {/* <TouchableOpacity onPress={goToFeed}> */}
-            <FastImage style={{
-              height: Spacing[24],
-              width: Spacing[24],
-              borderRadius: Spacing[8]
-            }} source={downArrow} resizeMode={"contain"}/>
-          {/* </TouchableOpacity> */}
-          <Spacer/>
-        </HStack>
       </TouchableOpacity>
+      <FeedPost data={data} key={data.id} onImageTap={onImageFeedTap}/>
+      <HStack>
+        <Spacer/>
+        <TouchableOpacity onPress={goToFeed}>
+          <FastImage style={{
+            height: Spacing[24],
+            width: Spacing[24],
+            borderRadius: Spacing[8]
+          }} source={downArrow} resizeMode={"contain"}/>
+        </TouchableOpacity>
+        <Spacer/>
+      </HStack>
     </VStack>
   )
 

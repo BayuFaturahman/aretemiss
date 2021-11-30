@@ -79,7 +79,11 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
   }
 
   const coverImage = () => {
-    // console.log('list image: ', listImage, ' total: ', listImage.length)
+    console.log('list image: ', listImage, ' total: ', listImage.length)
+    if (listImage.length === 0) {
+      return null
+    }
+
     if (listImage.length === 2) {
       return (
         <HStack
@@ -143,6 +147,32 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
     }
   }
 
+  const getCreatedTime = () => {
+    var currDate = new Date()
+    var createdDate = new Date(data.createdAt)
+    
+    var timeDiff = currDate.getTime() - createdDate.getTime() 
+    
+    var dayDiff = timeDiff/ (1000 * 3600 * 24);
+    var hrsDiff = Math.floor((timeDiff % 86400000) / 3600000); // hours
+    var minDiff = Math.floor(((timeDiff % 86400000) % 3600000) / 60000) //min
+
+    if (dayDiff > 1 ) {
+      return Math.floor(dayDiff) + ' days'
+    } 
+    
+    if (hrsDiff > 1) {
+      return hrsDiff + ' hours'
+    } 
+
+    if (minDiff >= 0) {
+      return hrsDiff + ' mins'
+    }
+  
+    // return dayDiff
+  }
+
+
   return (
     <Fragment>
       <HStack>
@@ -159,7 +189,7 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
           type={"body"}
           style={{ fontSize: Spacing[12] }}
           underlineWidth={Spacing[72]}
-          text="40min ago"
+          text={`${getCreatedTime()} ago`}
         />
       </HStack>
 

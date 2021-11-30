@@ -45,7 +45,9 @@ export const CoachingJournalComponent = ({
 
   return(
     <>
-      <Text type={'left-header'} style={{fontSize: Spacing[16]}} underlineWidth={Spacing[72]} text="Coaching Journal." />
+      <TouchableOpacity onPress={goToCoaching}>
+        <Text type={'left-header'} style={{fontSize: Spacing[16]}} underlineWidth={Spacing[72]} text="Coaching Journal." />
+      </TouchableOpacity>
       <Spacer height={Spacing[8]} />
       <CoachingJournalItemRender
         item={data}

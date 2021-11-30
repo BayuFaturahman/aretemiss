@@ -47,5 +47,22 @@ export interface PostUploadFeedImagesResponse {
   }
 }
 
+export interface CreatePostResponse {
+  message: string
+  token: string
+  data: {
+    feed: {
+      "id": string
+      "isDeleted": boolean
+      "description": string
+      "imagesUrl": string
+      "authorId": string
+      "feed_updated_at": string
+      "feed_created_at": string
+    }
+  }
+}
+
 export type GetListFeedsResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListFeedsResponse }  | GeneralApiProblem
-export type PostUploadFeedImagesResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: PostUploadFeedPhotoResponse }  | GeneralApiProblem
+export type PostUploadFeedImagesResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: PostUploadFeedImagesResponse }  | GeneralApiProblem
+export type CreatePostResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreatePostResponse }  | GeneralApiProblem

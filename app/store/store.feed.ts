@@ -6,7 +6,7 @@ import ServiceStore from "./store.service"
 import { Api } from "@services/api"
 import { FeedApi } from "@services/api/feed/feed-api"
 import { ErrorFormResponse, FeedApiModel } from "@services/api/feed/feed-api.types"
-import { FeedItemType } from "@screens/feed/feed.type"
+import { CreatePostType, FeedItemType } from "@screens/feed/feed.type"
 
 
 export default class FeedStore {
@@ -60,8 +60,9 @@ export default class FeedStore {
   getListFeedsSuccess(data: FeedApiModel[]) {
     console.log("getListFeedsSuccess data", data)
     this.listFeeds = []
+    const tempListFeeds: FeedItemType[] = []
     data.forEach(post => {
-      this.listFeeds.push({
+      tempListFeeds.push({
         id: post.feed_id,
         description: post.feed_description,
         imageUrl: post.feed_images_url,
@@ -80,7 +81,34 @@ export default class FeedStore {
       })
     })
     
+    this.listFeeds = tempListFeeds
     console.log("list feed: ", this.listFeeds)
+  }
+
+  async createPost(data: CreatePostType) {
+    console.log('createPost with body request',data)
+    this.isLoading = true
+    try {
+      const result = await this.feedApi.createPost(data)
+
+      console.log('result create Post: ', result)
+      if (result.kind === "ok") {
+        this.refreshData = true
+      } else if (result.kind === 'form-error'){
+        this.formError(result.response)
+      // } else if () {
+
+      } else {
+        __DEV__ && console.tron.log(result.kind)
+      }
+    } catch (e) {
+      console.log("createPost error")
+      console.log(e)
+      this.setErrorMessage(e)
+    } finally {
+      console.log("createPost done")
+      this.isLoading = false
+    }
   }
 
   clearListFeed() {
@@ -111,6 +139,11 @@ export default class FeedStore {
       console.log("Upload Feed Image done")
       this.isLoading = false
     }
+  }
+
+  formReset() {
+    this.errorCode = null
+    this.errorMessage = null
   }
 
   formError(data: ErrorFormResponse) {
