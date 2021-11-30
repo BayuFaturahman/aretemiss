@@ -319,19 +319,22 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
       } else {
         setError("")
         setJournalEntryForm(data)
-        toggleEncouragementModal()
+        console.log('journal entry to be passed ', data)
+        
+        goToFeedback()
+        // toggleEncouragementModal()
       }
-    },[])
+    },[setJournalEntryForm, journalEntryForm])
 
     const goToFeedback = () => {
       journalEntryForm.type = 'coaching' 
       console.log('journalEntryForm ', journalEntryForm)
-      if(!isDetail){
+      // if(!isDetail){
         navigation.navigate("fillFeedback",{
           data: journalEntryForm,
           isDetail: false
         })
-      }
+      // }
     }
 
     const ActivityTypeSelector = ({onActivityPress = (item) => setActivity(item), selectedActivity = 'weekly_coaching', isError = false}) => {

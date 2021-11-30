@@ -99,6 +99,18 @@ export function Text(props: TextProps) {
     )
   }
 
+  if(props.type === 'left-label'){
+    return(
+      <VStack>
+        <ReactNativeText {...rest} style={[style, presets.bold, { fontSize: Spacing[12], textAlign: 'center', lineHeight: Spacing[20], zIndex: 100, top: Spacing[10]} ,styleOverride ]}>
+          {content}
+        </ReactNativeText>
+        <View style={{height: Spacing[6], backgroundColor: Colors.MAIN_RED, width: underlineWidth || Spacing[42], marginLeft: 'auto', marginRight: 'auto'}}></View>
+        
+      </VStack>
+    )
+  }
+
   if(props.type === 'button'){
     return(
       <ReactNativeText {...rest} style={[style, presets.bold, {fontSize: Spacing[18]} ,styleOverride ]}>
