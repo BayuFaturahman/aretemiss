@@ -7,7 +7,7 @@ import notFeedbackIcon from "@assets/icons/coachingJournal/note-feedback.png";
 import Spacer from "@components/spacer";
 import {Text} from "@components";
 import notIcon from "@assets/icons/coachingJournal/note.png";
-import React, {useMemo} from "react";
+import React from "react";
 import {CoachingJournalItem} from "@screens/coaching-journal/coaching-journal.type";
 
 type CoachingJournalItemRenderProps = {
@@ -108,11 +108,45 @@ export const CoachingJournalItemRender = (
             // }
           }
 
-          const renderContent = useMemo(()=>{
-            if(selectedActivities === activitiesItem.id){
-              return(renderButtonTagged(activitiesItem.isTagged, activitiesItem.id, activitiesItem.coach_id))
-            }else{
-              return(
+          // const renderContent = useMemo(()=>{
+          //   if(selectedActivities === activitiesItem.id){
+          //     return(renderButtonTagged(activitiesItem.isTagged, activitiesItem.id, activitiesItem.coach_id))
+          //   }else{
+          //     return(
+          //       <TouchableOpacity key={activitiesItem.jl_id} onPress={()=>{onPressActivity(activitiesItem.id)}}>
+          //         <HStack horizontal={Spacing[8]} style={{maxWidth: dimensions.screenWidth - Spacing[144], minHeight:Spacing[64]}}>
+          //           <View style={{height: Spacing[16], width: Spacing[16], backgroundColor: statusColor, borderRadius: Spacing[128]}} />
+          //           <Spacer width={Spacing[12]}/>
+          //           <VStack>
+          //             <Text type={'body'} style={{}} numberOfLines={1} >
+          //               {activitiesItem.is_coachee ?
+          //                 <VStack style={{backgroundColor: Colors.SOFT_GREEN, paddingHorizontal: Spacing[8], alignItems: 'center', justifyContent: 'center', borderRadius: Spacing[48], maxWidth: Spacing[64]}}>
+          //                   <Text type={'body'} text={activitiesItem.title} numberOfLines={1} />
+          //                 </VStack>
+          //                 : <Text type={'body'} text={activitiesItem.title} numberOfLines={1} /> }
+          //             </Text>
+          //             {activitiesItem.coach_fullname ?
+          //               <Text type={'body-bold'} style={{color: statusColor, fontSize: Spacing[12]}} numberOfLines={1} >
+          //                 {activitiesItem.is_coachee ? `Coached by ` : 'You Coached '}
+          //                 {activitiesItem.is_coachee ? <Text type={'body'} style={{color: Colors.UNDERTONE_BLUE}}>
+          //                   {`${activitiesItem.coach_fullname}`}
+          //                 </Text> :
+          //                   <Text type={'body'} style={{color: Colors.UNDERTONE_BLUE}}>
+          //                     {`${activitiesItem.learner_fullname}`}
+          //                   </Text>
+          //                 }
+          //               </Text> : null}
+          //           </VStack>
+          //         </HStack>
+          //       </TouchableOpacity>
+          //     )
+          //   }
+          // },[selectedActivities, item, index])
+
+          return(
+            <VStack style={[Layout.widthFull,{minWidth: dimensions.screenWidth - Spacing[72]}]}>
+              {/* {renderContent} */}
+              {selectedActivities === activitiesItem.id ? renderButtonTagged(activitiesItem.isTagged, activitiesItem.id, activitiesItem.coach_id) :
                 <TouchableOpacity key={activitiesItem.jl_id} onPress={()=>{onPressActivity(activitiesItem.id)}}>
                   <HStack horizontal={Spacing[8]} style={{maxWidth: dimensions.screenWidth - Spacing[144], minHeight:Spacing[64]}}>
                     <View style={{height: Spacing[16], width: Spacing[16], backgroundColor: statusColor, borderRadius: Spacing[128]}} />
@@ -129,8 +163,8 @@ export const CoachingJournalItemRender = (
                         <Text type={'body-bold'} style={{color: statusColor, fontSize: Spacing[12]}} numberOfLines={1} >
                           {activitiesItem.is_coachee ? `Coached by ` : 'You Coached '}
                           {activitiesItem.is_coachee ? <Text type={'body'} style={{color: Colors.UNDERTONE_BLUE}}>
-                            {`${activitiesItem.coach_fullname}`}
-                          </Text> :
+                              {`${activitiesItem.coach_fullname}`}
+                            </Text> :
                             <Text type={'body'} style={{color: Colors.UNDERTONE_BLUE}}>
                               {`${activitiesItem.learner_fullname}`}
                             </Text>
@@ -139,13 +173,7 @@ export const CoachingJournalItemRender = (
                     </VStack>
                   </HStack>
                 </TouchableOpacity>
-              )
-            }
-          },[selectedActivities, item, index])
-
-          return(
-            <VStack style={[Layout.widthFull,{minWidth: dimensions.screenWidth - Spacing[72]}]}>
-              {renderContent}
+              }
               <View style={{borderBottomWidth: activitiesIndex + 1 === item.activities.length ? 0 : Spacing[1], borderColor: Colors.MAIN_BLUE, paddingTop: Spacing[2], maxWidth: dimensions.screenWidth - Spacing[128]}}/>
             </VStack>
           )

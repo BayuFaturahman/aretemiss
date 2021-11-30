@@ -27,8 +27,8 @@ export default class RootStore {
     this.api = api
 
     this.serviceStore = new ServiceStore(api);
-    this.mainStore = new MainStore(this.serviceStore, this.api);
-    this.authStore = new AuthStore(this.serviceStore, this.mainStore, this.api);
+    this.authStore = new AuthStore(this.serviceStore, this.api);
+    this.mainStore = new MainStore(this.serviceStore, this.authStore, this.api);
     this.coachingStore = new CoachingStore(this.serviceStore, this.mainStore, this.api);
     this.feedStore = new FeedStore(this.serviceStore, this.api);
     this.notificationStore = new NotificationStore(this.api)

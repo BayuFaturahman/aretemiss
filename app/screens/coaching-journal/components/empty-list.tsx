@@ -11,7 +11,7 @@ import surprissedPurple from "@assets/icons/coachingJournal/empty/surprised-purp
 
 export const EmptyList = ({}) => {
   return(
-    <VStack horizontal={Spacing[64]} top={Spacing[24]} style={Layout.widthFull}>
+    <VStack horizontal={Spacing[64]} top={Spacing[24]} style={[Layout.widthFull, {backgroundColor: Colors.WHITE}]}>
       <HStack style={{left: -Spacing[24]}}>
         <Text type={'body'} style={{textAlign: 'left'}} text={`Yuk mulai isi catatan jurnal \ncoaching-mu!`} />
         <Spacer width={Spacing[8]} />

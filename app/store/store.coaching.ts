@@ -187,10 +187,10 @@ export default class CoachingStore {
     makeAutoObservable(this);
   }
 
-  async getJournal(){
+  async getJournal(page = 1, limit = 5){
     this.isLoading = true
     try {
-      const result = await this.coachingApi.getJournalList()
+      const result = await this.coachingApi.getJournalList(page, limit)
       if (result.kind === "ok") {
         console.log('result.response.journal', result.response)
         await this.journalSucceed(result.response.journal)
@@ -319,9 +319,18 @@ export default class CoachingStore {
     this.isLoading = false
   }
 
+  resetJournalList () {
+    this.listJournal = []
+    this.formErrorCode = null
+    this.isLoading = false
+  }
+
   async journalSucceed (journal: JournalModel[]) {
     console.log('journalSucceed', journal)
-    this.listJournal = journal
+    this.listJournal = [
+      ...this.listJournal,
+      ...(journal ?? [])
+    ]
     this.formErrorCode = null
     this.isLoading = false
   }

@@ -15,10 +15,10 @@ import { FeedItemType } from "@screens/feed/feed.type";
 
 
 export const EmptyList = ({
-                            navigateTo = () => null,
-                            imageSource = sick,
-                            buttonLabel = 'Kembali'
-                          }) => {
+    navigateTo = () => null,
+    imageSource = sick,
+    buttonLabel = 'Kembali'
+  }) => {
   return(
     <VStack horizontal={Spacing[24]} top={Spacing[24]} style={Layout.widthFull}>
       <VStack>
@@ -82,7 +82,7 @@ export const FeedItemComponent = ({data, goToFeed = ()=> null, goToNewPost = ()=
     <VStack>
       <TouchableOpacity onPress={goToFeed}>
         <Text type={'left-header'} style={{fontSize: Spacing[16]}} underlineWidth={Spacing[72]} text="Feed." />
-        <FeedPost data={data} key={data.id} onImageTap={onImageFeedTap}/>
+        <FeedPost data={data} key={'feed-post-01'} onImageTap={onImageFeedTap}/>
         <HStack>
           <Spacer/>
           {/* <TouchableOpacity onPress={goToFeed}> */}

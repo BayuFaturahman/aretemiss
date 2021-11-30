@@ -1,5 +1,5 @@
 import React, {FC, useCallback, useEffect, useState,} from "react"
-import {FlatList, RefreshControl, SafeAreaView, TouchableOpacity, View} from "react-native"
+import {ActivityIndicator, FlatList, RefreshControl, SafeAreaView, View} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {
@@ -97,15 +97,23 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
   ({ navigation }) => {
 
     const [notificationsData, setNotificationsData] = useState<Array<NotificationItem>>([]);
-    // const [notificationsData, setNotificationsData] = useState<Array<NotificationItemType>>([]);
 
     const {notificationStore, coachingStore, mainStore} = useStores()
 
-
     const goBack = () => navigation.goBack()
+
+    const [currentPage, setCurrentPage] = useState<number>(2);
+
+    const onLoadMore = React.useCallback(async () => {
+      console.log('load more journal')
+      await notificationStore.getListNotifications(currentPage)
+      setCurrentPage(currentPage + 1)
+    }, [currentPage]);
 
     const onRefresh = React.useCallback(async() => {
       setNotificationsData([])
+      setCurrentPage(2)
+      notificationStore.clearListNotifications()
       await notificationStore.getListNotifications()
     }, []);
 
@@ -145,112 +153,124 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
     return (
       <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: 'center'}}>
         <SafeAreaView style={Layout.flex}>
-          <BackNavigation goBack={goBack} />
-          <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
-            <Spacer height={Spacing[24]} />
-            <Text type={'header'} style={{color: Colors.WHITE, fontSize: Spacing[16]}} text="Notifications" />
-            <Spacer height={Spacing[32]} />
-          </VStack>
-          <VStack top={Spacing[12]} horizontal={Spacing[24]} style={[Layout.heightFull, {flex: 1, backgroundColor: Colors.WHITE, borderTopStartRadius: Spacing[48], borderTopEndRadius: Spacing[48]}]}>
-            <Spacer height={Spacing[12]} />
-            <FlatList
-              refreshControl={
-                <RefreshControl
-                  refreshing={notificationStore.isLoading}
-                  onRefresh={onRefresh}
-                  tintColor={Colors.MAIN_RED}
-                />
-              }
-              showsVerticalScrollIndicator={false}
-              ItemSeparatorComponent={()=><Spacer height={Spacing[24]} />}
-              data={notificationsData}
-              ListEmptyComponent={()=>
-                <EmptyList navigateTo={goBack} />
-              }
-              renderItem={({item, index})=> {
-                return(
-                  <HStack vertical={Spacing[2]} horizontal={Spacing[8]}>
-                    <VStack>
-                      {/* {item.isNew === true ? <View style={{backgroundColor: Colors.MAIN_RED, height: Spacing[12], width: Spacing[12], borderRadius: 999, position: 'absolute', zIndex: 100, left: -Spacing[4]}} /> : null} */}
-                      <Spacer height={Spacing[4]}/>
-                      <FastImage style={{
-                        height: Spacing[48],
-                        width: Spacing[48],
-                        borderRadius: Spacing[8]
-                      }} source={item.authorPhoto === '' ? nullProfileIcon : {uri: item.authorPhoto}} resizeMode={"cover"}/>
-                      <Spacer/>
-                    </VStack>
-                    <HStack left={Spacing[12]} style={{maxWidth: dimensions.screenWidth - Spacing["128"]}}>
-                      {item.type === 'request_feedback' ?
-                        <VStack>
-                          <Text type={'body'}>
-                            <Text type={'body-bold'} text={`${item.content} `} />
-                          </Text>
-                          <Spacer height={Spacing[4]} />
-                          <VStack right={Spacing[48]}>
-                            <Button
-                              type={"primary"}
-                              text={"Isi feedback untuknya."}
-                              style={{height:Spacing[32], backgroundColor: Colors.MAIN_RED}}
-                              textStyle={{fontSize: Spacing[14], lineHeight: Spacing[18]}}
-                              onPress={()=>{
-                                goToNoteFeedback(item.authorId, item.data.journalId)}
-                              }
-                            />
-                          </VStack>
-                        </VStack> : null }
-                      {item.type === 'submitted_feedback' ?
-                        <VStack>
-                          <Text type={'body'}>
-                            <Text type={'body-bold'} text={`${item.content} `} />
-                          </Text>
-                          <Spacer height={Spacing[4]} />
-                          <VStack right={Spacing[48]}>
-                             <Button
-                              type={"primary"}
-                              text={"Lihat feedback di sini."}
-                              style={{height:Spacing[32]}}
-                              textStyle={{fontSize: Spacing[14], lineHeight: Spacing[18]}}
-                              onPress={()=>{
-                                goToFeedback(item.data.journalId)}
-                              }
-                             />
-                          </VStack>
-                        </VStack> : null }
-                      {item.type === 'tagged' ?
-                        <VStack>
-                          <Text type={'body'}>
-                            <Text type={'body-bold'} text={`${item.user.name} `} />
-                            telah menandaimu dalam sesi
-                            <Text type={'body-bold'} text={` ${item.session}`} />
-                          </Text>
-                          <Spacer height={Spacing[4]} />
-                          <VStack right={Spacing[48]}>
-                            <Button
-                              type={"primary"}
-                              text={"Isi feedback untuknya."}
-                              style={{height:Spacing[32], backgroundColor: Colors.MAIN_RED}}
-                              textStyle={{fontSize: Spacing[14], lineHeight: Spacing[18]}}
-                            />
-                          </VStack>
-                        </VStack> : null }
-                      {item.type === 'liked' ?
-                        <VStack>
-                          <Text type={'body-bold'}>
-                            <Text type={'body-bold'} text={`${item.user.name} `} />
-                            menyukai post Feed-mu!
-                          </Text>
-                          <Spacer height={Spacing[4]} />
-                        </VStack> : null }
-                    </HStack>
+          <FlatList
+            style={{backgroundColor: Colors.WHITE}}
+            ItemSeparatorComponent={()=> <VStack style={{backgroundColor: Colors.WHITE}}><Spacer height={Spacing[32]} /></VStack>}
+            ListHeaderComponent={
+              <VStack style={{backgroundColor: Colors.UNDERTONE_BLUE}}>
+                <BackNavigation goBack={goBack} />
+                <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
+                  <Spacer height={Spacing[24]} />
+                  <Text type={'header'} style={{color: Colors.WHITE, fontSize: Spacing[16]}} text="Notifications" />
+                  <Spacer height={Spacing[32]} />
+                </VStack>
+                <VStack style={{backgroundColor: Colors.WHITE, borderTopStartRadius: Spacing[32], borderTopEndRadius: Spacing[32], height:Spacing[48], width: dimensions.screenWidth, bottom: -1}}/>
+              </VStack>
+            }
+            refreshControl={
+              <RefreshControl
+                refreshing={notificationStore.isLoading}
+                onRefresh={onRefresh}
+                tintColor={Colors.MAIN_RED}
+              />
+            }
+            showsVerticalScrollIndicator={false}
+            data={notificationsData}
+            ListEmptyComponent={()=>
+              <EmptyList navigateTo={goBack} />
+            }
+            renderItem={({item, index})=> {
+              return(
+                <HStack horizontal={Spacing[24]} style={{backgroundColor: Colors.WHITE}}>
+                  <VStack>
+                    {item.isNew === true ? <View style={{backgroundColor: Colors.MAIN_RED, height: Spacing[12], width: Spacing[12], borderRadius: 999, position: 'absolute', zIndex: 100, left: -Spacing[4]}} /> : null}
+                    <Spacer height={Spacing[4]}/>
+                    <FastImage style={{
+                      height: Spacing[48],
+                      width: Spacing[48],
+                      borderRadius: Spacing[8]
+                    }} source={item.authorPhoto === '' ? nullProfileIcon : {uri: item.authorPhoto}} resizeMode={"cover"}/>
+                    <Spacer/>
+                  </VStack>
+                  <HStack left={Spacing[12]} style={{maxWidth: dimensions.screenWidth - Spacing["128"]}}>
+                    {item.type === 'request_feedback' ?
+                      <VStack>
+                        <Text type={'body'}>
+                          <Text type={'body-bold'} text={`${item.content} `} />
+                        </Text>
+                        <Spacer height={Spacing[4]} />
+                        <VStack right={Spacing[48]}>
+                          <Button
+                            type={"primary"}
+                            text={"Isi feedback untuknya."}
+                            style={{height:Spacing[32], backgroundColor: Colors.MAIN_RED}}
+                            textStyle={{fontSize: Spacing[14], lineHeight: Spacing[18]}}
+                            onPress={()=>{
+                              goToNoteFeedback(item.authorId, item.data.journalId)}
+                            }
+                          />
+                        </VStack>
+                      </VStack> : null }
+                    {item.type === 'submitted_feedback' ?
+                      <VStack>
+                        <Text type={'body'}>
+                          <Text type={'body-bold'} text={`${item.content} `} />
+                        </Text>
+                        <Spacer height={Spacing[4]} />
+                        <VStack right={Spacing[48]}>
+                          <Button
+                            type={"primary"}
+                            text={"Lihat feedback di sini."}
+                            style={{height:Spacing[32]}}
+                            textStyle={{fontSize: Spacing[14], lineHeight: Spacing[18]}}
+                            onPress={()=>{
+                              goToFeedback(item.data.journalId)}
+                            }
+                          />
+                        </VStack>
+                      </VStack> : null }
+                    {/* {item.type === 'tagged' ? */}
+                    {/*  <VStack> */}
+                    {/*    <Text type={'body'}> */}
+                    {/*      <Text type={'body-bold'} text={`${item.user.name} `} /> */}
+                    {/*      telah menandaimu dalam sesi */}
+                    {/*      <Text type={'body-bold'} text={` ${item.session}`} /> */}
+                    {/*    </Text> */}
+                    {/*    <Spacer height={Spacing[4]} /> */}
+                    {/*    <VStack right={Spacing[48]}> */}
+                    {/*      <Button */}
+                    {/*        type={"primary"} */}
+                    {/*        text={"Isi feedback untuknya."} */}
+                    {/*        style={{height:Spacing[32], backgroundColor: Colors.MAIN_RED}} */}
+                    {/*        textStyle={{fontSize: Spacing[14], lineHeight: Spacing[18]}} */}
+                    {/*      /> */}
+                    {/*    </VStack> */}
+                    {/*  </VStack> : null } */}
+                    {/* {item.type === 'liked' ? */}
+                    {/*  <VStack> */}
+                    {/*    <Text type={'body-bold'}> */}
+                    {/*      <Text type={'body-bold'} text={`${item.user.name} `} /> */}
+                    {/*      menyukai post Feed-mu! */}
+                    {/*    </Text> */}
+                    {/*    <Spacer height={Spacing[4]} /> */}
+                    {/*  </VStack> : null } */}
                   </HStack>
-                )
-              }}
-              keyExtractor={item => item.id}
-
-            />
-          </VStack>
+                </HStack>
+              )
+            }}
+            keyExtractor={item => item.id}
+            onEndReached={onLoadMore}
+            onEndReachedThreshold={0.1}
+          />
         </SafeAreaView>
+        {
+          notificationStore.isLoading ?
+            <VStack vertical={Spacing[12]} style={{position:'absolute',bottom: 0, width: dimensions.screenWidth}}>
+              <ActivityIndicator
+                animating={notificationStore.isLoading}
+              />
+            </VStack> : null
+        }
       </VStack>
     )
   },

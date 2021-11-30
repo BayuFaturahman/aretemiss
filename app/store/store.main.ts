@@ -8,6 +8,7 @@ import { ProfileApi } from "@services/api/profile/profile-api"
 import { ErrorFormResponse } from "@services/api/auth/auth-api.types"
 import {PostUploadFilesResponse, TeamResponse, UpdateProfileResponse} from "@services/api/profile/profile-api.types"
 import { ProfileUpdateForm } from "@screens/auth/create-profile"
+import AuthStore from "./store.auth";
 
 // CONFIGS
 
@@ -86,6 +87,7 @@ export default class MainStore {
   // #region PROPERTIES
 
   serviceStore: ServiceStore
+  authStore: AuthStore
   api: Api
   isLoading: boolean
 
@@ -104,8 +106,9 @@ export default class MainStore {
 
   // #region CONSTRUCTOR
 
-  constructor(serviceStore: ServiceStore, api: Api) {
+  constructor(serviceStore: ServiceStore, authStore: AuthStore, api: Api) {
     this.serviceStore = serviceStore
+    this.authStore = authStore
     this.api = api
     this.isLoading = false
 
@@ -267,16 +270,16 @@ export default class MainStore {
       }
       if (response.kind === "ok") {
         this.userProfile = {
-          userId: response.response[0]["user_id"],
-          fullName: response.response[0]["user_fullname"],
-          nickName: response.response[0]["user_nickname"],
-          email: response.response[0]["user_email"],
-          team1Id: response.response[0]["user_team_1_id"],
-          team2Id: response.response[0]["user_team_2_id"],
-          team3Id: response.response[0]["user_team_3_id"],
-          phoneNumber: response.response[0]["user_phone_number"],
-          isAllowNotification: response.response[0]["user_is_allow_notification"],
-          isAllowReminderNotification: response.response[0]["user_is_allow_reminder_notification"],
+          userId: response.response[0].user_id,
+          fullName: response.response[0].user_fullname,
+          nickName: response.response[0].user_nickname,
+          email: response.response[0].user_email,
+          team1Id: response.response[0].user_team_1_id,
+          team2Id: response.response[0].user_team_2_id,
+          team3Id: response.response[0].user_team_3_id,
+          phoneNumber: response.response[0].user_phone_number,
+          isAllowNotification: response.response[0].user_is_allow_notification,
+          isAllowReminderNotification: response.response[0].user_is_allow_reminder_notification,
         }
         console.log("USer profile ", this.userProfile)
       }
@@ -299,6 +302,10 @@ export default class MainStore {
      try {
       const response = await this.profileApi.getProfile()
 
+       if(response.kind === 'unauthorized'){
+         await this.authStore.resetAuthStore()
+       }
+
        if(response.kind === 'form-error'){
          this.formError(response.response)
        }
@@ -306,6 +313,7 @@ export default class MainStore {
        if(response.kind === 'ok'){
          this.getProfileSuccess(response.response.data)
        }
+
      } catch (e) {
        console.log(e)
        this.updateProfileFailed(e)

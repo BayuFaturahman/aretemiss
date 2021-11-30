@@ -184,6 +184,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     },[])
 
     const getJournalList = useCallback(async ()=>{
+      await coachingStore.clearJournal()
       await coachingStore.getJournal()
     },[])
 
@@ -214,11 +215,19 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       }
     }, [coachingStore.listJournal])
 
+    useEffect(()=> {
+      if(feedStore.listFeeds){
+        setFeedData(feedStore.listFeeds[0])
+      }
+    }, [feedStore.listFeeds])
+
     const loadData = debounce( async () => {
       await getUserProfile()
       await getJournalList()
       await getListFeed()
-      setFeedData(feedStore.listFeeds[0])
+      if(feedStore.listFeeds){
+        setFeedData(feedStore.listFeeds[0])
+      }
     }, 500)
 
     useEffect(()=> {
@@ -330,8 +339,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
           <Spacer height={Spacing[12]} />
           <HomepageCardWrapper animationDuration={700}>
             <FeedItemComponent
-              data={feedData}
-              // data={FEED_EXAMPLE_DATA_ITEM[0]}
+              data={feedData ?? null}
               goToFeed={goToFeed}
               goToNewPost={goToNewPost}
             />

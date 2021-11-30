@@ -48,10 +48,10 @@ export default class NotificationStore {
     makeAutoObservable(this);
   }
 
-  async getListNotifications() {
+  async getListNotifications(page = 1, limit = 5) {
     this.isLoading = true
     try {
-      const response = await this.notificationApi.getListNotifications()
+      const response = await this.notificationApi.getListNotifications(page, limit)
 
       console.log("getListNotifications response.kind", response.kind)
 
@@ -73,9 +73,9 @@ export default class NotificationStore {
 
   getNotificationsSuccess(data: NotificationItemModel[]) {
     console.log("getNotificationsSuccess data", data)
-    this.notificationsList = []
+    const newNotification = []
     data.forEach(item => {
-      this.notificationsList.push({
+      newNotification.push({
         id: item.notification_id,
         content: item.notification_content,
         type: item.notification_type,
@@ -90,6 +90,10 @@ export default class NotificationStore {
       })
     })
 
+    this.notificationsList = [
+      ...this.notificationsList,
+      ...(newNotification ?? [])
+    ]
     console.log("list notifications data: ", this.notificationsList)
   }
 

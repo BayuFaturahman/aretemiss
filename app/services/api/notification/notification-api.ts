@@ -10,11 +10,14 @@ export class NotificationApi {
     this.api = api
   }
 
-  async getListNotifications(): Promise<GetNotificationsListResult> {
+  async getListNotifications(page: number, limit: number): Promise<GetNotificationsListResult> {
     console.log("getListNotifications()")
     try {
       // make the api call
-      const response: ApiResponse<any> = await this.api.apisauce.get(`/notification`)
+      const response: ApiResponse<any> = await this.api.apisauce.get(`/notification`,{
+        limit: limit,
+        page: page
+      })
       if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }

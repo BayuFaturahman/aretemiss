@@ -1,5 +1,5 @@
 import React, {FC, useCallback, useEffect, useState} from "react"
-import { SafeAreaView } from "react-native"
+import {SafeAreaView, ScrollView} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {
@@ -11,7 +11,7 @@ import {
 import { NavigatorParamList } from "@navigators/auth-navigator"
 import {VStack} from "@components/view-stack";
 import Spacer from "@components/spacer";
-import {Colors, Spacing} from "@styles";
+import {Colors, Layout, Spacing} from "@styles";
 import logoBottom from "@assets/icons/ilead_abm.png";
 import FastImage from "react-native-fast-image";
 
@@ -109,6 +109,7 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
     return (
       <DismissKeyboard>
         <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.WHITE, flex: 1, justifyContent: 'center'}}>
+          <ScrollView bounces={false} style={[Layout.flex, Layout.heightFull]}>
           <SafeAreaView style={{flex: 1}}>
             <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
             <Spacer />
@@ -135,6 +136,7 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
                 onChangeText={setPassword}
               />
             </VStack>
+            <Spacer height={Spacing[48]} />
             <VStack top={Spacing[32]} horizontal={Spacing[96]}>
               <Button
                 type={"primary"}
@@ -155,6 +157,7 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
               bottom: 0
             }} source={logoBottom} resizeMode={"contain"}/>
           </SafeAreaView>
+          </ScrollView>
           <Spinner
             visible={authStore.isLoading}
             textContent={'Memuat...'}
