@@ -141,17 +141,12 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
             await mainStore.updateProfile(mainStore.userProfile.user_id, userProfile)
             if (mainStore.errorCode === null) {
               setIsDisableEditBtn(true);
-              setModalTitle('Hore!')
-              setModalDesc(`${route.params?.isPasswordChange ? `Password` : `Profil`} kamu sudah berhasil diganti.`)
-              setModalIcon(smileYellow)
+              setModalContent('Hore!', 'Profil kamu sudah berhasil diganti.', smileYellow)
               
-
               await mainStore.getProfile();
               toggleModal()
             } else {
-              setModalTitle('Oh no! :(')
-              setModalDesc(`Perubahannya gagal diproses.\nCoba lagi ya!`)
-              setModalIcon(angry)
+              setModalContent('Oh no! :(', 'Perubahannya gagal diproses.\nCoba lagi ya!', angry)
 
               console.log('error code ', mainStore.errorCode)
               if (mainStore.errorCode === 500) {
@@ -167,12 +162,13 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
           }
         }
 
-    }, [userProfile, profilePicture, mainStore.errorCode, isDisableEditBtn, mainStore.updateProfileSuccess, mainStore.updateProfileFailed])
+    }, [userProfile, profilePicture, mainStore.errorCode, isDisableEditBtn, mainStore.updateProfileSuccess, mainStore.updateProfileFailed, modalTitle, modalDesc, modalIcon])
 
     const submitEditProfile = useCallback(async (data: ProfileUpdateForm) => {
-      console.log("Data to be submitted", userProfile)
+      console.log("submitEditProfile Data to be submitted", userProfile)
       await mainStore.updateProfile(mainStore.userProfile.user_id, userProfile)
       if (mainStore.errorCode === null) {
+        setModalContent('Hore!', 'Profil kamu sudah berhasil diganti.', smileYellow)
         setIsDisableEditBtn(true);
         await mainStore.getProfile();
         // console.log('USER PROFILE ', userProfile)
@@ -185,6 +181,11 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
       }
     }, [mainStore.errorCode, userProfile, isDisableEditBtn])
 
+    const setModalContent = (title: string, desc: string, icon) => {
+      setModalTitle(title)
+      setModalDesc(desc)
+      setModalIcon(icon)
+    }
 
     useEffect(() => {
       if (mainStore.isOTPVerified && route.params?.newEmail && route.params?.newNickname ) {
@@ -202,6 +203,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
 
     useEffect(() => {
       if (route.params?.isPasswordChange) {
+        setModalContent('Hore!', 'Password kamu sudah berhasil diganti.', smileYellow)
         toggleModal()
       }
     }, [route.params?.isPasswordChange])
@@ -346,6 +348,8 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
     }
 
     const toggleModal = () => {
+      console.log('modal title ', modalTitle )
+      console.log('modal desc ', modalDesc )
       setTimeout(() => {
         setModalVisible(!isModalVisible)
         // setIsClickEditProfile(false)
