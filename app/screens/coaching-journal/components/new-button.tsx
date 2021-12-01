@@ -12,7 +12,7 @@ type NewButtonProps = {
 
 export const NewButton = ({onPress = ()=> null}:NewButtonProps) => {
   return(
-    <VStack style={{width: dimensions.screenWidth, alignItems: 'center', top: -Spacing[32], position: 'absolute'}}>
+    <VStack style={{width: dimensions.screenWidth, alignItems: 'center', top: -Spacing[32], position: 'absolute', zIndex: 10}}>
       <TouchableOpacity onPress={onPress} style={{height: Spacing[64], width: Spacing[64], backgroundColor: Colors.BRIGHT_BLUE, borderRadius: Spacing[64], flex:1, justifyContent: 'center'}}>
         <FastImage style={{
           height: Spacing[36],

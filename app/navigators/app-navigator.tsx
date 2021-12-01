@@ -5,7 +5,7 @@
  * and a "main" flow which the user will use once logged in.
  */
 import React, {FunctionComponent, useCallback, useEffect, useState} from "react"
-import {StatusBar, useColorScheme} from "react-native"
+import {Platform, StatusBar, useColorScheme} from "react-native"
 import {NavigationContainer, DefaultTheme, DarkTheme, useNavigation} from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { navigationRef } from "./navigation-utilities"
@@ -18,6 +18,7 @@ import mainScreens, { NavigatorParamList as MainNavigatorParamList } from "@navi
 // import {useStores} from "@models";
 import {observer} from "mobx-react-lite";
 import {useStores} from "../bootstrap/context.boostrap";
+import {Colors} from "@styles";
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -165,9 +166,9 @@ export const AppNavigator = observer( (props: NavigationProps) => {
       theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
     >
       <StatusBar
-        barStyle="dark-content"
+        barStyle={Platform.OS === 'ios' ? "dark-content" : "light-content"}
         // translucent
-        backgroundColor="white"
+        backgroundColor={Colors.UNDERTONE_BLUE}
       />
       {isLogin === true ? <MainNavigator /> : <AuthNavigator />}
     </NavigationContainer>

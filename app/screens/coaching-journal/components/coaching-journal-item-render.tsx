@@ -151,14 +151,17 @@ export const CoachingJournalItemRender = (
                   <HStack horizontal={Spacing[8]} style={{maxWidth: dimensions.screenWidth - Spacing[144], minHeight:Spacing[64]}}>
                     <View style={{height: Spacing[16], width: Spacing[16], backgroundColor: statusColor, borderRadius: Spacing[128]}} />
                     <Spacer width={Spacing[12]}/>
-                    <VStack>
-                      <Text type={'body'} style={{}} numberOfLines={1} >
-                        {activitiesItem.is_coachee ?
-                          <VStack style={{backgroundColor: Colors.SOFT_GREEN, paddingHorizontal: Spacing[8], alignItems: 'center', justifyContent: 'center', borderRadius: Spacing[48], maxWidth: Spacing[64]}}>
-                            <Text type={'body'} text={activitiesItem.title} numberOfLines={1} />
-                          </VStack>
-                          : <Text type={'body'} text={activitiesItem.title} numberOfLines={1} /> }
-                      </Text>
+                    <VStack style={Layout.widthFull}>
+                      <HStack>
+                        <VStack style={{backgroundColor: activitiesItem.is_coachee ? Colors.SOFT_GREEN : Colors.WHITE,
+                          paddingHorizontal: activitiesItem.is_coachee ? Spacing[8] : 0, alignItems: 'center', justifyContent: 'center', borderRadius: Spacing[48]}}>
+                          <Text type={'body'} style={{}} numberOfLines={1} >
+                            {activitiesItem.is_coachee ?
+                              <Text type={'body'} text={activitiesItem.title} numberOfLines={1} />
+                              : <Text type={'body'} text={activitiesItem.title} numberOfLines={1} /> }
+                          </Text>
+                        </VStack>
+                      </HStack>
                       {activitiesItem.coach_fullname ?
                         <Text type={'body-bold'} style={{color: statusColor, fontSize: Spacing[12]}} numberOfLines={1} >
                           {activitiesItem.is_coachee ? `Coached by ` : 'You Coached '}
