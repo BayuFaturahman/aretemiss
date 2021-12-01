@@ -227,7 +227,7 @@ export default class CoachingStore {
   async createJournal(
     data: JournalEntryType
   ){
-    console.log('createJournal')
+    console.log('createJournal ', data)
     console.log(this.date)
 
     this.isLoading = true
