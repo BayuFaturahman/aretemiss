@@ -113,6 +113,7 @@ const MyFeedList: FC<StackScreenProps<NavigatorParamList, "myFeedList">> = obser
 
     const [modal, setModal] = useState<boolean>(false);
     const [isModalDeletePostVisible, setModalDeletePostVisible] = useState<boolean>(false);
+    const [selectedPost, setSelectePost] = useState<string>('')
 
     const [listFeeds, setListFeeds] = useState<Array<FeedItemType>>(feedStore.listMyFeed);
 
@@ -127,6 +128,11 @@ const MyFeedList: FC<StackScreenProps<NavigatorParamList, "myFeedList">> = obser
 
     const goToCommentList = () => navigation.navigate("commentList")
 
+    const goToDetails = useCallback(async (data: FeedItemType) => {
+      navigation.navigate("postDetails", {
+        data
+      })
+    }, [])
 
     const toggleModal = (value: boolean) =>{
       setModal(value)
@@ -163,8 +169,21 @@ const MyFeedList: FC<StackScreenProps<NavigatorParamList, "myFeedList">> = obser
     const deletePost = React.useCallback(async(id) => {
       console.log('delete post')
       console.log(id)
+      setSelectePost(id)
       toggleModalDeletePost()
     }, []);
+
+    const onDeletePost = React.useCallback(async() => {
+      console.log('ON delete post')
+      feedStore.formReset()
+      await feedStore.deletePost(selectedPost)
+      if (feedStore.errorCode === null) {
+        loadData()
+      }
+      
+      toggleModalDeletePost()
+    }, [selectedPost, isModalDeletePostVisible]);
+
     const getListFeeds = useCallback(async () => {
       await feedStore.getListMyFeeds(mainStore.userProfile.user_id)
     }, [])
@@ -215,8 +234,9 @@ const MyFeedList: FC<StackScreenProps<NavigatorParamList, "myFeedList">> = obser
                   data={item}
                   onImageTap={onImageFeedTap}
                   ownPost={true}
-                  deletePost={deletePost} 
-                  goToDetail={() => console.log('go to detail')}                />)
+                  deletePost={deletePost.bind(this, item.id)} 
+                  goToDetail={goToDetails}                
+                />)
             }}
             style={{paddingHorizontal: Spacing[24]}}
             keyExtractor={item => item.id}
@@ -299,7 +319,7 @@ const MyFeedList: FC<StackScreenProps<NavigatorParamList, "myFeedList">> = obser
                         text={"Hapus"}
                         style={{ height: Spacing[32], paddingHorizontal: Spacing[8], width: '100%' }}
                         textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
-                        onPress={toggleModalDeletePost}
+                        onPress={onDeletePost}
                       />
                       <Spacer height={Spacing[12]} />
                       <Button

@@ -30,6 +30,8 @@ export default class FeedStore {
     this.api = api
     this.isLoading = false
 
+    this.refreshData = false
+
     this.errorCode = null
     this.errorMessage = null
 
@@ -60,7 +62,7 @@ export default class FeedStore {
   }
 
   getListFeedsSuccess(data: FeedApiModel[]) {
-    console.log("getListFeedsSuccess data", data)
+    console.log("getListFeedsSuccess")
     this.listFeeds = []
     const tempListFeeds: FeedItemType[] = []
     data.forEach(post => {
@@ -71,7 +73,7 @@ export default class FeedStore {
         author: {
           id: post.feed_author_id,
           nickname: post.feed_author_nickname,
-          title: 'Head of something',
+          title: '',
           photo: post.feed_author_photo,
         },
         commentCount: post.feed_comment_count,
@@ -83,8 +85,10 @@ export default class FeedStore {
       })
     })
     
-    this.listFeeds = tempListFeeds
-    console.log("list feed: ", this.listFeeds)
+    const sortedListFeed = tempListFeeds.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    this.listFeeds = sortedListFeed
+    console.log('on getListFeedsSuccess')
+    // console.log("list feed: ", this.listFeeds)
   }
 
   async createPost(data: CreatePostType) {
@@ -95,7 +99,7 @@ export default class FeedStore {
 
       console.log('result create Post: ', result)
       if (result.kind === "ok") {
-        this.refreshData = true
+        this.createPostSuccess()
       } else if (result.kind === 'form-error'){
         this.formError(result.response)
       // } else if () {
@@ -113,9 +117,14 @@ export default class FeedStore {
     }
   }
 
+  createPostSuccess() {
+    this.refreshData = true
+  }
+
   clearListFeed() {
     this.listFeeds = []
-    console.log("list feed: ", this.listFeeds)
+    console.log('clear list feed')
+    // console.log("list feed: ", this.listFeeds)
   }
 
 
@@ -167,6 +176,29 @@ export default class FeedStore {
     console.log("list my feed: ", this.listMyFeed)
   }
 
+  async deletePost(id: string) {
+    this.isLoading = true
+    try {
+      const response = await this.feedApi.deletePost(id)
+      console.log('delete utk id: ', id)
+
+      if (response.kind === "form-error") {
+        this.formError(response.response)
+      }
+
+      if (response.kind === "ok") {
+        // this.getListMyFeedsSuccess(response.response.data)
+      }
+    } catch (e) {
+      console.log(e)
+      this.setErrorMessage(e)
+    } finally {
+      console.log("deletePost done")
+      this.isLoading = false
+    }
+  }
+
+
   clearListMyFeed() {
     this.listMyFeed = []
     console.log("list MY feed: ", this.listMyFeed)
@@ -201,6 +233,7 @@ export default class FeedStore {
   formReset() {
     this.errorCode = null
     this.errorMessage = null
+    this.refreshData = false
   }
 
   formError(data: ErrorFormResponse) {
