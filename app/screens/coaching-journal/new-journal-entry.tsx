@@ -320,18 +320,18 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
         setError("")
         setJournalEntryForm(data)
         console.log('journal entry to be passed ', data)
-        
-        goToFeedback()
+        console.log('journalEntryForm mau ke feedback', journalEntryForm)
+        goToFeedback(data)
         // toggleEncouragementModal()
       }
     },[setJournalEntryForm, journalEntryForm])
 
-    const goToFeedback = () => {
-      journalEntryForm.type = 'coaching' 
+    const goToFeedback = (journalEntry) => {
+      journalEntry.type = 'coaching' 
       console.log('journalEntryForm ', journalEntryForm)
       // if(!isDetail){
         navigation.navigate("fillFeedback",{
-          data: journalEntryForm,
+          data: journalEntry,
           isDetail: false
         })
       // }
