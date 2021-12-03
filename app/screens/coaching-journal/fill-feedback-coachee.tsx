@@ -221,8 +221,7 @@ const FillFeedbackCoachee: FC<StackScreenProps<NavigatorParamList, "fillFeedback
             <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
               <Text type={'left-header'} style={{color: Colors.WHITE}} text="Feedback untuk coach" />
               <Spacer height={Spacing[24]} />
-              <Text type={"header"} style={{color: Colors.WHITE, textAlign:'center', fontSize: Spacing[12]}}>Berilah rating pada pernyataan berikut ini
-                sesuai dengan sesi coaching yang sudah kamu lakukan.</Text>
+              <Text type={"header"} style={{color: Colors.WHITE, textAlign:'center', fontSize: Spacing[12]}}>Terima kasih sudah memberikan feedback untuk coach-mu! Inilah penilaian yang sudah kamu berikan untuk sesi coaching kali ini.</Text>
               <Spacer height={Spacing[32]} />
             </VStack>
             <VStack top={Spacing[32]} horizontal={Spacing[24]} style={[Layout.heightFull, {backgroundColor: Colors.WHITE, borderTopStartRadius: Spacing[48], borderTopEndRadius: Spacing[48]}]}>

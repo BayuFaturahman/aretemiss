@@ -209,7 +209,7 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
                   <Text type={'header'} style={{color: Colors.WHITE}} text="Coaching Journal" />
                   <Spacer height={Spacing[24]} />
                   <Text type={'body'} style={{textAlign: 'center', color: Colors.WHITE}}>
-                    Setiap journal entry yang kamu catat di iLEAD akan memberikan kesempatan bagi anggota tim kamu untuk memberikan <Text type={"label"} style={{color: Colors.WHITE}}>feedback</Text> kepadamu juga lho! Anggota tim bisa memberikan feedback untuk setiap journal entry yang kamu catat.
+                    Setiap coaching journal yang dicatat akan memberikan kesempatan bagi coachee-mu untuk memberikan <Text type={"label"} style={{color: Colors.WHITE}}>feedback</Text>. Sehingga kamu dapat terus melakukan improvement.
                   </Text>
                   <Spacer height={Spacing[32]} />
                 </VStack>
@@ -225,7 +225,7 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
                   }} source={arrowYellow} resizeMode={"contain"}/> : null }
                   <Spacer height={Spacing[42]} />
                   <HStack horizontal={Spacing[24]}>
-                    <Text type={'left-header'} text="Catatan jurnal coaching" />
+                    <Text type={'left-header'} text="Catatan coaching journal" />
                   </HStack>
                   <Spacer height={Spacing[24]} />
                 </VStack>

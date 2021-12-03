@@ -396,7 +396,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
             <ScrollView>
               <VStack top={Spacing[32]} horizontal={Spacing[24]}>
                 <HStack>
-                  <Text type={"left-header"} style={{}} text="Tambah journal entry" />
+                  <Text type={"left-header"} style={{}} text="Tambah coaching journal" />
                   <Spacer />
                   <HStack>
                     <Button type={"negative"} text={"Cancel"} onPress={goBack} />
