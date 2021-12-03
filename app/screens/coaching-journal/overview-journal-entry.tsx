@@ -227,8 +227,9 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
           if(coachingStore.isDetail){
             setError('');
             await coachingStore.updateJournal(data.content,data.commitment,"",data.strength,selectedActivities,data.improvement)
-            toggleModalEditEntry()
+            // toggleModalEditEntry()
             setIsOnEditMode(false)
+            goToFeedback()
           }
         }
       }
@@ -247,8 +248,9 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
           setError('')
           await coachingStore.updateJournalCoachee(
             data.jlContent, data.jlLessonLearned, data.jlCommitment, journalId)
-          toggleModalEditEntry()
+          // toggleModalEditEntry()
           setIsOnEditMode(false)
+          goToFeedback()
         }
       }
     }
@@ -318,20 +320,21 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                       <HStack>
                         <Text type={'left-header'} style={{}} text="Isi coaching journal" />
                         <Spacer/>
-                        {/*<HStack>*/}
-                        {/*  {isOnEditMode ?*/}
-                        {/*    <Button*/}
-                        {/*      type={"negative"}*/}
-                        {/*      text={"Cancel"}*/}
-                        {/*      onPress={onClickCancel}*/}
-                        {/*    />:*/}
-                        {/*    <Button*/}
-                        {/*      type={"negative"}*/}
-                        {/*      text={"Edit Entry"}*/}
-                        {/*      onPress={onClickEditEntry}*/}
-                        {/*    />*/}
-                        {/*  }*/}
-                        {/*</HStack>*/}
+                        <HStack>
+                          { isCoachee ? null : (isOnEditMode ?
+                              <Button
+                                type={"negative"}
+                                text={"Cancel"}
+                                onPress={onClickCancel}
+                              />:
+                              <Button
+                                type={"negative"}
+                                text={"Edit Entry"}
+                                onPress={onClickEditEntry}
+                              />)
+                           }
+
+                        </HStack>
                       </HStack>
 
                       <VStack>
@@ -516,12 +519,18 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                               type={"primary"}
                               text={isCoachee ? "Lakukan feedback" : "Lihat catatan coachee"}
                               onPress={ isCoachee ? goToFeedback : goToOverviewJournalByCoachee}
-                            /> :
-                            <Button
-                              type={"warning"}
-                              text={"Save entry"}
-                              onPress={() => handleSubmit()}
-                            />
+                            /> : (
+                              isCoachee ? <Button
+                                type={"primary"}
+                                text={"Lakukan feedback"}
+                                onPress={() => handleSubmit()}
+                              /> :
+                              <Button
+                                type={"warning"}
+                                text={"Simpan"}
+                                onPress={() => handleSubmit()}
+                              />
+                            )
                           }
                     </VStack>
                     <VStack horizontal={Spacing[24]} bottom={Spacing[24]}>
