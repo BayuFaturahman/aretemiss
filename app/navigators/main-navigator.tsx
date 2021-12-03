@@ -104,7 +104,9 @@ const screens: AppRoute[] = [
 
 export type NavigatorParamList = {
   coachingJournalMain: undefined;
-  feedTimelineMain: undefined;
+  feedTimelineMain: {
+    newPost?: boolean
+  };
   settingsPage: undefined;
   myAccount:{
     newEmail?: string,

@@ -22,7 +22,9 @@ const screens: AppRoute[] = [
 
 export type NavigatorParamList = {
   newPost: undefined;
-  feedTimelineMain: undefined;
+  feedTimelineMain: {
+    newPost?: boolean
+  };
 };
 
 export default screens

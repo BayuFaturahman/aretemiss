@@ -83,6 +83,10 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
   //   setCoachingData([])
   // }, []);
 
+  const goToFeed = () => navigation.navigate('feedTimelineMain', {
+    newPost: true
+  })
+
   const goBack = () => navigation.goBack()
 
   const actionSheetRef = createRef()
@@ -217,7 +221,7 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
     if (feedStore.errorCode === null) {
       // feedStore.formReset()
       // await feedStore.getListFeeds()
-      navigation.navigate("feedTimelineMain")
+      goToFeed()
     } else {
       setErrorMessage(feedStore.errorMessage)
       console.log(feedStore.errorCode, ' : ', feedStore.errorMessage )

@@ -142,14 +142,12 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
     }, [])
 
     useEffect(()=>{
-      console.log('feedStore.refreshData', feedStore.refreshData)
-
-      if(feedStore.refreshData){
+      if(feedStore.refreshData || route.params?.newPost){
         setTimeout(()=>{
           loadData()
         }, 100)
       }
-    },[feedStore.refreshData, feedStore.createPostSuccess])
+    },[route.params?.newPost,feedStore.refreshData, feedStore.createPostSuccess])
 
     useEffect(() => {
       if(feedStore.listFeeds.length > 0){
