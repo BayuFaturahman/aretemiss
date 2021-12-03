@@ -36,22 +36,22 @@ const EXAMPLE_DATA:Array<ChoiceItemType> = [
   },
   {
     id: '2',
-    title: '“Dalam skala 1 - 5, seberapa baik saya sudah mempraktekan active listening atau mendengar aktif saat sesi berlangsung?”',
+    title: 'Dalam skala 1 - 5, seberapa baik saya sudah mempraktekan active listening atau mendengar aktif saat sesi berlangsung?',
     choice: 0
   },
   {
     id: '3',
-    title: '“Dalam skala 1 - 5, seberapa baik saya sudah mengajukan powerful questions atau pertanyaan yang menggugah pada saat sesi berlangsung?”',
+    title: 'Dalam skala 1 - 5, seberapa baik saya sudah mengajukan powerful questions atau pertanyaan yang menggugah pada saat sesi berlangsung?',
     choice: 0
   },
   {
     id: '4',
-    title: '“Dalam skala 1 - 5, seberapa baik saya sudah menggali insights atau pembelajaran yang saya dapatkan selama sesi berlangsung?”',
+    title: 'Dalam skala 1 - 5, seberapa baik saya sudah menggali insights atau pembelajaran yang saya dapatkan selama sesi berlangsung?',
     choice: 0
   },
   {
     id: '5',
-    title: '“Dalam skala 1 - 5, seberapa baik saya sudah membantu kamu sebagai coachee untuk menyampaikan komitmen di akhir sesi?”',
+    title: 'Dalam skala 1 - 5, seberapa baik saya sudah membantu kamu sebagai coachee untuk menyampaikan komitmen di akhir sesi?',
     choice: 0
   }
 ]
@@ -174,11 +174,11 @@ const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = o
               <Text type={"header"} style={{color: Colors.WHITE, textAlign:'center', fontSize: Spacing[12]}}>Berilah rating pada pernyataan berikut ini
                 sesuai dengan sesi coaching yang sudah kamu lakukan.</Text>
               <Spacer height={Spacing[12]} />
-              
 
-              
-              <Text type={"label"} style={{ color: Colors.WHITE, fontSize: Spacing[12], textAlign: 'center'}}> 
-                <Text type={"left-label"} style={{ color: Colors.WHITE, fontSize: Spacing[12], textAlign: 'center'}}> 
+
+
+              <Text type={"label"} style={{ color: Colors.WHITE, fontSize: Spacing[12], textAlign: 'center'}}>
+                <Text type={"left-label"} style={{ color: Colors.WHITE, fontSize: Spacing[12], textAlign: 'center'}}>
                 {`Penting! `}</Text>
                 {`Catatan coaching-mu belum tersimpan sampai kamu \n klik `}
                 <VStack style={{backgroundColor: Colors.BRIGHT_BLUE, paddingHorizontal: Spacing[8], borderRadius: Spacing[48], maxWidth: Spacing[64], padding: Spacing[0]}}>
@@ -186,7 +186,7 @@ const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = o
                 </VStack>
                  {` di bawah halaman ini.`}
               </Text>
-              
+
               <Spacer height={Spacing[12]} />
               {isError !== null ? <Text type={"warning"} style={{textAlign:'center', fontSize: Spacing[12]}}>Ada yang belum diisi nih!</Text> : null}
               <Spacer height={Spacing[12]} />

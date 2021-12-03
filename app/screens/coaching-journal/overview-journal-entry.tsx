@@ -318,20 +318,20 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                       <HStack>
                         <Text type={'left-header'} style={{}} text="Isi coaching journal" />
                         <Spacer/>
-                        <HStack>
-                          {isOnEditMode ?
-                            <Button
-                              type={"negative"}
-                              text={"Cancel"}
-                              onPress={onClickCancel}
-                            />:
-                            <Button
-                              type={"negative"}
-                              text={"Edit Entry"}
-                              onPress={onClickEditEntry}
-                            />
-                          }
-                        </HStack>
+                        {/*<HStack>*/}
+                        {/*  {isOnEditMode ?*/}
+                        {/*    <Button*/}
+                        {/*      type={"negative"}*/}
+                        {/*      text={"Cancel"}*/}
+                        {/*      onPress={onClickCancel}*/}
+                        {/*    />:*/}
+                        {/*    <Button*/}
+                        {/*      type={"negative"}*/}
+                        {/*      text={"Edit Entry"}*/}
+                        {/*      onPress={onClickEditEntry}*/}
+                        {/*    />*/}
+                        {/*  }*/}
+                        {/*</HStack>*/}
                       </HStack>
 
                       <VStack>
