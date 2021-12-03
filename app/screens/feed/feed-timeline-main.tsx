@@ -114,43 +114,6 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
     const [listImageViewer, setListImageViewer] = useState(images);
     const [activeViewerIndex, setActiveViewerIndex] = useState<number>(0);
 
-   const toggleModal = (value: boolean) =>{
-     setModal(value)
-   }
-
-    const onRefresh = React.useCallback(async() => {
-      console.log('masuk refresh')
-      // setListFeeds([])
-      feedStore.clearListFeed()
-      getListFeed()
-    }, []);
-
-    useEffect(() => {
-      // setListFeeds([])
-      feedStore.clearListFeed()
-      getListFeed()
-    }, [])
-
-
-    // useEffect(()=>{
-    //   console.log('feedStore.refreshData', feedStore.refreshData)
-
-    //   if(feedStore.refreshData){
-    //     setTimeout(()=>{
-    //       feedStore.getListFeeds()
-    //     }, 20)
-    //   }
-    // },[feedStore.refreshData, feedStore.getListFeedsSuccess])
-
-    useEffect(() => {
-      if(feedStore.listFeeds.length > 0){
-        console.log('masuk list feed ga kosong')
-        setListFeeds(feedStore.listFeeds)
-        console.log('ini list feed skrng ', listFeeds)
-      }
-    }, [ feedStore.listFeeds, setListFeeds, listFeeds, feedStore.getListFeedsSuccess])
-
-   
     const goBack = () => navigation.goBack()
 
     const goToNewPost = () => navigation.navigate("newPost")
@@ -158,6 +121,41 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
     const goToMyfeed = () => navigation.navigate("myFeedList")
 
     const goToCommentList = () => navigation.navigate("commentList")
+
+    const toggleModal = (value: boolean) =>{
+      setModal(value)
+    }
+
+    const loadData = debounce( async () => {
+      await getListFeed()
+      setListFeeds(feedStore.listFeeds)
+    }, 500)
+
+    const onRefresh = React.useCallback(async() => {
+      console.log('ON REFRESH')
+      await loadData()
+    }, []);
+
+    useEffect(() => {
+      console.log('Use effect tanpa []')
+      loadData()
+    }, [])
+
+    useEffect(()=>{
+      if(feedStore.refreshData || route.params?.newPost){
+        setTimeout(()=>{
+          loadData()
+        }, 100)
+      }
+    },[route.params?.newPost,feedStore.refreshData, feedStore.createPostSuccess])
+
+    useEffect(() => {
+      if(feedStore.listFeeds.length > 0){
+        console.log('masuk list feed ga kosong')
+        setListFeeds(feedStore.listFeeds)
+        // console.log('ini list feed skrng ', listFeeds)
+      }
+    }, [ feedStore.listFeeds, setListFeeds, listFeeds, feedStore.getListFeedsSuccess])
 
     const getListFeed = useCallback(async () => {
       await feedStore.getListFeeds()
@@ -169,7 +167,7 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
       toggleModal(true);
     }, [])
 
-    const goToDetails = useCallback(async (data: FeedTimelineItem) => {
+    const goToDetails = useCallback(async (data: FeedItemType) => {
       navigation.navigate("postDetails", {
         data
       })

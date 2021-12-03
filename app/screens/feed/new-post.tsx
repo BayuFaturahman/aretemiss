@@ -83,6 +83,10 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
   //   setCoachingData([])
   // }, []);
 
+  const goToFeed = () => navigation.navigate('feedTimelineMain', {
+    newPost: true
+  })
+
   const goBack = () => navigation.goBack()
 
   const actionSheetRef = createRef()
@@ -125,14 +129,16 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
               ? response.assets[id].uri
               : response.assets[id].uri.replace("file://", ""),
           name: `feed-image-${
-            response.assets[0].fileName.toLowerCase().split(" ")[0]
+            response.assets[id].fileName.toLowerCase().split(" ")[0]
           }-${new Date().getTime()}.jpeg`,
           type: response.assets[id].type ?? "image/jpeg",
           size: response.assets[id].fileSize,
         })
       })
       // console.log("RESPONSE ASET: ", response.assets)
+      // console.log(formData['_parts'])
 
+      feedStore.formReset()
       const responseUpload = await feedStore.uploadImage(formData)
       console.log('responseUpload ',responseUpload)
       const listResponseUpload = responseUpload.data.urls.split(';')
@@ -178,6 +184,7 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
   }, [])
 
   const getListFeed = useCallback(async () => {
+    feedStore.formReset()
     await feedStore.getListFeeds()
   }, [])
 
@@ -205,13 +212,16 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
     const imagesUrl = uploadedPicture.join(';')
     console.log('imagesUrl ', imagesUrl)
 
+    feedStore.formReset()
     await feedStore.createPost({ 
       "description": description,
       "images_url": imagesUrl
     });
 
     if (feedStore.errorCode === null) {
-      navigation.navigate("feedTimelineMain")
+      // feedStore.formReset()
+      // await feedStore.getListFeeds()
+      goToFeed()
     } else {
       setErrorMessage(feedStore.errorMessage)
       console.log(feedStore.errorCode, ' : ', feedStore.errorMessage )

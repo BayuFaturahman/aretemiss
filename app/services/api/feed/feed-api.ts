@@ -1,7 +1,7 @@
 import { ApiResponse } from "apisauce"
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
-import { GetListFeedsResult, PostUploadFeedImagesResult, CreatePostResult } from "@services/api/feed/feed-api.types"
+import { GetListFeedsResult, PostUploadFeedImagesResult, CreatePostResult, DeletePostResult } from "@services/api/feed/feed-api.types"
 import { CreatePostType } from "@screens/feed/feed.type"
 
 export class FeedApi {
@@ -31,7 +31,7 @@ export class FeedApi {
 
       const res = response.data
 
-      console.log(res)
+      // console.log(res)
       console.log(response.status)
 
       return { kind: "ok", response: res }
@@ -114,7 +114,7 @@ export class FeedApi {
         `/feed`, data
       )
 
-      console.log('createPost response', response)
+      // console.log('createPost response', response)
       console.log('createPost response.data', response.data)
       if(response.status === 400){
         const res = response.data
@@ -140,6 +140,44 @@ export class FeedApi {
       return { kind: "bad-data"}
     }
   }
+
+  async deletePost(postId: string): Promise<DeletePostResult> {
+    try {
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.delete(
+        `/feed/${postId}`,
+      )
+
+      // console.log('path nya ', `/feed/${postId}`)
+      // console.log('deletePost response', response)
+      console.log('deletePost response.data', response.data)
+      if(response.status === 400){
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      if(response.status === 500){
+        console.log('MASUK RESPONSE STATUS 500')
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        console.log('MASUK RESPONSE NOT OK')
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data"}
+    }
+  }
+
 
 
 }

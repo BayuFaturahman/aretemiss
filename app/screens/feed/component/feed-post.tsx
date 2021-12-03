@@ -19,7 +19,7 @@ type FeedPostProps = {
 
 export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDetail = () => null }:FeedPostProps) => {
 
-  const listImage = data.imageUrl.split(";")
+  const listImage = data.imageUrl ? data.imageUrl.split(";") : []
 
   const imageListViewer = listImage.map((item)=>{
     return(
@@ -79,7 +79,7 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
   }
 
   const coverImage = () => {
-    console.log('list image: ', listImage, ' total: ', listImage.length)
+    // console.log('list image: ', listImage, ' total: ', listImage.length)
     if (listImage.length === 0) {
       return null
     }
@@ -166,7 +166,7 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
     } 
 
     if (minDiff >= 0) {
-      return hrsDiff + ' mins'
+      return minDiff + ' mins'
     }
   
     // return dayDiff
