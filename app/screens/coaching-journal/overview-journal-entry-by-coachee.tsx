@@ -17,7 +17,7 @@ const NewJournalEntry: FC<
   const { title, lessonLearned, commitment, content } = route.params
 
   console.log("overview journal by coache ")
-  console.log('ROUTES PARAM ', route.params)
+  // console.log('ROUTES PARAM ', route.params)
 
   // empty list state
   const [selectedActivities, setSelectedActivities] = useState<string>("")
@@ -59,7 +59,7 @@ const NewJournalEntry: FC<
               <>
                 <VStack top={Spacing[32]} horizontal={Spacing[24]}>
                   <HStack>
-                    <Text type={"left-header"} style={{}} text="Overview journal entry" />
+                    <Text type={"left-header"} style={{}} text="Coaching journal overview" />
                     <Spacer />
                   </HStack>
 

@@ -26,12 +26,12 @@ type ChoiceItemType = {
 const EXAMPLE_DATA:Array<ChoiceItemType> = [
   {
     id: '0',
-    title: 'Dalam skala 1 - 5, seberapa baik saya sudah membangun rapport atau kedekatan di awal sesi',
+    title: 'Dalam skala 1 - 5, seberapa baik saya sudah membangun rapport atau kedekatan di awal sesi?',
     choice: 0
   },
   {
     id: '1',
-    title: 'Dalam skala 1 - 5, seberapa baik saya sudah membantu saya sebagai coachee menentukan outcome?',
+    title: 'Dalam skala 1-5, seberapa baik saya sudah membantu coachee menentukan outcome?',
     choice: 0
   },
   {

@@ -316,7 +316,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                   <>
                     <VStack top={Spacing[32]} horizontal={Spacing[24]}>
                       <HStack>
-                        <Text type={'left-header'} style={{}} text="Isi journal entry" />
+                        <Text type={'left-header'} style={{}} text="Isi coaching journal" />
                         <Spacer/>
                         <HStack>
                           {isOnEditMode ?
