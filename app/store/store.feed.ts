@@ -87,7 +87,6 @@ export default class FeedStore {
         isDeleted: (post.feed_is_deleted === 1),
         deletedAt: post.feed_deleted_at
       }
-      console.log(tempPost.id, ' : ', tempListFeeds.includes(tempPost));
       tempListFeeds.push(tempPost)
     })
     
@@ -142,10 +141,10 @@ export default class FeedStore {
   }
 
 
-  async getListMyFeeds(id) {
+  async getListMyFeeds(id: string, page = 1, limit = 5) {
     this.isLoading = true
     try {
-      const response = await this.feedApi.getListMyFeed(id)
+      const response = await this.feedApi.getListMyFeed(id, page, limit)
 
       if (response.kind === "form-error") {
         this.formError(response.response)
@@ -164,7 +163,7 @@ export default class FeedStore {
   }
 
   getListMyFeedsSuccess(data: FeedApiModel[]) {
-    console.log("getListMyFeedsSuccess data", data)
+    console.log("getListMyFeedsSuccess data", )
     const tempListMyFeeds: FeedItemType[] = []
     data.forEach(post => {
       tempListMyFeeds.push({
@@ -186,7 +185,14 @@ export default class FeedStore {
       })
     })
     
-    this.listMyFeed = tempListMyFeeds
+    const sortedListMyFeed = tempListMyFeeds.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+
+    this.listMyFeed = [
+      ...this.listMyFeed,
+      ...(sortedListMyFeed ?? [])
+    ]
+    this.isLoading = false
+    this.refreshData = true    
     // console.log("list my feed: ", this.listMyFeed)
   }
 
@@ -209,7 +215,7 @@ export default class FeedStore {
     } finally {
       console.log("deletePost done")
       this.isLoading = false
-      this.refreshData = true
+      // this.refreshData = true
       console.log('this.refreshdata ', this.refreshData)
     }
   }

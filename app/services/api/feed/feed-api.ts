@@ -46,11 +46,15 @@ export class FeedApi {
     }
   }
 
-  async getListMyFeed(authorId: string): Promise<GetListFeedsResult> {
+  async getListMyFeed(authorId: string, page: number, limit: number): Promise<GetListFeedsResult> {
     console.log("getListMyFeeds()")
     try {
       // make the api call
-      const response: ApiResponse<any> = await this.api.apisauce.get(`/feed?feedAuthorId=${authorId}`)
+      const response: ApiResponse<any> = await this.api.apisauce.get(`/feed`, {
+        limit: limit,
+        page: page,
+        feedAuthorId: authorId
+      })
       if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
@@ -66,7 +70,7 @@ export class FeedApi {
 
       const res = response.data
 
-      console.log(res)
+      // console.log(res)
       console.log(response.status)
 
       return { kind: "ok", response: res }

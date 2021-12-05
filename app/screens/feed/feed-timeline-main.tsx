@@ -123,7 +123,10 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
       navigation.navigate("newPost")
     }
 
-    const goToMyfeed = () => navigation.navigate("myFeedList")
+    const goToMyfeed = () => {
+      feedStore.refreshData = false
+      navigation.navigate("myFeedList")
+    }
 
     const goToCommentList = () => navigation.navigate("commentList")
 
@@ -169,8 +172,8 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
 
     useEffect(() => {
       setListFeeds([])
-       setListFeeds(feedStore.listFeeds)
-     }, [listFeeds, feedStore.getListFeedsSuccess])
+      setListFeeds(feedStore.listFeeds)
+    }, [listFeeds, feedStore.getListFeedsSuccess])
 
     const onImageFeedTap = useCallback( (index, imageList) => {
       setActiveViewerIndex(index)
