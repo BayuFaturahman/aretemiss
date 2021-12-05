@@ -40,17 +40,21 @@ export default class FeedStore {
     this.feedApi = new FeedApi(this.api)
   }
 
-  async getListFeeds() {
+  async getListFeeds(page = 1, limit = 5) {
     this.isLoading = true
     try {
-      const response = await this.feedApi.getListFeeds()
+      const response = await this.feedApi.getListFeeds(page, limit)
 
       if (response.kind === "form-error") {
         this.formError(response.response)
-      }
-
-      if (response.kind === "ok") {
+      } else if (response.kind === "ok") {
         this.getListFeedsSuccess(response.response.data)
+      } else if (response.kind === 'unauthorized'){
+        console.log('token expired journal')
+        console.log(response)
+        this.formError(response.response)
+      } else {
+        __DEV__ && console.tron.log(response.kind)
       }
     } catch (e) {
       console.log(e)
@@ -63,10 +67,10 @@ export default class FeedStore {
 
   getListFeedsSuccess(data: FeedApiModel[]) {
     console.log("getListFeedsSuccess")
-    this.listFeeds = []
+    // this.listFeeds = []
     const tempListFeeds: FeedItemType[] = []
     data.forEach(post => {
-      tempListFeeds.push({
+      const tempPost = {
         id: post.feed_id,
         description: post.feed_description,
         imageUrl: post.feed_images_url,
@@ -82,12 +86,21 @@ export default class FeedStore {
         updatedAt: post.feed_updated_at,
         isDeleted: (post.feed_is_deleted === 1),
         deletedAt: post.feed_deleted_at
-      })
+      }
+      console.log(tempPost.id, ' : ', tempListFeeds.includes(tempPost));
+      tempListFeeds.push(tempPost)
     })
     
     const sortedListFeed = tempListFeeds.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    this.listFeeds = sortedListFeed
-    console.log('on getListFeedsSuccess')
+
+    this.listFeeds = [
+      ...this.listFeeds,
+      ...(sortedListFeed ?? [])
+    ]
+    this.isLoading = false
+    this.refreshData = true
+    // this.listFeeds = sortedListFeed
+    console.log('on getListFeedsSuccess, total store list feed ', this.listFeeds.length)
     // console.log("list feed: ", this.listFeeds)
   }
 
@@ -118,6 +131,7 @@ export default class FeedStore {
   }
 
   createPostSuccess() {
+    console.log('createPostSuccess')
     this.refreshData = true
   }
 
@@ -173,7 +187,7 @@ export default class FeedStore {
     })
     
     this.listMyFeed = tempListMyFeeds
-    console.log("list my feed: ", this.listMyFeed)
+    // console.log("list my feed: ", this.listMyFeed)
   }
 
   async deletePost(id: string) {
@@ -195,13 +209,15 @@ export default class FeedStore {
     } finally {
       console.log("deletePost done")
       this.isLoading = false
+      this.refreshData = true
+      console.log('this.refreshdata ', this.refreshData)
     }
   }
 
 
   clearListMyFeed() {
     this.listMyFeed = []
-    console.log("list MY feed: ", this.listMyFeed)
+    // console.log("list MY feed: ", this.listMyFeed)
   }
 
 

@@ -11,11 +11,14 @@ export class FeedApi {
     this.api = api
   }
 
-  async getListFeeds(): Promise<GetListFeedsResult> {
+  async getListFeeds(page: number, limit: number): Promise<GetListFeedsResult> {
     console.log("getListFeeds()")
     try {
       // make the api call
-      const response: ApiResponse<any> = await this.api.apisauce.get(`/feed`)
+      const response: ApiResponse<any> = await this.api.apisauce.get(`/feed`, {
+        limit: limit,
+        page: page
+      })
       if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
