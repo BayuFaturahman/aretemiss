@@ -120,7 +120,13 @@ const MyFeedList: FC<StackScreenProps<NavigatorParamList, "myFeedList">> = obser
     const [listImageViewer, setListImageViewer] = useState(images);
     const [activeViewerIndex, setActiveViewerIndex] = useState<number>(0);
 
-    const goBack = () => navigation.goBack()
+    const [currentPage, setCurrentPage] = useState<number>(2);
+
+    const goBack = () => {
+      navigation.navigate('feedTimelineMain', {
+        newPost: true
+      })
+    }
 
     const goToNewPost = () => navigation.navigate("newPost")
 
@@ -145,6 +151,28 @@ const MyFeedList: FC<StackScreenProps<NavigatorParamList, "myFeedList">> = obser
       }, 100)
     }
 
+    const getListFeeds = useCallback(async () => {
+      await feedStore.getListMyFeeds(mainStore.userProfile.user_id)
+      
+    }, [])
+
+    const firstLoadFeed = debounce( async () => {
+      await feedStore.clearListMyFeed()
+      await loadFeed(1)
+    }, 500)
+
+    const loadFeed = useCallback(async (page: number) => {
+      await feedStore.getListMyFeeds(mainStore.userProfile.user_id, page)
+      setListFeeds(feedStore.listMyFeed)
+    }, [])
+    
+    const onLoadMore = React.useCallback(async () => {
+      console.log('load more feed ')
+      await loadFeed(currentPage)
+      setCurrentPage(currentPage + 1)
+    }, [currentPage]);
+
+
     const loadData = debounce( async () => {
       await getListFeeds()
       setListFeeds(feedStore.listMyFeed)
@@ -152,12 +180,14 @@ const MyFeedList: FC<StackScreenProps<NavigatorParamList, "myFeedList">> = obser
 
     useEffect(() => {
       console.log('Use effect tanpa []')
-      loadData()
+      // loadData()
+      firstLoadFeed()
     },[])
 
     const onRefresh = React.useCallback(async() => {
       console.log('ON REFRESH')
-      await loadData()
+      await firstLoadFeed()
+      // await loadData()
     }, []);
 
 
@@ -178,15 +208,11 @@ const MyFeedList: FC<StackScreenProps<NavigatorParamList, "myFeedList">> = obser
       feedStore.formReset()
       await feedStore.deletePost(selectedPost)
       if (feedStore.errorCode === null) {
-        loadData()
+        firstLoadFeed()
       }
       
       toggleModalDeletePost()
     }, [selectedPost, isModalDeletePostVisible]);
-
-    const getListFeeds = useCallback(async () => {
-      await feedStore.getListMyFeeds(mainStore.userProfile.user_id)
-    }, [])
 
     const onImageFeedTap = useCallback( (index, imageList) => {
       setActiveViewerIndex(index)
@@ -240,6 +266,8 @@ const MyFeedList: FC<StackScreenProps<NavigatorParamList, "myFeedList">> = obser
             }}
             style={{paddingHorizontal: Spacing[24]}}
             keyExtractor={item => item.id}
+            onEndReached={onLoadMore}
+            onEndReachedThreshold={0.1}
           />
         </SafeAreaView>
         <FeedButton
