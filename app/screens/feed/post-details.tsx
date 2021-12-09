@@ -1,4 +1,4 @@
-import React, {FC, useCallback, useState,} from "react"
+import React, {FC, useCallback, useEffect, useState,} from "react"
 import {FlatList, Modal, RefreshControl, SafeAreaView } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
@@ -78,6 +78,8 @@ const images = [
 
 const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = observer(
   ({ navigation, route }) => {
+
+    const { data } = route.params;
     const { feedStore } = useStores()
 
     const [modal, setModal] = useState<boolean>(false);
@@ -143,7 +145,7 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                   text="My Feed."
                 />
                 <FeedPost
-                  data={postDetails}
+                  data={data}
                   onImageTap={onImageFeedTap}
                   ownPost={false}
                   deletePost={deletePost}

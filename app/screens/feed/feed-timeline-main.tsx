@@ -114,11 +114,19 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
     const [listImageViewer, setListImageViewer] = useState(images);
     const [activeViewerIndex, setActiveViewerIndex] = useState<number>(0);
 
+    const [currentPage, setCurrentPage] = useState<number>(2);
+
     const goBack = () => navigation.goBack()
 
-    const goToNewPost = () => navigation.navigate("newPost")
+    const goToNewPost = () => {
+      navigation.setParams({ newPost: undefined })
+      navigation.navigate("newPost")
+    }
 
-    const goToMyfeed = () => navigation.navigate("myFeedList")
+    const goToMyfeed = () => {
+      feedStore.refreshData = false
+      navigation.navigate("myFeedList")
+    }
 
     const goToCommentList = () => navigation.navigate("commentList")
 
@@ -126,40 +134,46 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
       setModal(value)
     }
 
-    const loadData = debounce( async () => {
-      await getListFeed()
-      setListFeeds(feedStore.listFeeds)
+    const firstLoadFeed = debounce( async () => {
+      await feedStore.clearListFeed()
+      await loadFeed(1)
     }, 500)
 
+    const loadFeed = useCallback(async (page: number) => {
+      await feedStore.getListFeeds(page)
+      setListFeeds(feedStore.listFeeds)
+    }, [])
+
+    const onLoadMore = React.useCallback(async () => {
+      console.log('load more feed ')
+      await loadFeed(currentPage)
+      setCurrentPage(currentPage + 1)
+    }, [currentPage]);
+
     const onRefresh = React.useCallback(async() => {
-      console.log('ON REFRESH')
-      await loadData()
+      console.log('On refresh main feed')
+      firstLoadFeed()
     }, []);
 
     useEffect(() => {
-      console.log('Use effect tanpa []')
-      loadData()
+      console.log('Use effect list feed tanpa []')
+      firstLoadFeed()      
     }, [])
 
     useEffect(()=>{
-      if(feedStore.refreshData || route.params?.newPost){
+      console.log('route.params?.newPost ', route.params?.newPost)
+      console.log('feedStore.refreshData ', feedStore.refreshData)
+      if(feedStore.refreshData || route.params?.newPost){        
         setTimeout(()=>{
-          loadData()
+          firstLoadFeed()
         }, 100)
       }
-    },[route.params?.newPost,feedStore.refreshData, feedStore.createPostSuccess])
+    },[route.params?.newPost,feedStore.refreshData])
 
     useEffect(() => {
-      if(feedStore.listFeeds.length > 0){
-        console.log('masuk list feed ga kosong')
-        setListFeeds(feedStore.listFeeds)
-        // console.log('ini list feed skrng ', listFeeds)
-      }
-    }, [ feedStore.listFeeds, setListFeeds, listFeeds, feedStore.getListFeedsSuccess])
-
-    const getListFeed = useCallback(async () => {
-      await feedStore.getListFeeds()
-    }, [])
+      setListFeeds([])
+      setListFeeds(feedStore.listFeeds)
+    }, [listFeeds, feedStore.getListFeedsSuccess])
 
     const onImageFeedTap = useCallback( (index, imageList) => {
       setActiveViewerIndex(index)
@@ -218,6 +232,8 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
             }}
             style={{paddingHorizontal: Spacing[24]}}
             keyExtractor={item => item.id}
+            onEndReached={onLoadMore}
+            onEndReachedThreshold={0.1}
           />
         </SafeAreaView>
         <FeedButton

@@ -31,7 +31,7 @@ const EXAMPLE_DATA:Array<ChoiceItemType> = [
   },
   {
     id: '1',
-    title: 'Dalam skala 1-5, seberapa baik saya sudah membantu coachee menentukan outcome?',
+    title: 'Dalam skala 1 - 5, seberapa baik saya sudah membantu coachee menentukan outcome?',
     choice: 0
   },
   {
@@ -46,12 +46,12 @@ const EXAMPLE_DATA:Array<ChoiceItemType> = [
   },
   {
     id: '4',
-    title: 'Dalam skala 1 - 5, seberapa baik saya sudah menggali insights atau pembelajaran yang saya dapatkan selama sesi berlangsung?',
+    title: 'Dalam skala 1 - 5, seberapa baik saya sudah menggali insights atau pembelajaran yang coachee dapatkan selama sesi berlangsung?',
     choice: 0
   },
   {
     id: '5',
-    title: 'Dalam skala 1 - 5, seberapa baik saya sudah membantu kamu sebagai coachee untuk menyampaikan komitmen di akhir sesi?',
+    title: 'Dalam skala 1 - 5, seberapa baik saya sudah membantu coachee untuk menyampaikan komitmen di akhir sesi?',
     choice: 0
   }
 ]
