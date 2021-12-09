@@ -287,6 +287,7 @@ export default class MainStore {
           team2Id: response.response[0].user_team_2_id,
           team3Id: response.response[0].user_team_3_id,
           phoneNumber: response.response[0].user_phone_number,
+          user_mood: response.response[0].user_mood,
           isAllowNotification: response.response[0].user_is_allow_notification,
           isAllowReminderNotification: response.response[0].user_is_allow_reminder_notification,
         }

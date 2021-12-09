@@ -10,7 +10,7 @@ import {
 import {commentList, feedTimelineMain, myFeedList, newPost, postDetails} from "@screens/feed";
 import {settings, myAccount, myAccountVerifyOTP, changePassword, changePhone, notification} from "@screens/settings";
 import {notifications} from "@screens/notification";
-import {homepage} from "@screens/homepage";
+import {homepage, moodTeam} from "@screens/homepage";
 import {createProfile} from "@screens";
 import {JournalEntryType} from "@screens/coaching-journal/new-journal-entry";
 import { FeedItemType } from "@screens/homepage/components/feed-homepage-component";
@@ -63,6 +63,10 @@ const screens: AppRoute[] = [
   {
     name: 'homepage',
     component: homepage,
+  },
+  {
+    name: 'moodTeam',
+    component: moodTeam,
   },
   {
     name: 'fillFeedbackDetail',
@@ -132,6 +136,7 @@ export type NavigatorParamList = {
   notificationList: undefined;
   notificationSettings: undefined;
   homepage: undefined;
+  moodTeam: undefined;
   fillFeedbackDetail: undefined;
   overviewJournalEntry: {
     journalId: string,

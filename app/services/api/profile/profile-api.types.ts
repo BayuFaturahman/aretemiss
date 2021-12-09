@@ -28,6 +28,7 @@ export interface UpdateProfileResponse {
     "team2Id": string
     "team3Id": string
     "token": string
+    "mood"?: string
   }
 }
 
