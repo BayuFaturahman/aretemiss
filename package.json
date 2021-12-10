@@ -5,6 +5,7 @@
   "scripts": {
     "start": "react-native start",
     "ios": "ENVFILE=.env.dev react-native run-ios --simulator='iPhone 8'",
+    "ios-prod": "ENVFILE=.env.prod react-native run-ios --simulator='iPhone 8'",
     "ios:small": "ENVFILE=.env.devt react-native run-ios --simulator='iPhone SE (1st generation)'",
     "ios:long": "ENVFILE=.env.dev react-native run-ios --simulator='iPhone 11 Pro'",
     "ios:large": "ENVFILE=.env.dev react-native run-ios --simulator='iPhone 11'",

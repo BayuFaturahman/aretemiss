@@ -118,7 +118,7 @@ export const MoodComponent = ({data, goToMood = () => null}: MoodProps) => {
       </HStack>
       <Spacer />
       {/* Mood Icon */}
-      <TouchableOpacity onPress={goToMood}>
+      {/* <TouchableOpacity onPress={goToMood}>
         <VStack>
           <FastImage style={{
             height: Spacing[42],
@@ -129,7 +129,7 @@ export const MoodComponent = ({data, goToMood = () => null}: MoodProps) => {
             <Spacer /> 
           </HStack> 
         </VStack> 
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </HStack>
     </>
   )
