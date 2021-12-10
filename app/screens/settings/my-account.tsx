@@ -23,7 +23,7 @@ import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png"
 import { dimensions } from "@config/platform.config"
 import Modal from "react-native-modalbox"
 import smileYellow from "@assets/icons/coachingJournal/empty/smile-yellow.png"
-import angry from "@assets/icons/mood/angry.png"
+import angry from "@assets/icons/mood/marah.png"
 import Spinner from 'react-native-loading-spinner-overlay';
 
 import {launchImageLibrary, launchCamera, ImagePickerResponse, } from 'react-native-image-picker';
@@ -40,7 +40,7 @@ export type ProfileUpdateForm = {
   photo: string
   isAllowNotification?: number
   isAllowReminderNotification?: number
-  // photo: string
+  mood: string
 }
 
 const qualityImage = Platform.OS === 'ios' ? 0.4 : 0.5;
@@ -71,7 +71,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
       photo: mainStore.userProfile.user_photo,
       isAllowNotification: mainStore.userProfile.user_is_allow_notification,
       isAllowReminderNotification: mainStore.userProfile.user_is_allow_reminder_notification,
-      // photo: mainStore.userProfile.user_photo
+      mood: mainStore.userProfile.user_mood
     }
 
     const actionSheetRef = createRef();

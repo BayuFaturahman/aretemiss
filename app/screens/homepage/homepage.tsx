@@ -1,16 +1,14 @@
 import React, {FC, useCallback, useState, useEffect, useReducer} from "react"
-import {SafeAreaView, ScrollView, StatusBar, RefreshControl} from "react-native"
+import {SafeAreaView, ScrollView, StatusBar, RefreshControl, View } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
-import {
-  Text,
-} from "@components"
+import { Button, Text} from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
-import {VStack} from "@components/view-stack";
+import { VStack, HStack } from "@components/view-stack"
 import Spacer from "@components/spacer";
 import {Colors, Layout, Spacing} from "@styles";
 
-import FastImage from "react-native-fast-image";
+import FastImage, { Source } from "react-native-fast-image"
 import topLogo from "@assets/icons/home-top-bg.png";
 import moment from 'moment'
 
@@ -23,12 +21,26 @@ import {SettingsButton} from "@screens/homepage/components/settings-button";
 import {HomepageCardWrapper} from "@screens/homepage/components/homepage-card-wrapper";
 import {CoachingJournalComponent} from "@screens/homepage/components/coaching-journal-component";
 import {FeedItemComponent, FeedItemType} from "@screens/homepage/components/feed-homepage-component";
-import {MoodComponent, MoodItemType} from "@screens/homepage/components/mood-component";
+import {MoodComponent, MoodItemType, MOOD_TYPE} from "@screens/homepage/components/mood-component";
 import {HomepageErrorCard} from "@screens/homepage/components/homepage-error-card";
 
 import RNAnimated from "react-native-animated-component";
 import {debounce} from "lodash";
 import messaging from "@react-native-firebase/messaging";
+
+import Modal from "react-native-modalbox"
+import senang from "@assets/icons/mood/senyum.png"
+import senangBw from "@assets/icons/mood/senyum-bw.png"
+import marah from "@assets/icons/mood/marah.png"
+import marahBw from "@assets/icons/mood/marah-bw.png"
+import sedih from "@assets/icons/mood/sedih.png"
+import sedihBw from "@assets/icons/mood/sedih-bw.png"
+import sakit from "@assets/icons/mood/sakit.png"
+import sakitBw from "@assets/icons/mood/sakit-bw.png"
+import terkejut from "@assets/icons/mood/kaget.png"
+import terkejutBw from "@assets/icons/mood/kaget-bw.png"
+import { TouchableOpacity } from "react-native-gesture-handler"
+import { ProfileUpdateForm } from "@screens/settings/my-account"
 
 const FEED_EXAMPLE_DATA_ITEM: FeedItemType[] = [
   {
@@ -131,6 +143,9 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     const [isHomepageError, setHomepageError] = useState<boolean>(false);
 
     const [moodData, setMoodData] = useState<MoodItemType>(MOOD_EXAMPLE_DATA);
+    const [selectedMood, setSelectedMood] = useState<string>("")
+    const [isMoodUpdated, setIsMoodUpdated] = useState<boolean>(false)
+    const [isModalVisible, setModalVisible] = useState<boolean>(false)
 
     const holdActivitiesId = useCallback((selectedId)=>{
       setSelectedActivities(selectedId)
@@ -181,12 +196,12 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
     const getUserProfile = useCallback(async ()=>{
       await mainStore.getProfile()
-    },[])
+    }, [])
 
     const getJournalList = useCallback(async ()=>{
       await coachingStore.clearJournal()
       await coachingStore.getJournal()
-    },[])
+    }, [])
 
     const getListFeed = useCallback(async () => {
       await feedStore.getListFeeds()
@@ -194,15 +209,15 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
     useEffect(() => {
       loadData()
-    },[])
+    }, [])
 
-
-    useEffect(()=> {
-      if(mainStore.userProfile){
+    useEffect(() => {
+      if (mainStore.userProfile) {
         const data = MOOD_EXAMPLE_DATA
         data.user.name = mainStore.userProfile.user_fullname
         data.user.title = mainStore.userProfile.team1_name
         data.avatarUrl = mainStore.userProfile.user_photo
+        data.moodType = mainStore.userProfile.user_mood
         setMoodData(data)
         forceUpdate()
       }
@@ -285,6 +300,8 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
     const goToSettings = () => navigation.navigate("settingsPage")
 
+    const goToTeamMood = () => navigation.navigate("moodTeam")
+
     StatusBar.setBarStyle('light-content',false);
 
     const renderHomepage = () => {
@@ -300,6 +317,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       }
 
       return(
+        <>
         <VStack top={Spacing[48]} horizontal={Spacing[8]} bottom={Spacing[12]}>
             <VStack horizontal={Spacing[12]}>
             <RNAnimated
@@ -346,15 +364,246 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
           </HomepageCardWrapper>
           <Spacer height={Spacing[12]} />
           <HomepageCardWrapper animationDuration={1000}>
-            <MoodComponent data={moodData} />
+            <MoodComponent data={moodData} goToMood={toggleModal} />
           </HomepageCardWrapper>
+        </VStack>
+        </>
+      )
+    }
+
+    const userProfile: ProfileUpdateForm = {
+      fullname: mainStore.userProfile.user_fullname,
+      nickname: mainStore.userProfile.user_nickname,
+      email: mainStore.userProfile.user_email,
+      team1Id: mainStore.userProfile.team1_id,
+      team2Id: mainStore.userProfile.team2_id,
+      team3Id: mainStore.userProfile.team3_id,
+      photo: mainStore.userProfile.user_photo,
+      isAllowNotification: mainStore.userProfile.user_is_allow_notification,
+      isAllowReminderNotification: mainStore.userProfile.user_is_allow_reminder_notification,
+      mood: mainStore.userProfile.user_mood,
+    }
+
+    const toggleModal = () => {
+      if (!isModalVisible) {
+        setSelectedMood("")
+      }
+      setTimeout(() => {
+        setModalVisible(!isModalVisible)
+      }, 100)
+    }
+
+    const completeUpdateMoodModal = () => {
+      toggleModal()
+      setTimeout(() => {
+        if (isMoodUpdated) {
+          setIsMoodUpdated(false)
+        }
+      }, 200)
+    }
+
+    const getMood = (source: Source, sourceBw: Source, type: string) => {
+      const typeLowerCase = type.toLowerCase()
+      const selectMood = () => {
+        setSelectedMood(typeLowerCase)
+        console.log("selected in getmood ", typeLowerCase)
+      }
+
+      return (
+        <VStack>
+          <TouchableOpacity onPress={selectMood}>
+            <FastImage
+              style={{
+                height: Spacing[48],
+                width: Spacing[48],
+                borderColor: selectedMood === type ? Colors.MAIN_RED : "",
+                borderWidth: selectedMood === type ? Spacing[3] : 0,
+                borderRadius: selectedMood === type ? Spacing[128] : 0,
+              }}
+              source={selectedMood !== typeLowerCase && selectedMood !== "" ? sourceBw : source}
+              resizeMode={"contain"}
+            />
+          </TouchableOpacity>
+          <Text
+            type={"body"}
+            style={{ fontSize: Spacing[18], textAlign: "center" }}
+            text={selectedMood === "" || selectedMood === typeLowerCase ? type : " "}
+          />
         </VStack>
       )
     }
 
+    const updateUserMood = useCallback(async () => {
+      mainStore.formReset()
+      userProfile.mood = selectedMood
+      console.log("selected mood ", userProfile.mood)
+
+      await mainStore.updateProfile(mainStore.userProfile.user_id, userProfile)
+      if (mainStore.errorCode === null) {
+        setIsMoodUpdated(true)
+        // setIsDisableEditBtn(true);
+        // setModalContent('Hore!', 'Profil kamu sudah berhasil diganti.', smileYellow)
+
+        await mainStore.getProfile()
+      } else {
+        // setModalContent('Oh no! :(', 'Perubahannya gagal diproses.\nCoba lagi ya!', angry)
+
+        console.log("error code ", mainStore.errorCode)
+        if (mainStore.errorCode === 500) {
+          // setGeneralErrorMessage(mainStore.errorMessage)
+        } else {
+          // setGeneralErrorMessage(null)
+        }
+      }
+    }, [
+      userProfile,
+      selectedMood,
+      mainStore.errorCode,
+      mainStore.updateProfileSuccess,
+      mainStore.updateProfileFailed,
+    ])
+
+    const renderMoodModal = () => {
+      if (!isMoodUpdated) {
+        return (
+          <VStack
+            horizontal={Spacing[24]}
+            top={Spacing[24]}
+            bottom={Spacing[24]}
+            style={Layout.widthFull}
+          >
+            <VStack style={{ alignItems: "flex-end" }}>
+              <TouchableOpacity onPress={toggleModal}>
+                <Text type={"body-bold"} style={[{ fontSize: Spacing[42] }]}>
+                  x
+                </Text>
+              </TouchableOpacity>
+            </VStack>
+            <VStack>
+              <Text
+                type={"body-bold"}
+                style={{ fontSize: Spacing[18], textAlign: "center" }}
+                text={"Pilih mood Anda hari ini:"}
+              />
+              <Spacer height={Spacing[42]} />
+              <HStack bottom={Spacing[12]}>
+                {getMood(senang, senangBw, "Senang")}
+                <Spacer />
+                <Spacer />
+                {getMood(sedih, sedihBw, "Sedih")}
+                <Spacer />
+                <Spacer />
+                {getMood(marah, marahBw, "Marah")}
+              </HStack>
+              <HStack bottom={Spacing[12]}>
+                <Spacer />
+                {getMood(terkejut, terkejutBw, "Terkejut")}
+                <Spacer />
+                {getMood(sakit, sakitBw, "Sakit")}
+                <Spacer />
+              </HStack>
+              <HStack bottom={Spacing[24]}>
+                <Spacer />
+                <VStack
+                  style={{ maxWidth: Spacing[256], minWidth: Spacing[128], alignItems: "center" }}
+                >
+                  <Button
+                    type={"primary"}
+                    text={"Pilih"}
+                    style={{ height: Spacing[36], paddingHorizontal: Spacing[28] }}
+                    textStyle={{ fontSize: Spacing[16], lineHeight: Spacing[20] }}
+                    onPress={updateUserMood}
+                    disabled={selectedMood === ""}
+                  />
+                  <Spacer height={Spacing[12]} />
+                  <Button
+                    type={"warning"}
+                    text={"Lihat mood anggota lain"}
+                    style={{ height: Spacing[36], paddingHorizontal: Spacing[28] }}
+                    textStyle={{ fontSize: Spacing[16], lineHeight: Spacing[20] }}
+                    onPress={goToTeamMood}
+                  />
+                </VStack>
+                <Spacer />
+              </HStack>
+            </VStack>
+          </VStack>
+        )
+      } else {
+
+        const getMoodSource = (moodType: string) => {
+          console.log("MasuK effect mood homepage ", MOOD_TYPE.length)
+          let toReturn = null
+          for (let x = 0; x < MOOD_TYPE.length; x++) {
+            const type = MOOD_TYPE[x]
+            console.log("type.lable ", type.label)
+            if (type.label === moodType) {
+              console.log("masuk nih ", type.source)
+              x = MOOD_TYPE.length
+              toReturn = type.source
+            }
+          }
+          return toReturn
+        }
+
+        
+        return (
+          <VStack
+            horizontal={Spacing[24]}
+            top={Spacing[24]}
+            bottom={Spacing[24]}
+            style={Layout.widthFull}
+          >
+            <VStack>
+            <Spacer height={Spacing[42]} />
+              <Text
+                type={"body"}
+                style={{ textAlign: "center" }}
+                text={"Mood Anda hari ini sudah terpilih."}
+              />
+              <Spacer height={Spacing[32]} />
+              <HStack bottom={Spacing[28]}>
+                <Spacer />
+                <FastImage
+                  style={{
+                    height: Spacing[84],
+                    width: Spacing[84],
+                  }}
+                  source={getMoodSource(selectedMood.toLowerCase())}
+                  resizeMode={"contain"}
+                />
+                <Spacer />
+              </HStack>
+              <Spacer height={Spacing[14]} />
+              <Text type={"body"} style={{ textAlign: "center", fontSize: Spacing[16] }} >Anda merasa 
+                <Text type={"warning"}> {selectedMood}</Text>!
+              </Text>
+              <Spacer height={Spacing[32]} />
+              <HStack bottom={Spacing[24]}>
+                <Spacer />
+                <VStack style={{ maxWidth: Spacing[256], minWidth: Spacing[128] }}>
+                  <Button
+                    type={"primary"}
+                    text={"Kembali"}
+                    style={{ height: Spacing[32], paddingHorizontal: Spacing[8] }}
+                    textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
+                    onPress={completeUpdateMoodModal}
+                  />
+                </VStack>
+                <Spacer />
+              </HStack>
+            </VStack>
+          </VStack>
+        )
+      }
+    }
+
     return (
-      <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.CLOUD_GRAY, flex: 1, justifyContent: 'center'}}>
-        <SafeAreaView style={Layout.flex}>
+      <VStack
+        testID="CoachingJournalMain"
+        style={{ backgroundColor: Colors.CLOUD_GRAY, flex: 1, justifyContent: "center" }}
+      >
+          <SafeAreaView style={Layout.flex}>
           <VStack style={{backgroundColor: Colors.UNDERTONE_BLUE, borderBottomLeftRadius: Spacing[48], borderBottomRightRadius: Spacing[48], position: 'absolute', width: dimensions.screenWidth}}>
             <FastImage style={{
               height: Spacing[256],
@@ -375,6 +624,30 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
             {renderHomepage()}
           </ScrollView>
         </SafeAreaView>
+        <Modal
+            isOpen={isModalVisible}
+            style={{
+              height: "50%",
+              width: dimensions.screenWidth - Spacing[24],
+              backgroundColor: "rgba(52, 52, 52, 0)",
+            }}
+          >
+            <View style={{ flex: 1, justifyContent: "center" }}>
+              <VStack
+                style={{
+                  backgroundColor: Colors.WHITE,
+                  borderRadius: Spacing[48],
+                  minHeight: Spacing[256],
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+                horizontal={Spacing[24]}
+                vertical={Spacing[24]}
+              >
+                {renderMoodModal()}
+              </VStack>
+            </View>
+          </Modal>
         <SettingsButton goToSettings={goToSettings} />
       </VStack>
     )
