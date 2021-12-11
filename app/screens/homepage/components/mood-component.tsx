@@ -37,7 +37,7 @@ export const MOOD_TYPE = [
   {
     label: 'marahBw',
     source: marahBw,
-  },  
+  },
   {
     label: 'sedih',
     source: sedih,
@@ -53,7 +53,7 @@ export const MOOD_TYPE = [
   {
     label: 'sakitBw',
     source: sakitBw,
-  },  
+  },
   {
     label: 'terkejut',
     source: terkejut,
@@ -79,7 +79,7 @@ type MoodProps = {
 }
 
 export const MoodComponent = ({data, goToMood = () => null}: MoodProps) => {
-  // console.log('mood data ', data) 
+  // console.log('mood data ', data)
   const [source, setSource] = useState<Source>();
 
   useEffect(() => {
@@ -98,14 +98,14 @@ export const MoodComponent = ({data, goToMood = () => null}: MoodProps) => {
     if (tempSource !== null) {
       setSource(tempSource)
     }
-    
+
   })
-  
+
 
   return(
     <>
     <HStack horizontal={Spacing[2]}>
-      <HStack>
+       <HStack>
         <FastImage style={{
           height: Spacing[64],
           width: Spacing[64],
@@ -113,23 +113,23 @@ export const MoodComponent = ({data, goToMood = () => null}: MoodProps) => {
         }} source={data.avatarUrl === '' ? nullProfileIcon : {uri: data.avatarUrl}} resizeMode={"cover"}/>
         <VStack left={Spacing[8]}>
           <Text type={'body-bold'} text={data.user.name} />
-          <Text type={'body'} style={{fontSize: Spacing[12]}} text={data.user.title} />
+          <Text type={'body'} style={{fontSize: Spacing[12], maxWidth: Spacing[128] + Spacing[48]}} text={data.user.title} />
         </VStack>
-      </HStack>
-      <Spacer />
+       </HStack>
+       <Spacer />
       {/* Mood Icon */}
-      {/* <TouchableOpacity onPress={goToMood}>
+      <TouchableOpacity style={{flex: 1, minWidth: Spacing[72], alignItems: 'center'}} onPress={goToMood}>
         <VStack>
           <FastImage style={{
             height: Spacing[42],
-            width: Spacing[42]}} source={source} resizeMode={"contain"}/> 
-          <HStack > 
-            <Spacer /> 
-            <Text type={'right-header'} style={{fontSize: Spacing[12]}} underlineWidth={Spacing[28]} text={'Mood'} /> 
-            <Spacer /> 
-          </HStack> 
-        </VStack> 
-      </TouchableOpacity> */}
+            width: Spacing[42]}} source={source} resizeMode={"contain"}/>
+          <HStack >
+            <Spacer />
+            <Text type={'right-header'} style={{fontSize: Spacing[12]}} underlineWidth={Spacing[28]} text={'Mood'} />
+            <Spacer />
+          </HStack>
+        </VStack>
+      </TouchableOpacity>
     </HStack>
     </>
   )
