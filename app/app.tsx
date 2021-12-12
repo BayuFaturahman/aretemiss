@@ -26,6 +26,12 @@ import RootStore from "./bootstrap/store.bootstrap";
 import {setupRootStore} from "./store/setup-store";
 import {requestUserPermissionForNotification} from "@utils";
 
+import PushNotificationIOS from "@react-native-community/push-notification-ios";
+import PushNotification, {Importance} from "react-native-push-notification";
+
+import messaging from '@react-native-firebase/messaging';
+import {Alert} from "react-native";
+
 // This puts screens in a native ViewController or Activity. If you want fully native
 // stack navigation, use `createNativeStackNavigator` in place of `createStackNavigator`:
 // https://github.com/kmagiera/react-native-screens#using-native-stack-navigator
@@ -53,6 +59,23 @@ function App() {
     })()
 
     requestUserPermissionForNotification();;
+
+    messaging().onMessage((message => {
+      console.log("onMessage")
+      console.log(message)
+      Alert.alert(
+        message.notification.title,
+        message.notification.body,
+        [
+          // {
+          //   text: "Cancel",
+          //   onPress: () => console.log("Cancel Pressed"),
+          //   style: "cancel"
+          // },
+          { text: "OK", onPress: () => console.log("OK Pressed") }
+        ]
+      );
+    }))
   }, [])
 
   if (__DEV__) {
