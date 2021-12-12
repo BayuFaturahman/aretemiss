@@ -150,25 +150,25 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
   const getCreatedTime = () => {
     var currDate = new Date()
     var createdDate = new Date(data.createdAt)
-    
-    var timeDiff = currDate.getTime() - createdDate.getTime() 
-    
+
+    var timeDiff = currDate.getTime() - createdDate.getTime()
+
     var dayDiff = timeDiff/ (1000 * 3600 * 24);
     var hrsDiff = Math.floor((timeDiff % 86400000) / 3600000); // hours
     var minDiff = Math.floor(((timeDiff % 86400000) % 3600000) / 60000) //min
 
     if (dayDiff > 1 ) {
       return Math.floor(dayDiff) + ' days'
-    } 
-    
+    }
+
     if (hrsDiff > 1) {
       return hrsDiff + ' hours'
-    } 
+    }
 
     if (minDiff >= 0) {
       return minDiff + ' mins'
     }
-  
+
     // return dayDiff
   }
 
@@ -234,7 +234,7 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
                 source={data.author.photo !== '' ? {
                   uri: data.author.photo
                 }: nullProfileIcon}
-                resizeMode={"contain"}
+                resizeMode={"cover"}
               />
               <VStack left={Spacing[8]}>
                 <Text
@@ -259,7 +259,7 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
                 width: Spacing[12]
               }}
               source={trash}
-              resizeMode={"cover"}
+              resizeMode={"contain"}
             />
           </TouchableOpacity>
         }
