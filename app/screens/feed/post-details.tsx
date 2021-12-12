@@ -4,7 +4,7 @@ import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {
   Text,
-  BackNavigation, TextField
+  BackNavigation, TextField, Button
 } from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
 import { VStack, HStack} from "@components/view-stack";
@@ -21,6 +21,7 @@ import KeyboardStickyView from "@components/keyboard-sticky-view";
 import FastImage from "react-native-fast-image";
 import {phoneType} from "@config/platform.config";
 import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png";
+import {clear} from "@utils/storage";
 
 const FEED_EXAMPLE_DATA_ITEM: FeedTimelineItem = {
   id: "0",
@@ -95,10 +96,11 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
     const [listImageViewer, setListImageViewer] = useState(images);
     const [activeViewerIndex, setActiveViewerIndex] = useState<number>(0);
 
+    const [replyInput, setReplyInput] = React.useState<string>('');
     const [isReplyFocus, setIsReplyFocus] = React.useState<boolean>(false);
     const [replyTo, setReplyTo] = React.useState<string>(null);
     const [isReplyingComment, setIsReplyingComment] = React.useState<boolean>(
-      false,
+      true,
     );
     const [holdPost, setHoldedPost] = useState<string>();
 
@@ -144,15 +146,11 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
       replyInputRef.current?.blur();
     };
 
-    const replyInputComponent = () => {
-      // const renderSubmitButton = () => {
-      //   if (replyInput !== '') {
-      //     return <SubmitActive width={Spacing[24]} height={Spacing[24]} />;
-      //   } else {
-      //     return <SubmitInactive width={Spacing[24]} height={Spacing[24]} />;
-      //   }
-      // };
+    const clearMention = () => {
+      setIsReplyingComment(false)
+    };
 
+    const replyInputComponent = () => {
       return (
         <KeyboardStickyView
           style={{
@@ -160,100 +158,83 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
               borderTopWidth: Spacing[1],
               borderColor: Colors.GRAY300,
             }}>
-          {/* clear reply to comment */}
-          {isReplyingComment && (
-            <HStack
-              vertical={Spacing[8]}
-              horizontal={Spacing[24]}
-              style={{backgroundColor: Colors.WHITE}}>
-              <Text style={[Layout.flex,{
-                color: Colors.BLACK,
-                fontSize: Spacing[16],
-                lineHeight: Spacing[24]}]}
-                type="body">
-              {/* //   {`${'Replying to'} ${ */}
-              {/* //   holdPost */}
-              {/* //     ? holdPost.repliedTo?.fullName */}
-              {/* //     : replyTo?.userId?.fullName */}
-              {/* // }…`} */}
-                Test
-              </Text>
-              <TouchableOpacity
-                // onPress={() => clearMention()}
-              >
-                {/* <IonIcon */}
-                {/*  name="close" */}
-                {/*  size={Spacing[24]} */}
-                {/*  color={Colors.BLACK_65} */}
-                {/* /> */}
-              </TouchableOpacity>
-            </HStack>
-          )}
-          <Spacer height={Spacing[8]} />
-          <HStack
+          <VStack
             horizontal={Spacing[16]}
             style={[Layout.widthFull, Layout.flex]}>
-            <VStack>
-              <Spacer height={Spacing[4]} />
-              <FastImage
-                source={nullProfileIcon}
-                style={{
-                  width: Spacing[42],
-                  height: Spacing[42],
-                  borderRadius: 150 / 2,
-                }}
-                resizeMode="cover"
-              />
-              <Spacer />
-            </VStack>
-            <Spacer width={Spacing[8]} />
+            {/* clear reply to comment */}
+            {isReplyingComment && (
+              <HStack
+                top={Spacing[12]}
+                style={{backgroundColor: Colors.WHITE}}>
+                <Text style={[Layout.flex,{
+                  fontSize: Spacing[16],
+                  lineHeight: Spacing[24]}]}
+                      type="body">
+                  {`${'Replying to '}`}
+                  {/* Replied User */}
+                  {`@${'Geneva Herrings'}`}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => clearMention()}
+                >
+                  <Text style={[Layout.flex,{
+                    fontSize: Spacing[16],
+                    lineHeight: Spacing[24]}]}
+                        type="body-bold">
+                    X
+                  </Text>
+                </TouchableOpacity>
+              </HStack>
+            )}
             <TextField
+              isRequired={false}
               autoCapitalize={'none'}
               multiline
               autoFocus={false}
-              // value={replyInput}
+              value={replyInput}
               maxLength={1000}
-              // onChangeText={(text) => setReplyInput(text)}
-              // @ts-ignore
+              onChangeText={(text) => setReplyInput(text)}
               ref={replyInputRef}
               autoCorrect={false}
-              // style={styles.replyInput}
+              style={Layout.widthFull}
               placeholder={'Write a reply...'}
               // placeholderTextColor={Colors.BLACK_30}
               underlineColorAndroid="transparent"
-              // onFocus={() => setIsReplyFocus(true)}
-              // onBlur={() => setIsReplyFocus(false)}
+              onFocus={() => setIsReplyFocus(true)}
+              onBlur={() => setIsReplyFocus(false)}
             />
-            {isReplyFocus && (
-              <TouchableOpacity
-                // onPress={submitComment}
-                style={[
-                  Layout.heightFull,
-                  {
-                    position: 'absolute',
-                    right: 0,
-                    bottom: 20,
-                    marginRight: Spacing[24],
-                    paddingBottom: Spacing[12],
-                  },
-                ]}
-                // disabled={replyInput === ''}
-              >
-                <Spacer />
-                {/* {renderSubmitButton()} */}
-              </TouchableOpacity>
-            )}
-          </HStack>
-          {Platform.OS === 'ios' ? (
+          </VStack>
+          {
+            isReplyFocus ?
+              <HStack horizontal={Spacing[24]}>
+                <TouchableOpacity onPress={() => {
+                  setReplyInput(null)
+                  clearMention()
+                }}>
+                  <Text
+                    type={"body"}
+                    style={{ fontSize: Spacing[16] }}
+                    underlineWidth={Spacing[72]}
+                    text="Cancel"
+                  />
+                </TouchableOpacity>
+                <Spacer/>
+                <Button
+                  type={"primary"}
+                  text={"Send"}
+                  style={{height:Spacing[32], paddingHorizontal: Spacing[12]}}
+                  textStyle={{fontSize: Spacing[14], lineHeight: Spacing[18]}}
+                  // onPress={navigateTo}
+                />
+              </HStack> : <></>
+          }
+           {Platform.OS === 'ios' ? (
             <Spacer
-              height={
-                (true ? Spacing[12] : Spacing[12]) +
-                (phoneType() === 'iphoneNotch' ? Spacing[12] : 0)
-              }
+              height={Spacing[12]}
             />
-          ) : (
+           ) : (
             <Spacer height={Spacing[20]} />
-          )}
+           )}
         </KeyboardStickyView>
       );
     };

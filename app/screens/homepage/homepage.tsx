@@ -474,7 +474,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
           >
             <VStack style={{ alignItems: "flex-end" }}>
               <TouchableOpacity onPress={toggleModal}>
-                <Text type={"body-bold"} style={[{ fontSize: Spacing[42] }]}>
+                <Text type={"body-bold"} style={[{ fontSize: Spacing[32] }]}>
                   x
                 </Text>
               </TouchableOpacity>
@@ -546,7 +546,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
           return toReturn
         }
 
-        
+
         return (
           <VStack
             horizontal={Spacing[24]}
@@ -575,7 +575,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
                 <Spacer />
               </HStack>
               <Spacer height={Spacing[14]} />
-              <Text type={"body"} style={{ textAlign: "center", fontSize: Spacing[16] }} >Anda merasa 
+              <Text type={"body"} style={{ textAlign: "center", fontSize: Spacing[16] }} >Anda merasa
                 <Text type={"warning"}> {selectedMood}</Text>!
               </Text>
               <Spacer height={Spacing[32]} />

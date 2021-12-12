@@ -88,7 +88,7 @@ export function TextField(props: TextFieldProps) {
     placeholderTx,
     placeholder,
     labelTx,
-    label,
+    label = null,
     preset = "default",
     style: styleOverride,
     inputStyle: inputStyleOverride,
@@ -148,11 +148,15 @@ export function TextField(props: TextFieldProps) {
   if(props.isTextArea){
     return(
       <View style={containerStyles}>
-        <HStack>
-          {renderRequired()}
-          <Text type={'label'} style={[{fontSize: Spacing[14]}, LABEL_STYLE]} tx={labelTx} text={label} />
-        </HStack>
-        <Spacer height={Spacing[4]} />
+        {label === null ? <></> :
+          <>
+            <HStack>
+              {renderRequired()}
+              <Text type={'label'} style={[{fontSize: Spacing[14]}, LABEL_STYLE]} tx={labelTx} text={label} />
+            </HStack>
+          </>
+        }
+        <Spacer height={Spacing[8]} />
         <TextInput
           multiline={true}
           placeholder={actualPlaceholder}
@@ -201,11 +205,15 @@ export function TextField(props: TextFieldProps) {
 
   return (
     <View style={containerStyles}>
-      <HStack>
-        {renderRequired()}
-        <Text type={'label'} style={[{fontSize: Spacing[14]}, LABEL_STYLE]} tx={labelTx} text={label} />
-      </HStack>
-      <Spacer height={Spacing[4]} />
+      {label === null ? <></> :
+        <>
+          <HStack>
+            {renderRequired()}
+            <Text type={'label'} style={[{fontSize: Spacing[14]}, LABEL_STYLE]} tx={labelTx} text={label} />
+          </HStack>
+          <Spacer height={Spacing[4]} />
+        </>
+      }
       <TextInput
         placeholder={actualPlaceholder}
         placeholderTextColor={color.palette.lighterGrey}
