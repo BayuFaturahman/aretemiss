@@ -155,7 +155,7 @@ const MoodTeam: FC<StackScreenProps<NavigatorParamList, "moodTeam">> = observer(
                     <HStack style={{ justifyContent: "space-around", width: "100%"}}>
                       <Text type={"body"} style={{fontSize: Spacing[16], width: '80%'}}>
                         <Text type={"body-bold"}>{item.userFullName} </Text>
-                        merasa {item.moodType}
+                        merasa  <Text type={"body-bold"}>{item.moodType}</Text>.
                       </Text>
                       <Spacer />
                       <FastImage
