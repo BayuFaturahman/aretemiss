@@ -150,9 +150,9 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
   const getCreatedTime = () => {
     var currDate = new Date()
     var createdDate = new Date(data.createdAt)
-    
-    var timeDiff = currDate.getTime() - createdDate.getTime() 
-    
+
+    var timeDiff = currDate.getTime() - createdDate.getTime()
+
     var dayDiff = timeDiff/ (1000 * 3600 * 24);
     var hrsDiff = Math.floor((timeDiff % 86400000) / 3600000); // hours
     var minDiff = Math.floor(((timeDiff % 86400000) % 3600000) / 60000) //min
@@ -172,7 +172,7 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
     if (minDiff === 0) {
       return 'baru saja'
     }
-  
+
     // return dayDiff
   }
 
@@ -263,7 +263,7 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
                 width: Spacing[12]
               }}
               source={trash}
-              resizeMode={"cover"}
+              resizeMode={"contain"}
             />
           </TouchableOpacity>
         }

@@ -1,13 +1,22 @@
-import React, {FC, useCallback, useEffect, useState,} from "react"
-import {FlatList, Modal, RefreshControl, SafeAreaView } from "react-native"
+import React, {FC, useCallback, useEffect, useRef, useState,} from "react"
+import {
+  FlatList,
+  Modal,
+  Platform,
+  RefreshControl,
+  SafeAreaView,
+  Text as ReactNativeText,
+  TouchableOpacity,
+  View
+} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {
   Text,
-  BackNavigation
+  BackNavigation, TextField, Button
 } from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
-import { VStack} from "@components/view-stack";
+import { VStack, HStack} from "@components/view-stack";
 import Spacer from "@components/spacer";
 import {Colors, Layout, Spacing} from "@styles";
 
@@ -17,6 +26,12 @@ import {FeedPost} from "@screens/feed/component/feed-post";
 import ImageViewer from "react-native-image-zoom-viewer";
 import {FeedItemType} from "@screens/homepage/components/feed-homepage-component";
 import {FeedTimelineItem} from "@screens/feed/feed.type";
+import KeyboardStickyView from "@components/keyboard-sticky-view";
+import FastImage from "react-native-fast-image";
+import {phoneType} from "@config/platform.config";
+import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png";
+import {clear} from "@utils/storage";
+import {presets} from "@components/text/text.presets";
 
 const FEED_EXAMPLE_DATA_ITEM: FeedTimelineItem = {
   id: "0",
@@ -37,31 +52,57 @@ const FEED_EXAMPLE_DATA_ITEM: FeedTimelineItem = {
     {
       id: '0',
       author: {
+        id: '0',
         fullname: 'Mr. Tomo Kaneki',
         nickname: 'Tomo',
-        title: 'Operational Manager'
+        title: 'Operational Manager',
+        imageUrl:
+          "https://www.gstatic.com/webp/gallery/4.jpg",
       },
       comment: 'That’s a clever idea, Eva. Well done.',
       isOwnComment: false,
       feedId: '0',
       createdAt: "2021-09-24T10:39:39.000Z",
       updatedAt: "2021-09-24T10:39:39.000Z",
-      isDeleted: 0
+      isDeleted: 0,
+      mentionTo: ""
     },
     {
       id: '1',
       author: {
-        fullname: 'Mr. Tomo Kaneki',
+        id: '0',
+        fullname: 'Mr. Joni Hoki',
         nickname: 'Tomo',
-        title: 'Operational Manager'
+        title: 'Operational Manager',
+        imageUrl:
+          "https://www.gstatic.com/webp/gallery/4.jpg",
       },
       comment: 'Nice! I’ve tried this strategy before, but it did not really made a difference on my team. Would you recommend me how to do it differently?',
       isOwnComment: true,
       feedId: '0',
       createdAt: "2021-09-24T10:39:39.000Z",
       updatedAt: "2021-09-24T10:39:39.000Z",
-      isDeleted: 0
-    }
+      isDeleted: 0,
+      mentionTo: ""
+    },
+    {
+      id: '2',
+      author: {
+        id: '0',
+        fullname: 'Mr. Tomo Kaneki',
+        nickname: 'Tomo',
+        title: 'Operational Manager',
+        imageUrl:
+          "https://www.gstatic.com/webp/gallery/4.jpg",
+      },
+      comment: 'That’s a clever idea, Eva. Well done.',
+      isOwnComment: false,
+      feedId: '0',
+      createdAt: "2021-09-24T10:39:39.000Z",
+      updatedAt: "2021-09-24T10:39:39.000Z",
+      isDeleted: 0,
+      mentionTo: "Layla Fathimah"
+    },
   ],
 }
 
@@ -79,6 +120,8 @@ const images = [
 const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = observer(
   ({ navigation, route }) => {
 
+    const replyInputRef = useRef(null);
+
     const { data } = route.params;
     const { feedStore } = useStores()
 
@@ -88,6 +131,19 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
 
     const [listImageViewer, setListImageViewer] = useState(images);
     const [activeViewerIndex, setActiveViewerIndex] = useState<number>(0);
+
+    const [replyInput, setReplyInput] = React.useState<string>('');
+    const [isReplyFocus, setIsReplyFocus] = React.useState<boolean>(false);
+    const [isReplyingComment, setIsReplyingComment] = React.useState<boolean>(
+      false,
+    );
+
+    const [replyId, setReplyId] = React.useState<string>(null);
+    const [replyToName, setReplyToName] = React.useState<string>(null);
+
+
+
+    const [holdPost, setHoldedPost] = useState<string>();
 
     const toggleModal = (value: boolean) =>{
       setModal(value)
@@ -120,6 +176,117 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
       setListImageViewer(imageList)
       toggleModal(true);
     }, [])
+
+    const replyInputFocus = () => {
+      // @ts-ignore
+      replyInputRef.current?.focus();
+    };
+
+    const replyInputBlur = () => {
+      // @ts-ignore
+      replyInputRef.current?.blur();
+    };
+
+    const clearMention = () => {
+      setIsReplyingComment(false)
+      setReplyId(null)
+      setReplyToName(null)
+    };
+
+    const replyingTo = (replyId: string, replyName: string) => {
+      setIsReplyingComment(true)
+      setReplyId(replyId)
+      setReplyToName(replyName)
+    };
+
+    const replyInputComponent = () => {
+      return (
+        <KeyboardStickyView
+          style={{
+              backgroundColor: Colors.WHITE,
+              borderTopWidth: Spacing[1],
+              borderColor: Colors.GRAY300,
+            }}>
+          <VStack
+            horizontal={Spacing[16]}
+            style={[Layout.widthFull, Layout.flex]}>
+            {/* clear reply to comment */}
+            {(isReplyingComment && replyId !== "") && (
+              <HStack
+                top={Spacing[12]}
+                style={{backgroundColor: Colors.WHITE}}>
+                <Text style={[Layout.flex,{
+                  fontSize: Spacing[16],
+                  lineHeight: Spacing[24]}]}
+                      type="body">
+                  {`${'Replying to '}`}
+                  {/* Replied User */}
+                  {`@${replyToName}`}
+                </Text>
+                 <TouchableOpacity
+                  onPress={() => clearMention()}
+                 >
+                  <Text style={[Layout.flex,{
+                    fontSize: Spacing[16],
+                    lineHeight: Spacing[24]}]}
+                        type="body-bold">
+                    X
+                  </Text>
+                 </TouchableOpacity>
+              </HStack>
+            )}
+            <TextField
+              isRequired={false}
+              autoCapitalize={'none'}
+              multiline
+              autoFocus={false}
+              value={replyInput}
+              maxLength={1000}
+              onChangeText={(text) => setReplyInput(text)}
+              ref={replyInputRef}
+              autoCorrect={false}
+              style={Layout.widthFull}
+              placeholder={'Write a reply...'}
+              // placeholderTextColor={Colors.BLACK_30}
+              underlineColorAndroid="transparent"
+              onFocus={() => setIsReplyFocus(true)}
+              onBlur={() => setIsReplyFocus(false)}
+            />
+          </VStack>
+          {
+            isReplyFocus ?
+              <HStack horizontal={Spacing[24]}>
+                <TouchableOpacity onPress={() => {
+                  setReplyInput(null)
+                  clearMention()
+                }}>
+                  <Text
+                    type={"body"}
+                    style={{ fontSize: Spacing[16] }}
+                    underlineWidth={Spacing[72]}
+                    text="Cancel"
+                  />
+                </TouchableOpacity>
+                <Spacer/>
+                <Button
+                  type={"primary"}
+                  text={"Send"}
+                  style={{height:Spacing[32], paddingHorizontal: Spacing[12]}}
+                  textStyle={{fontSize: Spacing[14], lineHeight: Spacing[18]}}
+                  // onPress={navigateTo}
+                />
+              </HStack> : <></>
+          }
+           {Platform.OS === 'ios' ? (
+            <Spacer
+              height={Spacing[12]}
+            />
+           ) : (
+            <Spacer height={Spacing[20]} />
+           )}
+        </KeyboardStickyView>
+      );
+    };
 
     return (
       <VStack
@@ -154,7 +321,7 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
               </VStack>
             }
             ListFooterComponent={
-              <Spacer height={Spacing[72]} />
+              <Spacer height={Spacing[256] + (isReplyFocus === true ? Spacing[256] : 0)} />
             }
             showsVerticalScrollIndicator={false}
             ItemSeparatorComponent={()=> <Spacer height={Spacing[8]} />}
@@ -168,14 +335,91 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
               />
             }
             renderItem={({item, index})=> {
+
+              const profileComponent = () => {
+                return(
+                  <>
+                    <VStack right={Spacing[8]}>
+                      <Text
+                        type={"body-bold"}
+                        style={{ fontSize: Spacing[14] }}
+                        text={item.author.fullname}
+                      />
+                      <Text
+                        type={"body"}
+                        style={{ fontSize: Spacing[14] }}
+                        text={item.author.title}
+                      />
+                    </VStack>
+                    <FastImage
+                      style={{
+                        height: Spacing[32],
+                        width: Spacing[32],
+                        borderRadius: Spacing[8],
+                      }}
+                      source={item.author.imageUrl !== '' ? {
+                        uri: item.author.imageUrl
+                      }: nullProfileIcon}
+                      resizeMode={"cover"}
+                    />
+                    {/* TODO Mood Icon */}
+                  </>
+                )
+              }
+
+              const replyButton = () => {
+                return(
+                  <TouchableOpacity onPress={() => {
+                    replyingTo(item.author.id, item.author.fullname)
+                  }}>
+                    <Text
+                      type={"body"}
+                      style={{ fontSize: Spacing[12] }}
+                      underlineWidth={Spacing[72]}
+                      text="Reply"
+                    />
+                    <Spacer/>
+                  </TouchableOpacity>
+                )
+              }
+
               return (
-                <VStack>
-                  <Text
-                    type={"body"}
-                    style={{ fontSize: Spacing[16] }}
-                    underlineWidth={Spacing[72]}
-                    text={item.comment}
-                  />
+                <VStack left={Spacing[24]}>
+                  <HStack
+                    style={{ backgroundColor: Colors.LIGHT_GRAY, borderRadius: Spacing[8] }}
+                    horizontal={Spacing[12]}
+                    vertical={Spacing[12]}
+                  >
+                    <Text
+                      type={"body"}
+                    >
+                      {item.mentionTo !== "" ?
+                        <VStack right={Spacing[4]}>
+                          <Text
+                            style={{fontSize: Spacing[14]}}
+                            type={"body-bold"}
+                            text={`@${item.mentionTo}`}
+                          />
+                        <View style={{height: Spacing[2], backgroundColor: Colors.MAIN_RED, width: '100%', position: 'absolute', bottom: 0}}></View>
+                      </VStack> : <></>}
+                      {item.comment}
+                    </Text>
+                  </HStack>
+                  <Spacer height={Spacing[8]} />
+                  <HStack>
+                    {item.isOwnComment ?
+                      <>
+                        {profileComponent()}
+                        <Spacer/>
+                        {replyButton()}
+                      </> :
+                      <>
+                        {replyButton()}
+                        <Spacer/>
+                        {profileComponent()}
+                      </>
+                    }
+                  </HStack>
                 </VStack>
                 )
             }}
@@ -183,6 +427,9 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
             keyExtractor={item => item.id}
           />
         </SafeAreaView>
+
+        {replyInputComponent()}
+
         <Modal
           visible={modal}
           transparent={true}
