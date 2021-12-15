@@ -157,15 +157,27 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
     var hrsDiff = Math.floor((timeDiff % 86400000) / 3600000); // hours
     var minDiff = Math.floor(((timeDiff % 86400000) % 3600000) / 60000) //min
 
+    if (dayDiff === 1 ) {
+      return Math.floor(dayDiff) + ' day ago'
+    } 
+
     if (dayDiff > 1 ) {
       return Math.floor(dayDiff) + ' days ago'
+    } 
+
+    if (hrsDiff === 1) {
+      return hrsDiff + ' hour ago'
     } 
     
     if (hrsDiff > 1) {
       return hrsDiff + ' hours ago'
     } 
 
-    if (minDiff > 0) {
+    if (minDiff === 1) {
+      return minDiff + ' min  ago'
+    }
+
+    if (minDiff > 1) {
       return minDiff + ' mins  ago'
     }
 
