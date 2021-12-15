@@ -14,18 +14,19 @@ export type FeedApiModel = {
   "feed_comment_count": number
 }
 
-// export type CommentApiModel = {
-//   "feed_comment_id": string
-//   "feed_comment_comment": string
-//   // "feed_comment_feedId": string
-//   // "feed_comment_authorId": string
-//   "feed_comment_isDeleted": number
-//   "feed_comment_created_at": string
-//   "feed_comment_updated_at": string
-//   "feed_comment_author_id": string
-//   "feed_comment_feed_id": string
-//   "feed_comment_author": null
-// }
+export type CommentApiModel = {
+  "feed_comment_id": string
+  "feed_comment_comment": string
+  "feed_comment_feed_id": string
+  "feed_comment_author_id": string
+  "feed_comment_reply_to_id": string
+  "feed_comment_created_at": string
+  "feed_comment_updated_at": string
+  "feed_comment_deleted_at": string
+  "feed_comment_author_nickname": string
+  "feed_comment_author_photo": null
+  "feed_comment_reply_to_nickname": string
+}
 
 export interface ErrorFormResponse {
   errorCode: number
@@ -70,8 +71,16 @@ export interface DeletePostResponse {
     
   }
 }
+export interface GetListCommentResponse {
+  message: string
+  token: string
+  data: {
+    comments: CommentApiModel[]
+  }
+}
 
 export type GetListFeedsResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListFeedsResponse }  | GeneralApiProblem
 export type PostUploadFeedImagesResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: PostUploadFeedImagesResponse }  | GeneralApiProblem
 export type CreatePostResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreatePostResponse }  | GeneralApiProblem
 export type DeletePostResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: DeletePostResponse }  | GeneralApiProblem
+export type GetListCommentResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListCommentResponse }  | GeneralApiProblem

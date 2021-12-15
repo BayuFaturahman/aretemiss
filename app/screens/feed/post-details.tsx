@@ -24,14 +24,15 @@ import {useStores} from "../../bootstrap/context.boostrap";
 
 import {FeedPost} from "@screens/feed/component/feed-post";
 import ImageViewer from "react-native-image-zoom-viewer";
-import {FeedItemType} from "@screens/homepage/components/feed-homepage-component";
-import {FeedTimelineItem} from "@screens/feed/feed.type";
+import {FeedPostCommentType, FeedTimelineItem} from "@screens/feed/feed.type";
 import KeyboardStickyView from "@components/keyboard-sticky-view";
 import FastImage from "react-native-fast-image";
 import {phoneType} from "@config/platform.config";
 import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png";
 import {clear} from "@utils/storage";
 import {presets} from "@components/text/text.presets";
+
+import {debounce} from "lodash";
 
 const FEED_EXAMPLE_DATA_ITEM: FeedTimelineItem = {
   id: "0",
@@ -123,9 +124,11 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
     const replyInputRef = useRef(null);
 
     const { data } = route.params;
-    const { feedStore } = useStores()
+    const { feedStore, mainStore } = useStores()
 
     const [modal, setModal] = useState<boolean>(false);
+    const [listComment, setListComment] = useState<Array<FeedPostCommentType>>(feedStore.listComment);
+    const [currentPage, setCurrentPage] = useState<number>(2);
 
     const [postDetails, setPostDetails] = useState<FeedTimelineItem>(FEED_EXAMPLE_DATA_ITEM);
 
@@ -141,18 +144,51 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
     const [replyId, setReplyId] = React.useState<string>(null);
     const [replyToName, setReplyToName] = React.useState<string>(null);
 
-
-
     const [holdPost, setHoldedPost] = useState<string>();
 
     const toggleModal = (value: boolean) =>{
       setModal(value)
     }
 
+    const firstLoadComment = debounce( async () => {
+      await feedStore.clearListComment()
+      await loadComment(1)
+    }, 500)
+
+    const loadComment = useCallback(async (page: number) => {
+      await feedStore.getListComment(mainStore.userProfile.user_id, data.id)
+      setListComment(feedStore.listComment)
+    }, [])
+
+    const onLoadMore = React.useCallback(async () => {
+      console.log('load more feed ')
+      await loadComment(currentPage)
+      setCurrentPage(currentPage + 1)
+    }, [currentPage]);
+
     const onRefresh = React.useCallback(async() => {
-      // setCoachingData([])
-      // await coachingStore.getJournal()
+      console.log('On refresh post detail ')
+      firstLoadComment()
     }, []);
+
+    useEffect(() => {
+      console.log('Use effect list feed tanpa []')
+      firstLoadComment()      
+    }, [])
+
+    useEffect(()=>{
+      console.log('feedStore.refreshData ', feedStore.refreshData)
+      if(feedStore.refreshData ){        
+        setTimeout(()=>{
+          firstLoadComment()
+        }, 100)
+      }
+    },[feedStore.refreshData])
+
+    useEffect(() => {
+      setListComment([])
+      setListComment(feedStore.listComment)
+    }, [listComment, feedStore.getListCommentSuccess])
 
     const deletePost = React.useCallback(async(id) => {
       console.log('delete post')
@@ -325,13 +361,13 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
             }
             showsVerticalScrollIndicator={false}
             ItemSeparatorComponent={()=> <Spacer height={Spacing[8]} />}
-            data={postDetails.comments}
+            data={listComment}
             ListEmptyComponent={()=>
               <Text
-                type={"left-header"}
+                type={"body"}
                 style={{ fontSize: Spacing[16] }}
                 underlineWidth={Spacing[72]}
-                text="My Feed."
+                text="no comment yet"
               />
             }
             renderItem={({item, index})=> {
@@ -343,7 +379,7 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                       <Text
                         type={"body-bold"}
                         style={{ fontSize: Spacing[14] }}
-                        text={item.author.fullname}
+                        text={item.author.nickname}
                       />
                       <Text
                         type={"body"}
@@ -357,8 +393,8 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                         width: Spacing[32],
                         borderRadius: Spacing[8],
                       }}
-                      source={item.author.imageUrl !== '' ? {
-                        uri: item.author.imageUrl
+                      source={item.author.photo !== '' ? {
+                        uri: item.author.photo
                       }: nullProfileIcon}
                       resizeMode={"cover"}
                     />
@@ -367,10 +403,42 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                 )
               }
 
+              const ownProfileComponent = () => {
+                return(
+                  <>
+                   <FastImage
+                      style={{
+                        height: Spacing[32],
+                        width: Spacing[32],
+                        borderRadius: Spacing[8],
+                      }}
+                      source={item.author.photo !== '' ? {
+                        uri: item.author.photo
+                      }: nullProfileIcon}
+                      resizeMode={"cover"}
+                    />
+                    <VStack left={Spacing[8]}>
+                      <Text
+                        type={"body-bold"}
+                        style={{ fontSize: Spacing[14] }}
+                        text={item.author.nickname}
+                      />
+                      <Text
+                        type={"body"}
+                        style={{ fontSize: Spacing[14] }}
+                        text={item.author.title}
+                      />
+                    </VStack>
+                   
+                    {/* TODO Mood Icon */}
+                  </>
+                )
+              }
+
               const replyButton = () => {
                 return(
                   <TouchableOpacity onPress={() => {
-                    replyingTo(item.author.id, item.author.fullname)
+                    replyingTo(item.author.id, item.author.nickname)
                   }}>
                     <Text
                       type={"body"}
@@ -393,12 +461,12 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                     <Text
                       type={"body"}
                     >
-                      {item.mentionTo !== "" ?
+                      {item.replyToNickname !== "" ?
                         <VStack right={Spacing[4]}>
                           <Text
                             style={{fontSize: Spacing[14]}}
                             type={"body-bold"}
-                            text={`@${item.mentionTo}`}
+                            text={`@${item.replyToNickname}`}
                           />
                         <View style={{height: Spacing[2], backgroundColor: Colors.MAIN_RED, width: '100%', position: 'absolute', bottom: 0}}></View>
                       </VStack> : <></>}
@@ -409,7 +477,7 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                   <HStack>
                     {item.isOwnComment ?
                       <>
-                        {profileComponent()}
+                        {ownProfileComponent()}
                         <Spacer/>
                         {replyButton()}
                       </> :

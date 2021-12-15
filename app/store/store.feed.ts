@@ -5,8 +5,8 @@ import { makeAutoObservable } from "mobx"
 import ServiceStore from "./store.service"
 import { Api } from "@services/api"
 import { FeedApi } from "@services/api/feed/feed-api"
-import { ErrorFormResponse, FeedApiModel } from "@services/api/feed/feed-api.types"
-import { CreatePostType, FeedItemType } from "@screens/feed/feed.type"
+import { CommentApiModel, ErrorFormResponse, FeedApiModel } from "@services/api/feed/feed-api.types"
+import { CreatePostType, FeedItemType, FeedPostCommentType } from "@screens/feed/feed.type"
 
 
 export default class FeedStore {
@@ -24,6 +24,7 @@ export default class FeedStore {
   feedApi: FeedApi
   listFeeds: FeedItemType[]
   listMyFeed: FeedItemType[]
+  listComment: FeedPostCommentType[]
 
   constructor(serviceStore: ServiceStore, api: Api) {
     this.serviceStore = serviceStore
@@ -250,6 +251,68 @@ export default class FeedStore {
       console.log("Upload Feed Image done")
       this.isLoading = false
     }
+  }
+
+  async getListComment(userId: string, feedId: string, page = 1, limit = 5) {
+    this.isLoading = true
+    try {
+      const response = await this.feedApi.getListComment(feedId, page, limit)
+
+      if (response.kind === "form-error") {
+        this.formError(response.response)
+      }
+
+      if (response.kind === "ok") {
+        this.getListCommentSuccess(userId, response.response.data.comments)
+      }
+    } catch (e) {
+      console.log(e)
+      this.setErrorMessage(e)
+    } finally {
+      console.log("getListComment done")
+      this.isLoading = false
+    }
+  }
+
+  getListCommentSuccess(userId: string, data: CommentApiModel[]) {
+    console.log("getListCommentSuccess data", data)
+    const tempPostComment: FeedPostCommentType[] = []
+    data.forEach(comment => {
+      console.log()
+      tempPostComment.push({
+        id: comment.feed_comment_id,
+        comment: comment.feed_comment_comment,
+        feedId: comment.feed_comment_feed_id,
+        isOwnComment: comment.feed_comment_author_id === userId,
+        replyToId: comment.feed_comment_reply_to_id? comment.feed_comment_reply_to_id : '',
+        replyToNickname: comment.feed_comment_reply_to_nickname ? comment.feed_comment_reply_to_nickname: '',
+        createdAt: comment.feed_comment_created_at,
+        updatedAt: comment.feed_comment_updated_at,
+        deletedAt: comment.feed_comment_deleted_at ? comment.feed_comment_deleted_at : '',
+        author: {
+          id: comment.feed_comment_author_id,
+          nickname: comment.feed_comment_author_nickname,
+          title: '',
+          photo: comment.feed_comment_author_photo
+        }
+      })
+    })
+    
+    const sortedComment = tempPostComment.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+
+    this.listComment = [
+      ...this.listComment,
+      ...(sortedComment ?? [])
+    ]
+    this.isLoading = false
+    this.refreshData = true    
+    console.log("list comment: ", this.listComment)
+  }
+
+  clearListComment() {
+    this.listComment = []
+    console.log('clear list comment')
+    // console.log("list feed: ", this.listFeeds)
   }
 
   formReset() {
