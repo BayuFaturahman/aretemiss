@@ -31,6 +31,7 @@ import {phoneType} from "@config/platform.config";
 import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png";
 import {clear} from "@utils/storage";
 import {presets} from "@components/text/text.presets";
+import Spinner from "react-native-loading-spinner-overlay"
 
 import {debounce} from "lodash";
 
@@ -309,7 +310,7 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                   text={"Send"}
                   style={{height:Spacing[32], paddingHorizontal: Spacing[12]}}
                   textStyle={{fontSize: Spacing[14], lineHeight: Spacing[18]}}
-                  // onPress={navigateTo}
+                  onPress={submitComment}
                 />
               </HStack> : <></>
           }
@@ -323,6 +324,23 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
         </KeyboardStickyView>
       );
     };
+
+    const submitComment = useCallback(async () => {
+      feedStore.formReset()
+      await feedStore.createComment({
+        feedId: data.id,
+        comment: replyInput
+      })
+
+      if (feedStore.errorCode === null) {
+        setReplyInput('')
+        firstLoadComment()
+        
+      } else {
+        console.log(feedStore.errorCode, ' : ', feedStore.errorMessage )
+      }
+
+    }, [replyInput, setReplyInput, feedStore.errorCode])
 
     return (
       <VStack
@@ -495,7 +513,7 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
             keyExtractor={item => item.id}
           />
         </SafeAreaView>
-
+        <Spinner visible={feedStore.isLoading} textContent={"Memuat..."} />
         {replyInputComponent()}
 
         <Modal

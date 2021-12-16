@@ -39,6 +39,12 @@ export type CreatePostType = {
   "images_url": string
 }
 
+
+export type CreateCommentType = {
+  feedId : string
+  comment: string
+}
+
 export type FeedTimelineItems = {
     // date: string
     posts: Array<FeedItemType>

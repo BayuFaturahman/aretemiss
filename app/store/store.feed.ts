@@ -6,7 +6,7 @@ import ServiceStore from "./store.service"
 import { Api } from "@services/api"
 import { FeedApi } from "@services/api/feed/feed-api"
 import { CommentApiModel, ErrorFormResponse, FeedApiModel } from "@services/api/feed/feed-api.types"
-import { CreatePostType, FeedItemType, FeedPostCommentType } from "@screens/feed/feed.type"
+import { CreateCommentType, CreatePostType, FeedItemType, FeedPostCommentType } from "@screens/feed/feed.type"
 
 
 export default class FeedStore {
@@ -298,7 +298,7 @@ export default class FeedStore {
       })
     })
     
-    const sortedComment = tempPostComment.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    const sortedComment = tempPostComment.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).reverse()
 
     this.listComment = [
       ...this.listComment,
@@ -313,6 +313,38 @@ export default class FeedStore {
     this.listComment = []
     console.log('clear list comment')
     // console.log("list feed: ", this.listFeeds)
+  }
+
+
+  async createComment(data: CreateCommentType) {
+    console.log('createComment with body request',data)
+    this.isLoading = true
+    try {
+      const result = await this.feedApi.createComment(data)
+
+      console.log('result create comment: ', result)
+      if (result.kind === "ok") {
+        this.createCommentSuccess()
+      } else if (result.kind === 'form-error'){
+        this.formError(result.response)
+      // } else if () {
+
+      } else {
+        __DEV__ && console.tron.log(result.kind)
+      }
+    } catch (e) {
+      console.log("createComment error")
+      console.log(e)
+      this.setErrorMessage(e)
+    } finally {
+      console.log("createComment done")
+      this.isLoading = false
+    }
+  }
+
+  createCommentSuccess() {
+    console.log('createComment')
+    this.refreshData = true
   }
 
   formReset() {
