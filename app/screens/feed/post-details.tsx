@@ -293,6 +293,7 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
               ref={replyInputRef}
               autoCorrect={false}
               style={Layout.widthFull}
+              inputStyle={{textAlign: 'left', paddingLeft: Spacing[10]}}
               placeholder={'Write a reply...'}
               // placeholderTextColor={Colors.BLACK_30}
               underlineColorAndroid="transparent"
@@ -491,7 +492,7 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
               const replyButton = () => {
                 return(
                   <TouchableOpacity onPress={() => {
-                    replyingTo(item.author.id, item.author.nickname)
+                    replyingTo(item.id, item.author.nickname)
                   }}>
                     <Text
                       type={"body"}
