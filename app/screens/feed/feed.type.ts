@@ -7,6 +7,7 @@ export type FeedItemType = {
     nickname: string
     title: string
     photo: string
+    mood: string
   }
   isDeleted: boolean
   createdAt: string

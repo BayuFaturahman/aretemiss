@@ -31,7 +31,13 @@ import {dimensions, phoneType} from "@config/platform.config";
 
 import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png";
 import trash from "@assets/icons/trash.png";
-import terkejut from "@assets/icons/mood/kaget.png"
+import senang from "@assets/icons/mood/senyum.png";
+import senangBw from "@assets/icons/mood/senyum-bw.png";
+import marah from "@assets/icons/mood/marah.png";
+import sedih from "@assets/icons/mood/sedih.png";
+import sakit from "@assets/icons/mood/sakit.png";
+import terkejut from "@assets/icons/mood/kaget.png";
+import { MOOD_TYPE } from "@screens/homepage/components/mood-component"
 
 import {clear} from "@utils/storage";
 import {presets} from "@components/text/text.presets";
@@ -398,7 +404,7 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                   type={"left-header"}
                   style={{ fontSize: Spacing[16] }}
                   underlineWidth={Spacing[72]}
-                  text="My Feed."
+                  text="Feed."
                 />
                 <FeedPost
                   data={data}
@@ -426,6 +432,16 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
             renderItem={({item, index})=> {
 
               const profileComponent = () => {
+                let moodSource = null
+                
+                MOOD_TYPE.map((type, index) => {
+                  if (type.label === data.author.mood) {
+                    moodSource = type.source
+                  } else {
+                    return null
+                  }
+                })
+            
                 return(
                   <>
                     <VStack right={Spacing[8]}>
@@ -440,48 +456,32 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                         text={item.author.title}
                       />
                     </VStack>
-                    <FastImage
+                    <HStack>
+                      <FastImage
+                        style={{
+                          height: Spacing[32],
+                          width: Spacing[32],
+                          borderRadius: Spacing[8],
+                        }}
+                        source={item.author.photo !== '' ? {
+                          uri: item.author.photo
+                        }: nullProfileIcon}
+                        resizeMode={"cover"}
+                      />
+                      <FastImage
                       style={{
-                        height: Spacing[32],
-                        width: Spacing[32],
-                        borderRadius: Spacing[8],
+                        height: Spacing[18],
+                        width: Spacing[18],
+                        borderRadius: Spacing[18],
+                        alignSelf: 'flex-end',
+                        zIndex: 1,
+                        left: -Spacing[10]
                       }}
-                      source={item.author.photo !== '' ? {
-                        uri: item.author.photo
-                      }: nullProfileIcon}
+                      source={moodSource !== null ? moodSource
+                      : senangBw}
                       resizeMode={"cover"}
                     />
-                    {/* TODO Mood Icon */}
-                  </>
-                )
-              }
-
-              const ownProfileComponent = () => {
-                return(
-                  <>
-                   <FastImage
-                      style={{
-                        height: Spacing[32],
-                        width: Spacing[32],
-                        borderRadius: Spacing[8],
-                      }}
-                      source={item.author.photo !== '' ? {
-                        uri: item.author.photo
-                      }: nullProfileIcon}
-                      resizeMode={"cover"}
-                    />
-                    <VStack left={Spacing[8]}>
-                      <Text
-                        type={"body-bold"}
-                        style={{ fontSize: Spacing[14] }}
-                        text={item.author.nickname}
-                      />
-                      <Text
-                        type={"body"}
-                        style={{ fontSize: Spacing[14] }}
-                        text={item.author.title}
-                      />
-                    </VStack>
+                    </HStack>
                    
                     {/* TODO Mood Icon */}
                   </>

@@ -12,6 +12,7 @@ export type FeedApiModel = {
   "feed_author_nickname": string
   "feed_author_photo": string
   "feed_comment_count": number
+  "feed_author_mood": string,
 }
 
 export type CommentApiModel = {

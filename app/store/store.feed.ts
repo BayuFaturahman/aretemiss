@@ -80,6 +80,7 @@ export default class FeedStore {
           nickname: post.feed_author_nickname,
           title: '',
           photo: post.feed_author_photo,
+          mood: post.feed_author_mood
         },
         commentCount: post.feed_comment_count,
         isNew: true,
@@ -100,7 +101,7 @@ export default class FeedStore {
     this.isLoading = false
     this.refreshData = true
     // this.listFeeds = sortedListFeed
-    console.log('on getListFeedsSuccess, total store list feed ', this.listFeeds.length)
+    console.log('on getListFeedsSuccess, total store list feed ', this.listFeeds)
     // console.log("list feed: ", this.listFeeds)
   }
 
@@ -176,6 +177,7 @@ export default class FeedStore {
           nickname: post.feed_author_nickname,
           title: '',
           photo: post.feed_author_photo,
+          mood: post.feed_author_mood
         },
         commentCount: post.feed_comment_count,
         isNew: true,
