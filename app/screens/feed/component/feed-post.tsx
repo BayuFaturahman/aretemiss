@@ -184,16 +184,32 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
     var hrsDiff = Math.floor((timeDiff % 86400000) / 3600000); // hours
     var minDiff = Math.floor(((timeDiff % 86400000) % 3600000) / 60000) //min
 
+    if (dayDiff === 1 ) {
+      return Math.floor(dayDiff) + ' day ago'
+    } 
+
     if (dayDiff > 1 ) {
-      return Math.floor(dayDiff) + ' days'
-    }
+      return Math.floor(dayDiff) + ' days ago'
+    } 
 
+    if (hrsDiff === 1) {
+      return hrsDiff + ' hour ago'
+    } 
+    
     if (hrsDiff > 1) {
-      return hrsDiff + ' hours'
+      return hrsDiff + ' hours ago'
+    } 
+
+    if (minDiff === 1) {
+      return minDiff + ' min  ago'
     }
 
-    if (minDiff >= 0) {
-      return minDiff + ' mins'
+    if (minDiff > 1) {
+      return minDiff + ' mins  ago'
+    }
+
+    if (minDiff === 0) {
+      return 'baru saja'
     }
 
     // return dayDiff
@@ -216,7 +232,7 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
           type={"body"}
           style={{ fontSize: Spacing[12] }}
           underlineWidth={Spacing[72]}
-          text={`${getCreatedTime()} ago`}
+          text={`${getCreatedTime()}`}
         />
       </HStack>
 
@@ -268,8 +284,8 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
               <FastImage
                 style={{
                   left: -Spacing[10],
-                  height: Spacing[42],
-                  width: Spacing[42],
+                  height: Spacing[32],
+                  width: Spacing[32],
                   borderRadius: Spacing[8],
                 }}
                 source={data.author.photo !== '' ? {

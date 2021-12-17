@@ -3,7 +3,7 @@ import * as storage from "@utils/storage"
 
 // PACKAGE IMPORTS
 import {makeAutoObservable} from 'mobx';
-import {ACCESS_TOKEN_KEY} from "./types.store";
+import {ACCESS_TOKEN_KEY, LAST_SEEN_FEED} from "./types.store";
 import {Api} from "@services/api";
 
 // #endregion
@@ -21,6 +21,8 @@ export default class ServiceStore {
 
   // #endregion
 
+  lastSeenFeed = '';
+
   // #region CONSTRUCTOR
 
   constructor(api: Api) {
@@ -32,7 +34,7 @@ export default class ServiceStore {
     makeAutoObservable(this);
 
     this.initToken();
-
+    this.initLastSeenFeed();
     // this.api.apisauce.addMonitor(response => this.responseMonitor(response, this.clearTokens))
   }
 
@@ -132,6 +134,40 @@ export default class ServiceStore {
     }
 
     console.log('end clearTokens');
+  }
+
+  private async initLastSeenFeed() {
+    console.log('start initLastSeenFeed');
+
+    try {
+      // Check whether there's a saved token or not
+      const savedLastSeenFeed = await storage.load(LAST_SEEN_FEED);
+      // const savedRefreshToken = await storage.load(REFRESH_TOKEN_KEY);
+
+      // Token available
+      if (savedLastSeenFeed) {
+        console.log('SAVED LastSeenFeed');
+        this.lastSeenFeed = savedLastSeenFeed;
+      }
+    } catch (error) {
+      console.log(error);
+      throw new Error('Unable to retrieved saved last seen feed from storage.');
+    }
+  }
+
+  async setLastSeenFeed(lastSeenDate: string) {
+    console.log('start setLastSeenFeed');
+
+    this.lastSeenFeed = lastSeenDate;
+    console.log('')
+    try {
+      await storage.save(LAST_SEEN_FEED, this.lastSeenFeed);
+    } catch (error) {
+      console.log(error);
+      throw new Error('Unable to save last seen feed to storage.');
+    }
+
+    console.log('end setLastSeenFeed');
   }
 
 }
