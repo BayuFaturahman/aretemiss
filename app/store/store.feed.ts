@@ -315,7 +315,6 @@ export default class FeedStore {
     // console.log("list feed: ", this.listFeeds)
   }
 
-
   async createComment(data: CreateCommentType) {
     console.log('createComment with body request',data)
     this.isLoading = true
@@ -378,6 +377,30 @@ export default class FeedStore {
     this.refreshData = true
   }
 
+  async deleteComment(id: string) {
+    this.isLoading = true
+    try {
+      const response = await this.feedApi.deleteComment(id)
+      console.log('delete comment utk id: ', id)
+
+      if (response.kind === "form-error") {
+        this.formError(response.response)
+      }
+
+      if (response.kind === "ok") {
+        // this.getListMyFeedsSuccess(response.response.data)
+      }
+    } catch (e) {
+      console.log(e)
+      this.setErrorMessage(e)
+    } finally {
+      console.log("deleteComment done")
+      this.isLoading = false
+      // this.refreshData = true
+      console.log('this.refreshdata ', this.refreshData)
+    }
+  }
+  
   formReset() {
     this.errorCode = null
     this.errorMessage = null
