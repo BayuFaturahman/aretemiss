@@ -69,7 +69,11 @@ export default class FeedStore {
     console.log("getListFeedsSuccess")
     // this.listFeeds = []
     const tempListFeeds: FeedItemType[] = []
+    const lastSeen = new Date(this.serviceStore.lastSeenFeed)
+    // console.log('lastSeen ', lastSeen , lastSeen.getTime())
     data.forEach(post => {
+      const postCreated = new Date(post.feed_created_at)
+      // console.log('is lasSeen < created ', lastSeen.getTime() < postCreated.getTime())
       const tempPost = {
         id: post.feed_id,
         description: post.feed_description,
@@ -81,7 +85,7 @@ export default class FeedStore {
           photo: post.feed_author_photo,
         },
         commentCount: post.feed_comment_count,
-        isNew: true,
+        isNew: lastSeen.getTime() < postCreated.getTime(),
         createdAt: post.feed_created_at,
         updatedAt: post.feed_updated_at,
         isDeleted: (post.feed_is_deleted === 1),
@@ -165,7 +169,12 @@ export default class FeedStore {
   getListMyFeedsSuccess(data: FeedApiModel[]) {
     console.log("getListMyFeedsSuccess data", )
     const tempListMyFeeds: FeedItemType[] = []
+    const lastSeen = new Date(this.serviceStore.lastSeenFeed)
+    // console.log('lastSeen ', lastSeen , lastSeen.getTime())
     data.forEach(post => {
+      const postCreated = new Date(post.feed_created_at)
+      // console.log('is lasSeen < created ', lastSeen.getTime() < postCreated.getTime())
+      
       tempListMyFeeds.push({
         id: post.feed_id,
         description: post.feed_description,
@@ -177,7 +186,7 @@ export default class FeedStore {
           photo: post.feed_author_photo,
         },
         commentCount: post.feed_comment_count,
-        isNew: true,
+        isNew: lastSeen.getTime() < postCreated.getTime(),
         createdAt: post.feed_created_at,
         updatedAt: post.feed_updated_at,
         isDeleted: (post.feed_is_deleted === 1),

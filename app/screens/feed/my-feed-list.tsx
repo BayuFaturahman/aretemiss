@@ -274,7 +274,7 @@ const MyFeedList: FC<StackScreenProps<NavigatorParamList, "myFeedList">> = obser
           goToNewPost={goToNewPost}
           goToMyFeed={goToMyfeed}
           goToCommentList={goToCommentList}
-          leftCounter={10}
+          leftCounter={null}
           rightCounter={20}
         />
         <ModalReact
