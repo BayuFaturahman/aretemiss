@@ -1,10 +1,10 @@
 import React, { FC, useCallback, useEffect, useState } from "react"
-import {SafeAreaView, ScrollView, StyleSheet} from "react-native"
+import {SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { BackNavigation, Button, DismissKeyboard, Text, TextField } from "@components"
 import { NavigatorParamList } from "@navigators/auth-navigator"
-import {VStack} from "@components/view-stack";
+import {HStack, VStack} from "@components/view-stack";
 import Spacer from "@components/spacer";
 import {Colors, Layout, Spacing} from "@styles";
 import logoBottom from "@assets/icons/ilead_abm.png";
@@ -14,7 +14,6 @@ import { Formik } from "formik"
 import { useStores } from "../../bootstrap/context.boostrap"
 
 import Spinner from "react-native-loading-spinner-overlay"
-import { useFocusEffect } from "@react-navigation/native"
 import messaging from "@react-native-firebase/messaging";
 
 const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = observer(
@@ -29,6 +28,15 @@ const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
 
     const [isEmailMatch, setIsEmailMatch] = useState<boolean>(true)
     const [isPasswordValid, setIsPasswordValid] = useState<boolean>(true)
+
+    const [isTermConsSelected, setIsTermConsSelected] = useState<boolean>(false)
+    const [isTermConsError, setIsTermConsError] = useState<boolean>(false)
+
+    const toggleTermCons = () => {
+      return(
+        setIsTermConsSelected(!isTermConsSelected)
+      )
+    }
 
     const { authStore } = useStores()
 
@@ -87,6 +95,10 @@ const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
       navigation.goBack()
     }
 
+    const goToTermsConds = () => {
+      navigation.navigate("termsConds")
+    }
+
     const validateEmail = (email) => {
       const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/
       if (reg.test(email) === false) {
@@ -107,7 +119,7 @@ const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
 
       const { email, confirmEmail, password } = data
 
-      if (email === "" || confirmEmail === "" || password === "") {
+      if (email === "" || confirmEmail === "" || password === "" || !isTermConsSelected) {
         if (email === "") {
           setIsEmailValid(false)
         }
@@ -121,6 +133,12 @@ const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
         }
         setIsError(true)
         setErrorMessage('Kayaknya ada yang belum diisi nih. \nYuk isi semua kolomnya!')
+
+        if(!isTermConsSelected){
+          setIsTermConsError(true)
+        }else{
+          setIsTermConsError(false)
+        }
         return
       }
 
@@ -164,27 +182,39 @@ const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
       setErrorMessage('')
     }
 
+    const TCCheckBox = ({isSelected = false, onPress, isError = false}) => {
+      return(
+        <TouchableOpacity onPress={onPress}>
+          <VStack>
+            <View style={{
+              height: Spacing[24],
+              width: Spacing[24],
+              backgroundColor: isSelected ? Colors.BRIGHT_BLUE : Colors.GRAY200,
+              borderRadius: Spacing[128], borderWidth: Spacing[2],
+              borderColor: isError ? Colors.MAIN_RED : Colors.BRIGHT_BLUE
+            }} />
+          </VStack>
+        </TouchableOpacity>
+      )
+    }
+
     return (
       <DismissKeyboard>
         <VStack
           testID="CoachingJournalMain"
           style={{ backgroundColor: Colors.WHITE, flex: 1, justifyContent: "center" }}
         >
-          {/* <GradientBackground colors={["#422443", "#281b34"]} /> */}
           <ScrollView bounces={false} style={[Layout.flex, Layout.heightFull]}>
           <SafeAreaView style={{ flex: 1 }}>
             <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
-            <Spacer />
             <Formik
               initialValues={{ email: "", confirmEmail: "", password: "" }}
               onSubmit={(values) => checkInputedData(values)}
             >
               {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
-                // <View>
                 <>
                   <VStack top={Spacing[24]} horizontal={Spacing[24]}>
                     <Text type={"header"} text="Selamat datang di iLEAD." />
-                    <Spacer height={Spacing[24]} />
 
                     {authStore.errorCode !== 37 &&
                       <Text type={"warning"} style={{ textAlign: "center" }}>
@@ -192,7 +222,7 @@ const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
                       </Text>
                     }
 
-                    <Spacer height={Spacing[32]} />
+                    <Spacer height={Spacing[16]} />
                     <TextField
                       label="Alamat E-mail:"
                       style={{ paddingTop: 0 }}
@@ -249,11 +279,23 @@ const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
                       </Text>
                     )}
                   </VStack>
+
+                  <HStack horizontal={Spacing[48]}>
+                    <TCCheckBox onPress={toggleTermCons} isSelected={isTermConsSelected} isError={isTermConsError} />
+                    <Spacer width={Spacing[12]} />
+                    <Text type={"body"}>
+                      Saya telah membaca dan menyetujui{` \n`}
+                      <Text type={"body-bold"} style={{color: Colors.MAIN_RED}} onPress={goToTermsConds}>
+                        {`syarat dan ketentuan `}
+                      </Text>
+                      penggunaan aplikasi iLEAD.
+                    </Text>
+                  </HStack>
+
                   <VStack top={Spacing[32]} horizontal={Spacing[96]}>
                     <Button
                       type={"primary"}
-                      // text={"Kirim SMS verifikasi"}
-                      text={"Kirim verifikasi"}
+                      text={"Registrasi"}
                       onPress={() => handleSubmit()}
                     />
                     <Spacer height={Spacing[8]} />
@@ -272,7 +314,6 @@ const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
           <Spinner
             visible={authStore.isLoading}
             textContent={"Memuat..."}
-            // textStyle={styles.spinnerTextStyle}
           />
         </VStack>
       </DismissKeyboard>

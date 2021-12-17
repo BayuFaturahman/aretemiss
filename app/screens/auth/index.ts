@@ -4,6 +4,7 @@ import verifyOTP from './verify-otp'
 import createProfile from './create-profile'
 import landingPage from './landing-page'
 import forgotPassword from './forgot-password'
+import termsConds from './terms-conds'
 
 export {
   login,
@@ -11,5 +12,6 @@ export {
   verifyOTP,
   createProfile,
   landingPage,
-  forgotPassword
+  forgotPassword,
+  termsConds
 }
