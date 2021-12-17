@@ -45,6 +45,12 @@ export type CreateCommentType = {
   comment: string
 }
 
+export type CreateCommentToType = {
+  feedId : string
+  comment: string
+  replyToId: string
+}
+
 export type FeedTimelineItems = {
     // date: string
     posts: Array<FeedItemType>

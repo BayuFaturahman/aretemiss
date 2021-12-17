@@ -198,15 +198,11 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
 
     const goBack = () => navigation.goBack()
 
-    const goToNewPost = () => navigation.navigate("newPost")
+    // const goToNewPost = () => navigation.navigate("newPost")
 
-    const goToMyfeed = () => navigation.navigate("myFeedList")
+    // const goToMyfeed = () => navigation.navigate("myFeedList")
 
-    const goToCommentList = () => navigation.navigate("commentList")
-
-    const getListFeed = useCallback(async () => {
-      await feedStore.getListFeeds()
-    }, [])
+    // const goToCommentList = () => navigation.navigate("commentList")
 
     const onImageFeedTap = useCallback( (index, imageList) => {
       setActiveViewerIndex(index)
@@ -327,20 +323,31 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
 
     const submitComment = useCallback(async () => {
       feedStore.formReset()
-      await feedStore.createComment({
-        feedId: data.id,
-        comment: replyInput
-      })
+      if (replyId === "" || replyId === null) {
+        await feedStore.createComment({
+          feedId: data.id,
+          comment: replyInput
+        })
+        
+      } else {
+        await feedStore.createCommentTo({
+          feedId: data.id,
+          comment: replyInput,
+          replyToId: replyId
+        })
+        clearMention()
+      }
+     
 
       if (feedStore.errorCode === null) {
         setReplyInput('')
         firstLoadComment()
         
       } else {
-        console.log(feedStore.errorCode, ' : ', feedStore.errorMessage )
+        console.log('feedStore.errorCode: ', feedStore.errorCode, ' : ', feedStore.errorMessage )
       }
 
-    }, [replyInput, setReplyInput, feedStore.errorCode])
+    }, [replyInput, setReplyInput, feedStore.errorCode, clearMention])
 
     return (
       <VStack
@@ -472,17 +479,18 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
               return (
                 <VStack left={Spacing[24]}>
                   <HStack
-                    style={{ backgroundColor: Colors.LIGHT_GRAY, borderRadius: Spacing[8] }}
+                    style={{ backgroundColor: item.isOwnComment ? Colors.UNDERTONE_BLUE: Colors.LIGHT_GRAY, borderRadius: Spacing[8] }}
                     horizontal={Spacing[12]}
                     vertical={Spacing[12]}
                   >
                     <Text
                       type={"body"}
+                      style={{color: item.isOwnComment ? Colors.WHITE : ''}}
                     >
                       {item.replyToNickname !== "" ?
                         <VStack right={Spacing[4]}>
                           <Text
-                            style={{fontSize: Spacing[14]}}
+                            style={{fontSize: Spacing[14], color: item.isOwnComment ? Colors.WHITE : ''}}
                             type={"body-bold"}
                             text={`@${item.replyToNickname}`}
                           />
@@ -495,9 +503,9 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                   <HStack>
                     {item.isOwnComment ?
                       <>
-                        {ownProfileComponent()}
-                        <Spacer/>
                         {replyButton()}
+                        <Spacer/>
+                        {profileComponent()}
                       </> :
                       <>
                         {replyButton()}

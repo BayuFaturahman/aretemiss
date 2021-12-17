@@ -6,7 +6,7 @@ import ServiceStore from "./store.service"
 import { Api } from "@services/api"
 import { FeedApi } from "@services/api/feed/feed-api"
 import { CommentApiModel, ErrorFormResponse, FeedApiModel } from "@services/api/feed/feed-api.types"
-import { CreateCommentType, CreatePostType, FeedItemType, FeedPostCommentType } from "@screens/feed/feed.type"
+import { CreateCommentToType, CreateCommentType, CreatePostType, FeedItemType, FeedPostCommentType } from "@screens/feed/feed.type"
 
 
 export default class FeedStore {
@@ -344,6 +344,37 @@ export default class FeedStore {
 
   createCommentSuccess() {
     console.log('createComment')
+    this.refreshData = true
+  }
+
+  async createCommentTo(data: CreateCommentToType) {
+    console.log('createCommentTo with body request',data)
+    this.isLoading = true
+    try {
+      const result = await this.feedApi.createCommentTo(data)
+
+      console.log('result create comment: ', result)
+      if (result.kind === "ok") {
+        this.createCommentToSuccess()
+      } else if (result.kind === 'form-error'){
+        this.formError(result.response)
+      // } else if () {
+
+      } else {
+        __DEV__ && console.tron.log(result.kind)
+      }
+    } catch (e) {
+      console.log("createComment error")
+      console.log(e)
+      this.setErrorMessage(e)
+    } finally {
+      console.log("createComment done")
+      this.isLoading = false
+    }
+  }
+
+  createCommentToSuccess() {
+    console.log('createCommentTo')
     this.refreshData = true
   }
 

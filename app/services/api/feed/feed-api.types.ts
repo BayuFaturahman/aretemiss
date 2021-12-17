@@ -94,9 +94,27 @@ export interface CreateCommentResponse {
   }
 }
 
+export interface CreateCommentToResponse {
+  message: string
+  token: string
+  data: {
+    comment: {
+      id: string,
+      comment: string,
+      feedId: string,
+      authorId: string,
+      replyToId: string,
+      "feed_comment_updated_at": string,
+      "feed_comment_created_at": string
+    },
+    token: string
+  }
+}
+
 export type GetListFeedsResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListFeedsResponse }  | GeneralApiProblem
 export type PostUploadFeedImagesResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: PostUploadFeedImagesResponse }  | GeneralApiProblem
 export type CreatePostResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreatePostResponse }  | GeneralApiProblem
 export type DeletePostResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: DeletePostResponse }  | GeneralApiProblem
 export type GetListCommentResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListCommentResponse }  | GeneralApiProblem
 export type CreateCommentResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreateCommentResponse }  | GeneralApiProblem
+export type CreateCommentToResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreateCommentToResponse }  | GeneralApiProblem
