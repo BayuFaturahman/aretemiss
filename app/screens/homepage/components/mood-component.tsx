@@ -83,7 +83,7 @@ export const MoodComponent = ({data, goToMood = () => null}: MoodProps) => {
   const [source, setSource] = useState<Source>();
 
   useEffect(() => {
-    console.log('MasuK effect mood component')
+    // console.log('MasuK effect mood component')
     let tempSource = null
     setSource(senangBw)
     MOOD_TYPE.map((type, index) => {

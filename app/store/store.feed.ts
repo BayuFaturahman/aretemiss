@@ -5,8 +5,8 @@ import { makeAutoObservable } from "mobx"
 import ServiceStore from "./store.service"
 import { Api } from "@services/api"
 import { FeedApi } from "@services/api/feed/feed-api"
-import { ErrorFormResponse, FeedApiModel } from "@services/api/feed/feed-api.types"
-import { CreatePostType, FeedItemType } from "@screens/feed/feed.type"
+import { CommentApiModel, ErrorFormResponse, FeedApiModel } from "@services/api/feed/feed-api.types"
+import { CreateCommentToType, CreateCommentType, CreatePostType, FeedItemType, FeedPostCommentType } from "@screens/feed/feed.type"
 
 
 export default class FeedStore {
@@ -24,6 +24,7 @@ export default class FeedStore {
   feedApi: FeedApi
   listFeeds: FeedItemType[]
   listMyFeed: FeedItemType[]
+  listComment: FeedPostCommentType[]
 
   constructor(serviceStore: ServiceStore, api: Api) {
     this.serviceStore = serviceStore
@@ -83,6 +84,7 @@ export default class FeedStore {
           nickname: post.feed_author_nickname,
           title: '',
           photo: post.feed_author_photo,
+          mood: post.feed_author_mood
         },
         commentCount: post.feed_comment_count,
         isNew: lastSeen.getTime() < postCreated.getTime(),
@@ -103,7 +105,7 @@ export default class FeedStore {
     this.isLoading = false
     this.refreshData = true
     // this.listFeeds = sortedListFeed
-    console.log('on getListFeedsSuccess, total store list feed ', this.listFeeds.length)
+    console.log('on getListFeedsSuccess, total store list feed ', this.listFeeds)
     // console.log("list feed: ", this.listFeeds)
   }
 
@@ -184,6 +186,7 @@ export default class FeedStore {
           nickname: post.feed_author_nickname,
           title: '',
           photo: post.feed_author_photo,
+          mood: post.feed_author_mood
         },
         commentCount: post.feed_comment_count,
         isNew: lastSeen.getTime() < postCreated.getTime(),
@@ -261,6 +264,154 @@ export default class FeedStore {
     }
   }
 
+  async getListComment(userId: string, feedId: string, page = 1, limit = 5) {
+    this.isLoading = true
+    try {
+      const response = await this.feedApi.getListComment(feedId, page, limit)
+
+      if (response.kind === "form-error") {
+        this.formError(response.response)
+      }
+
+      if (response.kind === "ok") {
+        this.getListCommentSuccess(userId, response.response.data.comments)
+      }
+    } catch (e) {
+      console.log(e)
+      this.setErrorMessage(e)
+    } finally {
+      console.log("getListComment done")
+      this.isLoading = false
+    }
+  }
+
+  getListCommentSuccess(userId: string, data: CommentApiModel[]) {
+    console.log("getListCommentSuccess data", data)
+    const tempPostComment: FeedPostCommentType[] = []
+    data.forEach(comment => {
+      console.log()
+      tempPostComment.push({
+        id: comment.feed_comment_id,
+        comment: comment.feed_comment_comment,
+        feedId: comment.feed_comment_feed_id,
+        isOwnComment: comment.feed_comment_author_id === userId,
+        replyToId: comment.feed_comment_reply_to_id? comment.feed_comment_reply_to_id : '',
+        replyToNickname: comment.feed_comment_reply_to_nickname ? comment.feed_comment_reply_to_nickname: '',
+        createdAt: comment.feed_comment_created_at,
+        updatedAt: comment.feed_comment_updated_at,
+        deletedAt: comment.feed_comment_deleted_at ? comment.feed_comment_deleted_at : '',
+        author: {
+          id: comment.feed_comment_author_id,
+          nickname: comment.feed_comment_author_nickname,
+          title: '',
+          photo: comment.feed_comment_author_photo
+        }
+      })
+    })
+    
+    const sortedComment = tempPostComment.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).reverse()
+
+    this.listComment = [
+      ...this.listComment,
+      ...(sortedComment ?? [])
+    ]
+    this.isLoading = false
+    this.refreshData = true    
+    console.log("list comment: ", this.listComment)
+  }
+
+  clearListComment() {
+    this.listComment = []
+    console.log('clear list comment')
+    // console.log("list feed: ", this.listFeeds)
+  }
+
+  async createComment(data: CreateCommentType) {
+    console.log('createComment with body request',data)
+    this.isLoading = true
+    try {
+      const result = await this.feedApi.createComment(data)
+
+      console.log('result create comment: ', result)
+      if (result.kind === "ok") {
+        this.createCommentSuccess()
+      } else if (result.kind === 'form-error'){
+        this.formError(result.response)
+      // } else if () {
+
+      } else {
+        __DEV__ && console.tron.log(result.kind)
+      }
+    } catch (e) {
+      console.log("createComment error")
+      console.log(e)
+      this.setErrorMessage(e)
+    } finally {
+      console.log("createComment done")
+      this.isLoading = false
+    }
+  }
+
+  createCommentSuccess() {
+    console.log('createComment')
+    this.refreshData = true
+  }
+
+  async createCommentTo(data: CreateCommentToType) {
+    console.log('createCommentTo with body request',data)
+    this.isLoading = true
+    try {
+      const result = await this.feedApi.createCommentTo(data)
+
+      console.log('result create comment: ', result)
+      if (result.kind === "ok") {
+        this.createCommentToSuccess()
+      } else if (result.kind === 'form-error'){
+        this.formError(result.response)
+      // } else if () {
+
+      } else {
+        __DEV__ && console.tron.log(result.kind)
+      }
+    } catch (e) {
+      console.log("createComment error")
+      console.log(e)
+      this.setErrorMessage(e)
+    } finally {
+      console.log("createComment done")
+      this.isLoading = false
+    }
+  }
+
+  createCommentToSuccess() {
+    console.log('createCommentTo')
+    this.refreshData = true
+  }
+
+  async deleteComment(id: string) {
+    this.isLoading = true
+    try {
+      const response = await this.feedApi.deleteComment(id)
+      console.log('delete comment utk id: ', id)
+
+      if (response.kind === "form-error") {
+        this.formError(response.response)
+      }
+
+      if (response.kind === "ok") {
+        // this.getListMyFeedsSuccess(response.response.data)
+      }
+    } catch (e) {
+      console.log(e)
+      this.setErrorMessage(e)
+    } finally {
+      console.log("deleteComment done")
+      this.isLoading = false
+      // this.refreshData = true
+      console.log('this.refreshdata ', this.refreshData)
+    }
+  }
+  
   formReset() {
     this.errorCode = null
     this.errorMessage = null

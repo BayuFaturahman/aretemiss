@@ -7,6 +7,7 @@ export type FeedItemType = {
     nickname: string
     title: string
     photo: string
+    mood: string
   }
   isDeleted: boolean
   createdAt: string
@@ -16,24 +17,39 @@ export type FeedItemType = {
   isNew: boolean
 }
 
-export type FeedPostComment = {
+export type FeedPostCommentType = {
   id: string
   comment: string
+  feedId: string
   isOwnComment: boolean
-  isDeleted: number
+  replyToId: string
+  replyToNickname: string
   createdAt: string
   updatedAt: string
+  deletedAt: string
   author: {
-      fullname: string
+      id: string
       nickname: string
       title: string
+      photo: string
   }
-  feedId: string
 }
 
 export type CreatePostType = {
   "description": string
   "images_url": string
+}
+
+
+export type CreateCommentType = {
+  feedId : string
+  comment: string
+}
+
+export type CreateCommentToType = {
+  feedId : string
+  comment: string
+  replyToId: string
 }
 
 export type FeedTimelineItems = {

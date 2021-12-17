@@ -1,13 +1,21 @@
-import React, { Fragment } from "react"
+import React, { Fragment, useEffect, useState } from "react"
 import { HStack, VStack } from "@components/view-stack"
 import { Colors, Spacing } from "@styles"
 import {TouchableOpacity, View} from "react-native"
-import FastImage from "react-native-fast-image"
+import FastImage, { Source } from "react-native-fast-image"
 import { Text } from "@components"
 import Spacer from "@components/spacer"
 import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png"
 import { FeedItemType } from "../feed.type"
+
 import trash from "@assets/icons/trash.png";
+import senang from "@assets/icons/mood/senyum.png";
+import senangBw from "@assets/icons/mood/senyum-bw.png";
+import marah from "@assets/icons/mood/marah.png";
+import sedih from "@assets/icons/mood/sedih.png";
+import sakit from "@assets/icons/mood/sakit.png";
+import terkejut from "@assets/icons/mood/kaget.png";
+import { MOOD_TYPE } from "@screens/homepage/components/mood-component"
 
 type FeedPostProps = {
   data: FeedItemType;
@@ -19,6 +27,7 @@ type FeedPostProps = {
 
 export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDetail = () => null }:FeedPostProps) => {
 
+  const [moodSource, setMoodSource] = useState<Source>();
   const listImage = data.imageUrl ? data.imageUrl.split(";") : []
 
   const imageListViewer = listImage.map((item)=>{
@@ -38,6 +47,24 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
   if (data === null) {
     return null
   }
+
+  useEffect(() => {
+    let tempSource = null
+    setMoodSource(senangBw)
+    MOOD_TYPE.map((type, index) => {
+      if (type.label === data.author.mood) {
+        tempSource = type.source
+        return type.source
+      } else {
+        return null
+      }
+    })
+
+    if (tempSource !== null) {
+      setMoodSource(tempSource)
+    }
+
+  })
 
   const getImage = (height, width, marginRight, marginBottom, image, imageIndex) => {
     return (
@@ -237,12 +264,26 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
         </HStack>
       </TouchableOpacity>
 
-      <HStack left={Spacing[24]} top={Spacing[8]}>
+      <HStack left={Spacing[20]} top={Spacing[8]}>
         { !ownPost ?
           <TouchableOpacity onPress={()=>{goToDetail(data)}}>
             <HStack>
               <FastImage
                 style={{
+                  height: Spacing[24],
+                  width: Spacing[24],
+                  borderRadius: Spacing[18],
+                  alignSelf: 'flex-end',
+                  zIndex: 1,
+                  bottom: -Spacing[4]
+                }}
+                source={data.author.mood !== '' ? moodSource
+                : senangBw}
+                resizeMode={"cover"}
+              />
+              <FastImage
+                style={{
+                  left: -Spacing[10],
                   height: Spacing[32],
                   width: Spacing[32],
                   borderRadius: Spacing[8],
