@@ -29,6 +29,7 @@ const forgotPassword: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = 
     const { authStore } = useStores()
 
     useEffect(() => {
+      authStore.isForgotPasswordSuccess = null
       authStore.formReset()
       authStore.resetAuthStore()
     }, [])
