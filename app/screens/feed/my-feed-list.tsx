@@ -136,7 +136,8 @@ const MyFeedList: FC<StackScreenProps<NavigatorParamList, "myFeedList">> = obser
 
     const goToDetails = useCallback(async (data: FeedItemType) => {
       navigation.navigate("postDetails", {
-        data
+        data,
+        isFromMainFeed: false
       })
     }, [])
 

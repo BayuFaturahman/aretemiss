@@ -141,6 +141,15 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
       navigation.navigate("commentList")
     }
 
+    const goToDetails = useCallback(async (data: FeedItemType) => {
+      setLastSeenFeed()
+      resetNavigationParam()
+      navigation.navigate("postDetails", {
+        data,
+        isFromMainFeed: true
+      })
+    }, [])
+
     const resetNavigationParam = () => {
       feedStore.refreshData = false
       navigation.setParams({ newPost: undefined })
@@ -203,11 +212,7 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
       toggleModal(true);
     }, [])
 
-    const goToDetails = useCallback(async (data: FeedItemType) => {
-      navigation.navigate("postDetails", {
-        data
-      })
-    }, [])
+    
 
     return (
       <VStack
