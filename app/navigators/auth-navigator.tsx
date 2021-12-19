@@ -1,5 +1,5 @@
 import {AppRoute} from "@navigators/navigation-type";
-import {login, verifyPhone, verifyOTP, createProfile, landingPage, forgotPassword} from "@screens/auth";
+import {login, verifyPhone, verifyOTP, createProfile, landingPage, forgotPassword, termsConds} from "@screens/auth";
 
 const screens: AppRoute[] = [
   {
@@ -26,6 +26,10 @@ const screens: AppRoute[] = [
     name: 'forgotPassword',
     component: forgotPassword,
   },
+  {
+    name: 'termsConds',
+    component: termsConds,
+  },
 ];
 
 export type NavigatorParamList = {
@@ -35,6 +39,7 @@ export type NavigatorParamList = {
   createProfile: undefined;
   landingPage: undefined;
   forgotPassword: undefined
+  termsConds: undefined
 };
 
 export default screens
