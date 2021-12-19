@@ -80,7 +80,9 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
       console.log('succeed')
       if(authStore.isCreateProfile === true){
         setIsError(false)
-        navigation.navigate("createProfile")
+        navigation.navigate("createProfile", {
+          isFromVerifyOtp: true
+        })
       }
     }, [authStore.isCreateProfile])
 

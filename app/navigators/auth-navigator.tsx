@@ -36,7 +36,9 @@ export type NavigatorParamList = {
   login: undefined;
   verifyPhone: undefined;
   verifyOTP: undefined;
-  createProfile: undefined;
+  createProfile: {
+    isFromVerifyOtp: boolean
+  };
   landingPage: undefined;
   forgotPassword: undefined
   termsConds: undefined

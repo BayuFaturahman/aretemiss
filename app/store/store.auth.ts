@@ -37,7 +37,7 @@ export default class AuthStore {
   emailVerify: string
   needChangePassword: boolean
   token: string
-  isVerify: number
+  isVerify: boolean
   isLoginFlow: boolean
 
   isCreateProfile: boolean
@@ -143,16 +143,18 @@ export default class AuthStore {
   }
 
   async loginSuccess (data: LoginResponse, email: string){
-    this.needChangePassword = data.needChangePassword
+    this.needChangePassword = data.need_change_password
     this.token = data.token
-
-    if(data.isVerify === 0){
+    this.isVerify = data.is_verify
+    console.log('login sukses, data is verify: ', data.is_verify)
+    if(data.is_verify === false){
       this.isCreateProfile = true
       await this.serviceStore.setHeaderToken(this.token)
     } else {
       this.isCreateProfile = false
       await this.serviceStore.setToken(this.token)
     }
+    console.log('this.isCreateProfile ', this.isCreateProfile)
     this.email = email
     this.isLoginFlow = true
   }
@@ -268,7 +270,7 @@ export default class AuthStore {
     console.log('signupVerifySuccess')
     this.userId = data.user_id
     this.token = data.token
-    this.isVerify = data.is_verify
+    // this.isVerify = data.is_verify
     this.email = data.email
 
     this.isLoginFlow = false

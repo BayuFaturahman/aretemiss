@@ -2,8 +2,8 @@ import { GeneralApiProblem } from "../api-problem"
 
 export interface LoginResponse {
   token: string
-  needChangePassword: boolean
-  isVerify: number
+  "need_change_password": boolean
+  "is_verify": boolean
 }
 
 export interface ErrorFormResponse {
@@ -26,7 +26,7 @@ export interface SignupResponse {
 export interface SignupVerifyResponse {
   user_id: string
   email: string
-  is_verify: number
+  // is_verify: number
   token: string
 }
 export interface ChangePasswordResponse {

@@ -29,7 +29,7 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
     const [isError, setIsError] = useState<boolean>(false)
     const [errorMessage, setErrorMessage] = useState<string | null>('')
 
-    const { authStore } = useStores()
+    const { authStore, mainStore } = useStores()
 
     const goToForgotPassword = () => navigation.navigate("forgotPassword")
 
@@ -48,6 +48,7 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
     useEffect(() => {
       authStore.formReset()
       authStore.resetAuthStore()
+      console.log('use effect [] login')
     }, [])
 
     useEffect(() => {
@@ -69,6 +70,24 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
         nextScreen()
       }
     }, [authStore.otp])
+
+    useEffect(() => {
+      if(authStore.isCreateProfile){
+        setIsError(false)
+        getUserProfile()
+        console.log('isCreateProfile is true, hence go to ke create profile')
+        navigation.navigate("createProfile", {
+          isFromVerifyOtp: false
+        })
+      }
+
+      console.log('succeed')
+     
+    }, [ authStore.isCreateProfile, authStore.token])
+
+    const getUserProfile = useCallback(async ()=>{
+      await mainStore.getProfile()
+    }, [])
 
     // useEffect(() => {
     //   // authStore.resetAuthStore()
