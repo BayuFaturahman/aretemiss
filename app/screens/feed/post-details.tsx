@@ -159,6 +159,7 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
     const [replyToName, setReplyToName] = React.useState<string>(null);
 
     const [holdPost, setHoldedPost] = useState<string>();
+    let listViewRef;
 
     const toggleModal = (value: boolean) =>{
       setModal(value)
@@ -305,7 +306,11 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
               placeholder={'Write a reply...'}
               // placeholderTextColor={Colors.BLACK_30}
               underlineColorAndroid="transparent"
-              onFocus={() => setIsReplyFocus(true)}
+              onFocus={() => {
+                setIsReplyFocus(true)
+                console.log('skroll to end ', listViewRef.hei)
+                listViewRef.scrollToEnd({ animated: true });
+              }}
               onBlur={() => setIsReplyFocus(false)}
             />
           </VStack>
@@ -318,7 +323,7 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                 }}>
                   <Text
                     type={"body"}
-                    style={{ fontSize: Spacing[16] }}
+                    style={{ fontSize: Spacing[16] }} 
                     underlineWidth={Spacing[72]}
                     text="Cancel"
                   />
@@ -396,9 +401,9 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
     return (
       <VStack
         testID="feedTimelineMain"
-        style={{ backgroundColor: Colors.WHITE, flex: 1, justifyContent: "center" }}
+        style={{ backgroundColor: Colors.BLACK, flex: 1, justifyContent: "center" }}
       >
-        <SafeAreaView style={Layout.flex}>
+        <SafeAreaView style={Layout.flex }>
           <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
           <FlatList
             refreshControl={
@@ -584,6 +589,9 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
             }}
             style={{paddingHorizontal: Spacing[24]}}
             keyExtractor={item => item.id}
+            ref={(ref) => {
+              listViewRef = ref;
+            }}
           />
         </SafeAreaView>
         <Spinner visible={feedStore.isLoading} textContent={"Memuat..."} />
