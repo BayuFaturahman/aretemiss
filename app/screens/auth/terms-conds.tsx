@@ -6,7 +6,6 @@ import { BackNavigation, Text } from "@components"
 import { NavigatorParamList } from "@navigators/auth-navigator"
 import {VStack} from "@components/view-stack";
 import {Colors, Layout, Spacing} from "@styles";
-import Spacer from "@components/spacer";
 import FastImage from "react-native-fast-image";
 import logoBottom from "@assets/icons/ilead_abm.png";
 
