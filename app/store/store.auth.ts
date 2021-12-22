@@ -95,6 +95,10 @@ export default class AuthStore {
         console.log(response.response.errorCode)
         console.log(response.response.message)
 
+        if (response.response.errorCode === 14 || response.response.errorCode === 3  ) {
+          response.response.message = 'Woops. Jangan lupa alamat email atau password-nya diisi ya!'
+        }
+
         this.formError(response.response)
       }
 
