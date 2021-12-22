@@ -518,7 +518,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
                   <Spacer height={Spacing[12]} />
                   <Button
                     type={"warning"}
-                    text={"Lihat mood anggota lain"}
+                    text={"Lihat mood anggota team"}
                     style={{ height: Spacing[36], paddingHorizontal: Spacing[28] }}
                     textStyle={{ fontSize: Spacing[16], lineHeight: Spacing[20] }}
                     onPress={goToTeamMood}

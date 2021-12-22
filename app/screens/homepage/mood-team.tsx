@@ -18,6 +18,7 @@ import sedih from "@assets/icons/mood/sedih.png"
 import sakit from "@assets/icons/mood/sakit.png"
 import kaget from "@assets/icons/mood/kaget.png"
 import { MOOD_TYPE } from "./components/mood-component"
+import { EmptyList } from "./components/empty-list"
 
 export type TeamMoodItemType = {
   userId: string
@@ -115,7 +116,7 @@ const MoodTeam: FC<StackScreenProps<NavigatorParamList, "moodTeam">> = observer(
             />
             <Spacer height={Spacing[24]} />
             <Text type={"body"} style={{ textAlign: "center", color: Colors.WHITE }}>
-              {`Lihat mood yang sudah di-update \n anggota tim Anda hari ini!`}
+              {`Lihat mood yang sudah di-update \n anggota team Anda hari ini!`}
             </Text>
             <Spacer height={Spacing[32]} />
           </VStack>
@@ -147,9 +148,9 @@ const MoodTeam: FC<StackScreenProps<NavigatorParamList, "moodTeam">> = observer(
                 showsVerticalScrollIndicator={false}
                 ItemSeparatorComponent={() => <Spacer height={Spacing[8]} />}
                 data={listTeamMood}
-                // ListEmptyComponent={()=>
-                // <EmptyList navigateTo={goBack} />
-                // }
+                ListEmptyComponent={()=>
+                <EmptyList />
+                }
                 renderItem={({ item, index }) => {
                   return (
                     <HStack style={{ justifyContent: "space-around", width: "100%"}}>
