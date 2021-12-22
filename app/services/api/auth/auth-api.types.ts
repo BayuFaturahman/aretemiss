@@ -4,6 +4,7 @@ export interface LoginResponse {
   token: string
   "need_change_password": boolean
   "is_verify": boolean
+  "need_update_profile": boolean
 }
 
 export interface ErrorFormResponse {

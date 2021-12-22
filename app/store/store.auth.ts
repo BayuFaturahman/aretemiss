@@ -36,6 +36,7 @@ export default class AuthStore {
   email: string
   emailVerify: string
   needChangePassword: boolean
+  needUpdateProfile: boolean
   token: string
   isVerify: boolean
   isLoginFlow: boolean
@@ -68,6 +69,7 @@ export default class AuthStore {
     this.email = null
     this.emailVerify = null
     this.needChangePassword = false
+    this.needUpdateProfile = false
     this.token = null
     this.isVerify = null
 
@@ -146,13 +148,14 @@ export default class AuthStore {
     this.needChangePassword = data.need_change_password
     this.token = data.token
     this.isVerify = data.is_verify
+    this.needUpdateProfile = data.need_update_profile
     console.log('login sukses, data is verify: ', data.is_verify)
-    if(data.is_verify === false){
-      this.isCreateProfile = true
-      await this.serviceStore.setHeaderToken(this.token)
-    } else {
+    if (this.isVerify && !this.needUpdateProfile) {
       this.isCreateProfile = false
       await this.serviceStore.setToken(this.token)
+    } else {
+      this.isCreateProfile = true
+      await this.serviceStore.setHeaderToken(this.token)
     }
     console.log('this.isCreateProfile ', this.isCreateProfile)
     this.email = email
@@ -276,6 +279,7 @@ export default class AuthStore {
     this.isLoginFlow = false
     this.serviceStore.setHeaderToken(this.token)
     this.isCreateProfile = true
+    this.isVerify = true
   }
 
   async resendOTP(email: string) {

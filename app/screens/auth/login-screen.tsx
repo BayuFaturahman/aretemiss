@@ -33,7 +33,7 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
 
     const goToForgotPassword = () => navigation.navigate("forgotPassword")
 
-    const nextScreen = () => navigation.navigate("verifyOTP")
+    const goToVerifyOTP = () => navigation.navigate("verifyOTP")
 
     const submitLogin = useCallback( async()=>{
 
@@ -42,7 +42,7 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
       console.log('### FCM token login ###')
       console.log(token)
 
-      await authStore.login(phoneNumber , password, token)
+      await authStore.login(phoneNumber.toLowerCase() , password, token)
     }, [phoneNumber, password])
 
     useEffect(() => {
@@ -63,27 +63,47 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
       }
     }, [authStore.errorMessage])
 
-    useEffect(() => {
-      console.log('login succeed')
-      if(authStore.otp !== null){
-        setIsError(false)
-        nextScreen()
-      }
-    }, [authStore.otp])
+    // useEffect(() => {
+    //   console.log('login succeed')
+    //   if(authStore.otp !== null){
+    //     setIsError(false)
+    //     goToVerifyOTP()
+    //   }
+    // }, [authStore.otp])
 
     useEffect(() => {
       if(authStore.isCreateProfile){
         setIsError(false)
         getUserProfile()
-        console.log('isCreateProfile is true, hence go to ke create profile')
-        navigation.navigate("createProfile", {
-          isFromVerifyOtp: false
-        })
+        console.log('isCreateProfile is true')
+
+
+        if (!authStore.isVerify ) {
+          resendOTP()
+
+          console.log('in login screen, resendOTP')
+          if(authStore.otp !== null){
+            setIsError(false)
+            goToVerifyOTP()
+          }
+          
+        } 
+
+        if (authStore.isVerify && authStore.needUpdateProfile) {
+          navigation.navigate("createProfile", {
+            isFromVerifyOtp: false
+          })
+          return
+        }
       }
 
-      console.log('succeed')
+      // console.log('succeed')
      
-    }, [ authStore.isCreateProfile, authStore.token])
+    }, [ authStore.isCreateProfile, authStore.token, authStore.isVerify, authStore.needUpdateProfile, authStore.otp])
+
+    const resendOTP = useCallback(async () => {
+      await authStore.resendOTP(authStore.email)
+    }, [])
 
     const getUserProfile = useCallback(async ()=>{
       await mainStore.getProfile()
