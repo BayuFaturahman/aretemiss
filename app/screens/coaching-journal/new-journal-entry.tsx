@@ -707,7 +707,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                       type={"body"}
                       style={{ textAlign: "center", color: "red" }}
                       text={
-                        "Penting! Catatan coaching-mu belum tersimpan sampai kamu klik “Submit” setelah melakukan feedback."
+                        "Penting! Coaching journal-mu belum tersimpan sampai kamu klik “Submit” setelah melakukan feedback."
                       }
                     />
                     <Spacer height={Spacing[20]} />
