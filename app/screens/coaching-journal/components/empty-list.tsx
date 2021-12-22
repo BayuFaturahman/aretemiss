@@ -23,11 +23,7 @@ export const EmptyList = ({}) => {
       <Spacer height={Spacing[16]} />
       <HStack>
         <Text type={'body'} style={{textAlign: 'left'}} >
-          {`Kamu gak perlu nunggu sampe ada jadwal coaching yang `}
-          <Text type={'body'} style={{ color: Colors.HONEY_YELLOW}} >
-            “profesional”
-          </Text>
-          {` buat mulai nyatet.`}
+          {`Kamu gak perlu nunggu sampe ada jadwal coaching buat mulai nyatet.`}
         </Text>
       </HStack>
       <Spacer height={Spacing[16]} />
@@ -53,7 +49,7 @@ export const EmptyList = ({}) => {
           <Text type={'body'} style={{ color: Colors.SOFT_GREEN}} >
             “di-coach”
           </Text>
-          {` sama atasanmu, nanti catatannya langsung muncul di sini juga.`}
+          {` sama atasanmu, nanti coaching journal-nya langsung muncul di sini juga.`}
         </Text>
         <Spacer width={Spacing[12]} />
         <View style={{bottom: -Spacing[36], left: -Spacing[24]}}>

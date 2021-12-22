@@ -209,7 +209,7 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
                   <Text type={'header'} style={{color: Colors.WHITE}} text="Coaching Journal" />
                   <Spacer height={Spacing[24]} />
                   <Text type={'body'} style={{textAlign: 'center', color: Colors.WHITE}}>
-                    Setiap coaching journal yang dicatat akan memberikan kesempatan bagi coachee-mu untuk memberikan <Text type={"label"} style={{color: Colors.WHITE}}>feedback</Text>. Sehingga kamu dapat terus melakukan improvement.
+                    Setiap coaching journal yang dicatat akan memberikan kesempatan bagi coachee-mu untuk memberikan <Text type={"label"} style={{color: Colors.WHITE}}>feedback</Text>, sehingga kamu dapat terus melakukan improvement.
                   </Text>
                   <Spacer height={Spacing[32]} />
                 </VStack>

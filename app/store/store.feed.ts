@@ -105,7 +105,7 @@ export default class FeedStore {
     this.isLoading = false
     this.refreshData = true
     // this.listFeeds = sortedListFeed
-    console.log('on getListFeedsSuccess, total store list feed ', this.listFeeds)
+    console.log('on getListFeedsSuccess, total store list feed ')
     // console.log("list feed: ", this.listFeeds)
   }
 

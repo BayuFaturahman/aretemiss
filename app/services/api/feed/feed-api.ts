@@ -294,7 +294,7 @@ export class FeedApi {
       const response: ApiResponse<any> = await this.api.apisauce.delete(
         `/comment/${commentId}`,
       )
-
+      console.log('delete comment dngan path  ',  `/comment/${commentId}`)
       console.log('deleteComment response.data', response.data)
       if(response.status === 400){
         const res = response.data
