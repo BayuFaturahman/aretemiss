@@ -258,7 +258,7 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
             <VStack top={Spacing[12]}>
               <TextField
                 style={{ paddingTop: 0, textAlign: "left" }}
-                inputStyle={{ minHeight: Spacing[128] }}
+                inputStyle={{ minHeight: Spacing[128],textAlign: 'left', paddingLeft: Spacing[12]}}
                 isRequired={false}
                 secureTextEntry={false}
                 isTextArea={true}

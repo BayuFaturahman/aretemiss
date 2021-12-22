@@ -252,6 +252,7 @@ export default class MainStore {
   }
 
   async updateProfileSuccess(data: UpdateProfileResponse) {
+    console.log('updateProfileSuccess updatingProfile ')
     this.updatingProfile = {
       userId: data.data.userId,
       fullName: data.data.fullname,
@@ -333,7 +334,7 @@ export default class MainStore {
   }
 
   getProfileSuccess(data: ProfileModel) {
-    console.log("getProfileSuccess data", data)
+    console.log("getProfileSuccess data")
     this.userProfile = {
       user_id: data.user_id,
       user_fullname: data.user_fullname,

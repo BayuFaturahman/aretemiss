@@ -156,7 +156,8 @@ export type NavigatorParamList = {
   commentList: undefined;
   myFeedList: undefined;
   postDetails: {
-    data: FeedItemType
+    data: FeedItemType,
+    isFromMainFeed: boolean
   };
 };
 

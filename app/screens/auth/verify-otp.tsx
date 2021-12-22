@@ -37,15 +37,16 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
       if(authStore.otp === Number(otpCode)){
         console.log('otp match')
       }
-      if(authStore.isLoginFlow) {
-        await authStore.loginVerify(otpCode ? otpCode.toString() : '')
-        // await mainStore.setProfile()
-      } else {
+      // if(authStore.isLoginFlow) {
+      //   await authStore.loginVerify(otpCode ? otpCode.toString() : '')
+      //   // await mainStore.setProfile()
+      // } else {
         await authStore.signupVerify(otpCode ? otpCode.toString() : '')
-      }
+      // }
     }, [otpCode])
 
     const resendOTP = useCallback(async () => {
+      console.log('VeridyOtp resend OTP')
       await authStore.resendOTP(authStore.email)
     }, [])
 
@@ -80,7 +81,9 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
       console.log('succeed')
       if(authStore.isCreateProfile === true){
         setIsError(false)
-        navigation.navigate("createProfile")
+        navigation.navigate("createProfile", {
+          isFromVerifyOtp: true
+        })
       }
     }, [authStore.isCreateProfile])
 
