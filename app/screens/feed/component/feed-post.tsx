@@ -16,6 +16,7 @@ import sedih from "@assets/icons/mood/sedih.png";
 import sakit from "@assets/icons/mood/sakit.png";
 import terkejut from "@assets/icons/mood/kaget.png";
 import { MOOD_TYPE } from "@screens/homepage/components/mood-component"
+import moment from "moment"
 
 type FeedPostProps = {
   data: FeedItemType;
@@ -188,6 +189,9 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
       return Math.floor(dayDiff) + ' day ago'
     } 
 
+    if (dayDiff > 30 ) {
+      return moment(createdDate).format("DD MMM yyyy")
+    }
     if (dayDiff > 1 ) {
       return Math.floor(dayDiff) + ' days ago'
     } 
