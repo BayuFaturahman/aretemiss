@@ -98,7 +98,7 @@ export class ProfileApi {
 
       const res = response.data
 
-      console.log(res)
+      // console.log(res)
       console.log(response.status)
 
       return { kind: "ok", response: res }
