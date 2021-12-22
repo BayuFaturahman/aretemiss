@@ -8,11 +8,20 @@ import sick from "@assets/icons/notifications/sick.png";
 
 
 export const EmptyList = ({
+                            imageSource = sick,
                             description = 'Sepertinya anggota team-mu belum ada yang update, nih. Tunggu sampe mereka update mood yah, nanti mood mereka muncul di sini.',
 }) => {
   return(
     <VStack horizontal={Spacing[24]} top={Spacing[24]} style={Layout.widthFull}>
       <VStack>
+      <HStack bottom={Spacing[12]}>
+          <Spacer/>
+          <FastImage style={{
+            height: Spacing[48],
+            width: Spacing[48],
+          }} source={imageSource} resizeMode={"contain"}/>
+          <Spacer/>
+        </HStack>
         <Text type={'body'} style={{textAlign: 'center'}} text={description} />
         <Spacer height={Spacing[12]} />
         <HStack top={Spacing[12]}>
