@@ -55,7 +55,7 @@ type QuisDataType = {
 }
 
 const EXAMPLE_DATA:QuisDataType = {
-  question: 'Ketahui gaya kepemimpinanmu untuk mengatahui caranya menghadapi anggota tim dengan lebih baik. Di dalam tes ini, tidak ada jawaban yang salah ataupun benar.',
+  question: 'Ketahui gaya kepemimpinanmu untuk mengatahui caranya menghadapi anggota team dengan lebih baik. Di dalam tes ini, tidak ada jawaban yang salah ataupun benar.',
   answer: EXAMPLE_ASNWER
 }
 
@@ -66,7 +66,7 @@ const QuizForm: FC<StackScreenProps<NavigatorParamList, "quizForm">> = observer(
     const [quizData, setQuizData] = useState<QuisDataType>(EXAMPLE_DATA);
     const [, forceUpdate] = useReducer(x => x + 1, 0);
 
-    const [question, setQuestion] = useState<string>('Ketahui gaya kepemimpinanmu untuk mengatahui caranya menghadapi anggota tim dengan lebih baik. Di dalam tes ini, tidak ada jawaban yang salah ataupun benar.');
+    const [question, setQuestion] = useState<string>('Ketahui gaya kepemimpinanmu untuk mengatahui caranya menghadapi anggota team dengan lebih baik. Di dalam tes ini, tidak ada jawaban yang salah ataupun benar.');
 
     const goBack = () => navigation.goBack()
 
