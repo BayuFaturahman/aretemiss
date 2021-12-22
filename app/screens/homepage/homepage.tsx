@@ -324,7 +324,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
               appearFrom="left"
               animationDuration={500}
             >
-             <NotificationButton goToNotifications={goToNotifications} isNewNotification={false} />
+             <NotificationButton goToNotifications={goToNotifications} isNewNotification={mainStore.userProfile.new_notification_flag === true} />
             </RNAnimated>
             </VStack>
           <Spacer height={Spacing[24]} />
@@ -474,7 +474,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
           >
             <VStack style={{ alignItems: "flex-end" }}>
               <TouchableOpacity onPress={toggleModal}>
-                <Text type={"body-bold"} style={[{ fontSize: Spacing[32] }]}>
+                <Text type={"body-bold"} style={{ fontSize: Spacing[32] }}>
                   x
                 </Text>
               </TouchableOpacity>
