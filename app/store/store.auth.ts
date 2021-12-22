@@ -93,6 +93,14 @@ export default class AuthStore {
         console.log(response.response.errorCode)
         console.log(response.response.message)
 
+
+        if (response.response.errorCode === 10) {
+          response.response.message = 'Woops. Alamat e-mail ini belum terdaftar. Coba cek lagi alamat e-mail-mu. Kalau memang belum registrasi, registrasi dulu yuk!'
+        }
+
+        if (response.response.errorCode === 15) {
+          response.response.message = 'Waduh. Password yang kamu masukan salah. Coba cek lagi password-mu.'
+        }
         this.formError(response.response)
       }
 
@@ -246,6 +254,10 @@ export default class AuthStore {
         console.log(response.response.errorCode)
         console.log(response.response.message)
 
+
+        if (response.response.errorCode === 7 ) {
+          response.response.message = 'Waduh. Nomor verifikasi OTP yang kamu masukan salah.'
+        }
         this.formError(response.response)
       }
 
