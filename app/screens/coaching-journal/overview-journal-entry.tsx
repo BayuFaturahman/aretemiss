@@ -307,7 +307,6 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
         <SafeAreaView style={Layout.flex}>
         <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
             <ScrollView>
-              <DismissKeyboard>
               <Formik
                 initialValues={journalEntryInitialValue}
                 onSubmit={(values) =>{
@@ -544,7 +543,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                   </>
                 )}
               </Formik>
-              </DismissKeyboard>
+              <Spacer height={Spacing[72]} />
             </ScrollView>
         </SafeAreaView>
 
