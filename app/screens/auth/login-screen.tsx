@@ -42,7 +42,7 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
       console.log('### FCM token login ###')
       console.log(token)
 
-      await authStore.login(phoneNumber.toLowerCase() , password, token)
+      await authStore.login(phoneNumber , password, token)
     }, [phoneNumber, password])
 
     useEffect(() => {
