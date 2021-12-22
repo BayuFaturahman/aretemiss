@@ -135,11 +135,11 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
 
     const replyInputRef = useRef(null);
 
-    const { data } = route.params;
+    const { data, isFromMainFeed } = route.params;
     const { feedStore, mainStore } = useStores()
 
     const [modal, setModal] = useState<boolean>(false);
-    const [isModalDeletePostVisible, setModalDeletePostVisible] = useState<boolean>(false);
+    const [isModalDeleteCommentVisible, setModalDeleteCommentVisible] = useState<boolean>(false);
     const [selectedComment, setSelecteComment] = useState<string>('')
     const [listComment, setListComment] = useState<Array<FeedPostCommentType>>(feedStore.listComment);
     const [currentPage, setCurrentPage] = useState<number>(2);
@@ -159,14 +159,15 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
     const [replyToName, setReplyToName] = React.useState<string>(null);
 
     const [holdPost, setHoldedPost] = useState<string>();
+    let listViewRef;
 
     const toggleModal = (value: boolean) =>{
       setModal(value)
     }
 
-    const toggleModalDeletePost = () =>{
+    const toggleModalDeleteComment = () =>{
       setTimeout(() => {
-        setModalDeletePostVisible(!isModalDeletePostVisible)
+        setModalDeleteCommentVisible(!isModalDeleteCommentVisible)
       }, 100)
     }
 
@@ -210,7 +211,15 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
       setListComment(feedStore.listComment)
     }, [listComment, feedStore.getListCommentSuccess])
 
-    const goBack = () => navigation.goBack()
+    const goBack = () => {
+      if (isFromMainFeed) {
+        navigation.navigate('feedTimelineMain', {
+          newPost: true
+        })
+      } else {
+        navigation.goBack()
+      }
+    }
 
     // const goToNewPost = () => navigation.navigate("newPost")
 
@@ -293,10 +302,15 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
               ref={replyInputRef}
               autoCorrect={false}
               style={Layout.widthFull}
+              inputStyle={{textAlign: 'left', paddingLeft: Spacing[10]}}
               placeholder={'Write a reply...'}
               // placeholderTextColor={Colors.BLACK_30}
               underlineColorAndroid="transparent"
-              onFocus={() => setIsReplyFocus(true)}
+              onFocus={() => {
+                setIsReplyFocus(true)
+                console.log('skroll to end ', listViewRef.hei)
+                listViewRef.scrollToEnd({ animated: true });
+              }}
               onBlur={() => setIsReplyFocus(false)}
             />
           </VStack>
@@ -309,7 +323,7 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                 }}>
                   <Text
                     type={"body"}
-                    style={{ fontSize: Spacing[16] }}
+                    style={{ fontSize: Spacing[16] }} 
                     underlineWidth={Spacing[72]}
                     text="Cancel"
                   />
@@ -337,6 +351,7 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
 
     const submitComment = useCallback(async () => {
       feedStore.formReset()
+      feedStore.isLoading = true
       if (replyId === "" || replyId === null) {
         await feedStore.createComment({
           feedId: data.id,
@@ -364,31 +379,31 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
     }, [replyInput, setReplyInput, feedStore.errorCode, clearMention])
 
 
-    const deletePost = React.useCallback(async(id) => {
+    const deleteComment = React.useCallback(async(id) => {
       console.log('delete post')
       console.log(id)
       setSelecteComment(id)
-      toggleModalDeletePost()
+      toggleModalDeleteComment()
     }, []);
 
 
-    const onDeletePost = React.useCallback(async() => {
+    const onDeleteComment = React.useCallback(async() => {
       console.log('ON delete post')
       feedStore.formReset()
-      await feedStore.deletePost(selectedComment)
+      await feedStore.deleteComment(selectedComment)
       if (feedStore.errorCode === null) {
         firstLoadComment()
       }
       
-      toggleModalDeletePost()
-    }, [selectedComment, isModalDeletePostVisible]);
+      toggleModalDeleteComment()
+    }, [selectedComment, isModalDeleteCommentVisible]);
 
     return (
       <VStack
         testID="feedTimelineMain"
-        style={{ backgroundColor: Colors.WHITE, flex: 1, justifyContent: "center" }}
+        style={{ backgroundColor: Colors.BLACK, flex: 1, justifyContent: "center" }}
       >
-        <SafeAreaView style={Layout.flex}>
+        <SafeAreaView style={Layout.flex }>
           <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
           <FlatList
             refreshControl={
@@ -410,7 +425,7 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                   data={data}
                   onImageTap={onImageFeedTap}
                   ownPost={false}
-                  deletePost={deletePost}
+                  deletePost={null}
                   goToDetail={()=>null}
                 />
               </VStack>
@@ -491,7 +506,7 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
               const replyButton = () => {
                 return(
                   <TouchableOpacity onPress={() => {
-                    replyingTo(item.author.id, item.author.nickname)
+                    replyingTo(item.id, item.author.nickname)
                   }}>
                     <Text
                       type={"body"}
@@ -537,7 +552,7 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                         style={{
                           height: Spacing[24],
                         }}
-                      onPress={deletePost.bind(this, item.id)}>
+                      onPress={deleteComment.bind(this, item.id)}>
                       <Spacer height={Spacing[4]}/>
                       <FastImage
                         style={{
@@ -574,6 +589,9 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
             }}
             style={{paddingHorizontal: Spacing[24]}}
             keyExtractor={item => item.id}
+            ref={(ref) => {
+              listViewRef = ref;
+            }}
           />
         </SafeAreaView>
         <Spinner visible={feedStore.isLoading} textContent={"Memuat..."} />
@@ -596,7 +614,7 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
           />
         </ModalReact>
         <Modal
-          isOpen={isModalDeletePostVisible}
+          isOpen={isModalDeleteCommentVisible}
           style={{
             height: "50%",
             width: dimensions.screenWidth - Spacing[28],
@@ -649,7 +667,7 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                         text={"Hapus"}
                         style={{ height: Spacing[32], paddingHorizontal: Spacing[8], width: '100%' }}
                         textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
-                        onPress={onDeletePost}
+                        onPress={onDeleteComment}
                       />
                       <Spacer height={Spacing[12]} />
                       <Button
@@ -657,7 +675,7 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                         text={"Kembali"}
                         style={{ height: Spacing[32], paddingHorizontal: Spacing[8] }}
                         textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
-                        onPress={toggleModalDeletePost}
+                        onPress={toggleModalDeleteComment}
                       />
                     </VStack>
                     <Spacer />
