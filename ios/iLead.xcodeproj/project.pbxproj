@@ -739,11 +739,12 @@
 				CODE_SIGN_ENTITLEMENTS = iLead/iLead.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 16;
-				DEVELOPMENT_TEAM = "";
+				CURRENT_PROJECT_VERSION = 17;
+				DEVELOPMENT_TEAM = M2L9Z4F4CF;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = iLead/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.17;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -768,10 +769,11 @@
 				CODE_SIGN_ENTITLEMENTS = iLead/iLead.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 16;
-				DEVELOPMENT_TEAM = "";
+				CURRENT_PROJECT_VERSION = 17;
+				DEVELOPMENT_TEAM = M2L9Z4F4CF;
 				INFOPLIST_FILE = iLead/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.17;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

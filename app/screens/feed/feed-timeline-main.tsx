@@ -116,22 +116,44 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
 
     const [currentPage, setCurrentPage] = useState<number>(2);
 
-    const goBack = () => navigation.goBack()
+    const currentDateTime = new Date().toString();
+
+
+    const goBack = () => {
+      setLastSeenFeed()
+      navigation.goBack()
+    }
 
     const goToNewPost = () => {
-      navigation.setParams({ newPost: undefined })
+      setLastSeenFeed()
+      resetNavigationParam()
       navigation.navigate("newPost")
     }
 
     const goToMyfeed = () => {
-      feedStore.refreshData = false
+      setLastSeenFeed()
+      resetNavigationParam()
       navigation.navigate("myFeedList")
     }
 
-    const goToCommentList = () => navigation.navigate("commentList")
+    const goToCommentList = () => {
+      setLastSeenFeed()
+      navigation.navigate("commentList")
+    }
+
+    const resetNavigationParam = () => {
+      feedStore.refreshData = false
+      navigation.setParams({ newPost: undefined })
+    }
 
     const toggleModal = (value: boolean) =>{
       setModal(value)
+    }
+
+    const setLastSeenFeed = () => {
+      // console.log('before: ', feedStore.serviceStore.lastSeenFeed)
+      feedStore.serviceStore.setLastSeenFeed(currentDateTime)
+      // console.log('after: ', feedStore.serviceStore.lastSeenFeed)
     }
 
     const firstLoadFeed = debounce( async () => {
@@ -240,7 +262,7 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
           goToNewPost={goToNewPost}
           goToMyFeed={goToMyfeed}
           goToCommentList={goToCommentList}
-          leftCounter={10}
+          leftCounter={null}
           rightCounter={20}
         />
         <Modal

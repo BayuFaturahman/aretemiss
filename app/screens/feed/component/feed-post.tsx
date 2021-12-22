@@ -1,13 +1,21 @@
-import React, { Fragment } from "react"
+import React, { Fragment, useEffect, useState } from "react"
 import { HStack, VStack } from "@components/view-stack"
 import { Colors, Spacing } from "@styles"
 import {TouchableOpacity, View} from "react-native"
-import FastImage from "react-native-fast-image"
+import FastImage, { Source } from "react-native-fast-image"
 import { Text } from "@components"
 import Spacer from "@components/spacer"
 import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png"
 import { FeedItemType } from "../feed.type"
+
 import trash from "@assets/icons/trash.png";
+import senang from "@assets/icons/mood/senyum.png";
+import senangBw from "@assets/icons/mood/senyum-bw.png";
+import marah from "@assets/icons/mood/marah.png";
+import sedih from "@assets/icons/mood/sedih.png";
+import sakit from "@assets/icons/mood/sakit.png";
+import terkejut from "@assets/icons/mood/kaget.png";
+import { MOOD_TYPE } from "@screens/homepage/components/mood-component"
 
 type FeedPostProps = {
   data: FeedItemType;
@@ -19,6 +27,7 @@ type FeedPostProps = {
 
 export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDetail = () => null }:FeedPostProps) => {
 
+  const [moodSource, setMoodSource] = useState<Source>();
   const listImage = data.imageUrl ? data.imageUrl.split(";") : []
 
   const imageListViewer = listImage.map((item)=>{
@@ -38,6 +47,24 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
   if (data === null) {
     return null
   }
+
+  useEffect(() => {
+    let tempSource = null
+    setMoodSource(senangBw)
+    MOOD_TYPE.map((type, index) => {
+      if (type.label === data.author.mood) {
+        tempSource = type.source
+        return type.source
+      } else {
+        return null
+      }
+    })
+
+    if (tempSource !== null) {
+      setMoodSource(tempSource)
+    }
+
+  })
 
   const getImage = (height, width, marginRight, marginBottom, image, imageIndex) => {
     return (
@@ -150,25 +177,41 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
   const getCreatedTime = () => {
     var currDate = new Date()
     var createdDate = new Date(data.createdAt)
-    
-    var timeDiff = currDate.getTime() - createdDate.getTime() 
-    
+
+    var timeDiff = currDate.getTime() - createdDate.getTime()
+
     var dayDiff = timeDiff/ (1000 * 3600 * 24);
     var hrsDiff = Math.floor((timeDiff % 86400000) / 3600000); // hours
     var minDiff = Math.floor(((timeDiff % 86400000) % 3600000) / 60000) //min
 
+    if (dayDiff === 1 ) {
+      return Math.floor(dayDiff) + ' day ago'
+    } 
+
     if (dayDiff > 1 ) {
-      return Math.floor(dayDiff) + ' days'
+      return Math.floor(dayDiff) + ' days ago'
+    } 
+
+    if (hrsDiff === 1) {
+      return hrsDiff + ' hour ago'
     } 
     
     if (hrsDiff > 1) {
-      return hrsDiff + ' hours'
+      return hrsDiff + ' hours ago'
     } 
 
-    if (minDiff >= 0) {
-      return minDiff + ' mins'
+    if (minDiff === 1) {
+      return minDiff + ' min  ago'
     }
-  
+
+    if (minDiff > 1) {
+      return minDiff + ' mins  ago'
+    }
+
+    if (minDiff === 0) {
+      return 'baru saja'
+    }
+
     // return dayDiff
   }
 
@@ -189,7 +232,7 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
           type={"body"}
           style={{ fontSize: Spacing[12] }}
           underlineWidth={Spacing[72]}
-          text={`${getCreatedTime()} ago`}
+          text={`${getCreatedTime()}`}
         />
       </HStack>
 
@@ -221,20 +264,34 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
         </HStack>
       </TouchableOpacity>
 
-      <HStack left={Spacing[24]} top={Spacing[8]}>
+      <HStack left={Spacing[20]} top={Spacing[8]}>
         { !ownPost ?
           <TouchableOpacity onPress={()=>{goToDetail(data)}}>
             <HStack>
               <FastImage
                 style={{
-                  height: Spacing[42],
-                  width: Spacing[42],
+                  height: Spacing[24],
+                  width: Spacing[24],
+                  borderRadius: Spacing[18],
+                  alignSelf: 'flex-end',
+                  zIndex: 1,
+                  bottom: -Spacing[4]
+                }}
+                source={data.author.mood !== '' ? moodSource
+                : senangBw}
+                resizeMode={"cover"}
+              />
+              <FastImage
+                style={{
+                  left: -Spacing[10],
+                  height: Spacing[32],
+                  width: Spacing[32],
                   borderRadius: Spacing[8],
                 }}
                 source={data.author.photo !== '' ? {
                   uri: data.author.photo
                 }: nullProfileIcon}
-                resizeMode={"contain"}
+                resizeMode={"cover"}
               />
               <VStack left={Spacing[8]}>
                 <Text
@@ -259,7 +316,7 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
                 width: Spacing[12]
               }}
               source={trash}
-              resizeMode={"cover"}
+              resizeMode={"contain"}
             />
           </TouchableOpacity>
         }

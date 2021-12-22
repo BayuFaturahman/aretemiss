@@ -1,8 +1,8 @@
 import { ApiResponse } from "apisauce"
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
-import { GetListFeedsResult, PostUploadFeedImagesResult, CreatePostResult, DeletePostResult } from "@services/api/feed/feed-api.types"
-import { CreatePostType } from "@screens/feed/feed.type"
+import { GetListFeedsResult, PostUploadFeedImagesResult, CreatePostResult, DeletePostResult, GetListCommentResult, CreateCommentResult, CreateCommentToResult, DeleteCommentResult } from "@services/api/feed/feed-api.types"
+import { CreateCommentToType, CreateCommentType, CreatePostType } from "@screens/feed/feed.type"
 
 export class FeedApi {
   private api: Api
@@ -185,6 +185,141 @@ export class FeedApi {
     }
   }
 
+  async getListComment(postId: string, page: number, limit: number): Promise<GetListCommentResult> {
+    console.log("getListComment()")
+    try {
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.get(`/feed/${postId}/comment`, {
+        limit: limit,
+        page: page,
+      })
+      if (response.status === 400) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
 
+      // console.log(response.data)
 
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data
+
+      // console.log(res)
+      console.log(response.status)
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      console.log(e)
+      console.log("error")
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data" }
+    }
+  }
+
+  async createComment(data: CreateCommentType): Promise<CreateCommentResult> {
+    try {
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.post(
+        `/comment`, data
+      )
+
+      // console.log('createComment response', response)
+      console.log('createComment response.data', response.data)
+      if(response.status === 400){
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      if(response.status === 500){
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data"}
+    }
+  }
+
+  async createCommentTo(data: CreateCommentToType): Promise<CreateCommentToResult> {
+    try {
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.post(
+        `/comment`, data
+      )
+
+      // console.log('createComment response', response)
+      console.log('createCommentTo response.data', response.data)
+      if(response.status === 400){
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      if(response.status === 500){
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data"}
+    }
+  }
+
+  async deleteComment(commentId: string): Promise<DeleteCommentResult> {
+    try {
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.delete(
+        `/comment/${commentId}`,
+      )
+
+      console.log('deleteComment response.data', response.data)
+      if(response.status === 400){
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      if(response.status === 500){
+        console.log('MASUK RESPONSE STATUS 500')
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        console.log('MASUK RESPONSE NOT OK')
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data"}
+    }
+  }
 }

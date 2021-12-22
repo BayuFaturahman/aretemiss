@@ -5,6 +5,7 @@
   "scripts": {
     "start": "react-native start",
     "ios": "ENVFILE=.env.dev react-native run-ios --simulator='iPhone 8'",
+    "ios-prod": "ENVFILE=.env.prod react-native run-ios --simulator='iPhone 8'",
     "ios:small": "ENVFILE=.env.devt react-native run-ios --simulator='iPhone SE (1st generation)'",
     "ios:long": "ENVFILE=.env.dev react-native run-ios --simulator='iPhone 11 Pro'",
     "ios:large": "ENVFILE=.env.dev react-native run-ios --simulator='iPhone 11'",
@@ -48,6 +49,7 @@
     "@react-native-community/datetimepicker": "^3.5.2",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-native-community/netinfo": "^5.9.6",
+    "@react-native-community/push-notification-ios": "^1.10.1",
     "@react-native-firebase/app": "^13.0.1",
     "@react-native-firebase/messaging": "^13.0.1",
     "@react-native-picker/picker": "^2.1.0",
@@ -95,6 +97,7 @@
     "react-native-modalbox": "^2.0.0",
     "react-native-paper": "^3.6.0",
     "react-native-progress": "^4.1.2",
+    "react-native-push-notification": "^8.1.1",
     "react-native-reanimated": "^1.13.0",
     "react-native-safe-area-context": "3.1.8",
     "react-native-screens": "3.4.0",
