@@ -36,8 +36,9 @@ export default class AuthStore {
   email: string
   emailVerify: string
   needChangePassword: boolean
+  needUpdateProfile: boolean
   token: string
-  isVerify: number
+  isVerify: boolean
   isLoginFlow: boolean
 
   isCreateProfile: boolean
@@ -68,6 +69,7 @@ export default class AuthStore {
     this.email = null
     this.emailVerify = null
     this.needChangePassword = false
+    this.needUpdateProfile = false
     this.token = null
     this.isVerify = null
 
@@ -92,6 +94,10 @@ export default class AuthStore {
       if(response.kind === 'form-error'){
         console.log(response.response.errorCode)
         console.log(response.response.message)
+
+        if (response.response.errorCode === 14 || response.response.errorCode === 3  ) {
+          response.response.message = 'Woops. Jangan lupa alamat email atau password-nya diisi ya!'
+        }
 
         this.formError(response.response)
       }
@@ -143,16 +149,19 @@ export default class AuthStore {
   }
 
   async loginSuccess (data: LoginResponse, email: string){
-    this.needChangePassword = data.needChangePassword
+    this.needChangePassword = data.need_change_password
     this.token = data.token
-
-    if(data.isVerify === 0){
-      this.isCreateProfile = true
-      await this.serviceStore.setHeaderToken(this.token)
-    } else {
+    this.isVerify = data.is_verify
+    this.needUpdateProfile = data.need_update_profile
+    console.log('login sukses, data is verify: ', data.is_verify)
+    if (this.isVerify && !this.needUpdateProfile) {
       this.isCreateProfile = false
       await this.serviceStore.setToken(this.token)
+    } else {
+      this.isCreateProfile = true
+      await this.serviceStore.setHeaderToken(this.token)
     }
+    console.log('this.isCreateProfile ', this.isCreateProfile)
     this.email = email
     this.isLoginFlow = true
   }
@@ -268,12 +277,13 @@ export default class AuthStore {
     console.log('signupVerifySuccess')
     this.userId = data.user_id
     this.token = data.token
-    this.isVerify = data.is_verify
+    // this.isVerify = data.is_verify
     this.email = data.email
 
     this.isLoginFlow = false
     this.serviceStore.setHeaderToken(this.token)
     this.isCreateProfile = true
+    this.isVerify = true
   }
 
   async resendOTP(email: string) {

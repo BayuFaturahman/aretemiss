@@ -43,7 +43,7 @@ const ProfileUpdateInitialForm: ProfileUpdateForm = {
 };
 
 const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> = observer(
-  ({ navigation }) => {
+  ({ navigation, route }) => {
 
     const goToOTP = () => navigation.navigate("verifyOTP")
 
@@ -94,15 +94,26 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
 
 
     const goBack = () => {
-      navigation.navigate("verifyPhone")
+      if (authStore.isVerify === null) {
+        navigation.navigate("verifyPhone")
+      } else {
+        navigation.navigate("login")
+      }
     }
 
     const onSubmit = useCallback(async (data: ProfileUpdateForm)=>{
       console.log(data)
       console.log(authStore.userId)
       // data.email = authStore.email
-      await mainStore.updateProfile(authStore.userId, data)
-    },[])
+      if (route.params.isFromVerifyOtp) {
+        await mainStore.updateProfile(authStore.userId, data)
+      } else {
+        console.log('mainStore.userProfile.user_id ',mainStore.userProfile.user_id)
+        await mainStore.updateProfile(mainStore.userProfile.user_id, data)
+      }
+      
+      
+    },[route.params.isFromVerifyOtp])
 
     return (
       <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.WHITE, flex: 1, justifyContent: 'center'}}>

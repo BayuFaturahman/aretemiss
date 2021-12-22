@@ -29,11 +29,11 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
     const [isError, setIsError] = useState<boolean>(false)
     const [errorMessage, setErrorMessage] = useState<string | null>('')
 
-    const { authStore } = useStores()
+    const { authStore, mainStore } = useStores()
 
     const goToForgotPassword = () => navigation.navigate("forgotPassword")
 
-    const nextScreen = () => navigation.navigate("verifyOTP")
+    const goToVerifyOTP = () => navigation.navigate("verifyOTP")
 
     const submitLogin = useCallback( async()=>{
 
@@ -48,6 +48,7 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
     useEffect(() => {
       authStore.formReset()
       authStore.resetAuthStore()
+      console.log('use effect [] login')
     }, [])
 
     useEffect(() => {
@@ -62,13 +63,51 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
       }
     }, [authStore.errorMessage])
 
+    // useEffect(() => {
+    //   console.log('login succeed')
+    //   if(authStore.otp !== null){
+    //     setIsError(false)
+    //     goToVerifyOTP()
+    //   }
+    // }, [authStore.otp])
+
     useEffect(() => {
-      console.log('login succeed')
-      if(authStore.otp !== null){
+      if(authStore.isCreateProfile){
         setIsError(false)
-        nextScreen()
+        getUserProfile()
+        console.log('isCreateProfile is true')
+
+
+        if (!authStore.isVerify ) {
+          resendOTP()
+
+          console.log('in login screen, resendOTP')
+          if(authStore.otp !== null){
+            setIsError(false)
+            goToVerifyOTP()
+          }
+          
+        } 
+
+        if (authStore.isVerify && authStore.needUpdateProfile) {
+          navigation.navigate("createProfile", {
+            isFromVerifyOtp: false
+          })
+          return
+        }
       }
-    }, [authStore.otp])
+
+      // console.log('succeed')
+     
+    }, [ authStore.isCreateProfile, authStore.token, authStore.isVerify, authStore.needUpdateProfile, authStore.otp])
+
+    const resendOTP = useCallback(async () => {
+      await authStore.resendOTP(authStore.email)
+    }, [])
+
+    const getUserProfile = useCallback(async ()=>{
+      await mainStore.getProfile()
+    }, [])
 
     // useEffect(() => {
     //   // authStore.resetAuthStore()
