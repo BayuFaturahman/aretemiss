@@ -39,7 +39,7 @@ export const EmptyList = ({}) => {
           <Text type={'body'} style={{ color: Colors.SOFT_PURPLE}} >
             “kumpul santai”
           </Text>
-          {` bareng anggota tim, itu juga bisa dijadiin catatan lho!.`}
+          {` bareng anggota team, itu juga bisa dijadiin catatan lho!.`}
         </Text>
       </HStack>
       <Spacer height={Spacing[16]} />

@@ -250,7 +250,11 @@ const FillFeedbackDetail: FC<StackScreenProps<NavigatorParamList, "fillFeedbackD
               <Spacer height={Spacing[24]} />
               <Text type={"header"} style={{color: Colors.WHITE, textAlign:'center', fontSize: Spacing[12]}}>
                 Berikut adalah hasil feedback {'\n'}
-                sudah dinilai oleh anggota tim-mu.
+                sudah dinilai oleh anggota team-mu.
+              </Text>
+              <Spacer height={Spacing[10]} />
+              <Text type={"body-bold"} style={{color: Colors.WHITE, textAlign:'center', fontSize: Spacing[12]}}>
+               Lingkaran merah adalah jawaban dari coachee-mu.
               </Text>
               <Spacer height={Spacing[32]} />
 
