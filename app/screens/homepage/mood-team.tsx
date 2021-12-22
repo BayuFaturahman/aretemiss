@@ -116,7 +116,7 @@ const MoodTeam: FC<StackScreenProps<NavigatorParamList, "moodTeam">> = observer(
             />
             <Spacer height={Spacing[24]} />
             <Text type={"body"} style={{ textAlign: "center", color: Colors.WHITE }}>
-              {`Lihat mood yang sudah di-update \n anggota tim Anda hari ini!`}
+              {`Lihat mood yang sudah di-update \n anggota team Anda hari ini!`}
             </Text>
             <Spacer height={Spacing[32]} />
           </VStack>
