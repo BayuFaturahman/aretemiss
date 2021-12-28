@@ -110,6 +110,7 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
 
     const [modal, setModal] = useState<boolean>(false);
     const [listFeeds, setListFeeds] = useState<Array<FeedItemType>>(feedStore.listFeeds);
+    const [newNotif, setNewNotif] = useState<number>(0);
 
     const [listImageViewer, setListImageViewer] = useState(images);
     const [activeViewerIndex, setActiveViewerIndex] = useState<number>(0);
@@ -204,7 +205,11 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
     useEffect(() => {
       setListFeeds([])
       setListFeeds(feedStore.listFeeds)
-    }, [listFeeds, feedStore.getListFeedsSuccess])
+      setNewNotif(feedStore.newNotif)
+      console.log('feedStore.newNotif ', feedStore.newNotif)
+      console.log('newNotif ', newNotif)
+      
+    }, [listFeeds, feedStore.getListFeedsSuccess, feedStore.newNotif, newNotif])
 
     const onImageFeedTap = useCallback( (index, imageList) => {
       setActiveViewerIndex(index)
@@ -268,7 +273,7 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
           goToMyFeed={goToMyfeed}
           goToCommentList={goToCommentList}
           leftCounter={null}
-          rightCounter={20}
+          rightCounter={newNotif}
         />
         <Modal
           visible={modal}

@@ -29,6 +29,18 @@ export type CommentApiModel = {
   "feed_comment_reply_to_nickname": string
 }
 
+export type CommentNotifApiModel = {
+  "feed_id": string
+  "feed_comment_id": string
+  "notification_is_new": number
+  "notification_id": string
+  "feed_comment_comment": string
+  "feed_comment_author_fullname": string
+  "feed_comment_author_photo": string
+  "feed_comment_author_mood": string
+  "feed_comment_reply_to_id": string
+  "feed_comment_reply_to_nickname": string
+}
 export interface ErrorFormResponse {
   errorCode: number
   message: string
@@ -37,7 +49,8 @@ export interface ErrorFormResponse {
 export interface GetListFeedsResponse {
   message: string
   token: string
-  data: FeedApiModel[]
+  data: FeedApiModel[],
+  "new_notif": number
   
 }
 
@@ -117,6 +130,16 @@ export interface DeleteCommentResponse {
   data: {
    }
 }
+
+export interface GetListCommentNotificationResponse {
+  message: string
+  data: {
+    notificationComments: CommentNotifApiModel[] 
+  }
+  
+}
+
+
 export type GetListFeedsResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListFeedsResponse }  | GeneralApiProblem
 export type PostUploadFeedImagesResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: PostUploadFeedImagesResponse }  | GeneralApiProblem
 export type CreatePostResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreatePostResponse }  | GeneralApiProblem
@@ -125,3 +148,4 @@ export type GetListCommentResult = { kind: "form-error"; response: ErrorFormResp
 export type CreateCommentResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreateCommentResponse }  | GeneralApiProblem
 export type CreateCommentToResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreateCommentToResponse }  | GeneralApiProblem
 export type DeleteCommentResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: DeleteCommentResponse }  | GeneralApiProblem
+export type GetListCommentNotification = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListCommentNotificationResponse }  | GeneralApiProblem

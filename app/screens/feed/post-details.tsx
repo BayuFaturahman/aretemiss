@@ -401,7 +401,7 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
     return (
       <VStack
         testID="feedTimelineMain"
-        style={{ backgroundColor: Colors.BLACK, flex: 1, justifyContent: "center" }}
+        style={{ backgroundColor: Colors.WHITE, flex: 1, justifyContent: "center" }}
       >
         <SafeAreaView style={Layout.flex }>
           <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
@@ -531,12 +531,12 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                     >
                       <Text
                         type={"body"}
-                        style={{color: item.isOwnComment ? Colors.WHITE : ''}}
+                        style={{color: item.isOwnComment ? Colors.WHITE : Colors.UNDERTONE_BLUE}}
                       >
                         {item.replyToNickname !== "" ?
                           <VStack right={Spacing[4]}>
                             <Text
-                              style={{fontSize: Spacing[14], color: item.isOwnComment ? Colors.WHITE : ''}}
+                              style={{fontSize: Spacing[14], color: item.isOwnComment ? Colors.WHITE : Colors.MAIN_BLUE}}
                               type={"body-bold"}
                               text={`@${item.replyToNickname}`}
                             />
