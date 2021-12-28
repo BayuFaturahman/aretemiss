@@ -324,7 +324,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
               appearFrom="left"
               animationDuration={500}
             >
-             <NotificationButton goToNotifications={goToNotifications} isNewNotification={false} />
+             <NotificationButton goToNotifications={goToNotifications} isNewNotification={mainStore.userProfile.new_notification_flag === true} />
             </RNAnimated>
             </VStack>
           <Spacer height={Spacing[24]} />
@@ -474,7 +474,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
           >
             <VStack style={{ alignItems: "flex-end" }}>
               <TouchableOpacity onPress={toggleModal}>
-                <Text type={"body-bold"} style={[{ fontSize: Spacing[32] }]}>
+                <Text type={"body-bold"} style={{ fontSize: Spacing[32] }}>
                   x
                 </Text>
               </TouchableOpacity>
@@ -518,7 +518,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
                   <Spacer height={Spacing[12]} />
                   <Button
                     type={"warning"}
-                    text={"Lihat mood anggota lain"}
+                    text={"Lihat mood anggota team"}
                     style={{ height: Spacing[36], paddingHorizontal: Spacing[28] }}
                     textStyle={{ fontSize: Spacing[16], lineHeight: Spacing[20] }}
                     onPress={goToTeamMood}

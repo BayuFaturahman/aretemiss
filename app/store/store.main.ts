@@ -61,6 +61,8 @@ export type ProfileModel = {
   team2_name: string
   team3_id: string
   team3_name: string
+  new_notification_count: string
+  new_notification_flag:boolean
 }
 
 export type ListProfileModel = {
@@ -160,6 +162,8 @@ export default class MainStore {
       team2_name: "",
       team3_id: "",
       team3_name: "",
+      "new_notification_count": 0,
+      "new_notification_flag": false
     }
 
     this.newProfilePhoto = ""
@@ -231,7 +235,7 @@ export default class MainStore {
             "Alamat email yang kamu ganti sudah dimiliki akun lain. Kamu yakin mau pakai alamat yang ini?"
         }
 
-        if (response.response['code'] === 500) {
+        if (response.response.code === 500) {
           response.response.errorCode = 500
         }
 
@@ -291,6 +295,8 @@ export default class MainStore {
           user_mood: response.response[0].user_mood,
           isAllowNotification: response.response[0].user_is_allow_notification,
           isAllowReminderNotification: response.response[0].user_is_allow_reminder_notification,
+          new_notification_count: response.response[0].new_notification_count,
+          new_notification_flag: response.response[0].new_notification_flag,
         }
         console.log("USer profile ", this.userProfile)
       }
@@ -364,6 +370,8 @@ export default class MainStore {
       team2_name: data.team2_name,
       team3_id: data.team3_id,
       team3_name: data.team3_name,
+      new_notification_count: data.new_notification_count,
+      new_notification_flag: data.new_notification_flag,
     }
   }
 
