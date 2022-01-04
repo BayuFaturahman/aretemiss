@@ -401,7 +401,7 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
     return (
       <VStack
         testID="feedTimelineMain"
-        style={{ backgroundColor: Colors.BLACK, flex: 1, justifyContent: "center" }}
+        style={{ backgroundColor: Colors.WHITE, flex: 1, justifyContent: "center" }}
       >
         <SafeAreaView style={Layout.flex }>
           <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
@@ -446,7 +446,7 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
             }
             renderItem={({item, index})=> {
 
-              const profileComponent = () => {
+              const profileComponent = (isAuthor = false) => {
                 let moodSource = null
                 
                 MOOD_TYPE.map((type, index) => {
@@ -456,7 +456,54 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                     return null
                   }
                 })
-            
+                
+                if (isAuthor) {
+                  return(
+                    <>
+                     <HStack>
+                        <FastImage
+                          style={{
+                            height: Spacing[32],
+                            width: Spacing[32],
+                            borderRadius: Spacing[8],
+                          }}
+                          source={item.author.photo !== '' ? {
+                            uri: item.author.photo
+                          }: nullProfileIcon}
+                          resizeMode={"cover"}
+                        />
+                        <FastImage
+                        style={{
+                          height: Spacing[18],
+                          width: Spacing[18],
+                          borderRadius: Spacing[18],
+                          alignSelf: 'flex-end',
+                          zIndex: 1,
+                          left: -Spacing[10]
+                        }}
+                        source={moodSource !== null ? moodSource
+                        : senangBw}
+                        resizeMode={"cover"}
+                      />
+                      </HStack>
+                      <VStack right={Spacing[8]}>
+                        <Text
+                          type={"body-bold"}
+                          style={{ fontSize: Spacing[14] }}
+                          text={item.author.nickname}
+                        />
+                        <Text
+                          type={"body"}
+                          style={{ fontSize: Spacing[14] }}
+                          text={item.author.title}
+                        />
+                      </VStack>
+                     
+                     
+                      {/* TODO Mood Icon */}
+                    </>
+                  )
+                }
                 return(
                   <>
                     <VStack right={Spacing[8]}>
@@ -531,12 +578,12 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                     >
                       <Text
                         type={"body"}
-                        style={{color: item.isOwnComment ? Colors.WHITE : ''}}
+                        style={{color: item.isOwnComment ? Colors.WHITE : Colors.UNDERTONE_BLUE}}
                       >
                         {item.replyToNickname !== "" ?
                           <VStack right={Spacing[4]}>
                             <Text
-                              style={{fontSize: Spacing[14], color: item.isOwnComment ? Colors.WHITE : ''}}
+                              style={{fontSize: Spacing[14], color: item.isOwnComment ? Colors.WHITE : Colors.MAIN_BLUE}}
                               type={"body-bold"}
                               text={`@${item.replyToNickname}`}
                             />
@@ -571,11 +618,11 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                   </HStack>
                   <Spacer height={Spacing[8]} />
                   <HStack>
-                    {item.isOwnComment ?
+                    {item.author.id === data.author.id ?
                       <>
-                        {replyButton()}
+                        {profileComponent(true)}
                         <Spacer/>
-                        {profileComponent()}
+                        {replyButton()}
                       </> :
                       <>
                         {replyButton()}

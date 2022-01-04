@@ -5,8 +5,8 @@ import { makeAutoObservable } from "mobx"
 import ServiceStore from "./store.service"
 import { Api } from "@services/api"
 import { FeedApi } from "@services/api/feed/feed-api"
-import { CommentApiModel, ErrorFormResponse, FeedApiModel } from "@services/api/feed/feed-api.types"
-import { CreateCommentToType, CreateCommentType, CreatePostType, FeedItemType, FeedPostCommentType } from "@screens/feed/feed.type"
+import { CommentApiModel, CommentNotifApiModel, ErrorFormResponse, FeedApiModel } from "@services/api/feed/feed-api.types"
+import { CommentNotificationType, CreateCommentToType, CreateCommentType, CreatePostType, FeedItemType, FeedPostCommentType } from "@screens/feed/feed.type"
 
 
 export default class FeedStore {
@@ -25,6 +25,8 @@ export default class FeedStore {
   listFeeds: FeedItemType[]
   listMyFeed: FeedItemType[]
   listComment: FeedPostCommentType[]
+  listCommentNotif: CommentNotificationType[]
+  newNotif: number
 
   constructor(serviceStore: ServiceStore, api: Api) {
     this.serviceStore = serviceStore
@@ -39,6 +41,7 @@ export default class FeedStore {
     this.listFeeds = []
     this.listMyFeed = []
     this.feedApi = new FeedApi(this.api)
+    this.newNotif = 0
   }
 
   async getListFeeds(page = 1, limit = 5) {
@@ -49,7 +52,7 @@ export default class FeedStore {
       if (response.kind === "form-error") {
         this.formError(response.response)
       } else if (response.kind === "ok") {
-        this.getListFeedsSuccess(response.response.data)
+        this.getListFeedsSuccess(response.response.data, response.response.new_notif)
       } else if (response.kind === 'unauthorized'){
         console.log('token expired journal')
         console.log(response)
@@ -66,7 +69,7 @@ export default class FeedStore {
     }
   }
 
-  getListFeedsSuccess(data: FeedApiModel[]) {
+  getListFeedsSuccess(data: FeedApiModel[], notif: number) {
     console.log("getListFeedsSuccess")
     // this.listFeeds = []
     const tempListFeeds: FeedItemType[] = []
@@ -98,6 +101,7 @@ export default class FeedStore {
     
     const sortedListFeed = tempListFeeds.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 
+    this.newNotif = notif
     this.listFeeds = [
       ...this.listFeeds,
       ...(sortedListFeed ?? [])
@@ -146,7 +150,6 @@ export default class FeedStore {
     // console.log("list feed: ", this.listFeeds)
   }
 
-
   async getListMyFeeds(id: string, page = 1, limit = 5) {
     this.isLoading = true
     try {
@@ -157,7 +160,7 @@ export default class FeedStore {
       }
 
       if (response.kind === "ok") {
-        this.getListMyFeedsSuccess(response.response.data)
+        this.getListMyFeedsSuccess(response.response.data, response.response.new_notif)
       }
     } catch (e) {
       console.log(e)
@@ -168,7 +171,7 @@ export default class FeedStore {
     }
   }
 
-  getListMyFeedsSuccess(data: FeedApiModel[]) {
+  getListMyFeedsSuccess(data: FeedApiModel[], notif: number) {
     console.log("getListMyFeedsSuccess data", )
     const tempListMyFeeds: FeedItemType[] = []
     const lastSeen = new Date(this.serviceStore.lastSeenFeed)
@@ -199,6 +202,7 @@ export default class FeedStore {
     
     const sortedListMyFeed = tempListMyFeeds.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 
+    this.newNotif = notif
     this.listMyFeed = [
       ...this.listMyFeed,
       ...(sortedListMyFeed ?? [])
@@ -232,12 +236,10 @@ export default class FeedStore {
     }
   }
 
-
   clearListMyFeed() {
     this.listMyFeed = []
     // console.log("list MY feed: ", this.listMyFeed)
   }
-
 
   async uploadImage(formData: FormData) {
     console.log("Upload Photo")
@@ -411,7 +413,69 @@ export default class FeedStore {
       console.log('this.refreshdata ', this.refreshData)
     }
   }
+
+  async getListCommentNotification(userId: string, page = 1, limit = 5) {
+    this.isLoading = true
+    try {
+      const response = await this.feedApi.getListCommentNotification(page, limit)
+
+      if (response.kind === "form-error") {
+        this.formError(response.response)
+      }
+
+      if (response.kind === "ok") {
+        this.getListCommentNotificationSuccess(userId, response.response.data.notificationComments)
+      }
+    } catch (e) {
+      console.log(e)
+      this.setErrorMessage(e)
+    } finally {
+      console.log("getListMyFeeds done")
+      this.isLoading = false
+    }
+  }
+
+  getListCommentNotificationSuccess(userId: string, data: CommentNotifApiModel[]) {
+    console.log("getListCommentNotificationSuccess data", )
+    const temptListCommentNotif: CommentNotificationType[] = []
+    const lastSeen = new Date(this.serviceStore.lastSeenFeed)
+    // console.log('lastSeen ', lastSeen , lastSeen.getTime())
+    data.forEach(notif => {
+      // const postCreated = new Date(post.feed_created_at)
+      // console.log('is lasSeen < created ', lastSeen.getTime() < postCreated.getTime())
+      
+      temptListCommentNotif.push({
+        id: notif.notification_id,
+        isNew: notif.notification_is_new === 1,
+        feedId: notif.feed_id,
+        feedCommentId: notif.feed_comment_id,
+        feedComment: notif.feed_comment_comment,
+        replyToNickname: notif.feed_comment_reply_to_nickname,
+        type: notif.feed_comment_reply_to_id === userId ? 'replied': 'comment' ,
+        author: {
+          fullName: notif.feed_comment_author_fullname,
+          photo: notif.feed_comment_author_photo,
+          mood: notif.feed_comment_author_mood
+        }
+      })
+    })
+    
+    
+    this.listCommentNotif = [
+      ...this.listCommentNotif,
+      ...(temptListCommentNotif ?? [])
+    ]
+    console.log('this.listCommentNotif ', this.listCommentNotif)
+    this.isLoading = false
+    this.refreshData = true    
+  }
   
+  clearListCommentNotification() {
+    this.listCommentNotif = []
+    console.log('clear list comment notif')
+    // console.log("list feed: ", this.listFeeds)
+  }
+
   formReset() {
     this.errorCode = null
     this.errorMessage = null

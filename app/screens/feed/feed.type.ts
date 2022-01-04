@@ -35,6 +35,21 @@ export type FeedPostCommentType = {
   }
 }
 
+export type CommentNotificationType = {
+  id: string
+  isNew: boolean
+  feedId: string
+  feedCommentId: string
+  feedComment: string
+  replyToNickname: string
+  type: string
+  author: {
+    fullName: string
+    photo: string
+    mood: string
+  }
+}
+
 export type CreatePostType = {
   "description": string
   "images_url": string
