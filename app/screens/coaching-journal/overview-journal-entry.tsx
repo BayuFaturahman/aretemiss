@@ -229,7 +229,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
             await coachingStore.updateJournal(data.content,data.commitment,"",data.strength,selectedActivities,data.improvement)
             // toggleModalEditEntry()
             setIsOnEditMode(false)
-            goToFeedback()
+            // goToFeedback()
           }
         }
       }
