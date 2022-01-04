@@ -64,59 +64,59 @@ export const FeedItemComponent = ({data, goToFeed = ()=> null, goToNewPost = ()=
     console.log(imageList)
   }, [])
 
-  // return(
-  //   <VStack horizontal={Spacing[24]} top={Spacing[24]} style={Layout.widthFull}>
-  //     <VStack>
-  //       <HStack bottom={Spacing[12]}>
-  //         <Spacer/>
-  //         <FastImage style={{
-  //           height: Spacing[48],
-  //           width: Spacing[48],
-  //         }} source={surprised} resizeMode={"contain"}/>
-  //         <Spacer/>
-  //       </HStack>
-  //       <Text type={'body'} style={{textAlign: 'center'}} >
-  //         Fitur ini masih
-  //         <Text type={'body'} style={[{textAlign: 'center', fontStyle: 'italic'}, presets.italic]} > under construction</Text>
-  //         , nih. Tunggu tanggal mainnya, ya!
-  //       </Text>
-  //       <Spacer height={Spacing[12]} />
-  //     </VStack>
-  //   </VStack>
-  // )
-
-  if(data === null || data === undefined){
-    return(
-      <VStack>
-        <Text type={'left-header'} style={{fontSize: Spacing[16]}} underlineWidth={Spacing[72]} text="Feed." />
-        <Spacer height={Spacing[12]} />
-        <Spacer width={Spacing[24]} />
-        <EmptyList buttonLabel={'Mau berbagi kisah apa hari ini?'}
-                   imageSource={surprised}
-                   navigateTo={goToNewPost}/>
-        <Spacer height={Spacing[32]} />
-      </VStack>
-    )
-  }
-
   return(
-    <VStack>
-      <TouchableOpacity onPress={goToFeed}>
-        <Text type={'left-header'} style={{fontSize: Spacing[16]}} underlineWidth={Spacing[72]} text="Feed." />
-      </TouchableOpacity>
-      <FeedPost data={data} key={data.id} onImageTap={onImageFeedTap}/>
-      <HStack>
-        <Spacer/>
-        <TouchableOpacity onPress={goToFeed}>
+    <VStack horizontal={Spacing[24]} top={Spacing[24]} style={Layout.widthFull}>
+      <VStack>
+        <HStack bottom={Spacing[12]}>
+          <Spacer/>
           <FastImage style={{
-            height: Spacing[24],
-            width: Spacing[24],
-            borderRadius: Spacing[8]
-          }} source={downArrow} resizeMode={"contain"}/>
-        </TouchableOpacity>
-        <Spacer/>
-      </HStack>
+            height: Spacing[48],
+            width: Spacing[48],
+          }} source={surprised} resizeMode={"contain"}/>
+          <Spacer/>
+        </HStack>
+        <Text type={'body'} style={{textAlign: 'center'}} >
+          Fitur ini masih
+          <Text type={'body'} style={[{textAlign: 'center', fontStyle: 'italic'}, presets.italic]} > under construction</Text>
+          , nih. Tunggu tanggal mainnya, ya!
+        </Text>
+        <Spacer height={Spacing[12]} />
+      </VStack>
     </VStack>
   )
+
+  // if(data === null || data === undefined){
+  //   return(
+  //     <VStack>
+  //       <Text type={'left-header'} style={{fontSize: Spacing[16]}} underlineWidth={Spacing[72]} text="Feed." />
+  //       <Spacer height={Spacing[12]} />
+  //       <Spacer width={Spacing[24]} />
+  //       <EmptyList buttonLabel={'Mau berbagi kisah apa hari ini?'}
+  //                  imageSource={surprised}
+  //                  navigateTo={goToNewPost}/>
+  //       <Spacer height={Spacing[32]} />
+  //     </VStack>
+  //   )
+  // }
+
+  // return(
+  //   <VStack>
+  //     <TouchableOpacity onPress={goToFeed}>
+  //       <Text type={'left-header'} style={{fontSize: Spacing[16]}} underlineWidth={Spacing[72]} text="Feed." />
+  //     </TouchableOpacity>
+  //     <FeedPost data={data} key={data.id} onImageTap={onImageFeedTap}/>
+  //     <HStack>
+  //       <Spacer/>
+  //       <TouchableOpacity onPress={goToFeed}>
+  //         <FastImage style={{
+  //           height: Spacing[24],
+  //           width: Spacing[24],
+  //           borderRadius: Spacing[8]
+  //         }} source={downArrow} resizeMode={"contain"}/>
+  //       </TouchableOpacity>
+  //       <Spacer/>
+  //     </HStack>
+  //   </VStack>
+  // )
 
 }
