@@ -402,7 +402,7 @@ export default class MainStore {
   }
 
   async listUserTeamSucceed(ListUser: ListProfileModel[]) {
-    console.log("journalSucceed", ListUser)
+    console.log("listUserTeamSucceed", ListUser)
     this.listUserProfile = ListUser
     this.errorMessage = null
     this.isLoading = false

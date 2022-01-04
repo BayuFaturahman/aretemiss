@@ -70,7 +70,7 @@ export type MoodItemType = {
     name: string
     title: string
   }
-  moodType: Source
+  moodType: string
 }
 
 type MoodProps = {

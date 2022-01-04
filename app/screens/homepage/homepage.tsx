@@ -1,5 +1,5 @@
 import React, {FC, useCallback, useState, useEffect, useReducer} from "react"
-import {SafeAreaView, ScrollView, StatusBar, RefreshControl, View } from "react-native"
+import {SafeAreaView, ScrollView, StatusBar, RefreshControl, View, TouchableOpacity } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Button, Text} from "@components"
@@ -20,7 +20,8 @@ import {NotificationButton} from "@screens/homepage/components/notification-butt
 import {SettingsButton} from "@screens/homepage/components/settings-button";
 import {HomepageCardWrapper} from "@screens/homepage/components/homepage-card-wrapper";
 import {CoachingJournalComponent} from "@screens/homepage/components/coaching-journal-component";
-import {FeedItemComponent, FeedItemType} from "@screens/homepage/components/feed-homepage-component";
+import {FeedItemComponent} from "@screens/homepage/components/feed-homepage-component";
+import { FeedItemType } from "@screens/feed/feed.type";
 import {MoodComponent, MoodItemType, MOOD_TYPE} from "@screens/homepage/components/mood-component";
 import {HomepageErrorCard} from "@screens/homepage/components/homepage-error-card";
 
@@ -39,7 +40,6 @@ import sakit from "@assets/icons/mood/sakit.png"
 import sakitBw from "@assets/icons/mood/sakit-bw.png"
 import terkejut from "@assets/icons/mood/kaget.png"
 import terkejutBw from "@assets/icons/mood/kaget-bw.png"
-import { TouchableOpacity } from "react-native-gesture-handler"
 import { ProfileUpdateForm } from "@screens/settings/my-account"
 
 const FEED_EXAMPLE_DATA_ITEM: FeedItemType[] = [
@@ -156,6 +156,19 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     const [coachingJournalData, setCoachingJournalData] = useState<CoachingJournalItem>(null);
     const {mainStore, coachingStore, authStore, feedStore} = useStores()
 
+    const userProfile: ProfileUpdateForm = {
+      fullname: mainStore.userProfile.user_fullname,
+      nickname: mainStore.userProfile.user_nickname,
+      email: mainStore.userProfile.user_email,
+      team1Id: mainStore.userProfile.user_team_1_id,
+      team2Id: mainStore.userProfile.user_team_2_id,
+      team3Id: mainStore.userProfile.user_team_3_id,
+      photo: mainStore.userProfile.user_photo,
+      isAllowNotification: mainStore.userProfile.user_is_allow_notification,
+      isAllowReminderNotification: mainStore.userProfile.user_is_allow_reminder_notification,
+      mood: mainStore.userProfile.user_mood,
+    }
+
     const goToNote = useCallback((id, coach_id)=>{
       console.log(id)
       coachingStore.isDetailJournal(true)
@@ -184,9 +197,9 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       coachingStore.setDetailCoaching(detailCoaching)
       coachingStore.setDetailID(id)
       coachingStore.setFormCoach(false)
-      console.log('goToNoteFeedback id', id)
-      console.log('goToNoteFeedback coach_id', coach_id)
-      console.log('goToNoteFeedback user_id', mainStore.userProfile.user_id)
+      // console.log('goToNoteFeedback id', id)
+      // console.log('goToNoteFeedback coach_id', coach_id)
+      // console.log('goToNoteFeedback user_id', mainStore.userProfile.user_id)
 
       navigation.navigate("overviewJournalEntry", {
         journalId: id,
@@ -219,8 +232,23 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
         data.avatarUrl = mainStore.userProfile.user_photo
         data.moodType = mainStore.userProfile.user_mood
         setMoodData(data)
+
+        userProfile.fullname = mainStore.userProfile.user_fullname
+        userProfile.nickname= mainStore.userProfile.user_nickname
+        userProfile.email= mainStore.userProfile.user_email
+        userProfile.team1Id= mainStore.userProfile.user_team_1_id
+        userProfile.team2Id= mainStore.userProfile.user_team_2_id
+        userProfile.team3Id= mainStore.userProfile.user_team_3_id
+        userProfile.photo= mainStore.userProfile.user_photo
+        userProfile.isAllowNotification= mainStore.userProfile.user_is_allow_notification
+        userProfile.isAllowReminderNotification= mainStore.userProfile.user_is_allow_reminder_notification
+        userProfile.mood= mainStore.userProfile.user_mood
+        
         forceUpdate()
+        // console.log('userprofile Use effect: ', userProfile)
+        // console.log('mainStore.userProfile Use effect: ', mainStore.userProfile)
       }
+      
     }, [mainStore.userProfile])
 
     useEffect(()=> {
@@ -371,26 +399,13 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       )
     }
 
-    const userProfile: ProfileUpdateForm = {
-      fullname: mainStore.userProfile.user_fullname,
-      nickname: mainStore.userProfile.user_nickname,
-      email: mainStore.userProfile.user_email,
-      team1Id: mainStore.userProfile.team1_id,
-      team2Id: mainStore.userProfile.team2_id,
-      team3Id: mainStore.userProfile.team3_id,
-      photo: mainStore.userProfile.user_photo,
-      isAllowNotification: mainStore.userProfile.user_is_allow_notification,
-      isAllowReminderNotification: mainStore.userProfile.user_is_allow_reminder_notification,
-      mood: mainStore.userProfile.user_mood,
-    }
-
     const toggleModal = () => {
       if (!isModalVisible) {
         setSelectedMood("")
       }
-      setTimeout(() => {
+      // setTimeout(() => {
         setModalVisible(!isModalVisible)
-      }, 100)
+      // }, 50)
     }
 
     const completeUpdateMoodModal = () => {
@@ -402,16 +417,20 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       }, 200)
     }
 
+    const selectMood = useCallback( (selectedMood) => {
+      setSelectedMood(selectedMood)
+      console.log("selected in getmood ", selectedMood)
+
+    }, [selectedMood, setSelectedMood])
+    
+
     const getMood = (source: Source, sourceBw: Source, type: string) => {
       const typeLowerCase = type.toLowerCase()
-      const selectMood = () => {
-        setSelectedMood(typeLowerCase)
-        console.log("selected in getmood ", typeLowerCase)
-      }
 
       return (
         <VStack>
-          <TouchableOpacity onPress={selectMood}>
+          <TouchableOpacity onPress={selectMood.bind(this, typeLowerCase)} style={{backgroundColor: Colors.WHITE}}>
+          <VStack>
             <FastImage
               style={{
                 height: Spacing[48],
@@ -423,12 +442,14 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
               source={selectedMood !== typeLowerCase && selectedMood !== "" ? sourceBw : source}
               resizeMode={"contain"}
             />
-          </TouchableOpacity>
-          <Text
+            <Text
             type={"body"}
             style={{ fontSize: Spacing[18], textAlign: "center" }}
             text={selectedMood === "" || selectedMood === typeLowerCase ? type : " "}
           />
+            </VStack>
+          </TouchableOpacity>
+        
         </VStack>
       )
     }
@@ -436,6 +457,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     const updateUserMood = useCallback(async () => {
       mainStore.formReset()
       userProfile.mood = selectedMood
+      console.log('user profile: ', userProfile)
       console.log("selected mood ", userProfile.mood)
 
       await mainStore.updateProfile(mainStore.userProfile.user_id, userProfile)
@@ -536,9 +558,9 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
           let toReturn = null
           for (let x = 0; x < MOOD_TYPE.length; x++) {
             const type = MOOD_TYPE[x]
-            console.log("type.lable ", type.label)
+            // console.log("type.lable ", type.label)
             if (type.label === moodType) {
-              console.log("masuk nih ", type.source)
+              // console.log("masuk nih ", type.source)
               x = MOOD_TYPE.length
               toReturn = type.source
             }

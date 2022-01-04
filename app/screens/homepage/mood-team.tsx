@@ -90,9 +90,7 @@ const MoodTeam: FC<StackScreenProps<NavigatorParamList, "moodTeam">> = observer(
       let toReturn = null
       for (let x = 0; x < MOOD_TYPE.length; x++) {
         const type = MOOD_TYPE[x]
-        console.log("type.lable ", type.label)
         if (type.label === moodType) {
-          console.log("masuk nih ", type.source)
           x = MOOD_TYPE.length
           toReturn = type.source
         }
@@ -167,6 +165,7 @@ const MoodTeam: FC<StackScreenProps<NavigatorParamList, "moodTeam">> = observer(
                         source={item.source}
                         resizeMode={"contain"}
                       />
+                      <Spacer/>
                     </HStack>
                   )
                 }}
