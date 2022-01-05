@@ -328,7 +328,10 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
     const goToSettings = () => navigation.navigate("settingsPage")
 
-    const goToTeamMood = () => navigation.navigate("moodTeam")
+    const goToTeamMood = () => {
+      setModalVisible(false)
+      navigation.navigate("moodTeam")
+    }
 
     StatusBar.setBarStyle('light-content',false);
 

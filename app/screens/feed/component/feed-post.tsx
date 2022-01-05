@@ -260,7 +260,7 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
                 position: "absolute",
                 zIndex: 100,
                 top: -Spacing[4],
-                left: -Spacing[4],
+                left: 0,
               }}
             />
           ) : null}
