@@ -49,6 +49,11 @@ export interface ErrorFormResponse {
 export interface GetListFeedsResponse {
   message: string
   token: string
+  data: FeedApiModel,
+}
+export interface GetPostDetailResponse {
+  message: string
+  token: string
   data: FeedApiModel[],
   "new_notif": number
   
@@ -141,6 +146,7 @@ export interface GetListCommentNotificationResponse {
 
 
 export type GetListFeedsResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListFeedsResponse }  | GeneralApiProblem
+export type GetPostDetailResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListFeedsResponse }  | GeneralApiProblem
 export type PostUploadFeedImagesResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: PostUploadFeedImagesResponse }  | GeneralApiProblem
 export type CreatePostResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreatePostResponse }  | GeneralApiProblem
 export type DeletePostResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: DeletePostResponse }  | GeneralApiProblem

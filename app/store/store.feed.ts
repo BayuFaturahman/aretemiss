@@ -22,6 +22,7 @@ export default class FeedStore {
   errorMessage: string
 
   feedApi: FeedApi
+  postDetail: FeedItemType
   listFeeds: FeedItemType[]
   listMyFeed: FeedItemType[]
   listComment: FeedPostCommentType[]
@@ -38,6 +39,7 @@ export default class FeedStore {
     this.errorCode = null
     this.errorMessage = null
 
+    this.postDetail = null
     this.listFeeds = []
     this.listMyFeed = []
     this.feedApi = new FeedApi(this.api)
@@ -210,6 +212,59 @@ export default class FeedStore {
     this.isLoading = false
     this.refreshData = true    
     // console.log("list my feed: ", this.listMyFeed)
+  }
+
+  async getPostDetail(postId: string) {
+    this.isLoading = true
+    try {
+      const response = await this.feedApi.getPostDetail(postId)
+
+      if (response.kind === "form-error") {
+        this.formError(response.response)
+      }
+
+      console.log('response ', response, postId)
+      if (response.kind === "ok") {
+        this.getPostDetailSuccess(response.response.data)
+      }
+    } catch (e) {
+      console.log(e)
+      this.setErrorMessage(e)
+    } finally {
+      console.log("getPostDetail done")
+      this.isLoading = false
+    }
+  }
+
+  getPostDetailSuccess(data: FeedApiModel) {
+    console.log("getPostDetailSuccess ")
+    
+    const lastSeen = new Date(this.serviceStore.lastSeenFeed)
+    const postCreated = new Date(data.feed_created_at)
+      
+    this.postDetail = {
+      id: data.feed_id,
+      description: data.feed_description,
+      imageUrl: data.feed_images_url,
+      author: {
+        id: data.feed_author_id,
+        nickname: data.feed_author_nickname,
+        title: '',
+        photo: data.feed_author_photo,
+        mood: data.feed_author_mood
+      },
+      commentCount: data.feed_comment_count,
+      isNew: lastSeen.getTime() < postCreated.getTime(),
+      createdAt: data.feed_created_at,
+      updatedAt: data.feed_updated_at,
+      isDeleted: (data.feed_is_deleted === 1),
+      deletedAt: data.feed_deleted_at
+    }
+    
+    
+    this.isLoading = false
+    this.refreshData = true    
+    console.log("postDetail set")
   }
 
   async deletePost(id: string) {
@@ -465,7 +520,7 @@ export default class FeedStore {
       ...this.listCommentNotif,
       ...(temptListCommentNotif ?? [])
     ]
-    console.log('this.listCommentNotif ', this.listCommentNotif)
+    console.log('this.listCommentNotif ')
     this.isLoading = false
     this.refreshData = true    
   }
