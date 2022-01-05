@@ -18,7 +18,8 @@ import {debounce} from "lodash";
 
 import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png";
 import {dimensions} from "@config/platform.config";
-import { CommentNotificationType } from "./feed.type"
+import { CommentNotificationType, FeedItemType } from "./feed.type"
+import { CommentNotif } from "./component/comment-notif"
 
 type CommentListItemData = {
   id: string
@@ -101,6 +102,13 @@ const CommentList: FC<StackScreenProps<NavigatorParamList, "commentList">> = obs
 
     const goToMyAccount = () => navigation.navigate('myAccount')
 
+    const goToDetails = (data: FeedItemType) => {
+      navigation.navigate("postDetails", {
+        data,
+        isFromMainFeed: false
+      })
+    }
+    
     const logout = useCallback( ()=>{
       authStore.resetAuthStore()
     }, [])
@@ -131,6 +139,15 @@ const CommentList: FC<StackScreenProps<NavigatorParamList, "commentList">> = obs
       console.log('Use effect list comment notif tanpa []')
       firstLoadCommentNotif()      
     }, [])
+  
+
+    const goToPostDetail = useCallback(async (postId: string) => {
+      await feedStore.getPostDetail(postId)  
+      if (feedStore.postDetail !== null) {
+        console.log('goToPostDetail ')
+        goToDetails(feedStore.postDetail)
+      }
+    },[feedStore.getPostDetailSuccess, feedStore.postDetail])
 
     return (
       <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.WHITE, flex: 1, justifyContent: 'center'}}>
@@ -158,46 +175,10 @@ const CommentList: FC<StackScreenProps<NavigatorParamList, "commentList">> = obs
               }
               renderItem={({item, index})=> {
                 return(
-                  <TouchableOpacity>
-                    <HStack vertical={Spacing[2]} horizontal={Spacing[8]}>
-                      <VStack>
-                        <Spacer height={Spacing[4]}/>
-                        <FastImage style={{
-                          height: Spacing[24],
-                          width: Spacing[24]
-                        }} source={nullProfileIcon} resizeMode={"cover"}/>
-                        <Spacer/>
-                      </VStack>
-                      <HStack left={Spacing[12]} style={{maxWidth: dimensions.screenWidth - Spacing["72"]}}>
-                        {item.type === 'comment' ?
-                          <VStack>
-                            <Text type={'body'}>
-                              <Text type={'body-bold'} text={`${item.author.fullName} `} />
-                              meninggalkan komentar di post Feed-mu:
-                            </Text>
-                            <Spacer height={Spacing[4]} />
-                          </VStack> : null }
-                        {item.type === 'replied' ?
-                          <VStack>
-                            <Text type={'body'}>
-                              <Text type={'body-bold'} text={`${item.author.fullName} `} />
-                              replied to you on a comment:
-                            </Text>
-                            <Spacer height={Spacing[4]} />
-                          </VStack> : null }
-                      </HStack>
-                    </HStack>
-                    <HStack horizontal={Spacing[16]} vertical={Spacing[8]} style={{backgroundColor: Colors.GRAY200, borderRadius: Spacing[12], marginLeft: Spacing[32], marginRight: Spacing[8]}}>
-                      {item.isNew === true ? <View style={{backgroundColor: Colors.MAIN_RED, height: Spacing[12], width: Spacing[12], borderRadius: 999, position: 'absolute', zIndex: 100, right: -Spacing[4], top: -Spacing[4]}} /> : null}
-                      <VStack>
-                        <Text type={'body'}>
-                          {item.replyToNickname !== null? <Text type={'body-bold'} text={`${item.replyToNickname} `} /> : null}
-                          {item.feedComment}
-                        </Text>
-                        <Spacer height={Spacing[4]} />
-                      </VStack>
-                    </HStack>
-                  </TouchableOpacity>
+                  <CommentNotif
+                  data={item}
+                  goToPostDetail={() => {goToPostDetail(item.feedId)}}
+                />
                 )
               }}
               keyExtractor={item => item.id}
