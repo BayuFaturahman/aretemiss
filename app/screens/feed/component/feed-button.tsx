@@ -95,7 +95,7 @@ export const FeedButton = ({ goToNewPost = () => null, goToMyFeed = () => null, 
         alignment={"center"}
         style={{
           width: "100%",
-          height: Spacing[48],
+          height: Spacing[96],
           position: "absolute",
           bottom: Spacing[12],
           alignItems: "center",
