@@ -36,11 +36,11 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>iLead akan mengakses kamera anda</string>
+	<string>iLEAD ingin mengakses kamera Anda. Aplikasi ini perlu mengakses kamera-kamera di perangkat Anda untuk mengambil foto yang dapat Anda unggah sebagai foto profil Anda.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>iLead akan membaca data pada galeri anda</string>
+	<string>iLEAD ingin mengakses galeri foto Anda. Aplikasi ini perlu mengakses galeri foto di perangkat Anda untuk mendapatkan foto yang dapat Anda unggah sebagai foto profil Anda.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>BrandonGrotesque-Regular.otf</string>
