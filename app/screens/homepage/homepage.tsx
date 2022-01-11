@@ -228,7 +228,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       if (mainStore.userProfile) {
         const data = MOOD_EXAMPLE_DATA
         data.user.name = mainStore.userProfile.user_fullname
-        data.user.title = mainStore.userProfile.team1_name
+        data.user.title = mainStore.userProfile.team1_name + (mainStore.userProfile.team2_name? (', ' + mainStore.userProfile.team2_name) : '') + (mainStore.userProfile.team3_name? (', ' + mainStore.userProfile.team3_name) : null)
         data.avatarUrl = mainStore.userProfile.user_photo
         data.moodType = mainStore.userProfile.user_mood
         setMoodData(data)

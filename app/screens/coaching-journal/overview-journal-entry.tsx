@@ -337,7 +337,9 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                       </HStack>
 
                       <VStack>
-                        <TextField
+                      <Spacer height={Spacing[8]} />
+                      <ScrollView  style={{width:"100%", backgroundColor:Colors.MAIN_BLUE, borderRadius: Spacing[20], minHeight: 44}} horizontal={true} >
+                      <TextField
                           value={title}
                           isRequired={false}
                           editable={false}
@@ -345,8 +347,9 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                           style={{paddingVertical: 0}}
                           secureTextEntry={false}
                         />
+                        </ScrollView>
                         { isCoachee ?
-                        <HStack>
+                        <HStack top={Spacing[8]}>
                             <VStack left={Spacing[24]} right={Spacing[8]}>
                                 <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError === "title" ? styles.textError : null ]}>
                                   {`dengan`}
