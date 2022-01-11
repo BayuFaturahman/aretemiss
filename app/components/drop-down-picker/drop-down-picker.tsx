@@ -9,6 +9,7 @@ import {Platform, StyleProp, TextStyle} from "react-native";
 import {color, typography} from "@theme";
 
 import ModalSelector, {IOption} from 'react-native-modal-selector'
+import {Button} from "@components/button/button";
 
 const EXAMPLE_DATA:IOption[] = [
   { key: 1, label: 'Red Apples', customKey: 'Not a fruit' },
@@ -64,12 +65,20 @@ export function DropDownPicker(props: DropDownProps) {
     onValueChange(value)
   },[value])
   useEffect(()=>{
-    setItems(items)
+    const newItems = [...items, { key: 0, label: 'None', customKey: null }]
+    setItems(newItems)
+    console.log(newItems)
     forceUpdate()
   },[items])
 
   const renderRequired = () => {
     return isRequired === true ? <Text type={'label'} style={[{fontSize: Spacing[14]}, LABEL_STYLE]} text={`*`} /> : null
+  }
+
+  const clearSelection = () => {
+    setValue({ key: 0, label: 'None', customKey: null })
+    console.log(value)
+    forceUpdate()
   }
 
   const LABEL_STYLE = {
@@ -114,30 +123,13 @@ export function DropDownPicker(props: DropDownProps) {
         selectTextPassThruProps={{style: TEXT_STYLE}}
         passThruProps={{style: {width: '100%', flex:1}}}
       />
-
-      {/* <DropDown */}
-      {/*  open={open} */}
-      {/*  value={value} */}
-      {/*  items={items_} */}
-      {/*  setOpen={setOpen} */}
-      {/*  setValue={setValue} */}
-      {/*  setItems={setItems} */}
-      {/*  style={{ */}
-      {/*    borderColor: isError ? Colors.MAIN_RED : Colors.MAIN_BLUE, */}
-      {/*    borderWidth: Spacing[2], */}
-      {/*    borderRadius: Spacing[20], */}
-      {/*    maxHeight: 44, */}
-      {/*  }} */}
-      {/*  textStyle={TEXT_STYLE} */}
-      {/*  dropDownContainerStyle={{ */}
-      {/*    borderRadius: Spacing[20], */}
-      {/*    borderColor: isError ? Colors.MAIN_RED : Colors.MAIN_BLUE, */}
-      {/*    borderWidth: Spacing[2], */}
-      {/*    zIndex: rest.zIndex + 100 */}
-      {/*  }} */}
-      {/*  placeholder={placeholder} */}
-      {/*  {...rest} */}
-      {/* /> */}
+      <Button
+        type={"primary"}
+        text={'X'}
+        style={{height:Spacing[32], paddingHorizontal: Spacing[8], position: 'absolute'}}
+        textStyle={{fontSize: Spacing[14], lineHeight: Spacing[18]}}
+        onPress={clearSelection}
+      />
     </VStack>
   )
 }
