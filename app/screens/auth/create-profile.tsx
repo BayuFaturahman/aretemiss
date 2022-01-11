@@ -4,7 +4,7 @@ import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {
   BackNavigation,
-  Button, DropDownPicker,
+  Button, DropDownItem, DropDownPicker,
   Text,
   TextField,
 } from "@components"
@@ -47,7 +47,7 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
 
     const goToOTP = () => navigation.navigate("verifyOTP")
 
-    const [teamList1, setTeamList1] = useState<IOption[]>([])
+    const [teamList1, setTeamList1] = useState<DropDownItem[]>([])
 
     const { authStore, mainStore, serviceStore } = useStores()
 
@@ -81,10 +81,9 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
 
     useEffect(()=>{
       if(mainStore.teamResponse !== null){
-        const itemsData:IOption[] = mainStore.teamResponse.data.map((item, index)=>{
+        const itemsData:DropDownItem[] = mainStore.teamResponse.data.map((item, index)=>{
           return({
-              key: index,
-              label: item.name,
+              item: item.name,
               id: item.id
           })
         })

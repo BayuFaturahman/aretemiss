@@ -10,7 +10,7 @@ import {
 } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
-import {Text, Button, TextField, DropDownPicker, DismissKeyboard} from "@components"
+import {Text, Button, TextField, DropDownPicker, DismissKeyboard, DropDownItem} from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
 import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
@@ -108,7 +108,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
 
     const [isModalVisible, setModalVisible] = useState(false)
     const [selectedDate, setSelectedDate] = useState(null)
-    const [dataTeamMember, setDataTeamMember] = useState<IOption[]>([])
+    const [dataTeamMember, setDataTeamMember] = useState<DropDownItem[]>([])
 
     const [title, setTitle] = useState<string>("")
     const [learner, setLearner] = useState({})
@@ -160,10 +160,9 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
     useEffect(()=>{
       if(mainStore.listUserProfile){
         console.log('mainStore.listUserProfile', mainStore.listUserProfile)
-        const itemsData:IOption[] = mainStore.listUserProfile.map((item, index)=>{
+        const itemsData:DropDownItem[] = mainStore.listUserProfile.map((item, index)=>{
           return{
-            key: index,
-            label: item.fullname,
+            item: item.fullname,
             id: item.id
           }
         })
@@ -417,8 +416,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                           <VStack style={{width:Spacing[64]}}>
                             <Text type={'body-bold'} style={[{textAlign: 'center', top: Spacing[4]}, isError === "learner" ? styles.textError : null ]} text="dengan" />
                           </VStack>
-                          <Spacer/>
-                          <VStack style={{maxWidth: dimensions.screenWidth - Spacing[128]}}>
+                          <VStack style={{maxWidth: dimensions.screenWidth - Spacing[128], flex: 1}}>
                             { !coachingStore.isDetail ? <DropDownPicker
                               items={dataTeamMember}
                               isRequired={false}
