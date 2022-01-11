@@ -271,6 +271,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       if(feedStore.listFeeds){
         setFeedData(feedStore.listFeeds[0])
       }
+      console.log( 'isNewNotification',mainStore.userProfile.user_is_allow_notification)
     }, 500)
 
     useEffect(()=> {
@@ -355,7 +356,11 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
               appearFrom="left"
               animationDuration={500}
             >
-             <NotificationButton goToNotifications={goToNotifications} isNewNotification={mainStore.userProfile.new_notification_flag === true} />
+
+             <NotificationButton
+               goToNotifications={goToNotifications}
+               isNewNotification={mainStore.userProfile.new_notification_flag === true}
+             />
             </RNAnimated>
             </VStack>
           <Spacer height={Spacing[24]} />

@@ -14,6 +14,7 @@ import {
 } from "@services/api/profile/profile-api.types"
 import { ProfileUpdateForm } from "@screens/auth/create-profile"
 import AuthStore from "./store.auth"
+import {bool} from "yup";
 
 // CONFIGS
 
@@ -62,7 +63,7 @@ export type ProfileModel = {
   team3_id: string
   team3_name: string
   new_notification_count: string
-  new_notification_flag:boolean
+  new_notification_flag: boolean
 }
 
 export type ListProfileModel = {
@@ -277,7 +278,7 @@ export default class MainStore {
     try {
       const response = await this.profileApi.getProfile()
 
-      console.log(response)
+      console.log('getProfile',response)
 
       if (response.kind === "form-error") {
         this.formError(response.response)
@@ -340,7 +341,7 @@ export default class MainStore {
   }
 
   getProfileSuccess(data: ProfileModel) {
-    console.log("getProfileSuccess data")
+    console.log("getProfileSuccess data", data)
     this.userProfile = {
       user_id: data.user_id,
       user_fullname: data.user_fullname,

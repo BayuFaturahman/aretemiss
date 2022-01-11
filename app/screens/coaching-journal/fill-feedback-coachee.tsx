@@ -1,10 +1,10 @@
 import React, {FC, useCallback, useEffect, useReducer, useState} from "react"
-import {FlatList, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View} from "react-native"
+import {FlatList, SafeAreaView, ScrollView, TouchableOpacity, View} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {
   Text,
-  BackNavigation, Button, TextField, DropDownPicker
+  BackNavigation, Button,
 } from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
 import {HStack, VStack} from "@components/view-stack";
