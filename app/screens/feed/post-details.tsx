@@ -581,14 +581,15 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                         style={{color: item.isOwnComment ? Colors.WHITE : Colors.UNDERTONE_BLUE}}
                       >
                         {item.replyToNickname !== "" ?
-                          <VStack right={Spacing[4]}>
+                          // <VStack right={Spacing[4]}>
                             <Text
                               style={{fontSize: Spacing[14], color: item.isOwnComment ? Colors.WHITE : Colors.MAIN_BLUE}}
                               type={"body-bold"}
-                              text={`@${item.replyToNickname}`}
+                              text={`@${item.replyToNickname} `}
                             />
-                          <View style={{height: Spacing[2], backgroundColor: Colors.MAIN_RED, width: '100%', position: 'absolute', bottom: 0}}></View>
-                        </VStack> : <></>}
+                          // <View style={{height: Spacing[2], backgroundColor: Colors.MAIN_RED, width: '100%', position: 'absolute', bottom: 0}}></View>
+                        // </VStack> 
+                        : <></>}
                         {item.comment}
                       </Text>
                     </HStack>
