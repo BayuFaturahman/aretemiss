@@ -297,13 +297,13 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
                 }: nullProfileIcon}
                 resizeMode={"cover"}
               />
-              <VStack left={Spacing[8]}>
+              <VStack left={Spacing[8]} style={{width: '60%'}}>
                 <Text
                   type={"body-bold"}
                   style={{ fontSize: Spacing[12] }}
                   text={data.author.nickname}
                 />
-                <Text type={"body"} style={{ fontSize: Spacing[12] }} text={data.author.title} />
+                <Text type={"body"} style={{ fontSize: Spacing[10] }} text={data.author.title} />
               </VStack>
             </HStack>
           </TouchableOpacity>
