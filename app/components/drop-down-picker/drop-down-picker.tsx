@@ -68,7 +68,7 @@ export function DropDownPicker(props: DropDownProps) {
   }
 
   const clearSelection = () => {
-    setSelectedTeam({})
+    setValue({})
     console.log(value)
     forceUpdate()
   }
