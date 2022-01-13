@@ -18,6 +18,7 @@ import FastImage from "react-native-fast-image";
 import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png";
 import {dimensions} from "@config/platform.config";
 import {NotificationItem} from "../../store/store.notification";
+import {FeedItemType} from "@screens/feed/feed.type";
 
 type NotificationItemType = {
   id: string
@@ -98,7 +99,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
 
     const [notificationsData, setNotificationsData] = useState<Array<NotificationItem>>([]);
 
-    const {notificationStore, coachingStore, mainStore} = useStores()
+    const {notificationStore, coachingStore, mainStore, feedStore} = useStores()
 
     const goBack = () => navigation.goBack()
 
@@ -149,6 +150,21 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
         setNotificationsData(notificationStore.notificationsList)
       }
     },[notificationStore.notificationsList, notificationStore.getNotificationsSuccess])
+
+    const goToPostDetail = useCallback(async (postId: string) => {
+      await feedStore.getPostDetail(postId)
+      if (feedStore.postDetail !== null) {
+        console.log('goToPostDetail ')
+        goToDetails(feedStore.postDetail)
+      }
+    },[feedStore.getPostDetailSuccess, feedStore.postDetail])
+
+    const goToDetails = async (data: FeedItemType) => {
+      navigation.navigate("postDetails", {
+        data,
+        isFromMainFeed: false
+      })
+    }
 
     return (
       <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: 'center'}}>
@@ -229,23 +245,24 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
                           />
                         </VStack>
                       </VStack> : null }
-                    {/* {item.type === 'tagged' ? */}
-                    {/*  <VStack> */}
-                    {/*    <Text type={'body'}> */}
-                    {/*      <Text type={'body-bold'} text={`${item.user.name} `} /> */}
-                    {/*      telah menandaimu dalam sesi */}
-                    {/*      <Text type={'body-bold'} text={` ${item.session}`} /> */}
-                    {/*    </Text> */}
-                    {/*    <Spacer height={Spacing[4]} /> */}
-                    {/*    <VStack right={Spacing[48]}> */}
-                    {/*      <Button */}
-                    {/*        type={"primary"} */}
-                    {/*        text={"Isi feedback untuknya."} */}
-                    {/*        style={{height:Spacing[32], backgroundColor: Colors.MAIN_RED}} */}
-                    {/*        textStyle={{fontSize: Spacing[14], lineHeight: Spacing[18]}} */}
-                    {/*      /> */}
-                    {/*    </VStack> */}
-                    {/*  </VStack> : null } */}
+                     {item.type === 'submitted_comment' ?
+                      <VStack>
+                        <Text type={'body'}>
+                          <Text type={'body-bold'} text={`${item.content} `} />
+                        </Text>
+                        <Spacer height={Spacing[4]} />
+                        <VStack right={Spacing[48]}>
+                          <Button
+                            type={"primary"}
+                            text={"Lihat postingan terkait."}
+                            style={{height:Spacing[32]}}
+                            textStyle={{fontSize: Spacing[14], lineHeight: Spacing[18]}}
+                            onPress={()=>{
+                              goToPostDetail(item.feedId)}
+                            }
+                          />
+                        </VStack>
+                      </VStack> : null }
                     {/* {item.type === 'liked' ? */}
                     {/*  <VStack> */}
                     {/*    <Text type={'body-bold'}> */}
