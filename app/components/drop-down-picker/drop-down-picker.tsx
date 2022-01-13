@@ -133,7 +133,7 @@ export function DropDownPicker(props: DropDownProps) {
           containerStyle={{
             top: -Spacing[8],
             paddingHorizontal: Spacing[12],
-            borderBottomWidth: 0
+            borderBottomWidth: 0,
           }}
           optionContainerStyle={{
             paddingHorizontal: Spacing[12],
@@ -146,6 +146,7 @@ export function DropDownPicker(props: DropDownProps) {
           inputPlaceholder={placeholder}
           optionsLabelStyle={TEXT_STYLE}
           selectedItemStyle={TEXT_STYLE_SELECTED}
+          listOptionProps={{ nestedScrollEnabled: true }}
         />
       </VStack>
     </VStack>
