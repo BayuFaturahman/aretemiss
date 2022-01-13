@@ -392,7 +392,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
             {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => (
               <>
           <SafeAreaView style={Layout.flex}>
-            <ScrollView>
+            <ScrollView style={[Layout.flex, {flex: 1}]} nestedScrollEnabled={true}>
               <VStack top={Spacing[32]} horizontal={Spacing[24]}>
                 <HStack>
                   <Text type={"left-header"} style={{}} text="Tambah coaching journal" />
