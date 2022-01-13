@@ -87,7 +87,7 @@ export default class FeedStore {
         author: {
           id: post.feed_author_id,
           nickname: post.feed_author_nickname,
-          title: '',
+          title: (post.feed_author_team_1 && post.feed_author_team_1!== null? post.feed_author_team_1 : '') + (post.feed_author_team_2 && post.feed_author_team_2 !== null ? ', ' + post.feed_author_team_2 : '') + (post.feed_author_team_3 && post.feed_author_team_3 !== null ? ', ' + post.feed_author_team_3 : ''),
           photo: post.feed_author_photo,
           mood: post.feed_author_mood
         },
@@ -241,7 +241,7 @@ export default class FeedStore {
     
     const lastSeen = new Date(this.serviceStore.lastSeenFeed)
     const postCreated = new Date(data.feed_created_at)
-      
+    
     this.postDetail = {
       id: data.feed_id,
       description: data.feed_description,
@@ -249,7 +249,7 @@ export default class FeedStore {
       author: {
         id: data.feed_author_id,
         nickname: data.feed_author_nickname,
-        title: '',
+        title: (data.feed_author_team_1 && data.feed_author_team_1 !== null? data.feed_author_team_1 : '') + (data.feed_author_team_2 && data.feed_author_team_2 !== null ? ', ' + data.feed_author_team_2 : '') + (data.feed_author_team_3 && data.feed_author_team_3 !== null ? ', ' + data.feed_author_team_3 : ''),
         photo: data.feed_author_photo,
         mood: data.feed_author_mood
       },

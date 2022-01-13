@@ -12,7 +12,10 @@ export type FeedApiModel = {
   "feed_author_nickname": string
   "feed_author_photo": string
   "feed_comment_count": number
-  "feed_author_mood": string,
+  "feed_author_mood": string
+  "feed_author_team_1": string
+  "feed_author_team_2": string
+  "feed_author_team_3": string
 }
 
 export type CommentApiModel = {
@@ -46,12 +49,12 @@ export interface ErrorFormResponse {
   message: string
 }
 
-export interface GetListFeedsResponse {
+export interface GetPostDetailResponse {
   message: string
   token: string
   data: FeedApiModel,
 }
-export interface GetPostDetailResponse {
+export interface GetListFeedsResponse {
   message: string
   token: string
   data: FeedApiModel[],
@@ -146,7 +149,7 @@ export interface GetListCommentNotificationResponse {
 
 
 export type GetListFeedsResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListFeedsResponse }  | GeneralApiProblem
-export type GetPostDetailResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListFeedsResponse }  | GeneralApiProblem
+export type GetPostDetailResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetPostDetailResponse }  | GeneralApiProblem
 export type PostUploadFeedImagesResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: PostUploadFeedImagesResponse }  | GeneralApiProblem
 export type CreatePostResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreatePostResponse }  | GeneralApiProblem
 export type DeletePostResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: DeletePostResponse }  | GeneralApiProblem
