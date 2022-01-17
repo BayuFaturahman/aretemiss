@@ -116,6 +116,7 @@ const MyFeedList: FC<StackScreenProps<NavigatorParamList, "myFeedList">> = obser
     const [selectedPost, setSelectePost] = useState<string>('')
 
     const [listFeeds, setListFeeds] = useState<Array<FeedItemType>>(feedStore.listMyFeed);
+    const [newNotif, setNewNotif] = useState<number>(0);
 
     const [listImageViewer, setListImageViewer] = useState(images);
     const [activeViewerIndex, setActiveViewerIndex] = useState<number>(0);
@@ -194,8 +195,9 @@ const MyFeedList: FC<StackScreenProps<NavigatorParamList, "myFeedList">> = obser
 
     useEffect(() => {
       console.log('Use effect dengan []')
+      setNewNotif(feedStore.newNotif)
       setListFeeds(feedStore.listMyFeed)
-    }, [setListFeeds, listFeeds, feedStore.getListMyFeedsSuccess, feedStore.listMyFeed])
+    }, [setListFeeds, listFeeds, feedStore.getListMyFeedsSuccess, feedStore.listMyFeed, feedStore.newNotif, newNotif])
 
     const deletePost = React.useCallback(async(id) => {
       console.log('delete post')
@@ -276,7 +278,7 @@ const MyFeedList: FC<StackScreenProps<NavigatorParamList, "myFeedList">> = obser
           goToMyFeed={goToMyfeed}
           goToCommentList={goToCommentList}
           leftCounter={null}
-          rightCounter={20}
+          rightCounter={newNotif}
         />
         <ModalReact
           visible={modal}
