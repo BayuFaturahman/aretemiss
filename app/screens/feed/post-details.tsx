@@ -472,7 +472,7 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                           }: nullProfileIcon}
                           resizeMode={"cover"}
                         />
-                        <FastImage
+                        {/* <FastImage
                         style={{
                           height: Spacing[18],
                           width: Spacing[18],
@@ -484,9 +484,9 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                         source={moodSource !== null ? moodSource
                         : senangBw}
                         resizeMode={"cover"}
-                      />
+                      /> */}
                       </HStack>
-                      <VStack right={Spacing[8]}>
+                      <VStack right={Spacing[8]} left={Spacing[8]}>
                         <Text
                           type={"body-bold"}
                           style={{ fontSize: Spacing[14] }}
@@ -530,7 +530,7 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                         }: nullProfileIcon}
                         resizeMode={"cover"}
                       />
-                      <FastImage
+                      {/* <FastImage
                       style={{
                         height: Spacing[18],
                         width: Spacing[18],
@@ -542,7 +542,7 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                       source={moodSource !== null ? moodSource
                       : senangBw}
                       resizeMode={"cover"}
-                    />
+                    /> */}
                     </HStack>
                    
                     {/* TODO Mood Icon */}

@@ -272,7 +272,7 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
         { !ownPost ?
           <TouchableOpacity onPress={()=>{goToDetail(data)}}>
             <HStack>
-              <FastImage
+              {/* <FastImage
                 style={{
                   height: Spacing[24],
                   width: Spacing[24],
@@ -284,7 +284,7 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
                 source={data.author.mood !== '' ? moodSource
                 : senangBw}
                 resizeMode={"cover"}
-              />
+              /> */}
               <FastImage
                 style={{
                   left: -Spacing[10],
