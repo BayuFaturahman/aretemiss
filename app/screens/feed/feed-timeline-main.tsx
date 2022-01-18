@@ -119,7 +119,6 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
 
     const currentDateTime = new Date().toString();
 
-
     const goBack = () => {
       setLastSeenFeed()
       navigation.goBack()
@@ -139,6 +138,7 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
 
     const goToCommentList = () => {
       setLastSeenFeed()
+      resetNavigationParam()
       navigation.navigate("commentList")
     }
 
@@ -161,9 +161,7 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
     }
 
     const setLastSeenFeed = () => {
-      // console.log('before: ', feedStore.serviceStore.lastSeenFeed)
       feedStore.serviceStore.setLastSeenFeed(currentDateTime)
-      // console.log('after: ', feedStore.serviceStore.lastSeenFeed)
     }
 
     const firstLoadFeed = debounce( async () => {
@@ -177,24 +175,19 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
     }, [])
 
     const onLoadMore = React.useCallback(async () => {
-      console.log('load more feed ')
       await loadFeed(currentPage)
       setCurrentPage(currentPage + 1)
     }, [currentPage]);
 
     const onRefresh = React.useCallback(async() => {
-      console.log('On refresh main feed')
       firstLoadFeed()
     }, []);
 
     useEffect(() => {
-      console.log('Use effect list feed tanpa []')
       firstLoadFeed()      
     }, [])
 
     useEffect(()=>{
-      console.log('route.params?.newPost ', route.params?.newPost)
-      console.log('feedStore.refreshData ', feedStore.refreshData)
       if(feedStore.refreshData || route.params?.newPost){        
         setTimeout(()=>{
           firstLoadFeed()
