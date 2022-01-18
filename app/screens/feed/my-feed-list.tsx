@@ -181,33 +181,26 @@ const MyFeedList: FC<StackScreenProps<NavigatorParamList, "myFeedList">> = obser
     }, 500)
 
     useEffect(() => {
-      console.log('Use effect tanpa []')
       // loadData()
       firstLoadFeed()
     },[])
 
     const onRefresh = React.useCallback(async() => {
-      console.log('ON REFRESH')
       await firstLoadFeed()
       // await loadData()
     }, []);
 
-
     useEffect(() => {
-      console.log('Use effect dengan []')
       setNewNotif(feedStore.newNotif)
       setListFeeds(feedStore.listMyFeed)
     }, [setListFeeds, listFeeds, feedStore.getListMyFeedsSuccess, feedStore.listMyFeed, feedStore.newNotif, newNotif])
 
     const deletePost = React.useCallback(async(id) => {
-      console.log('delete post')
-      console.log(id)
       setSelectePost(id)
       toggleModalDeletePost()
     }, []);
 
     const onDeletePost = React.useCallback(async() => {
-      console.log('ON delete post')
       feedStore.formReset()
       await feedStore.deletePost(selectedPost)
       if (feedStore.errorCode === null) {
