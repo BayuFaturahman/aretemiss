@@ -3,15 +3,16 @@ import {
   FlatList,
   RefreshControl,
   SafeAreaView,
-  Modal
+  Modal,
+  TouchableOpacity,
 } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {Text, BackNavigation} from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
-import { VStack } from "@components/view-stack"
+import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
-import { Colors, Layout, Spacing } from "@styles"
+import { Colors, Layout, Spacing, Roundness } from "@styles"
 
 import { useStores } from "../../bootstrap/context.boostrap"
 
@@ -131,6 +132,12 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
       navigation.navigate("newPost")
     }
 
+    const goToGuideline = () => {
+      setLastSeenFeed()
+      resetNavigationParam()
+      navigation.navigate("feedGuideline")
+    }
+
     const goToMyfeed = () => {
       setLastSeenFeed()
       resetNavigationParam()
@@ -242,6 +249,30 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
                   underlineWidth={Spacing[72]}
                   text="Feed."
                 />
+                <VStack top={Spacing[14]}>
+                  <HStack 
+                    horizontal={Spacing[12]}
+                    vertical={Spacing[14]}
+                    style={{
+                      backgroundColor: Colors.UNDERTONE_BLUE,
+                      borderRadius: Roundness.lm
+                    }}>
+                    <Text 
+                      type={"body"}
+                      style={{color: Colors.WHITE}}
+                    >
+                      Sebelum posting, lihat dulu yuk konten apa yang bisa di-post di Feed!{' '}
+                    <TouchableOpacity onPress={goToGuideline}>
+                      <Text 
+                        type={"button-extrasmall"}
+                        style={{color: Colors.WHITE}}
+                        underlineWidth={Spacing[112]}>
+                          Baca guideline Feed.
+                      </Text>
+                    </TouchableOpacity>
+                    </Text>
+                  </HStack>
+                </VStack>
               </VStack>
             }
             ListFooterComponent={

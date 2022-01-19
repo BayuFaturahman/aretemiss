@@ -28,7 +28,7 @@ export function Text(props: TextProps) {
         <ReactNativeText {...rest} style={[style, presets.bold, {fontSize: Spacing[24], textAlign: 'center'} ,styleOverride ]}>
           {content}
         </ReactNativeText>
-        <View style={{height: Spacing[6], backgroundColor: Colors.MAIN_RED, maxWidth: 144, width: '100%', marginLeft: 'auto', marginRight: 'auto'}}></View>
+        <View style={{height: Spacing[6], backgroundColor: Colors.MAIN_RED, maxWidth: underlineWidth || 144, width: '100%', marginLeft: 'auto', marginRight: 'auto'}}></View>
       </VStack>
     )
   }
@@ -124,6 +124,17 @@ export function Text(props: TextProps) {
       <ReactNativeText {...rest} style={[style, presets.bold, {fontSize: Spacing[16]} ,styleOverride ]}>
         {content}
       </ReactNativeText>
+    )
+  }
+
+  if (props.type === 'button-extrasmall') {
+    return(
+      <>
+        <ReactNativeText {...rest} style={[style, presets.bold, {fontSize: Spacing[14], textAlign: 'center', lineHeight: Spacing[20], zIndex: 100, top: Spacing[8]} ,styleOverride ]}>
+          {content}
+        </ReactNativeText>
+        <View style={{top: Spacing[4], height: Spacing[2], backgroundColor: Colors.MAIN_RED, width: underlineWidth || Spacing[42], marginLeft: 'auto', marginRight: 'auto'}}></View>
+      </>
     )
   }
 
