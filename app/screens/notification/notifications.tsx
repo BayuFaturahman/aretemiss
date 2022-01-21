@@ -106,7 +106,6 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
     const [currentPage, setCurrentPage] = useState<number>(2);
 
     const onLoadMore = React.useCallback(async () => {
-      console.log('load more journal')
       await notificationStore.getListNotifications(currentPage)
       setCurrentPage(currentPage + 1)
     }, [currentPage]);
@@ -126,7 +125,6 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
       coachingStore.isDetailJournal(true)
       coachingStore.setDetailID(id)
       navigation.navigate("fillFeedbackDetail")
-      console.log(id)
     }, [])
 
     const goToNoteFeedback = (authorId, journalId) => {
@@ -135,10 +133,6 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
       coachingStore.setDetailCoaching(detailCoaching)
       coachingStore.setDetailID(journalId)
       coachingStore.setFormCoach(false)
-      console.log('goToNoteFeedback journalId', journalId)
-      console.log('goToNoteFeedback authorId', authorId)
-      console.log('goToNoteFeedback user_id', mainStore.userProfile.user_id)
-
       navigation.navigate("overviewJournalEntry", {
         journalId: journalId,
         isCoachee: true
@@ -151,10 +145,9 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
       }
     },[notificationStore.notificationsList, notificationStore.getNotificationsSuccess])
 
-    const goToPostDetail = useCallback(async (postId: string) => {
-      await feedStore.getPostDetail(postId)
+    const goToPostDetail = useCallback(async (feedId: string) => {
+      await feedStore.getPostDetail(feedId)
       if (feedStore.postDetail !== null) {
-        console.log('goToPostDetail ')
         goToDetails(feedStore.postDetail)
       }
     },[feedStore.getPostDetailSuccess, feedStore.postDetail])
@@ -258,7 +251,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
                             style={{height:Spacing[32]}}
                             textStyle={{fontSize: Spacing[14], lineHeight: Spacing[18]}}
                             onPress={()=>{
-                              goToPostDetail(item.feedId)}
+                              goToPostDetail(item.data.feedId)}
                             }
                           />
                         </VStack>
