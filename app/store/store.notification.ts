@@ -13,6 +13,7 @@ export type NotificationItem = {
   "type": NotificationType
   "data": {
     "journalId": string;
+    "feedId" : string;
   },
   "createdAt": string;
   "updatedAt": string;
@@ -80,7 +81,8 @@ export default class NotificationStore {
         content: item.notification_content,
         type: item.notification_type,
         data: {
-          journalId: item.notification_data.journal_id
+          journalId: item.notification_data.journal_id,
+          feedId: item.notification_data.feed_id
         },
         createdAt: item.notification_created_at,
         updatedAt: item.notification_updated_at,
