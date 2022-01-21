@@ -18,6 +18,8 @@ export class NotificationApi {
         limit: limit,
         page: page
       })
+      console.log(response.data)
+
       if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
