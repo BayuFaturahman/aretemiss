@@ -170,6 +170,7 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
                       zIndex={3000}
                       zIndexInverse={1000}
                       dropDownDirection={"BOTTOM"}
+                      isRemovable={true}
                     />
                     <DropDownPicker
                       items={teamList1}
@@ -183,6 +184,7 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
                       zIndex={2000}
                       zIndexInverse={2000}
                       dropDownDirection={"BOTTOM"}
+                      isRemovable={true}
                     />
                     <DropDownPicker
                       items={teamList1}
@@ -196,6 +198,7 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
                       zIndex={1000}
                       zIndexInverse={3000}
                       dropDownDirection={"BOTTOM"}
+                      isRemovable={true}
                     />
                     <VStack top={Spacing[8]}>
                       <Text type={'body'} style={{textAlign: 'right'}}>

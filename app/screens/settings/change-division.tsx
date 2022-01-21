@@ -196,6 +196,7 @@ const ChangeDivision: FC<StackScreenProps<NavigatorParamList, "changeDivision">>
                             zIndex={3000}
                             zIndexInverse={1000}
                             dropDownDirection={"BOTTOM"}
+                            isRemovable={false}
                           />
                           <DropDownPicker
                             items={teamList1}
@@ -209,6 +210,7 @@ const ChangeDivision: FC<StackScreenProps<NavigatorParamList, "changeDivision">>
                             zIndex={2000}
                             zIndexInverse={2000}
                             dropDownDirection={"BOTTOM"}
+                            isRemovable={true}
                           />
                           <DropDownPicker
                             items={teamList1}
@@ -222,6 +224,7 @@ const ChangeDivision: FC<StackScreenProps<NavigatorParamList, "changeDivision">>
                             zIndex={1000}
                             zIndexInverse={3000}
                             dropDownDirection={"BOTTOM"}
+                            isRemovable={true}
                           />
                           {/* </VStack> */}
                           {authStore.errorCode === 37 && (
