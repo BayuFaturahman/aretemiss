@@ -14,6 +14,7 @@ import {homepage, moodTeam} from "@screens/homepage";
 import {createProfile} from "@screens";
 import {JournalEntryType} from "@screens/coaching-journal/new-journal-entry";
 import { FeedItemType } from "@screens/homepage/components/feed-homepage-component";
+import changeDivision from "@screens/settings/change-division";
 
 const screens: AppRoute[] = [
   {
@@ -43,6 +44,10 @@ const screens: AppRoute[] = [
   {
     name: 'changePassword',
     component: changePassword,
+  },
+  {
+    name: 'changeDivision',
+    component: changeDivision,
   },
   {
     name: 'changePhone',
@@ -125,6 +130,7 @@ export type NavigatorParamList = {
   };
   changePhone: undefined;
   changePassword: undefined;
+  changeDivision: undefined;
   newJournalEntry: {
     isDetail: boolean
   };
