@@ -5,6 +5,7 @@ const Roundness = {
   xs: ms(2),
   sm: ms(4),
   md: ms(8),
+  lm: ms(10),
   lg: ms(12),
   full: ms(9999),
 };

@@ -112,7 +112,16 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
       }
       
       
-    },[route.params.isFromVerifyOtp])
+    },[route.params.isFromVerifyOtp]);
+
+    const handleAvailableTeamList = (values: any) => {
+      const {team1Id, team2Id, team3Id} = values;
+      return teamList1.filter(item => 
+        item.id !== team1Id && 
+        item.id !== team2Id && 
+        item.id !== team3Id
+      );
+    };
 
     return (
       <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.WHITE, flex: 1, justifyContent: 'center'}}>
@@ -159,7 +168,7 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
                     /> */}
 
                     <DropDownPicker
-                      items={teamList1}
+                      items={handleAvailableTeamList(values)}
                       isRequired={true} label="Pilih team:"
                       // onValueChange={(value:IOption)=> setFieldValue('team1Id', value.id)}
                       onValueChange={(value:IOption)=> {
@@ -172,7 +181,7 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
                       dropDownDirection={"BOTTOM"}
                     />
                     <DropDownPicker
-                      items={teamList1}
+                      items={handleAvailableTeamList(values)}
                       isRequired={false}
                       label="Pilih team kedua (jika ada):"
                       onValueChange={(value:IOption)=> {
@@ -185,7 +194,7 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
                       dropDownDirection={"BOTTOM"}
                     />
                     <DropDownPicker
-                      items={teamList1}
+                      items={handleAvailableTeamList(values)}
                       isRequired={false}
                       label="Pilih team ketiga (jika ada):"
                       onValueChange={(value:IOption)=> {

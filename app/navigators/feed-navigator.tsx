@@ -1,7 +1,8 @@
 import {AppRoute} from "@navigators/navigation-type";
 import {
     newPost,
-    feedTimelineMain
+    feedTimelineMain,
+    feedGuideline,
 } from "@screens/feed";
 import {settings, myAccount, myAccountVerifyOTP, changePassword, changePhone, notification} from "@screens/settings";
 import {notifications} from "@screens/notification";
@@ -18,6 +19,10 @@ const screens: AppRoute[] = [
     name: 'feedTimelineMain',
     component: feedTimelineMain,
   },
+  {
+    name: 'feedGuideline',
+    component: feedGuideline,
+  }
 ];
 
 export type NavigatorParamList = {
