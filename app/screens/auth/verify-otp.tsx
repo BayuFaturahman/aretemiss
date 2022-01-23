@@ -11,13 +11,13 @@ import { NavigatorParamList } from "@navigators/auth-navigator"
 import {VStack} from "@components/view-stack";
 import Spacer from "@components/spacer";
 import {Colors, Spacing} from "@styles";
-import logoBottom from "@assets/icons/ilead_abm.png";
-import FastImage from "react-native-fast-image";
 
 import SMSVerifyCode from 'react-native-sms-verifycode'
 import {useStores} from "../../bootstrap/context.boostrap";
 
 import Spinner from 'react-native-loading-spinner-overlay';
+import {dimensions} from "@config/platform.config";
+import {IleadLogo} from "@assets/svgs";
 
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 40 : 0
 
@@ -151,10 +151,7 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
                 />
               </VStack>
               <Spacer />
-              <FastImage style={{
-                height: Spacing[72],
-                bottom: 0
-              }} source={logoBottom} resizeMode={"contain"}/>
+              <IleadLogo height={Spacing[72]} width={dimensions.screenWidth} />
             </KeyboardAvoidingView>
           </SafeAreaView>
           <Spinner

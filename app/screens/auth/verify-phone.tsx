@@ -7,20 +7,17 @@ import { NavigatorParamList } from "@navigators/auth-navigator"
 import {HStack, VStack} from "@components/view-stack";
 import Spacer from "@components/spacer";
 import {Colors, Layout, Spacing} from "@styles";
-import logoBottom from "@assets/icons/ilead_abm.png";
-import FastImage from "react-native-fast-image";
 
 import { Formik } from "formik"
 import { useStores } from "../../bootstrap/context.boostrap"
 
 import Spinner from "react-native-loading-spinner-overlay"
 import messaging from "@react-native-firebase/messaging";
+import {IleadLogo} from "@assets/svgs";
+import {dimensions} from "@config/platform.config";
 
 const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = observer(
   ({ navigation }) => {
-    // const [phoneNumber, setPhoneNumber] = useState<string>("")
-    // const [phoneNumberVerify, setPhoneNumberVerify] = useState<string>("")
-    // const [password, setPassword] = useState<string>("")
     const [isError, setIsError] = useState<boolean>(false)
     const [errorMessage, setErrorMessage] = useState<string | null>("")
     const [isEmailValid, setIsEmailValid] = useState<boolean>(true)
@@ -304,11 +301,8 @@ const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
                 </>
               )}
             </Formik>
-            <Spacer />
-            <FastImage style={{
-              height: Spacing[72],
-              bottom: 0
-            }} source={logoBottom} resizeMode={"contain"}/>
+            <Spacer height={Spacing[24]} />
+            <IleadLogo height={Spacing[72]} width={dimensions.screenWidth} />
           </SafeAreaView>
           </ScrollView>
           <Spinner
