@@ -37,6 +37,9 @@ export type ProfileUpdateForm = {
   team1Id: string
   team2Id: string
   team3Id: string
+  team1Name: string
+  team2Name: string
+  team3Name: string
   photo: string
   isAllowNotification?: number
   isAllowReminderNotification?: number
@@ -68,6 +71,9 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
       team1Id: mainStore.userProfile.team1_id,
       team2Id: mainStore.userProfile.team2_id,
       team3Id: mainStore.userProfile.team3_id,
+      team1Name: mainStore.userProfile.team1_name,
+      team2Name: mainStore.userProfile.team2_name,
+      team3Name: mainStore.userProfile.team3_name,
       photo: mainStore.userProfile.user_photo,
       isAllowNotification: mainStore.userProfile.user_is_allow_notification,
       isAllowReminderNotification: mainStore.userProfile.user_is_allow_reminder_notification,
@@ -81,6 +87,8 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
     const goBack = () => navigation.goBack()
 
     const goToChangePassword = () => navigation.navigate("changePassword")
+
+    const goToChangeDivision = () => navigation.navigate("changeDivision")
 
     const goToVerifyOTP = (email, nickname, profile) => navigation.navigate("myAccountVerifyOTP", {
       newEmail: email,
@@ -445,6 +453,25 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                               {generalErrorMessage}
                             </Text>
                           )}
+                          <TextField
+                            // value={password}
+                            label="Team:"
+                            style={{ paddingTop: 0}}
+                            inputStyle={{textAlign: 'left', paddingLeft: Spacing[12], paddingVertical: Spacing[4]}}
+                            isRequired={false}
+                            secureTextEntry={false}
+                            isTextArea={true}
+                            changeButton={true}
+                            editable={false}
+                            value={values.team1Name + (values.team2Name? ', '+ values.team1Name : '' )+ (values.team3Name? ', '+ values.team3Name : '')}
+                            onPressChangeButton={goToChangeDivision}
+                          />
+                           {generalErrorMessage !== null && (
+                            <Text type={"warning"} style={{ textAlign: "center" }}>
+                              {generalErrorMessage}
+                            </Text>
+                          )}
+                    
                           {/* <TextField
                     // value={password}
                     label="No. HP:"
@@ -459,7 +486,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                         </VStack>
                         <Spacer height={Spacing[12]} />
                         <VStack horizontal={Spacing[96]} vertical={Spacing[20]}>
-                          <Button type={isDisableEditBtn? "negative" : "primary"} text={"Update"} onPress={() => handleSubmit()} disabled={isDisableEditBtn} />
+                          <Button type={isDisableEditBtn? "negative" : "primary"} text={"Edit"} onPress={() => handleSubmit()} disabled={isDisableEditBtn} />
                         </VStack>
                       </VStack>
                     </>

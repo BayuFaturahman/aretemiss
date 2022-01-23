@@ -32,6 +32,7 @@ export interface DropDownProps {
   setOpen?
   setValue?
   setItems?
+  isRemovable: boolean
 }
 
 /**
@@ -46,11 +47,13 @@ export function DropDownPicker(props: DropDownProps) {
     isError,
     placeholder,
     containerStyle,
+    isRemovable,
     ...rest
   } = props
 
   const [open, setOpen] = useState(false);
   const [items_, setItems] = useState(items);
+
   const [, forceUpdate] = useReducer(x => x + 1, 0);
 
   const [value, setValue] = useState({})
@@ -104,15 +107,17 @@ export function DropDownPicker(props: DropDownProps) {
         <Text type={'label'} style={[{fontSize: Spacing[14]}, LABEL_STYLE]} text={label}/>
       </HStack>
       <Spacer height={Spacing[4]}/>
-
-      <Button
-        type={"primary"}
-        text={'X'}
-        style={{height: Spacing[28], width: Spacing[28], paddingHorizontal: Spacing[8],
-          position: 'absolute', right: 0, top: Spacing[12], zIndex: 10}}
-        textStyle={{fontSize: Spacing[14], lineHeight: Spacing[18]}}
-        onPress={clearSelection}
-      />
+      {console.log('isRemovable ', isRemovable)}
+      {isRemovable? 
+        <Button
+          type={"primary"}
+          text={'X'}
+          style={{height: Spacing[28], width: Spacing[28], paddingHorizontal: Spacing[8],
+            position: 'absolute', right: 0, top: Spacing[12], zIndex: 10}}
+          textStyle={{fontSize: Spacing[14], lineHeight: Spacing[18]}}
+          onPress={clearSelection}
+        /> : <></>
+      }
 
       <VStack
         style={
