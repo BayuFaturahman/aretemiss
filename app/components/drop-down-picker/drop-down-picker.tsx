@@ -1,20 +1,21 @@
-import React, {useEffect, useReducer, useState} from "react"
-import {Colors, Spacing} from "@styles";
+import React, { useEffect, useReducer, useState } from "react"
+import { Colors, Spacing } from "@styles"
 
-import {Text} from "@components/text/text";
-import {HStack, VStack} from "@components/view-stack";
-import Spacer from "@components/spacer";
-import {Platform, StyleProp, TextStyle} from "react-native";
-import {color, typography} from "@theme";
+import { Text } from "@components/text/text"
+import { HStack, VStack } from "@components/view-stack"
+import Spacer from "@components/spacer"
+import { Platform, StyleProp, TextStyle } from "react-native"
+import { color, typography } from "@theme"
 
-import {Button} from "@components/button/button";
+import { Button } from "@components/button/button"
 
-import SelectBox from 'react-native-multi-selectbox'
+import SelectBox from "react-native-multi-selectbox"
 
+import { xorBy } from "lodash"
 
 export type DropDownItem = {
-  item: string;
-  id: string;
+  item: string
+  id: string
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -33,6 +34,7 @@ export interface DropDownProps {
   setValue?
   setItems?
   isRemovable: boolean
+  multiple?: boolean
 }
 
 /**
@@ -48,31 +50,40 @@ export function DropDownPicker(props: DropDownProps) {
     placeholder,
     containerStyle,
     isRemovable,
+    multiple = false,
     ...rest
   } = props
 
-  const [open, setOpen] = useState(false);
-  const [items_, setItems] = useState(items);
+  const [open, setOpen] = useState(false)
+  const [items_, setItems] = useState(items)
 
-  const [, forceUpdate] = useReducer(x => x + 1, 0);
+  const [, forceUpdate] = useReducer((x) => x + 1, 0)
 
   const [value, setValue] = useState({})
+  const [values, setValues] = useState([])
 
   useEffect(() => {
     onValueChange(value)
   }, [value])
+
+  useEffect(() => {
+    onValueChange(values)
+    console.log(values)
+  }, [values])
+
   useEffect(() => {
     setItems(items)
     forceUpdate()
   }, [items])
 
   const renderRequired = () => {
-    return isRequired === true ? <Text type={'label'} style={[{fontSize: Spacing[14]}, LABEL_STYLE]} text={`*`}/> : null
+    return isRequired === true ? (
+      <Text type={"label"} style={[{ fontSize: Spacing[14] }, LABEL_STYLE]} text={`*`} />
+    ) : null
   }
 
   const clearSelection = () => {
     setValue({})
-    console.log(value)
     forceUpdate()
   }
 
@@ -85,7 +96,7 @@ export function DropDownPicker(props: DropDownProps) {
     color: Colors.UNDERTONE_BLUE,
     fontSize: Spacing[16],
     backgroundColor: color.palette.white,
-    textAlign: 'center',
+    textAlign: "center",
   }
 
   const TEXT_STYLE_SELECTED: TextStyle = {
@@ -101,39 +112,53 @@ export function DropDownPicker(props: DropDownProps) {
   }
 
   return (
-    <VStack top={Spacing[8]} style={[containerStyle, {zIndex: rest.zIndex}, Platform.OS === 'android' && open && STYLES_CONTAINER]}>
+    <VStack
+      top={Spacing[8]}
+      style={[
+        containerStyle,
+        { zIndex: rest.zIndex },
+        Platform.OS === "android" && open && STYLES_CONTAINER,
+      ]}
+    >
       <HStack>
         {renderRequired()}
-        <Text type={'label'} style={[{fontSize: Spacing[14]}, LABEL_STYLE]} text={label}/>
+        <Text type={"label"} style={[{ fontSize: Spacing[14] }, LABEL_STYLE]} text={label} />
       </HStack>
-      <Spacer height={Spacing[4]}/>
-      {console.log('isRemovable ', isRemovable)}
-      {isRemovable? 
+      <Spacer height={Spacing[4]} />
+      {isRemovable ? (
         <Button
           type={"primary"}
-          text={'X'}
-          style={{height: Spacing[28], width: Spacing[28], paddingHorizontal: Spacing[8],
-            position: 'absolute', right: 0, top: Spacing[12], zIndex: 10}}
-          textStyle={{fontSize: Spacing[14], lineHeight: Spacing[18]}}
+          text={"X"}
+          style={{
+            height: Spacing[28],
+            width: Spacing[28],
+            paddingHorizontal: Spacing[8],
+            position: "absolute",
+            right: 0,
+            top: Spacing[12],
+            zIndex: 10,
+          }}
+          textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
           onPress={clearSelection}
-        /> : <></>
-      }
+        />
+      ) : (
+        <></>
+      )}
 
       <VStack
-        style={
-          {
-            flex:1,
-            borderColor: isError ? Colors.MAIN_RED : Colors.MAIN_BLUE,
-            borderWidth: Spacing[2],
-            borderRadius: Spacing[20],
-          }
-        }
+        style={{
+          flex: 1,
+          borderColor: isError ? Colors.MAIN_RED : Colors.MAIN_BLUE,
+          borderWidth: Spacing[2],
+          borderRadius: Spacing[20],
+        }}
       >
         <SelectBox
           label=""
           options={items}
           value={value}
-          onChange={onChange()}
+          onChange={multiple === false ? onChange() : null}
+          onMultiSelect={multiple === true ? onMultiChange() : null}
           hideInputFilter={false}
           containerStyle={{
             top: -Spacing[8],
@@ -147,11 +172,19 @@ export function DropDownPicker(props: DropDownProps) {
           inputFilterStyle={{
             paddingHorizontal: Spacing[12],
           }}
-          selectIcon={<></>}
           inputPlaceholder={placeholder}
           optionsLabelStyle={TEXT_STYLE}
           selectedItemStyle={TEXT_STYLE_SELECTED}
           listOptionProps={{ nestedScrollEnabled: true }}
+          isMulti={multiple}
+          selectedValues={values}
+          onTapClose={onMultiChange()}
+          arrowIconColor={Colors.MAIN_BLUE}
+          searchIconColor={Colors.MAIN_BLUE}
+          toggleIconColor={Colors.MAIN_BLUE}
+          multiOptionContainerStyle={{
+            backgroundColor: Colors.MAIN_BLUE,
+          }}
         />
       </VStack>
     </VStack>
@@ -160,60 +193,64 @@ export function DropDownPicker(props: DropDownProps) {
   function onChange() {
     return (val) => setValue(val)
   }
+
+  function onMultiChange() {
+    return (item) => setValues(xorBy(values, [item], "id"))
+  }
 }
 
 const K_OPTIONS = [
   {
-    item: 'Juventus',
-    id: 'JUVE',
+    item: "Juventus",
+    id: "JUVE",
   },
   {
-    item: 'Real Madrid',
-    id: 'RM',
+    item: "Real Madrid",
+    id: "RM",
   },
   {
-    item: 'Barcelona',
-    id: 'BR',
+    item: "Barcelona",
+    id: "BR",
   },
   {
-    item: 'PSG',
-    id: 'PSG',
+    item: "PSG",
+    id: "PSG",
   },
   {
-    item: 'FC Bayern Munich',
-    id: 'FBM',
+    item: "FC Bayern Munich",
+    id: "FBM",
   },
   {
-    item: 'Manchester United FC',
-    id: 'MUN',
+    item: "Manchester United FC",
+    id: "MUN",
   },
   {
-    item: 'Manchester City FC',
-    id: 'MCI',
+    item: "Manchester City FC",
+    id: "MCI",
   },
   {
-    item: 'Everton FC',
-    id: 'EVE',
+    item: "Everton FC",
+    id: "EVE",
   },
   {
-    item: 'Tottenham Hotspur FC',
-    id: 'TOT',
+    item: "Tottenham Hotspur FC",
+    id: "TOT",
   },
   {
-    item: 'Chelsea FC',
-    id: 'CHE',
+    item: "Chelsea FC",
+    id: "CHE",
   },
   {
-    item: 'Liverpool FC',
-    id: 'LIV',
+    item: "Liverpool FC",
+    id: "LIV",
   },
   {
-    item: 'Arsenal FC',
-    id: 'ARS',
+    item: "Arsenal FC",
+    id: "ARS",
   },
 
   {
-    item: 'Leicester City FC',
-    id: 'LEI',
+    item: "Leicester City FC",
+    id: "LEI",
   },
 ]
