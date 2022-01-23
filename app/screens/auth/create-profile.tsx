@@ -1,5 +1,5 @@
 import React, {FC, useCallback, useEffect, useState} from "react"
-import {Dimensions, KeyboardAvoidingView, SafeAreaView, ScrollView, StyleSheet} from "react-native"
+import { KeyboardAvoidingView, ScrollView, StyleSheet} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {
@@ -12,8 +12,6 @@ import { NavigatorParamList } from "@navigators/auth-navigator"
 import {VStack} from "@components/view-stack";
 import Spacer from "@components/spacer";
 import {Colors, Layout, Spacing} from "@styles";
-import logoBottom from "@assets/icons/ilead_abm.png";
-import FastImage from "react-native-fast-image";
 
 import { Formik } from 'formik';
 
@@ -21,6 +19,8 @@ import { useStores } from "../../bootstrap/context.boostrap"
 
 import Spinner from 'react-native-loading-spinner-overlay';
 import {IOption} from "react-native-modal-selector";
+import {IleadLogo} from "@assets/svgs";
+import {dimensions} from "@config/platform.config";
 
 export type ProfileUpdateForm = {
   fullname: string
@@ -125,115 +125,110 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
 
     return (
       <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.WHITE, flex: 1, justifyContent: 'center'}}>
-        <SafeAreaView style={{flex: 1}}>
-          <KeyboardAvoidingView behavior='padding' style={{ minHeight: Dimensions.get('screen').height}}>
-            <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
-            <ScrollView bounces={false} style={[Layout.flex, Layout.heightFull]}>
-            <Spacer height={Spacing[32]} />
-            <Formik
-              initialValues={ProfileUpdateInitialForm}
-              onSubmit={onSubmit}
-            >
-              {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => (
-                <>
-                  <VStack top={Spacing[24]} horizontal={Spacing[24]}>
-                    <Text type={'header'} text="Lengkapi profilmu." />
-                    <Spacer height={Spacing[24]} />
+        <KeyboardAvoidingView behavior='padding' style={{ height: dimensions.screenHeight * 2}}>
+          <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
+          <ScrollView bounces={false} style={[Layout.flex, Layout.heightFull]}>
+          <Spacer height={Spacing[32]} />
+          <Formik
+            initialValues={ProfileUpdateInitialForm}
+            onSubmit={onSubmit}
+          >
+            {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => (
+              <>
+                <VStack top={Spacing[24]} horizontal={Spacing[24]}>
+                  <Text type={'header'} text="Lengkapi profilmu." />
+                  <Spacer height={Spacing[24]} />
 
-                    <Text type={'warning'} style={{textAlign: 'center'}}>
-                      {mainStore.errorMessage}
+                  <Text type={'warning'} style={{textAlign: 'center'}}>
+                    {mainStore.errorMessage}
+                  </Text>
+
+                  <Spacer height={Spacing[32]} />
+                  <TextField
+                    label="Nama lengkap:"
+                    style={{ paddingTop: 0}}
+                    isError={false}
+                    value={values.fullname}
+                    onChangeText={handleChange('fullname')}
+                  />
+                  <TextField
+                    label="Nama panggilan:"
+                    style={{ paddingTop: 0}}
+                    isError={false}
+                    value={values.nickname}
+                    onChangeText={handleChange('nickname')}
+                  />
+                  {/* <TextField
+                    label="Alamat e-mail:"
+                    style={{ paddingTop: 0}}
+                    isError={false}
+                    value={values.email}
+                    onChangeText={handleChange('email')}
+                  /> */}
+
+                  <DropDownPicker
+                    items={handleAvailableTeamList(values)}
+                    isRequired={true} label="Pilih team:"
+                    // onValueChange={(value:IOption)=> setFieldValue('team1Id', value.id)}
+                    onValueChange={(value:IOption)=> {
+                      setFieldValue('team1Id', value?.id?? '')
+                    }}
+                    placeholder={'Pilih salah satu'}
+                    containerStyle={{marginTop: Spacing[4]}}
+                    zIndex={3000}
+                    zIndexInverse={1000}
+                    dropDownDirection={"BOTTOM"}
+                  />
+                  <DropDownPicker
+                    items={handleAvailableTeamList(values)}
+                    isRequired={false}
+                    label="Pilih team kedua (jika ada):"
+                    onValueChange={(value:IOption)=> {
+                      setFieldValue('team2Id', value?.id ?? '')
+                    }}
+                    placeholder={'Pilih salah satu'}
+                    containerStyle={{marginTop: Spacing[4]}}
+                    zIndex={2000}
+                    zIndexInverse={2000}
+                    dropDownDirection={"BOTTOM"}
+                  />
+                  <DropDownPicker
+                    items={handleAvailableTeamList(values)}
+                    isRequired={false}
+                    label="Pilih team ketiga (jika ada):"
+                    onValueChange={(value:IOption)=> {
+                       setFieldValue('team3Id', value?.id ?? '')
+                    }}
+                    placeholder={'Pilih salah satu'}
+                    containerStyle={{marginTop: Spacing[4]}}
+                    zIndex={1000}
+                    zIndexInverse={3000}
+                    dropDownDirection={"BOTTOM"}
+                  />
+                  <VStack top={Spacing[8]}>
+                    <Text type={'body'} style={{textAlign: 'right'}}>
+                      * = Wajib diisi
                     </Text>
-
-                    <Spacer height={Spacing[32]} />
-                    <TextField
-                      label="Nama lengkap:"
-                      style={{ paddingTop: 0}}
-                      isError={false}
-                      value={values.fullname}
-                      onChangeText={handleChange('fullname')}
-                    />
-                    <TextField
-                      label="Nama panggilan:"
-                      style={{ paddingTop: 0}}
-                      isError={false}
-                      value={values.nickname}
-                      onChangeText={handleChange('nickname')}
-                    />
-                    {/* <TextField
-                      label="Alamat e-mail:"
-                      style={{ paddingTop: 0}}
-                      isError={false}
-                      value={values.email}
-                      onChangeText={handleChange('email')}
-                    /> */}
-
-                    <DropDownPicker
-                      items={handleAvailableTeamList(values)}
-                      isRequired={true} label="Pilih team:"
-                      // onValueChange={(value:IOption)=> setFieldValue('team1Id', value.id)}
-                      onValueChange={(value:IOption)=> {
-                        setFieldValue('team1Id', value?.id?? '')
-                      }}
-                      placeholder={'Pilih salah satu'}
-                      containerStyle={{marginTop: Spacing[4]}}
-                      zIndex={3000}
-                      zIndexInverse={1000}
-                      dropDownDirection={"BOTTOM"}
-                    />
-                    <DropDownPicker
-                      items={handleAvailableTeamList(values)}
-                      isRequired={false}
-                      label="Pilih team kedua (jika ada):"
-                      onValueChange={(value:IOption)=> {
-                        setFieldValue('team2Id', value?.id ?? '')
-                      }}
-                      placeholder={'Pilih salah satu'}
-                      containerStyle={{marginTop: Spacing[4]}}
-                      zIndex={2000}
-                      zIndexInverse={2000}
-                      dropDownDirection={"BOTTOM"}
-                    />
-                    <DropDownPicker
-                      items={handleAvailableTeamList(values)}
-                      isRequired={false}
-                      label="Pilih team ketiga (jika ada):"
-                      onValueChange={(value:IOption)=> {
-                         setFieldValue('team3Id', value?.id ?? '')
-                      }}
-                      placeholder={'Pilih salah satu'}
-                      containerStyle={{marginTop: Spacing[4]}}
-                      zIndex={1000}
-                      zIndexInverse={3000}
-                      dropDownDirection={"BOTTOM"}
-                    />
-                    <VStack top={Spacing[8]}>
-                      <Text type={'body'} style={{textAlign: 'right'}}>
-                        * = Wajib diisi
-                      </Text>
-                    </VStack>
                   </VStack>
-                  <VStack top={Spacing[32]} horizontal={Spacing[96]} style={{zIndex: -10}}>
-                    <Button
-                      type={"primary"}
-                      text={"Simpan"}
-                      onPress={()=>handleSubmit()}
-                    />
-                  </VStack>
-                </>
-              )}
-            </Formik>
+                </VStack>
+                <VStack top={Spacing[32]} horizontal={Spacing[96]} style={{zIndex: -10}}>
+                  <Button
+                    type={"primary"}
+                    text={"Simpan"}
+                    onPress={()=>handleSubmit()}
+                  />
+                </VStack>
+              </>
+            )}
+          </Formik>
             <Spacer height={Spacing[24]} />
-            <FastImage style={{
-              height: Spacing[72],
-              bottom: 0
-            }} source={logoBottom} resizeMode={"contain"}/>
-            </ScrollView>
-          </KeyboardAvoidingView>
-        </SafeAreaView>
+            <IleadLogo height={Spacing[72]} width={dimensions.screenWidth} />
+            <Spacer height={Spacing[48]} />
+          </ScrollView>
+        </KeyboardAvoidingView>
         <Spinner
           visible={authStore.isLoading || mainStore.isLoading}
           textContent={'Memuat...'}
-          // textStyle={styles.spinnerTextStyle}
         />
       </VStack>
     )
