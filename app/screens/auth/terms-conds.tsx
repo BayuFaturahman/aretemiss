@@ -6,8 +6,9 @@ import { BackNavigation, Text } from "@components"
 import { NavigatorParamList } from "@navigators/auth-navigator"
 import {VStack} from "@components/view-stack";
 import {Colors, Layout, Spacing} from "@styles";
-import FastImage from "react-native-fast-image";
-import logoBottom from "@assets/icons/ilead_abm.png";
+import Spacer from "@components/spacer";
+import {IleadLogo} from "@assets/svgs";
+import {dimensions} from "@config/platform.config";
 
 const TermsConds: FC<StackScreenProps<NavigatorParamList, "termsConds">> = observer(
   ({ navigation }) => {
@@ -31,11 +32,8 @@ const TermsConds: FC<StackScreenProps<NavigatorParamList, "termsConds">> = obser
               <Text type={"body"} text={TERMS_N_CONDITIONS} />
             </VStack>
           </ScrollView>
-          <FastImage style={{
-            height: Spacing[72],
-            bottom: 0
-          }} source={logoBottom} resizeMode={"contain"}
-          />
+          <IleadLogo height={Spacing[72]} width={dimensions.screenWidth} />
+          <Spacer height={Spacing[24]} />
         </SafeAreaView>
       </VStack>
     )

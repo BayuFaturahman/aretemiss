@@ -1,5 +1,5 @@
-import React, {FC, useEffect, useReducer} from "react"
-import { SafeAreaView, StyleSheet } from "react-native"
+import React, {FC} from "react"
+import { SafeAreaView } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {
@@ -10,7 +10,6 @@ import {VStack} from "@components/view-stack";
 import Spacer from "@components/spacer";
 import {Colors, Spacing} from "@styles";
 import ileadLogo from "@assets/icons/ilead-logo.png";
-import abmLogo from "@assets/icons/abm.png";
 import FastImage from "react-native-fast-image";
 import RNAnimated from "react-native-animated-component";
 
@@ -20,10 +19,6 @@ const LandingPage: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
     const goToRegister = () => navigation.navigate("verifyPhone")
     const goToLogin = () => navigation.navigate("login")
 
-    const styles = StyleSheet.create({
-
-    })
-
     return (
       <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.WHITE, flex: 1, justifyContent: 'center'}}>
         <SafeAreaView style={{flex: 1}}>
@@ -32,10 +27,6 @@ const LandingPage: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
             animationDuration={500}
           >
             <Spacer height={Spacing[48]} />
-            <FastImage style={{
-              height: Spacing[48],
-              bottom: 0
-            }} source={abmLogo} resizeMode={"contain"}/>
           </RNAnimated>
           <Spacer />
           <VStack horizontal={Spacing[24]}>
