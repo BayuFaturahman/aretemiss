@@ -41,6 +41,7 @@ export type JournalEntryType = {
   improvement: string
   commitment: string
   type: string
+  label: string
   learnerIds: string[]
   questions: FeedbackJLSixth
 }
@@ -54,6 +55,7 @@ const JournalEntryInitialValue: JournalEntryType = {
   improvement: "",
   commitment: "",
   type: "",
+  label: "",
   learnerIds: [],
   questions: {
     q1: "",
@@ -85,7 +87,24 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
 
     const [isModalVisible, setModalVisible] = useState(false)
     const [selectedDate, setSelectedDate] = useState(null)
-    const [dataTeamMember, setDataTeamMember] = useState<DropDownItem[]>([])
+    const [dataTeamMember, setDataTeamMember] = useState<DropDownItem[]>([]);
+    const [dataJournalTags, setDataJournalTags] = useState([
+      {
+        id: '0',
+        key: 'KPI coaching',
+        item: 'KPI coaching'
+      },
+      {
+        id: '1',
+        key: 'Project Culture Coaching',
+        item: 'Project Culture coaching',
+      },
+      {
+        id: '2',
+        key: 'other',
+        item: 'Others',
+      }
+    ]);
 
     const [title, setTitle] = useState<string>("")
     const [learner, setLearner] = useState({})
@@ -232,6 +251,10 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
           setError("improvement")
         } else if (data.commitment === "") {
           setError("commitment")
+        } else if (!data.type || data.type === "") {
+          setError("type")
+        } else if (data.type === "Others" && data.label === "") {
+          setError("label")
         }
         // else if (data.type === '') {
         //   setError('type')
@@ -559,6 +582,43 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                           />
                         </VStack>
 
+                        <VStack>
+                          <Text
+                            type={"body-bold"}
+                            style={[
+                              { textAlign: "left" },
+                              isError === "commitment" ? styles.textError : null,
+                            ]}
+                          >Pilih kategori coaching:</Text>
+                          <DropDownPicker
+                            items={dataJournalTags}
+                            isRequired={false}
+                            hideInputFilter={true}
+                            // value={values.lea}
+                            onValueChange={(value: DropDownItem | DropDownItem[]) => {
+                              setFieldValue("type", value.key)
+                            }}
+                            placeholder={"Pilih kategori"}
+                            containerStyle={{ marginTop: -Spacing[24] }}
+                            isError={isError === "type"}
+                            multiple={false}
+                          />
+                          {values.type === "other" && (
+                            <TextField
+                              style={{ paddingTop: 0 }}
+                              inputStyle={{ minHeight: Spacing[48], marginTop: Spacing[8]}}
+                              placeholder="Tulis kategori coaching di sini."
+                              isRequired={false}
+                              secureTextEntry={false}
+                              isTextArea={false}
+                              editable={!coachingStore.isDetail}
+                              // value={leassons}
+                              isError={isError === "label"}
+                              onChangeText={handleChange("label")}
+                            />
+                          )}
+                        </VStack>
+
                         {/* {coachingStore.isFormCoach && (
                           <VStack vertical={Spacing[16]}>
                              <VStack bottom={Spacing[8]} horizontal={Spacing[96]}>
@@ -582,7 +642,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                             </Text> 
                            </VStack>
                         )} */}
-                        <VStack horizontal={Spacing[72]} vertical={Spacing[24]}>
+                        <VStack horizontal={Spacing[72]} top={Spacing[24]}>
                           {/* {coachingStore.isFormCoach ? (
                             <ActivitiesTypeLegends showedItems={[1]} />
                           ) : (
@@ -598,11 +658,20 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                           ) : (
                             <Button
                               type={"primary"}
-                              text={"Lakukan Feedback"}
+                              text={"Lakukan feedback"}
                               onPress={handleSubmit}
                             />
                           )}
                         </VStack>
+                        <Text
+                          type={"label"}
+                          style={{
+                            textAlign: 'center',
+                            marginTop: Spacing[4],
+                            paddingBottom: Spacing[32],
+                            color: Colors.MAIN_RED
+                          }}
+                        >Penting! Catatan coaching-mu belum tersimpan sampai kamu klik “Submit” setelah melakukan feedback.</Text>
                       </VStack>
                     </VStack>
                   </ScrollView>

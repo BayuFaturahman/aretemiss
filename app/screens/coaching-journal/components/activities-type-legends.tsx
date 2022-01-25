@@ -8,20 +8,25 @@ import Spacer from "@components/spacer";
 
 export const ACTIVITIES_TYPE = [
   {
-    label: 'KPI Coaching',
+    label: 'KPI coaching',
     value: 'formal_coaching',
     color: Colors.HONEY_YELLOW
   },
   {
-    label: 'Project Culture Coaching',
+    label: 'Project Culture coaching',
     value: 'informal_coaching',
     color: Colors.SOFT_PURPLE
   },
-  // {
-  //   label: 'coached',
-  //   value: 'coached',
-  //   color: Colors.SOFT_GREEN
-  // }
+  {
+    label: 'Others',
+    value: 'other',
+    color: Colors.SOFT_BLUE
+  },
+  {
+    label: 'Coached',
+    value: 'coached',
+    color: Colors.SOFT_GREEN
+  }
 ]
 
 type ActivitiesTypeLegendsProps = {

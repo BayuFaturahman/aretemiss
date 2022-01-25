@@ -662,7 +662,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                       </Text>
                       <TextField
                         style={{ paddingTop: 0 }}
-                        value={"KPI Coaching"}
+                        value={values.type}
                         isError={isError === "jlCommitment"}
                         onChangeText={handleChange("jlCommitment")}
                         inputStyle={

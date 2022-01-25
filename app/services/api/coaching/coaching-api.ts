@@ -103,6 +103,7 @@ export class CoachingApi {
     commitment: string,
     learnerIds: string[],
     type: string,
+    label: string,
     feedback: FeedbackJLSixth
   ): Promise<CreateJournalResult> {
     try {
@@ -119,6 +120,7 @@ export class CoachingApi {
           commitment,
           learnerIds,
           type,
+          label,
           questions: {
             q1: feedback.q1,
             q2: feedback.q2,
@@ -145,6 +147,7 @@ export class CoachingApi {
 
       return { kind: "ok", response: res }
     } catch (e) {
+      console.log(e, 'line 150');
       __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }

@@ -12,6 +12,7 @@ import {Text, BackNavigation} from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
 import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors, Layout, Spacing, Roundness } from "@styles"
 
 import { useStores } from "../../bootstrap/context.boostrap"
@@ -131,10 +132,11 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
       navigation.navigate("newPost")
     }
 
-    const goToGuideline = () => {
+    const goToGuideline = async () => {
+      const savedAgreeTnc = await AsyncStorage.getItem('Agree Feed Guidelines');
       setLastSeenFeed()
       resetNavigationParam()
-      navigation.navigate("feedGuideline")
+      navigation.navigate("feedGuideline", {savedAgreeTnc})
     }
 
     const goToMyfeed = () => {
