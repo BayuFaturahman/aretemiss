@@ -48,7 +48,7 @@ export type JournalEntryType = {
 
 const JournalEntryInitialValue: JournalEntryType = {
   coachId: "",
-  date: moment(new Date()).format("LLLL"),
+  date: moment(new Date()).format(),
   title: "",
   content: "",
   strength: "",
@@ -143,7 +143,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
     }
 
     const onDateChange = (selectedDate, setFieldValue) => {
-      const dateTime = moment(selectedDate).format("LLLL")
+      const dateTime = moment(selectedDate).format()
       setSelectedDate(dateTime)
       setFieldValue("date", selectedDate)
       console.log(dateTime)
@@ -274,8 +274,12 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
     )
 
     const goToFeedback = (journalEntry) => {
-      journalEntry.type = "coaching"
       console.log("journalEntryForm ", journalEntryForm)
+      const tempLearnerIds = [];
+      for (let i = 0; i < journalEntry.learnerIds.length; i++) {
+        tempLearnerIds.push(journalEntry.learnerIds[i].id);
+      }
+      journalEntry.learnerIds = tempLearnerIds;
       // if(!isDetail){
       navigation.navigate("fillFeedback", {
         data: journalEntry,

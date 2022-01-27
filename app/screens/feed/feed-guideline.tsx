@@ -43,20 +43,18 @@ const FeedGuideline: FC<StackScreenProps<NavigatorParamList, "feedGuideline">> =
             <VStack top={Spacing[32]}>
               <HStack horizontal={Spacing[20]} style={styles.scrollBox}>
                 <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-                  <Text><Text type={'body-bold'}>Perhatian!</Text> Guideline ini dibuat sebagai <RnText style={styles.italicTxt}>ground rules</RnText> atau tata cara posting di Feed.{'\n'}</Text>
-                  <Text type={'body-bold'}>Apa saja yang bisa kamu post di Feed?{'\n'}</Text>
+                  <Text type={'body-bold'}>Apa saja konten yang dapat dipublikasikan pada forum feed?{'\n'}</Text>
                   <View>
-                    <Text>1.  Kegiatanmu yang berhubungan dengan winning culture “SIAP” yang diusung oleh perusahaan kita. Apapun kegiatan keseharianmu yang menunjukan value Synergy, Innovation, Accountable & Owner-like, atau Performance Focused bisa langsung di-post di Feed ya!{'\n'}</Text>
-                    <Text>2.  Kekagumanmu pada semua hal yang berhubungan dengan kegiatan rekan kerjamu yang berhubungan dengan winning culture “SIAP”. Jika kamu lihat rekan kerjamu mengerjakan sesuatu yang menginspirasi, boleh banget loh di-post di Feed.{'\n'}</Text>
-                    <Text>3.  Saling meninggalkan komentar yang positif dan membangun kepada sesama rekan kerja. Karena mendapatkan dukungan dari rekan kerja tuh berarti banget, ya gak?!{'\n\n'}</Text>
+                    <Text>1.  Kegiatan yang menunjukan dirimu sebagai seorang JUARA. Apapun kegiatan kamu yang selaras dengan 4 prinsip Budaya Juara dapat di post.{'\n'}</Text>
+                    <Text>2.  Aktivitas rekan kerjamu yang selaras dengan 4 prinsip Budaya Juara. Saling meninggalkan komentar yang positif dan membangun kepada sesama rekan kerja. Karena mendapatkan dukungan dari rekan kerja tuh berarti banget, ya gak?!{'\n'}</Text>
                   </View>
                   <Text type={'body-bold'}>Apa saja yang tidak diperkenankan di dalam forum Feed?{'\n'}</Text>
                   <View>
-                    <Text>1.  Semua konten yang berhubungan dengan SARA (Suku, Agama, Ras, dan Antargolongan) tidak diperbolehkan di dalam Feed.{'\n'}</Text>
-                    <Text>2.  Semua konten yang terlalu bersifat personal (Contoh: Update sedang menonton drama Korea bersama pasangan) tidak disarankan untuk di-post di Feed.{'\n'}</Text>
-                    <Text>3.  Semua konten yang sifatnya menyerang user lain. Yuk jaga forumnya supaya tetap positif!{'\n'}</Text>
+                    <Text>1.  Semua konten yang berhubungan dengan SARA (Suku, Agama, Ras, dan Antargolongan) tidak diperbolehkan di dalam feed.{'\n'}</Text>
+                    <Text>2.  Konten yang tidak mengandung 4 prinsip Budaya Juara dan menginspirasi orang lain untuk lebih baik.{'\n'}</Text>
                   </View>
-                  <Text>Jika ada yang membuat post dengan konten yang tidak diperkenankan, Team iLEAD berhak untuk menghapus konten dan melarang kamu untuk tidak membuat post di Feed dalam beberapa waktu. Yuk kita patuhi ground rules-nya!</Text>
+                  <Text>Konten atau komentar yang merendahkan, mengadu domba, dan fitnah tidak diperbolehkan. Berilah kritik atau komentar yang membangun sehingga diskusi menjadi lebih seru, menguntungkan, dan menginspirasi.{'\n'}</Text>
+                  <Text>Team iLEAD berhak untuk menghapus konten dan memblokir  user dalam jangka waktu tertentu. Yuk kita patuhi <RnText style={styles.italicTxt}>ground rules</RnText>-nya!</Text>
                 </ScrollView>
               </HStack>
             </VStack>

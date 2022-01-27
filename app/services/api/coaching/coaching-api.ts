@@ -198,17 +198,19 @@ export class CoachingApi {
     strength: string,
     improvement: string,
     type: string,
-    id: string
+    id: string,
+    label: string,
   ): Promise<CreateJournalResult> {
     try {
       console.log('updateJournalCoach ap', id)
       // make the api call
       const bodyRequest = {
-          content: content,
-          commitment: commitment,
-          strength: strength,
-          improvement: improvement,
-          type: type
+          content,
+          commitment,
+          strength,
+          improvement,
+          type,
+          label,
       }
       console.log("REQUEST ", bodyRequest)
       const response: ApiResponse<any> = await this.api.apisauce.patch(

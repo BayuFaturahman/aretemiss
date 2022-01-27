@@ -242,10 +242,9 @@ export default class CoachingStore {
       data.commitment,
       data.learnerIds,
       data.type,
+      data.label,
       data.questions
     )
-
-    console.log(result)
     if (result.kind === "ok") {
       this.refreshData = true
       await this.createJournalSucceed(result.response.message)
@@ -501,13 +500,13 @@ export default class CoachingStore {
   async updateJournal(
     content: string,
     commitment: string,
-    lessonsLearned: string,
     strength: string,
     type: string,
     improvement: string,
+    label: string,
+
   ){
     this.isLoading = true
-    console.log('updateJournal')
 
     const result = await this.coachingApi.updateJournalCoach(
       content,
@@ -515,7 +514,8 @@ export default class CoachingStore {
       strength,
       improvement,
       type,
-      this.detailId
+      this.detailId,
+      label,
     )
     console.log('updateJournal result', result)
     if (result.kind === "ok") {
