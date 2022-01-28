@@ -80,6 +80,8 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
       mood: mainStore.userProfile.user_mood
     }
 
+    // console.log('mainStore.userProfile USer profile: ', mainStore.userProfile)
+    // console.log('USer profile: ', userProfile)
     const actionSheetRef = createRef();
 
     const [profilePicture, setProfilePicture] = useState(userProfile.photo)
@@ -463,7 +465,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                             isTextArea={true}
                             changeButton={true}
                             editable={false}
-                            value={values.team1Name + (values.team2Name? ', '+ values.team1Name : '' )+ (values.team3Name? ', '+ values.team3Name : '')}
+                            value={(values.team1Name && values.team1Name !==null? values.team1Name : '' )+ (values.team2Name && values.team2Name !==null? ', '+ values.team2Name : '' )+ (values.team3Name && values.team3Name !==null? ', '+ values.team3Name : '')}
                             onPressChangeButton={goToChangeDivision}
                           />
                            {generalErrorMessage !== null && (
