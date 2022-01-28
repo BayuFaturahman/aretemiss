@@ -53,8 +53,6 @@ const ChangeDivision: FC<StackScreenProps<NavigatorParamList, "changeDivision">>
     }, [])
 
     const toggleModal = (value: boolean) =>{
-      console.log('modal title ', modalTitle )
-      console.log('modal desc ', modalDesc )
       // setTimeout(() => {
         setModalVisible(value)
         // setIsClickEditProfile(false)
@@ -92,12 +90,26 @@ const ChangeDivision: FC<StackScreenProps<NavigatorParamList, "changeDivision">>
     const changeDivision = useCallback(async (teams) => {
       authStore.formReset()
       setIsSubmitDivisionChange(true)
+      setErrorMessage('')
+      setModalVisible(false)
 
       const { team1Id, team2Id, team3Id } = teams
-      console.log(team1Id, team2Id, team3Id)
+
+      if (team1Id === '') {
+        setErrorMessage('Team1 wajib diisi')
+         return; 
+      }
+
+      // console.log('team1Id, team2Id, team3Id ', team1Id, team2Id, team3Id)
+      // console.log('user profile ', mainStore.userProfile)
+      await mainStore.requestChangeDivision(
+        mainStore.userProfile.team1_id? mainStore.userProfile.team1_id : '', team1Id,
+        mainStore.userProfile.team2_id? mainStore.userProfile.team2_id :'', team2Id,
+        mainStore.userProfile.team3_id? mainStore.userProfile.team3_id : '', team3Id
+        )
 
       // setIsSubmitPasswordChange(false)
-      if (authStore.errorCode === null) {
+      if (mainStore.errorCode === null) {
         setModalContent('Berhasil!', 'Permintaanmu berhasil dikirim. Silakan tunggu sampai team-mu berhasil diganti atau ditambahkan ya!', senang)
         await mainStore.getProfile();
         toggleModal(true)
@@ -183,6 +195,12 @@ const ChangeDivision: FC<StackScreenProps<NavigatorParamList, "changeDivision">>
                         // <View>
                         <>
                           {/* <VStack top={Spacing[32]} horizontal={Spacing[24]} style={{backgroundColor: Colors.SOFT_GREEN, padding: Spacing[0]}}> */}
+                          <Spacer height={Spacing[12]} />
+                          { errorMessage!==null &&
+                            <Text type={"warning"} style={{ textAlign: "center" }}>
+                              {errorMessage || mainStore.errorMessage}
+                            </Text>
+                          }
                           <DropDownPicker
                             items={teamList1}
                             isRequired={true}

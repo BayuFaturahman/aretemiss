@@ -365,11 +365,11 @@ export default class MainStore {
       user_is_allow_notification: data.user_is_allow_notification,
       user_is_allow_reminder_notification: data.user_is_allow_reminder_notification,
       user_fcm_token: data.user_fcm_token,
-      team1_id: data.team1_id,
+      team1_id: data.user_team_1_id,
       team1_name: data.team1_name,
-      team2_id: data.team2_id,
+      team2_id: data.user_team_2_id,
       team2_name: data.team2_name,
-      team3_id: data.team3_id,
+      team3_id: data.user_team_3_id,
       team3_name: data.team3_name,
       new_notification_count: data.new_notification_count,
       new_notification_flag: data.new_notification_flag,
@@ -491,6 +491,34 @@ export default class MainStore {
           }
           this.formError(errorCheckEmail)
         }
+      }
+    } catch (e) {
+      console.log("checkEmail error")
+      console.log(e)
+      this.checkEmailFailed(e)
+    } finally {
+      console.log("checkEmail done")
+      this.isLoading = false
+    }
+  }
+
+  async requestChangeDivision(oldDiv1: string, newDiv1: string, oldDiv2: string, newDiv2: string, oldDiv3: string, newDiv3: string,) {
+    this.isLoading = true
+    try {
+      const response = await this.profileApi.requestChangeDivision({
+        oldDiv1: oldDiv1,
+        newDiv1: newDiv1,
+        oldDiv2: oldDiv2,
+        newDiv2: newDiv2,
+        oldDiv3: oldDiv3,
+        newDiv3: newDiv3
+      })
+
+      if (response.kind === "form-error") {
+        this.formError(response.response)
+      }
+
+      if (response.kind === "ok") {
       }
     } catch (e) {
       console.log("checkEmail error")
