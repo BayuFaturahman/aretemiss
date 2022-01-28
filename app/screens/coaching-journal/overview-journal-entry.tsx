@@ -2,7 +2,7 @@ import React, { FC, useCallback, useReducer, useState, useEffect } from "react"
 import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
-import { Text, Button, TextField, BackNavigation, DismissKeyboard } from "@components"
+import { Text, Button, TextField, BackNavigation, DropDownPicker, DropDownItem } from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
 import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
@@ -48,7 +48,23 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
     // empty list state
     const [selectedActivities, setSelectedActivities] = useState<string>("")
     const [, forceUpdate] = useReducer((x) => x + 1, 0)
-
+    const [dataJournalTags, setDataJournalTags] = useState([
+      {
+        id: '0',
+        key: 'KPI coaching',
+        item: 'KPI coaching'
+      },
+      {
+        id: '1',
+        key: 'Project Culture Coaching',
+        item: 'Project Culture coaching',
+      },
+      {
+        id: '2',
+        key: 'other',
+        item: 'Others',
+      }
+    ]);
     const [isModalVisible, setModalVisible] = useState(false)
     const [selectedDate, setSelectedDate] = useState(null)
     const [dataTeamMember, setDataTeamMember] = useState<IOption[]>([])
@@ -76,6 +92,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
       improvement: "",
       commitment: "",
       type: "",
+      label: "",
       learner: "",
       jlLessonLearned: "",
       jlCommitment: "",
@@ -150,12 +167,15 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
           setIsOnEditMode(false)
         }
       } else {
+        console.log(JSON.stringify(coachingStore.journalDetail, null, 4), 'line 154')
         journalEntryInitialValue.title = coachingStore.journalDetail.journal_title
         journalEntryInitialValue.content = coachingStore.journalDetail.journal_content
         journalEntryInitialValue.strength = coachingStore.journalDetail.journal_strength
         journalEntryInitialValue.improvement = coachingStore.journalDetail.journal_improvement
         journalEntryInitialValue.commitment = coachingStore.journalDetail.journal_commitment
         journalEntryInitialValue.learner = coachingStore.journalDetail.jl_learner_fullname[0]
+        journalEntryInitialValue.type = coachingStore.journalDetail.journal_type;
+        journalEntryInitialValue.label = coachingStore.journalDetail.journal_label;
 
         setJlLessonLearned(coachingStore.journalDetail.jl_lesson_learned[0].desc)
         setJlCommitment(coachingStore.journalDetail.jl_commitment[0].desc)
@@ -223,16 +243,20 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
           setError("improvement")
         } else if (data.commitment === "") {
           setError("commitment")
+        } else if (!data.type || data.type === "") {
+          setError("type")
+        } else if (data.type === "Others" && data.label === "") {
+          setError("label")
         } else {
           if (coachingStore.isDetail) {
             setError("")
             await coachingStore.updateJournal(
               data.content,
               data.commitment,
-              "",
               data.strength,
-              selectedActivities,
+              data.type,
               data.improvement,
+              data.label,
             )
             // toggleModalEditEntry()
             setIsOnEditMode(false)
@@ -654,27 +678,64 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                       <Text
                         type={"body-bold"}
                         style={[
-                          { textAlign: "center", top: Spacing[4] },
+                          { textAlign: "left", top: Spacing[4] },
                           isError == "content" ? styles.textError : null,
                         ]}
                       >
                         {`Kategori coaching:`}
                       </Text>
-                      <TextField
-                        style={{ paddingTop: 0 }}
-                        value={"KPI Coaching"}
-                        isError={isError === "jlCommitment"}
-                        onChangeText={handleChange("jlCommitment")}
-                        inputStyle={
-                          isOnEditMode
-                            ? { minHeight: Spacing[72] }
-                            : { minHeight: Spacing[48], backgroundColor: Colors.LIGHT_GRAY }
-                        }
-                        editable={isOnEditMode}
-                        isRequired={false}
-                        secureTextEntry={false}
-                        isTextArea={true}
-                      />
+                      {isOnEditMode ? (
+                        <>
+                          <DropDownPicker
+                            items={dataJournalTags}
+                            isRequired={false}
+                            hideInputFilter={true}
+                            value={dataJournalTags.filter(item => item.key === values.type)[0]}
+                            onValueChange={(value: DropDownItem | DropDownItem[]) => {
+                              if (value.key) {
+                                setFieldValue("type", value.key);
+                                if (value.key !== 'other') {
+                                  setFieldValue("label", "");
+                                }
+                              }
+                            }}
+                            placeholder={"Pilih kategori"}
+                            containerStyle={{ marginTop: -Spacing[24] }}
+                            isError={isError === "type"}
+                            multiple={false}
+                          />
+                          {values.type === "other" && (
+                            <TextField
+                              style={{ paddingTop: 0 }}
+                              inputStyle={{ minHeight: Spacing[48], marginTop: Spacing[8]}}
+                              placeholder="Tulis kategori coaching di sini."
+                              isRequired={false}
+                              secureTextEntry={false}
+                              isTextArea={false}
+                              editable={true}
+                              value={values.label}
+                              isError={isError === "label"}
+                              onChangeText={handleChange("label")}
+                            />
+                          )}
+                        </>
+                      ) : (
+                        <TextField
+                          style={{ paddingTop: 0 }}
+                          value={`${values.type}${(values.label !== '' && values.type === 'other') ? ` (${values.label})` : ''}`}
+                          isError={isError === "jlCommitment"}
+                          onChangeText={handleChange("jlCommitment")}
+                          inputStyle={
+                            isOnEditMode
+                              ? { minHeight: Spacing[72] }
+                              : { minHeight: Spacing[48], backgroundColor: Colors.LIGHT_GRAY }
+                          }
+                          editable={isOnEditMode}
+                          isRequired={false}
+                          secureTextEntry={false}
+                          isTextArea={true}
+                        />
+                      )}
                     </VStack>
                   </VStack>
 

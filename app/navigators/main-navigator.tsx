@@ -120,7 +120,9 @@ export type NavigatorParamList = {
   feedTimelineMain: {
     newPost?: boolean
   };
-  feedGuideline: undefined;
+  feedGuideline: {
+    savedAgreeTnc: string
+  };
   settingsPage: undefined;
   myAccount:{
     newEmail?: string,

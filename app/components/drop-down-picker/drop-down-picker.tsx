@@ -15,6 +15,7 @@ import { xorBy } from "lodash"
 
 export type DropDownItem = {
   item: string
+  key?: string
   id: string
 }
 
@@ -27,6 +28,7 @@ export interface DropDownProps {
   isRequired: boolean
   isError?: boolean
   placeholder: string
+  hideInputFilter: boolean
   containerStyle?: StyleProp<StyleProp<any>>
   open?
   value?
@@ -43,6 +45,7 @@ export interface DropDownProps {
 export function DropDownPicker(props: DropDownProps) {
   const {
     onValueChange,
+    hideInputFilter,
     items,
     label,
     isRequired,
@@ -159,7 +162,7 @@ export function DropDownPicker(props: DropDownProps) {
           value={value}
           onChange={multiple === false ? onChange() : null}
           onMultiSelect={multiple === true ? onMultiChange() : null}
-          hideInputFilter={false}
+          hideInputFilter={hideInputFilter}
           containerStyle={{
             top: -Spacing[8],
             paddingHorizontal: Spacing[12],
