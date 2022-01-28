@@ -155,6 +155,9 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
         journalEntryInitialValue.jlContent = coachingStore.journalDetail.jl_content
         journalEntryInitialValue.jlLessonLearned = coachingStore.journalDetail.jl_lesson_learned
         journalEntryInitialValue.jlCommitment = coachingStore.journalDetail.jl_commitment
+        // journalEntryInitialValue.type = coachingStore.journalDetail.journal_type;
+        // journalEntryInitialValue.label = coachingStore.journalDetail.journal_label;
+
 
         setJlLessonLearned(coachingStore.journalDetail.jl_lesson_learned)
         setJlCommitment(coachingStore.journalDetail.jl_commitment)
@@ -214,9 +217,10 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
       console.log("journalEntryInitialValue : ", journalEntryInitialValue)
       navigation.navigate("overviewJournalEntryByCoachee", {
         title: title,
-        lessonLearned: jlLessonLearned,
-        commitment: jlCommitment,
-        content: jlContent,
+        lessonsLearned: coachingStore.journalDetail.jl_lesson_learned,
+        commitments: coachingStore.journalDetail.jl_commitment,
+        contents: coachingStore.journalDetail.jl_content,
+        learnersFullname: coachingStore.journalDetail.jl_learner_fullname
       })
     }
 
@@ -684,7 +688,20 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                       >
                         {`Kategori coaching:`}
                       </Text>
-                      {isOnEditMode ? (
+                      {isCoachee?   
+                        <TextField
+                          style={{ paddingTop: 0 }}
+                          value={`${values.type}${(values.label !== '' && values.type === 'other') ? ` (${values.label})` : ''}`}
+                          isError={isError === "jlCommitment"}
+                          onChangeText={handleChange("jlCommitment")}
+                          inputStyle={{ minHeight: Spacing[48], backgroundColor: Colors.LIGHT_GRAY }
+                          }
+                          editable={false}
+                          isRequired={false}
+                          secureTextEntry={false}
+                          isTextArea={true}
+                        /> : 
+                        (isOnEditMode ? (
                         <>
                           <DropDownPicker
                             items={dataJournalTags}
@@ -735,7 +752,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                           secureTextEntry={false}
                           isTextArea={true}
                         />
-                      )}
+                      ))}
                     </VStack>
                   </VStack>
 
