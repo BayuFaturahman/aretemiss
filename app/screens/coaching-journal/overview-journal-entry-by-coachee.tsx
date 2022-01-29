@@ -1,5 +1,5 @@
-import React, { FC, useCallback, useReducer, useState, useEffect } from "react"
-import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native"
+import React, { FC, useReducer, useState, useEffect } from "react"
+import { SafeAreaView, ScrollView } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Text, Button, TextField, BackNavigation } from "@components"
@@ -11,160 +11,197 @@ import { Colors, Layout, Spacing } from "@styles"
 import Spinner from "react-native-loading-spinner-overlay"
 import { Formik } from "formik"
 
-const NewJournalEntry: FC<
-  StackScreenProps<NavigatorParamList, "overviewJournalEntryByCoachee">
-> = observer(({ navigation, route }) => {
-  const { title, lessonLearned, commitment, content } = route.params
+type CoacheeListItem = {
+  id: string
+  name: string
+}
 
-  console.log("overview journal by coache ")
-  // console.log('ROUTES PARAM ', route.params)
+const LIST_COACHEE: CoacheeListItem[] = [
+  {
+    id: "0",
+    name: "Agus Surya Pradana",
+  },
+  {
+    id: "1",
+    name: "Indrawan Kresna",
+  },
+  {
+    id: "2",
+    name: "Indrawan Kresna",
+  },
+  {
+    id: "3",
+    name: "Indrawan Kresna",
+  },
+]
 
-  // empty list state
-  const [selectedActivities, setSelectedActivities] = useState<string>("")
-  const [, forceUpdate] = useReducer((x) => x + 1, 0)
+const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalEntryByCoachee">> =
+  observer(({ navigation, route }) => {
+    const { title, lessonLearned, commitment, content } = route.params
 
-  const goBack = () => {
-    navigation.goBack()
-  }
+    console.log("overview journal by coache ")
 
-  const holdActivitiesId = useCallback(
-    (selectedId) => {
-      setSelectedActivities(selectedId)
-    },
-    [selectedActivities],
-  )
+    // empty list state
+    const [selectedActivities, setSelectedActivities] = useState<string>("")
+    const [, forceUpdate] = useReducer((x) => x + 1, 0)
 
-  return (
-    <VStack
-      testID="CoachingJournalMain"
-      style={{ backgroundColor: Colors.WHITE, flex: 1, justifyContent: "center" }}
-    >
-      <SafeAreaView style={Layout.flex}>
-        <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
-        <ScrollView>
-          <Formik
-            initialValues={{
-              content: content,
-              commitment: commitment,
-              lessonLearned: lessonLearned,
-              title: title,
-            }}
-            // validationSchema={JournalEntryTypeSchema}
-            onSubmit={(values) => {
-              console.log(values)
-            }}
-            // validate={validate}
-          >
-            {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => (
-              <>
-                <VStack top={Spacing[32]} horizontal={Spacing[24]}>
-                  <HStack>
-                    <Text type={"left-header"} style={{}} text="Coaching journal overview" />
-                    <Spacer />
-                  </HStack>
+    const [listCoachee, setListCoachee] = useState<CoacheeListItem[]>([])
+    const [activeCoacheeId, setActiveCoacheeId] = useState<string>("")
 
-                  <VStack>
-                    <TextField
-                      value={values.title}
-                      // onChangeText={setTitle}
-                      isRequired={false}
-                      editable={false}
-                      inputStyle={{
-                        backgroundColor: Colors.MAIN_BLUE,
-                        color: Colors.WHITE,
-                        textAlign: "left",
-                        paddingHorizontal: 10,
-                        fontWeight: "bold",
+    useEffect(() => {
+      setListCoachee(LIST_COACHEE)
+    }, [])
+
+    const goBack = () => {
+      navigation.goBack()
+    }
+
+    const setActiveCoachee = (id: string) => {
+      setActiveCoacheeId(id)
+    }
+
+    return (
+      <VStack
+        testID="CoachingJournalMain"
+        style={{ backgroundColor: Colors.WHITE, flex: 1, justifyContent: "center" }}
+      >
+        <SafeAreaView style={Layout.flex}>
+          <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
+          <ScrollView horizontal={true}>
+            <HStack>
+              <VStack left={Spacing[24]} />
+              {listCoachee.map((item) => {
+                return (
+                  <VStack key={item.id} right={Spacing[12]}>
+                    <Button
+                      type={activeCoacheeId === item.id ? "primary-dark" : "negative"}
+                      text={item.name}
+                      onPress={() => {
+                        setActiveCoachee(item.id)
                       }}
-                      secureTextEntry={false}
-
+                      style={{ paddingHorizontal: Spacing[20] }}
                     />
-                    <TextField
-                      value={'Yang dicatat oleh coachee-mu:'}
-                      isRequired={false}
-                      editable={false}
-                      inputStyle={{
-                        backgroundColor: Colors.MAIN_BLUE,
-                        color: Colors.WHITE,
-                        fontSize: Spacing[14],
-                        fontWeight:"400",
-                        minHeight: Spacing[12],
-                        paddingHorizontal: Spacing[12],
-                        paddingVertical: Spacing[2]
-                      }}
-                      style={{width:'auto',  justifyContent: "center", alignItems: "center",}}
-                      secureTextEntry={false}
-                    />
-                    <VStack top={Spacing[12]}>
-                      <Text type={"body-bold"} style={{ textAlign: "center", top: Spacing[4] }}>
-                        {`Apa yang dibicarakan saat coaching?`}
-                      </Text>
+                  </VStack>
+                )
+              })}
+            </HStack>
+          </ScrollView>
+          <ScrollView>
+            <Formik
+              initialValues={{
+                content: content,
+                commitment: commitment,
+                lessonLearned: lessonLearned,
+                title: title,
+              }}
+              onSubmit={(values) => {
+                console.log(values)
+              }}
+            >
+              {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => (
+                <>
+                  <VStack top={Spacing[12]} horizontal={Spacing[24]}>
+                    <HStack>
+                      <Text type={"left-header"} style={{}} text="Coaching journal overview" />
+                      <Spacer />
+                    </HStack>
+                    <VStack>
                       <TextField
-                        style={{ paddingTop: 0 }}
-                        inputStyle={{ minHeight: Spacing[48] }}
-                        editable={false}
+                        value={values.title}
+                        // onChangeText={setTitle}
                         isRequired={false}
-                        value={values.content}
+                        editable={false}
+                        inputStyle={{
+                          backgroundColor: Colors.MAIN_BLUE,
+                          color: Colors.WHITE,
+                          textAlign: "left",
+                          paddingHorizontal: 10,
+                          fontWeight: "bold",
+                        }}
                         secureTextEntry={false}
-                        isTextArea={true}
                       />
-                    </VStack>
-
-                    <VStack top={Spacing[12]}>
-                      <Text type={"body-bold"} style={{ textAlign: "center", top: Spacing[4] }}>
-                        {`Tulislah`}
-                        <Text type={"body-bold"} style={{ color: Colors.BRIGHT_BLUE }}>
-                          {'"lessons learned"'}
+                      <TextField
+                        value={"Yang dicatat oleh coachee-mu:"}
+                        isRequired={false}
+                        editable={false}
+                        inputStyle={{
+                          backgroundColor: Colors.MAIN_BLUE,
+                          color: Colors.WHITE,
+                          fontSize: Spacing[14],
+                          fontWeight: "400",
+                          minHeight: Spacing[12],
+                          paddingHorizontal: Spacing[12],
+                          paddingVertical: Spacing[2],
+                        }}
+                        style={{ width: "auto", justifyContent: "center", alignItems: "center" }}
+                        secureTextEntry={false}
+                      />
+                      <VStack top={Spacing[12]}>
+                        <Text type={"body-bold"} style={{ textAlign: "center", top: Spacing[4] }}>
+                          {`Apa yang dibicarakan saat coaching?`}
                         </Text>
-                        {`-mu di coaching session ini. `}
-                      </Text>
-                      <TextField
-                        style={{ paddingTop: 0 }}
-                        inputStyle={{ minHeight: Spacing[48] }}
-                        editable={false}
-                        isRequired={false}
-                        secureTextEntry={false}
-                        isTextArea={true}
-                        value={values.lessonLearned}
-                      />
-                    </VStack>
+                        <TextField
+                          style={{ paddingTop: 0 }}
+                          inputStyle={{ minHeight: Spacing[48] }}
+                          editable={false}
+                          isRequired={false}
+                          value={values.content}
+                          secureTextEntry={false}
+                          isTextArea={true}
+                        />
+                      </VStack>
 
-                    <VStack top={Spacing[12]}>
-                      <Text type={"body-bold"} style={{ textAlign: "center", top: Spacing[4] }}>
-                        <Text type={"body-bold"} style={{ color: Colors.BRIGHT_BLUE }}>
-                          {"Komitmen"}
+                      <VStack top={Spacing[12]}>
+                        <Text type={"body-bold"} style={{ textAlign: "center", top: Spacing[4] }}>
+                          {`Tulislah`}
+                          <Text type={"body-bold"} style={{ color: Colors.BRIGHT_BLUE }}>
+                            {'"lessons learned"'}
+                          </Text>
+                          {`-mu di coaching session ini. `}
                         </Text>
-                        {` apa saja yang sudah disepakati bersama?`}
-                      </Text>
-                      <TextField
-                        style={{ paddingTop: 0 }}
-                        inputStyle={{ minHeight: Spacing[128] }}
-                        isRequired={false}
-                        secureTextEntry={false}
-                        isTextArea={true}
-                        editable={false}
-                        value={values.commitment}
-                      />
+                        <TextField
+                          style={{ paddingTop: 0 }}
+                          inputStyle={{ minHeight: Spacing[48] }}
+                          editable={false}
+                          isRequired={false}
+                          secureTextEntry={false}
+                          isTextArea={true}
+                          value={values.lessonLearned}
+                        />
+                      </VStack>
+
+                      <VStack top={Spacing[12]}>
+                        <Text type={"body-bold"} style={{ textAlign: "center", top: Spacing[4] }}>
+                          <Text type={"body-bold"} style={{ color: Colors.BRIGHT_BLUE }}>
+                            {"Komitmen"}
+                          </Text>
+                          {` apa saja yang sudah disepakati bersama?`}
+                        </Text>
+                        <TextField
+                          style={{ paddingTop: 0 }}
+                          inputStyle={{ minHeight: Spacing[128] }}
+                          isRequired={false}
+                          secureTextEntry={false}
+                          isTextArea={true}
+                          editable={false}
+                          value={values.commitment}
+                        />
+                      </VStack>
                     </VStack>
                   </VStack>
-                </VStack>
 
-                <VStack horizontal={Spacing[72]} vertical={Spacing[24]}>
-                  {/* <Spacer height={Spacing[24]} /> */}
+                  <VStack horizontal={Spacing[72]} vertical={Spacing[24]}>
+                    {/* <Spacer height={Spacing[24]} /> */}
 
-                  <Button
-                    type={"primary"}
-                    text={"Kembali"}
-                    onPress={goBack}
-                  />
-                </VStack>
-              </>
-            )}
-          </Formik>
-        </ScrollView>
-      </SafeAreaView>
-    </VStack>
-  )
-})
+                    <Button type={"primary"} text={"Kembali"} onPress={goBack} />
+                  </VStack>
+                </>
+              )}
+            </Formik>
+          </ScrollView>
+        </SafeAreaView>
+      </VStack>
+    )
+  })
 
 export default NewJournalEntry
