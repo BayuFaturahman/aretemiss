@@ -31,7 +31,7 @@ export interface DropDownProps {
   hideInputFilter: boolean
   containerStyle?: StyleProp<StyleProp<any>>
   open?
-  value?
+  initialValue?
   setOpen?
   setValue?
   setItems?
@@ -54,6 +54,7 @@ export function DropDownPicker(props: DropDownProps) {
     containerStyle,
     isRemovable,
     multiple = false,
+    initialValue = {},
     ...rest
   } = props
 
@@ -64,7 +65,7 @@ export function DropDownPicker(props: DropDownProps) {
 
   const [value, setValue] = useState({})
   const [values, setValues] = useState([])
-
+  
   useEffect(() => {
     onValueChange(value)
   }, [value])
@@ -78,6 +79,10 @@ export function DropDownPicker(props: DropDownProps) {
     setItems(items)
     forceUpdate()
   }, [items])
+
+  useEffect(() => {
+    setValue(initialValue)
+  }, [])
 
   const renderRequired = () => {
     return isRequired === true ? (

@@ -75,6 +75,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
     const [jlContent, setJlContent] = useState<string>("")
     const [jlCommitment, setJlCommitment] = useState<string>("")
     const [jlLessonLearned, setJlLessonLearned] = useState<string>("")
+    const [initValueJournalType, setInitValueJournalType] = useState({})
 
     const [activity, setActivity] = useState<string>("")
     const [isError, setError] = useState<string>("")
@@ -177,6 +178,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
         journalEntryInitialValue.type = coachingStore.journalDetail.journal_type;
         journalEntryInitialValue.label = coachingStore.journalDetail.journal_label;
 
+        setInitValueJournalType(dataJournalTags.find(data => data.key === coachingStore.journalDetail.journal_type))
         setJlLessonLearned(coachingStore.journalDetail.jl_lesson_learned[0].desc)
         setJlCommitment(coachingStore.journalDetail.jl_commitment[0].desc)
         setJlContent(coachingStore.journalDetail.jl_content[0].desc)
@@ -703,6 +705,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                             containerStyle={{ marginTop: -Spacing[24] }}
                             isError={isError === "type"}
                             multiple={false}
+                            initialValue={initValueJournalType}
                           />
                           {values.type === "other" && (
                             <TextField

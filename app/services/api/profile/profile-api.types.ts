@@ -63,6 +63,12 @@ export interface CheckEmailResponse {
   }
 }
 
+export interface RequestChangeDivisionResponse {
+  message: string
+  token: string
+  data: string
+}
+
 export type TeamListResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: TeamResponse }  | GeneralApiProblem
 
 export type UpdateProfileResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: UpdateProfileResponse }  | GeneralApiProblem
@@ -78,4 +84,6 @@ export type VerifyOTPResult = { kind: "form-error"; response: ErrorFormResponse 
 export type PostUpdateProfile = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: PostUploadFilesResponse }  | GeneralApiProblem
 
 export type CheckEmailResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CheckEmailResponse }  | GeneralApiProblem
+
+export type RequestChangeDivisionResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: RequestChangeDivisionResponse }  | GeneralApiProblem
 
