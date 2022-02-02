@@ -47,12 +47,12 @@ export type JournalDetail = {
   journal_type: string
   journal_date: string
 
-  jl_lesson_learned: JLDetail
-  jl_commitment: JLDetail
-  jl_content: JLDetail
+  jl_lesson_learned: JLDetail[]
+  jl_commitment: JLDetail[]
+  jl_content: JLDetail[]
 
 
-  jl_learner_fullname: string
+  jl_learner_fullname: []
   coach_fullname: string
 
   is_edited: boolean

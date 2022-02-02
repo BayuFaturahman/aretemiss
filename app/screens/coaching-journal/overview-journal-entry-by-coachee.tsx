@@ -1,4 +1,4 @@
-import React, { FC, useReducer, useState, useEffect } from "react"
+import React, { FC, useReducer, useState, useEffect, useCallback } from "react"
 import { SafeAreaView, ScrollView } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
@@ -37,9 +37,11 @@ const LIST_COACHEE: CoacheeListItem[] = [
 
 const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalEntryByCoachee">> =
   observer(({ navigation, route }) => {
-    const { title, lessonLearned, commitment, content } = route.params
+    const { title, lessonsLearned, commitments, contents, learnersFullname } = route.params
 
-    console.log("overview journal by coache ")
+    console.log("overview journal by coache ", route.params)
+    // console.log(' lessonLearned', lessonsLearned)
+    // // console.log(' lessonLearned', lessonsLearned)
 
     // empty list state
     const [selectedActivities, setSelectedActivities] = useState<string>("")
@@ -48,15 +50,51 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
     const [listCoachee, setListCoachee] = useState<CoacheeListItem[]>([])
     const [activeCoacheeId, setActiveCoacheeId] = useState<string>("")
 
-    useEffect(() => {
-      setListCoachee(LIST_COACHEE)
-    }, [])
+    const [lessonLearned, setLessonLearned] = useState<string>()
+    const [content, setContent] = useState<string>()
+    const [commitment, setCommitment] = useState<string>()
+    const [learnerFullname, setLearnerFullName] = useState<string>()
+
+
+    const formInitialValue = {
+      content: '',
+      commitment: '',
+      lessonLearned: '',
+      title: title,
+    }
 
     const goBack = () => {
       navigation.goBack()
     }
 
-    const setActiveCoachee = (id: string) => {
+    useEffect(() => {
+      loadData()
+      // setListCoachee(LIST_COACHEE)
+    }, [])
+
+    const loadData = () => {
+      const coacheeTemp: CoacheeListItem[] = learnersFullname.map((value, index) => {
+        return {id: index.toString(), name: value}
+      }) 
+      setListCoachee(coacheeTemp)
+    }
+
+    useEffect(()=> {
+      setActiveCoachee('0')    
+    }, [lessonsLearned,commitments, contents])
+
+    useEffect (() => {
+      formInitialValue.lessonLearned= lessonsLearned[activeCoacheeId]? lessonsLearned[activeCoacheeId].desc : ''
+      formInitialValue.commitment = commitments[activeCoacheeId]? commitments[activeCoacheeId].desc : ''
+      formInitialValue.content = contents[activeCoacheeId]? contents[activeCoacheeId].desc : ''
+
+      setLessonLearned(lessonsLearned[activeCoacheeId]? lessonsLearned[activeCoacheeId].desc : '')
+      setCommitment(commitments[activeCoacheeId]? commitments[activeCoacheeId].desc : '')
+      setContent(contents[activeCoacheeId]? contents[activeCoacheeId].desc : '')
+      console.log('formInitialValue ', formInitialValue)
+    }, [activeCoacheeId])
+
+    const setActiveCoachee = (id) => {
       setActiveCoacheeId(id)
     }
 
@@ -88,12 +126,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
           </ScrollView>
           <ScrollView>
             <Formik
-              initialValues={{
-                content: content,
-                commitment: commitment,
-                lessonLearned: lessonLearned,
-                title: title,
-              }}
+              initialValues={formInitialValue}
               onSubmit={(values) => {
                 console.log(values)
               }}
@@ -145,7 +178,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                           inputStyle={{ minHeight: Spacing[48] }}
                           editable={false}
                           isRequired={false}
-                          value={values.content}
+                          value={content}
                           secureTextEntry={false}
                           isTextArea={true}
                         />
@@ -166,7 +199,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                           isRequired={false}
                           secureTextEntry={false}
                           isTextArea={true}
-                          value={values.lessonLearned}
+                          value={lessonLearned}
                         />
                       </VStack>
 
@@ -184,7 +217,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                           secureTextEntry={false}
                           isTextArea={true}
                           editable={false}
-                          value={values.commitment}
+                          value={commitment}
                         />
                       </VStack>
                     </VStack>
