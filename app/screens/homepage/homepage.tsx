@@ -22,7 +22,7 @@ import {HomepageCardWrapper} from "@screens/homepage/components/homepage-card-wr
 import {CoachingJournalComponent} from "@screens/homepage/components/coaching-journal-component";
 import {FeedItemComponent} from "@screens/homepage/components/feed-homepage-component";
 import { FeedItemType } from "@screens/feed/feed.type";
-import {MoodComponent, MoodItemType, MOOD_TYPE} from "@screens/homepage/components/mood-component";
+import {MoodComponent} from "@screens/homepage/components/mood-component";
 import {HomepageErrorCard} from "@screens/homepage/components/homepage-error-card";
 
 import RNAnimated from "react-native-animated-component";
@@ -41,6 +41,52 @@ import sakitBw from "@assets/icons/mood/sakit-bw.png"
 import terkejut from "@assets/icons/mood/kaget.png"
 import terkejutBw from "@assets/icons/mood/kaget-bw.png"
 import { ProfileUpdateForm } from "@screens/settings/my-account"
+import { ProfileComponent, ProfileItemType } from "./components/profile-component"
+import { LeaderboardComponent } from "./components/leaderboard-component"
+import { AssesmentComponent } from "./components/assesment-component"
+
+export const MOOD_TYPE = [
+  {
+    label: 'senang',
+    source: senang,
+  },
+  {
+    label: 'senangBw',
+    source: senangBw,
+  },
+  {
+    label: 'marah',
+    source: marah,
+  },
+  {
+    label: 'marahBw',
+    source: marahBw,
+  },
+  {
+    label: 'sedih',
+    source: sedih,
+  },
+  {
+    label: 'sedihBw',
+    source: sedihBw,
+  },
+  {
+    label: 'sakit',
+    source: sakit,
+  },
+  {
+    label: 'sakitBw',
+    source: sakitBw,
+  },
+  {
+    label: 'terkejut',
+    source: terkejut,
+  },
+  {
+    label: 'terkejutBw',
+    source: terkejutBw,
+  },
+]
 
 const FEED_EXAMPLE_DATA_ITEM: FeedItemType[] = [
   {
@@ -112,13 +158,17 @@ const FEED_EXAMPLE_DATA_ITEM: FeedItemType[] = [
   },
 ]
 
-const MOOD_EXAMPLE_DATA:MoodItemType = {
+// const MOOD_EXAMPLE_DATA:MoodItemType = {
+ 
+//   moodType: ''
+// }
+
+const PROFILE_EXAMPLE_DATA:ProfileItemType = {
   avatarUrl: '',
   user: {
     name: '',
     title: ''
   },
-  moodType: ''
 }
 
 const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
@@ -142,7 +192,8 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     const [selectedActivities, setSelectedActivities] = useState<string>('');
     const [isHomepageError, setHomepageError] = useState<boolean>(false);
 
-    const [moodData, setMoodData] = useState<MoodItemType>(MOOD_EXAMPLE_DATA);
+    const [moodData, setMoodData] = useState<string>('');
+    const [profileData, setProfileData] = useState<ProfileItemType>(PROFILE_EXAMPLE_DATA);
     const [selectedMood, setSelectedMood] = useState<string>("")
     const [isMoodUpdated, setIsMoodUpdated] = useState<boolean>(false)
     const [isModalVisible, setModalVisible] = useState<boolean>(false)
@@ -226,12 +277,13 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
     useEffect(() => {
       if (mainStore.userProfile) {
-        const data = MOOD_EXAMPLE_DATA
-        data.user.name = mainStore.userProfile.user_fullname
-        data.user.title = (mainStore.userProfile.team1_name? ( mainStore.userProfile.team1_name) : '')  + (mainStore.userProfile.team2_name? (', ' + mainStore.userProfile.team2_name) : '') + (mainStore.userProfile.team3_name? (', ' + mainStore.userProfile.team3_name) : '')
-        data.avatarUrl = mainStore.userProfile.user_photo
-        data.moodType = mainStore.userProfile.user_mood
-        setMoodData(data)
+        setMoodData(mainStore.userProfile.user_mood)
+
+        const profileDataTemp = PROFILE_EXAMPLE_DATA
+        profileDataTemp.user.name = mainStore.userProfile.user_fullname
+        profileDataTemp.user.title = (mainStore.userProfile.team1_name? ( mainStore.userProfile.team1_name) : '')  + (mainStore.userProfile.team2_name? (', ' + mainStore.userProfile.team2_name) : '') + (mainStore.userProfile.team3_name? (', ' + mainStore.userProfile.team3_name) : '')
+        profileDataTemp.avatarUrl = mainStore.userProfile.user_photo
+        setProfileData(profileDataTemp)
 
         userProfile.fullname = mainStore.userProfile.user_fullname
         userProfile.nickname= mainStore.userProfile.user_nickname
@@ -379,7 +431,20 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
           </RNAnimated>
 
           <Spacer height={Spacing[32]} />
-
+          <HomepageCardWrapper animationDuration={1000}>
+            <ProfileComponent data={profileData} />
+          </HomepageCardWrapper>
+          <Spacer height={Spacing[12]} />
+          <HStack>
+            <HomepageCardWrapper animationDuration={1000} horizontal={Spacing[16]}>
+              <LeaderboardComponent leaderboardPosition="1"/>
+            </HomepageCardWrapper>
+            <Spacer width={Spacing[12]} />
+            <HomepageCardWrapper animationDuration={1000} horizontal={Spacing[14]}>
+              <MoodComponent data={moodData} goToMood={toggleModal} />
+            </HomepageCardWrapper>
+          </HStack>
+          <Spacer height={Spacing[12]} />
           <HomepageCardWrapper animationDuration={500}>
             <CoachingJournalComponent
               data={coachingJournalData}
@@ -399,9 +464,11 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
             />
           </HomepageCardWrapper>
           <Spacer height={Spacing[12]} />
-          <HomepageCardWrapper animationDuration={1000}>
-            <MoodComponent data={moodData} goToMood={toggleModal} />
+          <HomepageCardWrapper animationDuration={700}>
+            <AssesmentComponent data={profileData}/>
           </HomepageCardWrapper>
+          <Spacer height={Spacing[12]} />
+          
         </VStack>
         </>
       )
@@ -443,9 +510,9 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
               style={{
                 height: Spacing[48],
                 width: Spacing[48],
-                borderColor: selectedMood === type ? Colors.MAIN_RED : "",
-                borderWidth: selectedMood === type ? Spacing[3] : 0,
-                borderRadius: selectedMood === type ? Spacing[128] : 0,
+                borderColor: selectedMood === typeLowerCase ? Colors.MAIN_RED : "",
+                borderWidth: selectedMood === typeLowerCase ? Spacing[2] : 0,
+                borderRadius: selectedMood === typeLowerCase ? Spacing[128] : 0,
               }}
               source={selectedMood !== typeLowerCase && selectedMood !== "" ? sourceBw : source}
               resizeMode={"contain"}
