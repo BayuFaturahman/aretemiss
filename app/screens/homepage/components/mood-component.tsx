@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import {HStack, VStack} from "@components/view-stack";
-import {Colors, Spacing} from "@styles"
-import FastImage, { Source } from "react-native-fast-image";
+import React, { useState } from "react";
+import {HStack} from "@components/view-stack";
+import {Spacing} from "@styles"
+import { Source } from "react-native-fast-image";
 import {Text} from "@components";
 import Spacer from "@components/spacer";
 
 
-import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png";
+// import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png";
 import senang from "@assets/icons/mood/senyum.png";
 import senangBw from "@assets/icons/mood/senyum-bw.png";
 import marah from "@assets/icons/mood/marah.png";
@@ -17,118 +17,48 @@ import sakit from "@assets/icons/mood/sakit.png";
 import sakitBw from "@assets/icons/mood/sakit-bw.png";
 import terkejut from "@assets/icons/mood/kaget.png";
 import terkejutBw from "@assets/icons/mood/kaget-bw.png";
-import { View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-
-export const MOOD_TYPE = [
-  {
-    label: 'senang',
-    source: senang,
-  },
-  {
-    label: 'senangBw',
-    source: senangBw,
-  },
-  {
-    label: 'marah',
-    source: marah,
-  },
-  {
-    label: 'marahBw',
-    source: marahBw,
-  },
-  {
-    label: 'sedih',
-    source: sedih,
-  },
-  {
-    label: 'sedihBw',
-    source: sedihBw,
-  },
-  {
-    label: 'sakit',
-    source: sakit,
-  },
-  {
-    label: 'sakitBw',
-    source: sakitBw,
-  },
-  {
-    label: 'terkejut',
-    source: terkejut,
-  },
-  {
-    label: 'terkejutBw',
-    source: terkejutBw,
-  },
-]
-
-export type MoodItemType = {
-  avatarUrl: string
-  user: {
-    name: string
-    title: string
-  }
-  moodType: string
-}
+import { MarahActive, SedihActive, SenyumActive, SenyumInactive, SickActive, SurprisedActive } from "@assets/svgs"
 
 type MoodProps = {
-  data: MoodItemType
+  data: string
   goToMood(): void
 }
 
 export const MoodComponent = ({data, goToMood = () => null}: MoodProps) => {
-  // console.log('mood data ', data)
-  const [source, setSource] = useState<Source>();
 
-  useEffect(() => {
-    // console.log('MasuK effect mood component')
-    let tempSource = null
-    setSource(senangBw)
-    MOOD_TYPE.map((type, index) => {
-      if (type.label === data.moodType) {
-        tempSource = type.source
-        return type.source
-      } else {
-        return null
-      }
-    })
-
-    if (tempSource !== null) {
-      setSource(tempSource)
+  const renderUserMood = () => {
+    if (data === 'senang') {
+      return <SenyumActive height={Spacing[42]} width={Spacing[42]}/>
+    } else if (data === 'senangBw') {
+      return <SenyumInactive height={Spacing[42]} width={Spacing[42]}/>
+    } else if (data === 'marah') {
+      return <MarahActive height={Spacing[42]} width={Spacing[42]}/>
+    } else if (data === 'sedih') {
+      return <SedihActive height={Spacing[42]} width={Spacing[42]}/>
+    } else if (data === 'sakit') {
+      return <SickActive height={Spacing[42]} width={Spacing[42]}/>
+    } else if (data === 'terkejut') {
+      return <SurprisedActive height={Spacing[42]} width={Spacing[42]}/>
+    } else {
+      return <SenyumInactive height={Spacing[42]} width={Spacing[42]}/>
     }
-
-  })
+  }
 
 
   return(
     <>
-    <HStack horizontal={Spacing[2]}>
-       <HStack>
-        <FastImage style={{
-          height: Spacing[64],
-          width: Spacing[64],
-          borderRadius: Spacing[8]
-        }} source={data.avatarUrl === '' ? nullProfileIcon : {uri: data.avatarUrl}} resizeMode={"cover"}/>
-        <VStack left={Spacing[8]}>
-          <Text type={'body-bold'} text={data.user.name} />
-          <Text type={'body'} style={{fontSize: Spacing[12], maxWidth: Spacing[128] + Spacing[48]}} text={data.user.title} />
-        </VStack>
-       </HStack>
-       <Spacer />
+    <HStack horizontal={Spacing[2]} style={{width: Spacing[100], height: Spacing[48]+Spacing[2]}}>
       {/* Mood Icon */}
-      <TouchableOpacity style={{flex: 1, minWidth: Spacing[72], alignItems: 'center'}} onPress={goToMood}>
-        <VStack>
-          <FastImage style={{
-            height: Spacing[42],
-            width: Spacing[42]}} source={source} resizeMode={"contain"}/>
+      <TouchableOpacity style={{flex: 1, alignItems: 'center', alignItems: "center", justifyContent: "center"}} onPress={goToMood}>
+        <HStack>
+          {renderUserMood()}
           <HStack >
-            <Spacer />
-            <Text type={'right-header'} style={{fontSize: Spacing[12]}} underlineWidth={Spacing[28]} text={'Mood'} />
-            <Spacer />
+          <Spacer width={Spacing[12]}/>
+          <Text type={'left-header'} style={{fontSize: Spacing[16]}} underlineWidth={Spacing[42]} text={'Mood.'} />
           </HStack>
-        </VStack>
+        </HStack>
       </TouchableOpacity>
     </HStack>
     </>
