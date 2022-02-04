@@ -1,3 +1,4 @@
 import leaderboards from "./leaderboards"
+import guidePoints from "./guide-points"
 
-export { leaderboards }
+export { leaderboards, guidePoints }

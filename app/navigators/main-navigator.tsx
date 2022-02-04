@@ -30,7 +30,7 @@ import { homepage, moodTeam } from "@screens/homepage"
 import { JournalEntryType } from "@screens/coaching-journal/new-journal-entry"
 import { FeedItemType } from "@screens/homepage/components/feed-homepage-component"
 import changeDivision from "@screens/settings/change-division"
-import { leaderboards } from "@screens/leaderboard"
+import { leaderboards, guidePoints } from "@screens/leaderboard"
 
 const screens: AppRoute[] = [
   {
@@ -133,6 +133,10 @@ const screens: AppRoute[] = [
     name: "leaderboards",
     component: leaderboards,
   },
+  {
+    name: "guidePoints",
+    component: guidePoints,
+  },
 ]
 
 export type NavigatorParamList = {
@@ -193,6 +197,7 @@ export type NavigatorParamList = {
     isFromMainFeed: boolean
   }
   leaderboards: undefined
+  guidePoints: undefined
 }
 
 export default screens

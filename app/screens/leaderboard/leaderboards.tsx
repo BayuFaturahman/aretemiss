@@ -191,6 +191,8 @@ const Leaderboards: FC<StackScreenProps<NavigatorParamList, "notificationList">>
 
     const goBack = () => navigation.goBack()
 
+    const goToGuidePoints = () => navigation.navigate("guidePoints")
+
     const [currentPage, setCurrentPage] = useState<number>(2)
 
     const onLoadMore = React.useCallback(async () => {
@@ -258,7 +260,7 @@ const Leaderboards: FC<StackScreenProps<NavigatorParamList, "notificationList">>
             </VStack>
 
             <Spacer height={Spacing[24]} />
-            <TouchableOpacity style={layout.widthFull}>
+            <TouchableOpacity style={layout.widthFull} onPress={goToGuidePoints}>
               <HStack style={layout.flexCenterMid}>
                 <Text
                   type={"header2"}
