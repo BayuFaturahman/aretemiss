@@ -1,7 +1,6 @@
 import React from "react"
 import { HStack, VStack } from "@components/view-stack"
 import { Colors, Spacing } from "@styles"
-import { TouchableOpacity } from "react-native-gesture-handler"
 import FastImage from "react-native-fast-image"
 
 import conversation from "@assets/icons/feed/conversation.png"
@@ -9,7 +8,7 @@ import newPost from "@assets/icons/feed/newPost.png"
 import user from "@assets/icons/feed/user.png"
 
 import RNAnimated from "react-native-animated-component"
-import {StyleProp} from "react-native";
+import {StyleProp, TouchableOpacity} from "react-native";
 import {Text} from "@components";
 
 const SIDE_CONTAINER:StyleProp<any> = {
@@ -89,15 +88,13 @@ export const FeedButton = ({ goToNewPost = () => null, goToMyFeed = () => null, 
   }
 
   return (
-    <RNAnimated appearFrom={"bottom"} animationDuration={500}>
+    <RNAnimated appearFrom={"bottom"} animationDuration={500} style={{position: "absolute", bottom: Spacing[12], alignSelf: 'center'}}>
       <HStack
         bottom={Spacing[24]}
         alignment={"center"}
         style={{
           width: "100%",
           height: Spacing[96],
-          position: "absolute",
-          bottom: Spacing[12],
           alignItems: "center",
           justifyContent: "center",
         }}

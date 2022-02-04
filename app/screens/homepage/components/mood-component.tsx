@@ -18,6 +18,7 @@ import sakitBw from "@assets/icons/mood/sakit-bw.png";
 import terkejut from "@assets/icons/mood/kaget.png";
 import terkejutBw from "@assets/icons/mood/kaget-bw.png";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { View } from "react-native";
 
 import { MarahActive, SedihActive, SenyumActive, SenyumInactive, SickActive, SurprisedActive } from "@assets/svgs"
 
