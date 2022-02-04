@@ -17,8 +17,7 @@ import sakit from "@assets/icons/mood/sakit.png";
 import sakitBw from "@assets/icons/mood/sakit-bw.png";
 import terkejut from "@assets/icons/mood/kaget.png";
 import terkejutBw from "@assets/icons/mood/kaget-bw.png";
-import { View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { View, TouchableOpacity } from "react-native";
 
 
 export const MOOD_TYPE = [
