@@ -31,6 +31,7 @@ import { JournalEntryType } from "@screens/coaching-journal/new-journal-entry"
 import { FeedItemType } from "@screens/homepage/components/feed-homepage-component"
 import changeDivision from "@screens/settings/change-division"
 import { leaderboards, guidePoints, assessment } from "@screens/leaderboard"
+import { JLDetail } from "app/store/store.coaching"
 
 const screens: AppRoute[] = [
   {
@@ -185,9 +186,10 @@ export type NavigatorParamList = {
   }
   overviewJournalEntryByCoachee: {
     title: string
-    lessonLearned: string
-    commitment: string
-    content: string
+    lessonsLearned: JLDetail[]
+    commitments: JLDetail[]
+    contents: JLDetail[]
+    learnersFullname: []
   }
   fillFeedbackCoachee: {
     isFilled: boolean
