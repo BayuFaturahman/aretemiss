@@ -340,6 +340,8 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
     const goToLeaderboards = () => navigation.navigate("leaderboards")
 
+    const goToAssessment = () => navigation.navigate("assessment")
+
     const goToTeamMood = () => {
       setModalVisible(false)
       navigation.navigate("moodTeam")
@@ -390,6 +392,14 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
               style={{ height: Spacing[32], paddingHorizontal: Spacing[8] }}
               textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
               onPress={goToLeaderboards}
+            />
+
+            <Button
+              type={"primary"}
+              text={"Assessments"}
+              style={{ height: Spacing[32], paddingHorizontal: Spacing[8] }}
+              textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
+              onPress={goToAssessment}
             />
 
             <HomepageCardWrapper animationDuration={500}>

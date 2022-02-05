@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react"
+import React, { FC } from "react"
 import { SafeAreaView, ScrollView } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
@@ -6,18 +6,13 @@ import { NavigatorParamList } from "@navigators/main-navigator"
 import { HStack, VStack } from "@components/view-stack"
 import { Colors, Layout, Spacing } from "@styles"
 
-import {
-  Collapse,
-  CollapseHeader,
-  CollapseBody,
-  AccordionList,
-} from "accordion-collapse-react-native"
+import { Collapse, CollapseHeader, CollapseBody } from "accordion-collapse-react-native"
 import { Button, Text } from "@components"
 import Spacer from "@components/spacer"
 
 const GuidePoints: FC<StackScreenProps<NavigatorParamList, "guidePoints">> = observer(
   ({ navigation }) => {
-    const [point, setPoint] = useState<number>(65)
+    // const [point, setPoint] = useState<number>(65)
 
     const goBack = () => navigation.goBack()
 
