@@ -2,29 +2,23 @@ import React, { FC, useCallback, useEffect, useState } from "react"
 import { FlatList, SafeAreaView, RefreshControl } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
-import { Text, BackNavigation, Button } from "@components"
+import { Text, BackNavigation } from "@components"
 import { debounce } from "lodash"
 import { NavigatorParamList } from "@navigators/main-navigator"
 import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
 import { Colors, Layout, Spacing } from "@styles"
 import { useStores } from "../../bootstrap/context.boostrap"
-import RNAnimated from "react-native-animated-component"
-import FastImage, { Source } from "react-native-fast-image"
+import { Source } from "react-native-fast-image"
 
-import senang from "@assets/icons/mood/senyum.png"
-import marah from "@assets/icons/mood/marah.png"
-import sedih from "@assets/icons/mood/sedih.png"
-import sakit from "@assets/icons/mood/sakit.png"
-import kaget from "@assets/icons/mood/kaget.png"
-import { MOOD_TYPE } from "./components/mood-component"
 import { EmptyList } from "./components/empty-list"
+import { SenyumActive, SenyumInactive, MarahActive, SedihActive, SickActive, SurprisedActive } from "@assets/svgs"
+import { MoodComponent } from "./components/mood-component"
 
 export type TeamMoodItemType = {
   userId: string
   userFullName: string
   moodType: string
-  source: Source
 }
 
 // const TEAM_MOOD_EXAMPLE_DATA:TeamMoodItemType = []
@@ -67,35 +61,18 @@ const MoodTeam: FC<StackScreenProps<NavigatorParamList, "moodTeam">> = observer(
             userId: user.id,
             userFullName: user.fullname,
             moodType: user.mood,
-            source: getMoodSource(user.mood),
           }
           teamMood.push(tempUserMood)
         }
       })
-
-      // teamMood.push({
-      //   userId: 'user.id',
-      //   userFullName: 'user.fullnameuser.fullnameuser.fullname',
-      //   moodType: 'senang',
-      //   source: getMoodSource('senang'),
-      // })
 
       if (teamMood.length > 0) {
         setListTeamMood(teamMood)
       }
     }, [])
 
-    const getMoodSource = (moodType: string) => {
-      console.log("MasuK effect mood team ", MOOD_TYPE.length)
-      let toReturn = null
-      for (let x = 0; x < MOOD_TYPE.length; x++) {
-        const type = MOOD_TYPE[x]
-        if (type.label === moodType) {
-          x = MOOD_TYPE.length
-          toReturn = type.source
-        }
-      }
-      return toReturn
+    const renderUserMood = (data: string) => {
+      return <MoodComponent data={data}/>
     }
 
     return (
@@ -157,14 +134,8 @@ const MoodTeam: FC<StackScreenProps<NavigatorParamList, "moodTeam">> = observer(
                         merasa  <Text type={"body-bold"}>{item.moodType}</Text>.
                       </Text>
                       <Spacer />
-                      <FastImage
-                        style={{
-                          height: Spacing[32],
-                          width: Spacing[32],
-                        }}
-                        source={item.source}
-                        resizeMode={"contain"}
-                      />
+                      {/* <MoodComponent data={item.moodType}/> */}
+                      {renderUserMood(item.moodType)}
                       <Spacer/>
                     </HStack>
                   )

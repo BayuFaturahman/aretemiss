@@ -9,15 +9,16 @@ type HomepageCardWrappperProps = {
   animationDuration?: number
   appearFrom?: AppearFrom
   children: React.ReactElement
+  horizontal?: number
 }
 
-export const HomepageCardWrapper = ({children, appearFrom = 'bottom', animationDuration = 500}:HomepageCardWrappperProps) => {
+export const HomepageCardWrapper = ({children, appearFrom = 'bottom', animationDuration = 500, horizontal = Spacing[16]}:HomepageCardWrappperProps) => {
   return(
     <RNAnimated
       appearFrom={appearFrom}
       animationDuration={animationDuration}
     >
-      <VStack horizontal={Spacing[16]} vertical={Spacing[12]} style={{backgroundColor: Colors.WHITE, width: '100%', borderRadius: Spacing[20]}}>
+      <VStack horizontal={horizontal} vertical={Spacing[12]} style={{backgroundColor: Colors.WHITE, width: '100%', borderRadius: Spacing[20]}}>
         {children}
       </VStack>
     </RNAnimated>

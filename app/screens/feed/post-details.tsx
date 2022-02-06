@@ -5,7 +5,6 @@ import {
   Platform,
   RefreshControl,
   SafeAreaView,
-  Text as ReactNativeText,
   TouchableOpacity,
   View
 } from "react-native"
@@ -27,20 +26,12 @@ import ImageViewer from "react-native-image-zoom-viewer";
 import {FeedPostCommentType, FeedTimelineItem} from "@screens/feed/feed.type";
 import KeyboardStickyView from "@components/keyboard-sticky-view";
 import FastImage from "react-native-fast-image";
-import {dimensions, phoneType} from "@config/platform.config";
+import {dimensions} from "@config/platform.config";
 
 import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png";
 import trash from "@assets/icons/trash.png";
-import senang from "@assets/icons/mood/senyum.png";
-import senangBw from "@assets/icons/mood/senyum-bw.png";
-import marah from "@assets/icons/mood/marah.png";
-import sedih from "@assets/icons/mood/sedih.png";
-import sakit from "@assets/icons/mood/sakit.png";
 import terkejut from "@assets/icons/mood/kaget.png";
-import { MOOD_TYPE } from "@screens/homepage/components/mood-component"
 
-import {clear} from "@utils/storage";
-import {presets} from "@components/text/text.presets";
 import Spinner from "react-native-loading-spinner-overlay"
 
 import {debounce} from "lodash";
@@ -447,16 +438,6 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
             renderItem={({item, index})=> {
 
               const profileComponent = (isAuthor = false) => {
-                let moodSource = null
-                
-                MOOD_TYPE.map((type, index) => {
-                  if (type.label === data.author.mood) {
-                    moodSource = type.source
-                  } else {
-                    return null
-                  }
-                })
-                
                 if (isAuthor) {
                   return(
                     <>
@@ -472,19 +453,6 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                           }: nullProfileIcon}
                           resizeMode={"cover"}
                         />
-                        {/* <FastImage
-                        style={{
-                          height: Spacing[18],
-                          width: Spacing[18],
-                          borderRadius: Spacing[18],
-                          alignSelf: 'flex-end',
-                          zIndex: 1,
-                          left: -Spacing[10]
-                        }}
-                        source={moodSource !== null ? moodSource
-                        : senangBw}
-                        resizeMode={"cover"}
-                      /> */}
                       </HStack>
                       <VStack right={Spacing[8]} left={Spacing[8]}>
                         <Text
@@ -530,19 +498,6 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                         }: nullProfileIcon}
                         resizeMode={"cover"}
                       />
-                      {/* <FastImage
-                      style={{
-                        height: Spacing[18],
-                        width: Spacing[18],
-                        borderRadius: Spacing[18],
-                        alignSelf: 'flex-end',
-                        zIndex: 1,
-                        left: -Spacing[10]
-                      }}
-                      source={moodSource !== null ? moodSource
-                      : senangBw}
-                      resizeMode={"cover"}
-                    /> */}
                     </HStack>
                    
                     {/* TODO Mood Icon */}

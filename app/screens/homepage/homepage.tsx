@@ -29,25 +29,21 @@ import { HomepageCardWrapper } from "@screens/homepage/components/homepage-card-
 import { CoachingJournalComponent } from "@screens/homepage/components/coaching-journal-component"
 import { FeedItemComponent } from "@screens/homepage/components/feed-homepage-component"
 import { FeedItemType } from "@screens/feed/feed.type"
-import { MoodComponent, MoodItemType, MOOD_TYPE } from "@screens/homepage/components/mood-component"
+import { MoodHomepageComponent} from "@screens/homepage/components/mood-homepage-component";
 import { HomepageErrorCard } from "@screens/homepage/components/homepage-error-card"
+import { ProfileComponent, ProfileItemType } from "@screens/homepage/components/profile-component"
+import { LeaderboardComponent } from "@screens/homepage/components/leaderboard-component"
+import { AssessmentComponent } from "@screens/homepage/components/assessment-component"
+
 
 import RNAnimated from "react-native-animated-component"
 import { debounce } from "lodash"
 import messaging from "@react-native-firebase/messaging"
 
 import Modal from "react-native-modalbox"
-import senang from "@assets/icons/mood/senyum.png"
-import senangBw from "@assets/icons/mood/senyum-bw.png"
-import marah from "@assets/icons/mood/marah.png"
-import marahBw from "@assets/icons/mood/marah-bw.png"
-import sedih from "@assets/icons/mood/sedih.png"
-import sedihBw from "@assets/icons/mood/sedih-bw.png"
-import sakit from "@assets/icons/mood/sakit.png"
-import sakitBw from "@assets/icons/mood/sakit-bw.png"
-import terkejut from "@assets/icons/mood/kaget.png"
-import terkejutBw from "@assets/icons/mood/kaget-bw.png"
 import { ProfileUpdateForm } from "@screens/settings/my-account"
+import { SenyumActive, SenyumInactive, MarahActive, SedihActive, SickActive, SurprisedActive, SenyumActiveBorder, MarahActiveBorder, MarahInactive, SedihActiveBorder, SedihInactive, SickInactive, SickActiveBorder, SurprisedActiveBorder, SurprisedInactive } from "@assets/svgs"
+import { MoodComponent } from "./components/mood-component"
 
 const FEED_EXAMPLE_DATA_ITEM: FeedItemType[] = [
   {
@@ -119,13 +115,17 @@ const FEED_EXAMPLE_DATA_ITEM: FeedItemType[] = [
   },
 ]
 
-const MOOD_EXAMPLE_DATA: MoodItemType = {
-  avatarUrl: "",
+// const MOOD_EXAMPLE_DATA:MoodItemType = {
+ 
+//   moodType: ''
+// }
+
+const PROFILE_EXAMPLE_DATA:ProfileItemType = {
+  avatarUrl: '',
   user: {
     name: "",
     title: "",
   },
-  moodType: "",
 }
 
 const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
@@ -145,9 +145,10 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     const [, forceUpdate] = useReducer((x) => x + 1, 0)
 
     const [selectedActivities, setSelectedActivities] = useState<string>("")
-    const [isHomepageError, setHomepageError] = useState<boolean>(false)
+    const [isHomepageError, setHomepageError] = useState<boolean>(false);
 
-    const [moodData, setMoodData] = useState<MoodItemType>(MOOD_EXAMPLE_DATA)
+    const [moodData, setMoodData] = useState<string>('');
+    const [profileData, setProfileData] = useState<ProfileItemType>(PROFILE_EXAMPLE_DATA);
     const [selectedMood, setSelectedMood] = useState<string>("")
     const [isMoodUpdated, setIsMoodUpdated] = useState<boolean>(false)
     const [isModalVisible, setModalVisible] = useState<boolean>(false)
@@ -234,15 +235,13 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
     useEffect(() => {
       if (mainStore.userProfile) {
-        const data = MOOD_EXAMPLE_DATA
-        data.user.name = mainStore.userProfile.user_fullname
-        data.user.title =
-          (mainStore.userProfile.team1_name ? mainStore.userProfile.team1_name : "") +
-          (mainStore.userProfile.team2_name ? ", " + mainStore.userProfile.team2_name : "") +
-          (mainStore.userProfile.team3_name ? ", " + mainStore.userProfile.team3_name : "")
-        data.avatarUrl = mainStore.userProfile.user_photo
-        data.moodType = mainStore.userProfile.user_mood
-        setMoodData(data)
+        setMoodData(mainStore.userProfile.user_mood)
+
+        const profileDataTemp = PROFILE_EXAMPLE_DATA
+        profileDataTemp.user.name = mainStore.userProfile.user_fullname
+        profileDataTemp.user.title = (mainStore.userProfile.team1_name? ( mainStore.userProfile.team1_name) : '')  + (mainStore.userProfile.team2_name? (', ' + mainStore.userProfile.team2_name) : '') + (mainStore.userProfile.team3_name? (', ' + mainStore.userProfile.team3_name) : '')
+        profileDataTemp.avatarUrl = mainStore.userProfile.user_photo
+        setProfileData(profileDataTemp)
 
         userProfile.fullname = mainStore.userProfile.user_fullname
         userProfile.nickname = mainStore.userProfile.user_nickname
@@ -385,23 +384,20 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
             </RNAnimated>
 
             <Spacer height={Spacing[32]} />
-
-            <Button
-              type={"primary"}
-              text={"Leaderboards"}
-              style={{ height: Spacing[32], paddingHorizontal: Spacing[8] }}
-              textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
-              onPress={goToLeaderboards}
-            />
-
-            <Button
-              type={"primary"}
-              text={"Assessments"}
-              style={{ height: Spacing[32], paddingHorizontal: Spacing[8] }}
-              textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
-              onPress={goToAssessment}
-            />
-
+            <HomepageCardWrapper animationDuration={1000}>
+              <ProfileComponent data={profileData} />
+            </HomepageCardWrapper>
+            <Spacer height={Spacing[12]} />
+            <HStack>
+              <HomepageCardWrapper animationDuration={1000} horizontal={Spacing[16]}>
+                <LeaderboardComponent leaderboardPosition="1" goToLeaderboard={goToLeaderboards}/>
+              </HomepageCardWrapper>
+              <Spacer width={Spacing[12]} />
+              <HomepageCardWrapper animationDuration={1000} horizontal={Spacing[14]}>
+                <MoodHomepageComponent data={moodData} goToMood={toggleModal} />
+              </HomepageCardWrapper>
+            </HStack>
+            <Spacer height={Spacing[12]} />
             <HomepageCardWrapper animationDuration={500}>
               <CoachingJournalComponent
                 data={coachingJournalData}
@@ -423,9 +419,10 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
               />
             </HomepageCardWrapper>
             <Spacer height={Spacing[12]} />
-            <HomepageCardWrapper animationDuration={1000}>
-              <MoodComponent data={moodData} goToMood={toggleModal} />
+            <HomepageCardWrapper animationDuration={700}>
+              <AssessmentComponent data={profileData} goToAssessment={goToAssessment}/>
             </HomepageCardWrapper>
+            <Spacer height={Spacing[12]} />
           </VStack>
         </>
       )
@@ -457,32 +454,61 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       [selectedMood, setSelectedMood],
     )
 
-    const getMood = (source: Source, sourceBw: Source, type: string) => {
-      const typeLowerCase = type.toLowerCase()
+    const getMood = (mood: string) => {
+      const type = mood.toLowerCase()
+
+      const renderUserMood = () => {
+        if (!selectedMood) {
+           return <MoodComponent data={type}/>
+        }
+
+        if (selectedMood) {
+          if (type === 'senang') {
+            if (selectedMood === type) {
+              return <SenyumActiveBorder height={Spacing[42]} width={Spacing[42]}/>
+            } else {
+              return <SenyumInactive height={Spacing[42]} width={Spacing[42]}/>
+            }
+            
+          } else if (type === 'marah') {
+            if (selectedMood === type) {
+              return <MarahActiveBorder height={Spacing[42]} width={Spacing[42]}/>
+            } else {
+              return <MarahInactive height={Spacing[42]} width={Spacing[42]}/>
+            }
+            
+          } else if (type === 'sedih') {
+            if (selectedMood === type) {
+              return <SedihActiveBorder height={Spacing[42]} width={Spacing[42]}/>
+            } else {
+              return <SedihInactive height={Spacing[42]} width={Spacing[42]}/>
+            }
+          } else if (type === 'sakit') {
+            if (selectedMood === type) {
+              return <SickActiveBorder height={Spacing[42]} width={Spacing[42]}/>
+            } else {
+              return <SickInactive height={Spacing[42]} width={Spacing[42]}/>
+            }
+          } else if (type === 'terkejut') {
+            if (selectedMood === type) {
+              return <SurprisedActiveBorder height={Spacing[42]} width={Spacing[42]}/>
+            } else {
+              return <SurprisedInactive height={Spacing[42]} width={Spacing[42]}/>
+            }
+          } 
+        }
+      }
 
       return (
         <VStack>
-          <TouchableOpacity
-            onPress={selectMood.bind(this, typeLowerCase)}
-            style={{ backgroundColor: Colors.WHITE }}
-          >
-            <VStack>
-              <FastImage
-                style={{
-                  height: Spacing[48],
-                  width: Spacing[48],
-                  borderColor: selectedMood === type ? Colors.MAIN_RED : "",
-                  borderWidth: selectedMood === type ? Spacing[3] : 0,
-                  borderRadius: selectedMood === type ? Spacing[128] : 0,
-                }}
-                source={selectedMood !== typeLowerCase && selectedMood !== "" ? sourceBw : source}
-                resizeMode={"contain"}
-              />
-              <Text
-                type={"body"}
-                style={{ fontSize: Spacing[18], textAlign: "center" }}
-                text={selectedMood === "" || selectedMood === typeLowerCase ? type : " "}
-              />
+          <TouchableOpacity onPress={selectMood.bind(this, type)} style={{backgroundColor: Colors.WHITE}}>
+          <VStack>
+            {renderUserMood()}
+            <Text
+            type={"body"}
+            style={{ fontSize: Spacing[18], textAlign: "center" }}
+            text={selectedMood === "" || selectedMood === type ? type : " "}
+          />
             </VStack>
           </TouchableOpacity>
         </VStack>
@@ -544,19 +570,19 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
               />
               <Spacer height={Spacing[42]} />
               <HStack bottom={Spacing[12]}>
-                {getMood(senang, senangBw, "Senang")}
+                {getMood("Senang")}
                 <Spacer />
                 <Spacer />
-                {getMood(sedih, sedihBw, "Sedih")}
+                {getMood("Sedih")}
                 <Spacer />
                 <Spacer />
-                {getMood(marah, marahBw, "Marah")}
+                {getMood("Marah")}
               </HStack>
               <HStack bottom={Spacing[12]}>
                 <Spacer />
-                {getMood(terkejut, terkejutBw, "Terkejut")}
+                {getMood("Terkejut")}
                 <Spacer />
-                {getMood(sakit, sakitBw, "Sakit")}
+                {getMood("Sakit")}
                 <Spacer />
               </HStack>
               <HStack bottom={Spacing[24]}>
@@ -619,14 +645,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
               <Spacer height={Spacing[32]} />
               <HStack bottom={Spacing[28]}>
                 <Spacer />
-                <FastImage
-                  style={{
-                    height: Spacing[84],
-                    width: Spacing[84],
-                  }}
-                  source={getMoodSource(selectedMood.toLowerCase())}
-                  resizeMode={"contain"}
-                />
+                <MoodComponent data={selectedMood.toLowerCase()} height={Spacing[84]} width={Spacing[84]}/>
                 <Spacer />
               </HStack>
               <Spacer height={Spacing[14]} />
