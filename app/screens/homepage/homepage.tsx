@@ -22,7 +22,7 @@ import {HomepageCardWrapper} from "@screens/homepage/components/homepage-card-wr
 import {CoachingJournalComponent} from "@screens/homepage/components/coaching-journal-component";
 import {FeedItemComponent} from "@screens/homepage/components/feed-homepage-component";
 import { FeedItemType } from "@screens/feed/feed.type";
-import {MoodComponent} from "@screens/homepage/components/mood-component";
+import {MoodHomepageComponent} from "@screens/homepage/components/mood-homepage-component";
 import {HomepageErrorCard} from "@screens/homepage/components/homepage-error-card";
 
 import RNAnimated from "react-native-animated-component";
@@ -30,63 +30,12 @@ import {debounce} from "lodash";
 import messaging from "@react-native-firebase/messaging";
 
 import Modal from "react-native-modalbox"
-import senang from "@assets/icons/mood/senyum.png"
-import senangBw from "@assets/icons/mood/senyum-bw.png"
-import marah from "@assets/icons/mood/marah.png"
-import marahBw from "@assets/icons/mood/marah-bw.png"
-import sedih from "@assets/icons/mood/sedih.png"
-import sedihBw from "@assets/icons/mood/sedih-bw.png"
-import sakit from "@assets/icons/mood/sakit.png"
-import sakitBw from "@assets/icons/mood/sakit-bw.png"
-import terkejut from "@assets/icons/mood/kaget.png"
-import terkejutBw from "@assets/icons/mood/kaget-bw.png"
 import { ProfileUpdateForm } from "@screens/settings/my-account"
 import { ProfileComponent, ProfileItemType } from "./components/profile-component"
 import { LeaderboardComponent } from "./components/leaderboard-component"
-import { AssesmentComponent } from "./components/assesment-component"
-
-export const MOOD_TYPE = [
-  {
-    label: 'senang',
-    source: senang,
-  },
-  {
-    label: 'senangBw',
-    source: senangBw,
-  },
-  {
-    label: 'marah',
-    source: marah,
-  },
-  {
-    label: 'marahBw',
-    source: marahBw,
-  },
-  {
-    label: 'sedih',
-    source: sedih,
-  },
-  {
-    label: 'sedihBw',
-    source: sedihBw,
-  },
-  {
-    label: 'sakit',
-    source: sakit,
-  },
-  {
-    label: 'sakitBw',
-    source: sakitBw,
-  },
-  {
-    label: 'terkejut',
-    source: terkejut,
-  },
-  {
-    label: 'terkejutBw',
-    source: terkejutBw,
-  },
-]
+import { AssessmentComponent } from "./components/assessment-component"
+import { SenyumActive, SenyumInactive, MarahActive, SedihActive, SickActive, SurprisedActive, SenyumActiveBorder, MarahActiveBorder, MarahInactive, SedihActiveBorder, SedihInactive, SickInactive, SickActiveBorder, SurprisedActiveBorder, SurprisedInactive } from "@assets/svgs"
+import { MoodComponent } from "./components/mood-component"
 
 const FEED_EXAMPLE_DATA_ITEM: FeedItemType[] = [
   {
@@ -437,11 +386,11 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
           <Spacer height={Spacing[12]} />
           <HStack>
             <HomepageCardWrapper animationDuration={1000} horizontal={Spacing[16]}>
-              <LeaderboardComponent leaderboardPosition="1"/>
+              <LeaderboardComponent leaderboardPosition="1" goToLeaderboard={() => null}/>
             </HomepageCardWrapper>
             <Spacer width={Spacing[12]} />
             <HomepageCardWrapper animationDuration={1000} horizontal={Spacing[14]}>
-              <MoodComponent data={moodData} goToMood={toggleModal} />
+              <MoodHomepageComponent data={moodData} goToMood={toggleModal} />
             </HomepageCardWrapper>
           </HStack>
           <Spacer height={Spacing[12]} />
@@ -465,7 +414,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
           </HomepageCardWrapper>
           <Spacer height={Spacing[12]} />
           <HomepageCardWrapper animationDuration={700}>
-            <AssesmentComponent data={profileData}/>
+            <AssessmentComponent data={profileData}/>
           </HomepageCardWrapper>
           <Spacer height={Spacing[12]} />
           
@@ -499,28 +448,60 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     }, [selectedMood, setSelectedMood])
     
 
-    const getMood = (source: Source, sourceBw: Source, type: string) => {
-      const typeLowerCase = type.toLowerCase()
+    const getMood = (mood: string) => {
+      const type = mood.toLowerCase()
+
+      const renderUserMood = () => {
+        if (!selectedMood) {
+           return <MoodComponent data={type}/>
+        }
+
+        if (selectedMood) {
+          if (type === 'senang') {
+            if (selectedMood === type) {
+              return <SenyumActiveBorder height={Spacing[42]} width={Spacing[42]}/>
+            } else {
+              return <SenyumInactive height={Spacing[42]} width={Spacing[42]}/>
+            }
+            
+          } else if (type === 'marah') {
+            if (selectedMood === type) {
+              return <MarahActiveBorder height={Spacing[42]} width={Spacing[42]}/>
+            } else {
+              return <MarahInactive height={Spacing[42]} width={Spacing[42]}/>
+            }
+            
+          } else if (type === 'sedih') {
+            if (selectedMood === type) {
+              return <SedihActiveBorder height={Spacing[42]} width={Spacing[42]}/>
+            } else {
+              return <SedihInactive height={Spacing[42]} width={Spacing[42]}/>
+            }
+          } else if (type === 'sakit') {
+            if (selectedMood === type) {
+              return <SickActiveBorder height={Spacing[42]} width={Spacing[42]}/>
+            } else {
+              return <SickInactive height={Spacing[42]} width={Spacing[42]}/>
+            }
+          } else if (type === 'terkejut') {
+            if (selectedMood === type) {
+              return <SurprisedActiveBorder height={Spacing[42]} width={Spacing[42]}/>
+            } else {
+              return <SurprisedInactive height={Spacing[42]} width={Spacing[42]}/>
+            }
+          } 
+        }
+      }
 
       return (
         <VStack>
-          <TouchableOpacity onPress={selectMood.bind(this, typeLowerCase)} style={{backgroundColor: Colors.WHITE}}>
+          <TouchableOpacity onPress={selectMood.bind(this, type)} style={{backgroundColor: Colors.WHITE}}>
           <VStack>
-            <FastImage
-              style={{
-                height: Spacing[48],
-                width: Spacing[48],
-                borderColor: selectedMood === typeLowerCase ? Colors.MAIN_RED : "",
-                borderWidth: selectedMood === typeLowerCase ? Spacing[2] : 0,
-                borderRadius: selectedMood === typeLowerCase ? Spacing[128] : 0,
-              }}
-              source={selectedMood !== typeLowerCase && selectedMood !== "" ? sourceBw : source}
-              resizeMode={"contain"}
-            />
+            {renderUserMood()}
             <Text
             type={"body"}
             style={{ fontSize: Spacing[18], textAlign: "center" }}
-            text={selectedMood === "" || selectedMood === typeLowerCase ? type : " "}
+            text={selectedMood === "" || selectedMood === type ? type : " "}
           />
             </VStack>
           </TouchableOpacity>
@@ -584,19 +565,19 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
               />
               <Spacer height={Spacing[42]} />
               <HStack bottom={Spacing[12]}>
-                {getMood(senang, senangBw, "Senang")}
+                {getMood("Senang")}
                 <Spacer />
                 <Spacer />
-                {getMood(sedih, sedihBw, "Sedih")}
+                {getMood("Sedih")}
                 <Spacer />
                 <Spacer />
-                {getMood(marah, marahBw, "Marah")}
+                {getMood("Marah")}
               </HStack>
               <HStack bottom={Spacing[12]}>
                 <Spacer />
-                {getMood(terkejut, terkejutBw, "Terkejut")}
+                {getMood("Terkejut")}
                 <Spacer />
-                {getMood(sakit, sakitBw, "Sakit")}
+                {getMood("Sakit")}
                 <Spacer />
               </HStack>
               <HStack bottom={Spacing[24]}>
@@ -661,14 +642,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
               <Spacer height={Spacing[32]} />
               <HStack bottom={Spacing[28]}>
                 <Spacer />
-                <FastImage
-                  style={{
-                    height: Spacing[84],
-                    width: Spacing[84],
-                  }}
-                  source={getMoodSource(selectedMood.toLowerCase())}
-                  resizeMode={"contain"}
-                />
+                <MoodComponent data={selectedMood.toLowerCase()} height={Spacing[84]} width={Spacing[84]}/>
                 <Spacer />
               </HStack>
               <Spacer height={Spacing[14]} />

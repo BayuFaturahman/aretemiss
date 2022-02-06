@@ -13,6 +13,7 @@ import { Source } from "react-native-fast-image"
 
 import { EmptyList } from "./components/empty-list"
 import { SenyumActive, SenyumInactive, MarahActive, SedihActive, SickActive, SurprisedActive } from "@assets/svgs"
+import { MoodComponent } from "./components/mood-component"
 
 export type TeamMoodItemType = {
   userId: string
@@ -71,21 +72,7 @@ const MoodTeam: FC<StackScreenProps<NavigatorParamList, "moodTeam">> = observer(
     }, [])
 
     const renderUserMood = (data: string) => {
-      if (data === 'senang') {
-        return <SenyumActive height={Spacing[42]} width={Spacing[42]}/>
-      } else if (data === 'senangBw') {
-        return <SenyumInactive height={Spacing[42]} width={Spacing[42]}/>
-      } else if (data === 'marah') {
-        return <MarahActive height={Spacing[42]} width={Spacing[42]}/>
-      } else if (data === 'sedih') {
-        return <SedihActive height={Spacing[42]} width={Spacing[42]}/>
-      } else if (data === 'sakit') {
-        return <SickActive height={Spacing[42]} width={Spacing[42]}/>
-      } else if (data === 'terkejut') {
-        return <SurprisedActive height={Spacing[42]} width={Spacing[42]}/>
-      } else {
-        return <SenyumInactive height={Spacing[42]} width={Spacing[42]}/>
-      }
+      return <MoodComponent data={data}/>
     }
 
     return (
@@ -147,7 +134,8 @@ const MoodTeam: FC<StackScreenProps<NavigatorParamList, "moodTeam">> = observer(
                         merasa  <Text type={"body-bold"}>{item.moodType}</Text>.
                       </Text>
                       <Spacer />
-                     {renderUserMood(item.moodType)}
+                      {/* <MoodComponent data={item.moodType}/> */}
+                      {renderUserMood(item.moodType)}
                       <Spacer/>
                     </HStack>
                   )
