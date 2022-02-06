@@ -24,8 +24,8 @@ import {dimensions} from "@config/platform.config";
 const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
   ({ navigation }) => {
 
-    const [phoneNumber, setPhoneNumber] = useState<string>('')
-    const [password, setPassword] = useState<string>('')
+    const [phoneNumber, setPhoneNumber] = useState<string>(__DEV__ ? 'ardasatata@gmail.com' : '')
+    const [password, setPassword] = useState<string>(__DEV__ ? 'rahasia' : '')
     const [isError, setIsError] = useState<boolean>(false)
     const [errorMessage, setErrorMessage] = useState<string | null>('')
 

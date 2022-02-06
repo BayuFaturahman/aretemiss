@@ -1,39 +1,47 @@
-import React, {FC, useCallback, useState, useEffect, useReducer} from "react"
-import {SafeAreaView, ScrollView, StatusBar, RefreshControl, View, TouchableOpacity } from "react-native"
+import React, { FC, useCallback, useState, useEffect, useReducer } from "react"
+import {
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  RefreshControl,
+  View,
+  TouchableOpacity,
+} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
-import { Button, Text} from "@components"
+import { Button, Text } from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
 import { VStack, HStack } from "@components/view-stack"
-import Spacer from "@components/spacer";
-import {Colors, Layout, Spacing} from "@styles";
+import Spacer from "@components/spacer"
+import { Colors, Layout, Spacing } from "@styles"
 
 import FastImage, { Source } from "react-native-fast-image"
-import topLogo from "@assets/icons/home-top-bg.png";
-import moment from 'moment'
+import topLogo from "@assets/icons/home-top-bg.png"
+import moment from "moment"
 
-import {dimensions} from "@config/platform.config";
-import {CoachingJournalItem} from "@screens/coaching-journal/coaching-journal.type";
+import { dimensions } from "@config/platform.config"
+import { CoachingJournalItem } from "@screens/coaching-journal/coaching-journal.type"
 import { useStores } from "../../bootstrap/context.boostrap"
 
-import {NotificationButton} from "@screens/homepage/components/notification-button";
-import {SettingsButton} from "@screens/homepage/components/settings-button";
-import {HomepageCardWrapper} from "@screens/homepage/components/homepage-card-wrapper";
-import {CoachingJournalComponent} from "@screens/homepage/components/coaching-journal-component";
-import {FeedItemComponent} from "@screens/homepage/components/feed-homepage-component";
-import { FeedItemType } from "@screens/feed/feed.type";
-import {MoodHomepageComponent} from "@screens/homepage/components/mood-homepage-component";
-import {HomepageErrorCard} from "@screens/homepage/components/homepage-error-card";
+import { NotificationButton } from "@screens/homepage/components/notification-button"
+import { SettingsButton } from "@screens/homepage/components/settings-button"
+import { HomepageCardWrapper } from "@screens/homepage/components/homepage-card-wrapper"
+import { CoachingJournalComponent } from "@screens/homepage/components/coaching-journal-component"
+import { FeedItemComponent } from "@screens/homepage/components/feed-homepage-component"
+import { FeedItemType } from "@screens/feed/feed.type"
+import { MoodHomepageComponent} from "@screens/homepage/components/mood-homepage-component";
+import { HomepageErrorCard } from "@screens/homepage/components/homepage-error-card"
+import { ProfileComponent, ProfileItemType } from "@screens/homepage/components/profile-component"
+import { LeaderboardComponent } from "@screens/homepage/components/leaderboard-component"
+import { AssessmentComponent } from "@screens/homepage/components/assessment-component"
 
-import RNAnimated from "react-native-animated-component";
-import {debounce} from "lodash";
-import messaging from "@react-native-firebase/messaging";
+
+import RNAnimated from "react-native-animated-component"
+import { debounce } from "lodash"
+import messaging from "@react-native-firebase/messaging"
 
 import Modal from "react-native-modalbox"
 import { ProfileUpdateForm } from "@screens/settings/my-account"
-import { ProfileComponent, ProfileItemType } from "./components/profile-component"
-import { LeaderboardComponent } from "./components/leaderboard-component"
-import { AssessmentComponent } from "./components/assessment-component"
 import { SenyumActive, SenyumInactive, MarahActive, SedihActive, SickActive, SurprisedActive, SenyumActiveBorder, MarahActiveBorder, MarahInactive, SedihActiveBorder, SedihInactive, SickInactive, SickActiveBorder, SurprisedActiveBorder, SurprisedInactive } from "@assets/svgs"
 import { MoodComponent } from "./components/mood-component"
 
@@ -115,30 +123,28 @@ const FEED_EXAMPLE_DATA_ITEM: FeedItemType[] = [
 const PROFILE_EXAMPLE_DATA:ProfileItemType = {
   avatarUrl: '',
   user: {
-    name: '',
-    title: ''
+    name: "",
+    title: "",
   },
 }
 
 const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
   ({ navigation }) => {
-
-    const onRefresh = React.useCallback(async() => {
+    const onRefresh = React.useCallback(async () => {
       await loadData()
-    }, []);
+    }, [])
 
     if (__DEV__) {
       // eslint-disable-next-line global-require
-      const DevMenu = require('react-native-dev-menu');
-      DevMenu.addItem('Feedback Detail', () => {
-        navigation.navigate('fillFeedbackDetail')
-      });
+      const DevMenu = require("react-native-dev-menu")
+      DevMenu.addItem("Feedback Detail", () => {
+        navigation.navigate("fillFeedbackDetail")
+      })
     }
 
+    const [, forceUpdate] = useReducer((x) => x + 1, 0)
 
-    const [, forceUpdate] = useReducer(x => x + 1, 0);
-
-    const [selectedActivities, setSelectedActivities] = useState<string>('');
+    const [selectedActivities, setSelectedActivities] = useState<string>("")
     const [isHomepageError, setHomepageError] = useState<boolean>(false);
 
     const [moodData, setMoodData] = useState<string>('');
@@ -147,14 +153,17 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     const [isMoodUpdated, setIsMoodUpdated] = useState<boolean>(false)
     const [isModalVisible, setModalVisible] = useState<boolean>(false)
 
-    const holdActivitiesId = useCallback((selectedId)=>{
-      setSelectedActivities(selectedId)
-    }, [selectedActivities])
+    const holdActivitiesId = useCallback(
+      (selectedId) => {
+        setSelectedActivities(selectedId)
+      },
+      [selectedActivities],
+    )
 
     // const [feedData, setFeedDAta] = useState<FeedItemType>(FEED_EXAMPLE_DATA_ITEM);
-    const [feedData, setFeedData] = useState<FeedItemType>(null);
-    const [coachingJournalData, setCoachingJournalData] = useState<CoachingJournalItem>(null);
-    const {mainStore, coachingStore, authStore, feedStore} = useStores()
+    const [feedData, setFeedData] = useState<FeedItemType>(null)
+    const [coachingJournalData, setCoachingJournalData] = useState<CoachingJournalItem>(null)
+    const { mainStore, coachingStore, authStore, feedStore } = useStores()
 
     const userProfile: ProfileUpdateForm = {
       fullname: mainStore.userProfile.user_fullname,
@@ -169,29 +178,29 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       mood: mainStore.userProfile.user_mood,
     }
 
-    const goToNote = useCallback((id, coach_id)=>{
+    const goToNote = useCallback((id, coach_id) => {
       console.log(id)
       coachingStore.isDetailJournal(true)
       const detailCoaching = coach_id == mainStore.userProfile.user_id
       coachingStore.setDetailCoaching(detailCoaching)
       coachingStore.setDetailID(id)
       coachingStore.setFormCoach(true)
-      console.log('goToNote coach_id', coach_id)
-      console.log('goToNote user_id', mainStore.userProfile.user_id)
+      console.log("goToNote coach_id", coach_id)
+      console.log("goToNote user_id", mainStore.userProfile.user_id)
       navigation.navigate("overviewJournalEntry", {
         journalId: id,
-        isCoachee: false
+        isCoachee: false,
       })
     }, [])
 
-    const goToFeedback = useCallback((id)=>{
+    const goToFeedback = useCallback((id) => {
       coachingStore.isDetailJournal(true)
       coachingStore.setDetailID(id)
       navigation.navigate("fillFeedbackDetail")
       console.log(id)
     }, [])
 
-    const goToNoteFeedback = useCallback((id, coach_id)=>{
+    const goToNoteFeedback = useCallback((id, coach_id) => {
       coachingStore.isDetailJournal(true)
       const detailCoaching = coach_id == mainStore.userProfile.user_id
       coachingStore.setDetailCoaching(detailCoaching)
@@ -203,15 +212,15 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
       navigation.navigate("overviewJournalEntry", {
         journalId: id,
-        isCoachee: true
+        isCoachee: true,
       })
     }, [])
 
-    const getUserProfile = useCallback(async ()=>{
+    const getUserProfile = useCallback(async () => {
       await mainStore.getProfile()
     }, [])
 
-    const getJournalList = useCallback(async ()=>{
+    const getJournalList = useCallback(async () => {
       await coachingStore.clearJournal()
       await coachingStore.getJournal()
     }, [])
@@ -235,54 +244,54 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
         setProfileData(profileDataTemp)
 
         userProfile.fullname = mainStore.userProfile.user_fullname
-        userProfile.nickname= mainStore.userProfile.user_nickname
-        userProfile.email= mainStore.userProfile.user_email
-        userProfile.team1Id= mainStore.userProfile.user_team_1_id
-        userProfile.team2Id= mainStore.userProfile.user_team_2_id
-        userProfile.team3Id= mainStore.userProfile.user_team_3_id
-        userProfile.photo= mainStore.userProfile.user_photo
-        userProfile.isAllowNotification= mainStore.userProfile.user_is_allow_notification
-        userProfile.isAllowReminderNotification= mainStore.userProfile.user_is_allow_reminder_notification
-        userProfile.mood= mainStore.userProfile.user_mood
-        
+        userProfile.nickname = mainStore.userProfile.user_nickname
+        userProfile.email = mainStore.userProfile.user_email
+        userProfile.team1Id = mainStore.userProfile.user_team_1_id
+        userProfile.team2Id = mainStore.userProfile.user_team_2_id
+        userProfile.team3Id = mainStore.userProfile.user_team_3_id
+        userProfile.photo = mainStore.userProfile.user_photo
+        userProfile.isAllowNotification = mainStore.userProfile.user_is_allow_notification
+        userProfile.isAllowReminderNotification =
+          mainStore.userProfile.user_is_allow_reminder_notification
+        userProfile.mood = mainStore.userProfile.user_mood
+
         forceUpdate()
         // console.log('userprofile Use effect: ', userProfile)
         // console.log('mainStore.userProfile Use effect: ', mainStore.userProfile)
       }
-      
     }, [mainStore.userProfile])
 
-    useEffect(()=> {
-      if(coachingStore.listJournal){
-        console.log('useCallback coachingStore.listJournal', coachingStore.listJournal)
+    useEffect(() => {
+      if (coachingStore.listJournal) {
+        console.log("useCallback coachingStore.listJournal", coachingStore.listJournal)
         createList()
       }
     }, [coachingStore.listJournal])
 
-    useEffect(()=> {
-      if(feedStore.listFeeds){
+    useEffect(() => {
+      if (feedStore.listFeeds) {
         setFeedData(feedStore.listFeeds[0])
       }
     }, [feedStore.listFeeds])
 
-    const loadData = debounce( async () => {
+    const loadData = debounce(async () => {
       await getUserProfile()
       await getJournalList()
       await getListFeed()
-      if(feedStore.listFeeds){
+      if (feedStore.listFeeds) {
         setFeedData(feedStore.listFeeds[0])
       }
-      console.log( 'isNewNotification',mainStore.userProfile.user_is_allow_notification)
+      console.log("isNewNotification", mainStore.userProfile.user_is_allow_notification)
     }, 500)
 
-    useEffect(()=> {
+    useEffect(() => {
       setCoachingJournalData(null)
       setFeedData(null)
       loadData()
     }, [])
 
-    useEffect(()=> {
-      if(coachingStore.formErrorCode === 9){
+    useEffect(() => {
+      if (coachingStore.formErrorCode === 9) {
         authStore.resetAuthStore()
       }
     }, [coachingStore.formErrorCode])
@@ -290,57 +299,58 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     const createList = () => {
       const id = mainStore.userProfile.user_id
       let groupArrays = []
-      if(coachingStore.listJournal){
+      if (coachingStore.listJournal) {
         const groups = coachingStore.listJournal.reduce((groups, journalData) => {
-          const date = journalData.journal_date.split('T')[0];
-             if (!groups[date]) {
-              groups[date] = [];
-             }
-             groups[date].push(
-               {
-                 ...journalData,
-                  title: journalData.journal_title,
-                  type: journalData.journal_type,
-                  id: journalData.journal_id,
-                  isTagged: id != journalData.coach_id
-               }
-             );
-             return groups;
-          }, {});
-          groupArrays = Object.keys(groups).map((date) => {
-             return {
-             date: moment(date).format('DD MMM'),
-             activities: groups[date]
-             };
-          });
+          const date = journalData.journal_date.split("T")[0]
+          if (!groups[date]) {
+            groups[date] = []
+          }
+          groups[date].push({
+            ...journalData,
+            title: journalData.journal_title,
+            type: journalData.journal_type,
+            id: journalData.journal_id,
+            isTagged: id != journalData.coach_id,
+          })
+          return groups
+        }, {})
+        groupArrays = Object.keys(groups).map((date) => {
+          return {
+            date: moment(date).format("DD MMM"),
+            activities: groups[date],
+          }
+        })
       }
-      if(groupArrays[0]){
+      if (groupArrays[0]) {
         setCoachingJournalData(groupArrays[0])
         forceUpdate()
       }
     }
 
-    const goToNotifications = () => navigation.navigate('notificationList')
+    const goToNotifications = () => navigation.navigate("notificationList")
 
-    const goToJournalCoaching = () => navigation.navigate('coachingJournalMain')
+    const goToJournalCoaching = () => navigation.navigate("coachingJournalMain")
 
-    const goToFeed = () => navigation.navigate('feedTimelineMain')
+    const goToFeed = () => navigation.navigate("feedTimelineMain")
 
-    const goToNewPost = () => navigation.navigate('newPost')
+    const goToNewPost = () => navigation.navigate("newPost")
 
     const goToSettings = () => navigation.navigate("settingsPage")
+
+    const goToLeaderboards = () => navigation.navigate("leaderboards")
+
+    const goToAssessment = () => navigation.navigate("assessment")
 
     const goToTeamMood = () => {
       setModalVisible(false)
       navigation.navigate("moodTeam")
     }
 
-    StatusBar.setBarStyle('light-content',false);
+    StatusBar.setBarStyle("light-content", false)
 
     const renderHomepage = () => {
-
-      if(isHomepageError){
-        return(
+      if (isHomepageError) {
+        return (
           <VStack top={dimensions.screenHeight / 2} horizontal={Spacing[12]}>
             <HomepageCardWrapper animationDuration={300}>
               <HomepageErrorCard navigateTo={onRefresh} />
@@ -349,76 +359,71 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
         )
       }
 
-      return(
+      return (
         <>
-        <VStack top={Spacing[48]} horizontal={Spacing[8]} bottom={Spacing[12]}>
+          <VStack top={Spacing[48]} horizontal={Spacing[8]} bottom={Spacing[12]}>
             <VStack horizontal={Spacing[12]}>
-            <RNAnimated
-              appearFrom="left"
-              animationDuration={500}
-            >
-
-             <NotificationButton
-               goToNotifications={goToNotifications}
-               isNewNotification={mainStore.userProfile.new_notification_flag === true}
-             />
+              <RNAnimated appearFrom="left" animationDuration={500}>
+                <NotificationButton
+                  goToNotifications={goToNotifications}
+                  isNewNotification={mainStore.userProfile.new_notification_flag === true}
+                />
+              </RNAnimated>
+            </VStack>
+            <Spacer height={Spacing[24]} />
+            <RNAnimated appearFrom="right" animationDuration={700}>
+              <VStack horizontal={Spacing[12]}>
+                <Text
+                  type={"right-header"}
+                  style={{ color: Colors.WHITE, fontSize: Spacing[16] }}
+                  underlineWidth={Spacing[72]}
+                >
+                  {`Hai, ${mainStore.userProfile.user_nickname}`}
+                </Text>
+              </VStack>
             </RNAnimated>
-            </VStack>
-          <Spacer height={Spacing[24]} />
-          <RNAnimated
-            appearFrom="right"
-            animationDuration={700}
-          >
-            <VStack horizontal={Spacing[12]}>
-              <Text
-                type={'right-header'}
-                style={{color: Colors.WHITE, fontSize: Spacing[16]}}
-                underlineWidth={Spacing[72]}>
-                {`Hai, ${mainStore.userProfile.user_nickname}`}
-              </Text>
-            </VStack>
-          </RNAnimated>
 
-          <Spacer height={Spacing[32]} />
-          <HomepageCardWrapper animationDuration={1000}>
-            <ProfileComponent data={profileData} />
-          </HomepageCardWrapper>
-          <Spacer height={Spacing[12]} />
-          <HStack>
-            <HomepageCardWrapper animationDuration={1000} horizontal={Spacing[16]}>
-              <LeaderboardComponent leaderboardPosition="1" goToLeaderboard={() => null}/>
+            <Spacer height={Spacing[32]} />
+            <HomepageCardWrapper animationDuration={1000}>
+              <ProfileComponent data={profileData} />
             </HomepageCardWrapper>
-            <Spacer width={Spacing[12]} />
-            <HomepageCardWrapper animationDuration={1000} horizontal={Spacing[14]}>
-              <MoodHomepageComponent data={moodData} goToMood={toggleModal} />
+            <Spacer height={Spacing[12]} />
+            <HStack>
+              <HomepageCardWrapper animationDuration={1000} horizontal={Spacing[16]}>
+                <LeaderboardComponent leaderboardPosition="1" goToLeaderboard={goToLeaderboards}/>
+              </HomepageCardWrapper>
+              <Spacer width={Spacing[12]} />
+              <HomepageCardWrapper animationDuration={1000} horizontal={Spacing[14]}>
+                <MoodHomepageComponent data={moodData} goToMood={toggleModal} />
+              </HomepageCardWrapper>
+            </HStack>
+            <Spacer height={Spacing[12]} />
+            <HomepageCardWrapper animationDuration={500}>
+              <CoachingJournalComponent
+                data={coachingJournalData}
+                // data={null}
+                onPressActivity={holdActivitiesId}
+                selectedActivities={selectedActivities}
+                onPressNote={goToNote}
+                onPressFeedback={goToFeedback}
+                onPressNoteFeedback={goToNoteFeedback}
+                goToCoaching={goToJournalCoaching}
+              />
             </HomepageCardWrapper>
-          </HStack>
-          <Spacer height={Spacing[12]} />
-          <HomepageCardWrapper animationDuration={500}>
-            <CoachingJournalComponent
-              data={coachingJournalData}
-              // data={null}
-              onPressActivity={holdActivitiesId}
-              selectedActivities={selectedActivities}
-              onPressNote={goToNote}
-              onPressFeedback={goToFeedback}
-              onPressNoteFeedback={goToNoteFeedback} goToCoaching={goToJournalCoaching} />
-          </HomepageCardWrapper>
-          <Spacer height={Spacing[12]} />
-          <HomepageCardWrapper animationDuration={700}>
-            <FeedItemComponent
-              data={feedData ?? null}
-              goToFeed={goToFeed}
-              goToNewPost={goToNewPost}
-            />
-          </HomepageCardWrapper>
-          <Spacer height={Spacing[12]} />
-          <HomepageCardWrapper animationDuration={700}>
-            <AssessmentComponent data={profileData}/>
-          </HomepageCardWrapper>
-          <Spacer height={Spacing[12]} />
-          
-        </VStack>
+            <Spacer height={Spacing[12]} />
+            <HomepageCardWrapper animationDuration={700}>
+              <FeedItemComponent
+                data={feedData ?? null}
+                goToFeed={goToFeed}
+                goToNewPost={goToNewPost}
+              />
+            </HomepageCardWrapper>
+            <Spacer height={Spacing[12]} />
+            <HomepageCardWrapper animationDuration={700}>
+              <AssessmentComponent data={profileData} goToAssessment={goToAssessment}/>
+            </HomepageCardWrapper>
+            <Spacer height={Spacing[12]} />
+          </VStack>
         </>
       )
     }
@@ -428,7 +433,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
         setSelectedMood("")
       }
       // setTimeout(() => {
-        setModalVisible(!isModalVisible)
+      setModalVisible(!isModalVisible)
       // }, 50)
     }
 
@@ -441,12 +446,13 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       }, 200)
     }
 
-    const selectMood = useCallback( (selectedMood) => {
-      setSelectedMood(selectedMood)
-      console.log("selected in getmood ", selectedMood)
-
-    }, [selectedMood, setSelectedMood])
-    
+    const selectMood = useCallback(
+      (selectedMood) => {
+        setSelectedMood(selectedMood)
+        console.log("selected in getmood ", selectedMood)
+      },
+      [selectedMood, setSelectedMood],
+    )
 
     const getMood = (mood: string) => {
       const type = mood.toLowerCase()
@@ -505,7 +511,6 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
           />
             </VStack>
           </TouchableOpacity>
-        
         </VStack>
       )
     }
@@ -513,7 +518,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     const updateUserMood = useCallback(async () => {
       mainStore.formReset()
       userProfile.mood = selectedMood
-      console.log('user profile: ', userProfile)
+      console.log("user profile: ", userProfile)
       console.log("selected mood ", userProfile.mood)
 
       await mainStore.updateProfile(mainStore.userProfile.user_id, userProfile)
@@ -608,7 +613,6 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
           </VStack>
         )
       } else {
-
         const getMoodSource = (moodType: string) => {
           console.log("MasuK effect mood homepage ", MOOD_TYPE.length)
           let toReturn = null
@@ -624,7 +628,6 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
           return toReturn
         }
 
-
         return (
           <VStack
             horizontal={Spacing[24]}
@@ -633,7 +636,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
             style={Layout.widthFull}
           >
             <VStack>
-            <Spacer height={Spacing[42]} />
+              <Spacer height={Spacing[42]} />
               <Text
                 type={"body"}
                 style={{ textAlign: "center" }}
@@ -646,7 +649,8 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
                 <Spacer />
               </HStack>
               <Spacer height={Spacing[14]} />
-              <Text type={"body"} style={{ textAlign: "center", fontSize: Spacing[16] }} >Anda merasa
+              <Text type={"body"} style={{ textAlign: "center", fontSize: Spacing[16] }}>
+                Anda merasa
                 <Text type={"warning"}> {selectedMood}</Text>!
               </Text>
               <Spacer height={Spacing[32]} />
@@ -674,14 +678,26 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
         testID="CoachingJournalMain"
         style={{ backgroundColor: Colors.CLOUD_GRAY, flex: 1, justifyContent: "center" }}
       >
-          <SafeAreaView style={Layout.flex}>
-          <VStack style={{backgroundColor: Colors.UNDERTONE_BLUE, borderBottomLeftRadius: Spacing[48], borderBottomRightRadius: Spacing[48], position: 'absolute', width: dimensions.screenWidth}}>
-            <FastImage style={{
-              height: Spacing[256],
-              width: dimensions.screenWidth - Spacing[72],
-              top: -Spacing[48],
-              zIndex: -100
-            }} source={topLogo} resizeMode={"contain"}/>
+        <SafeAreaView style={Layout.flex}>
+          <VStack
+            style={{
+              backgroundColor: Colors.UNDERTONE_BLUE,
+              borderBottomLeftRadius: Spacing[48],
+              borderBottomRightRadius: Spacing[48],
+              position: "absolute",
+              width: dimensions.screenWidth,
+            }}
+          >
+            <FastImage
+              style={{
+                height: Spacing[256],
+                width: dimensions.screenWidth - Spacing[72],
+                top: -Spacing[48],
+                zIndex: -100,
+              }}
+              source={topLogo}
+              resizeMode={"contain"}
+            />
           </VStack>
           <ScrollView
             refreshControl={
@@ -696,33 +712,33 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
           </ScrollView>
         </SafeAreaView>
         <Modal
-            isOpen={isModalVisible}
-            style={{
-              height: "50%",
-              width: dimensions.screenWidth - Spacing[24],
-              backgroundColor: "rgba(52, 52, 52, 0)",
-            }}
-          >
-            <View style={{ flex: 1, justifyContent: "center" }}>
-              <VStack
-                style={{
-                  backgroundColor: Colors.WHITE,
-                  borderRadius: Spacing[48],
-                  minHeight: Spacing[256],
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-                horizontal={Spacing[24]}
-                vertical={Spacing[24]}
-              >
-                {renderMoodModal()}
-              </VStack>
-            </View>
-          </Modal>
+          isOpen={isModalVisible}
+          style={{
+            height: "50%",
+            width: dimensions.screenWidth - Spacing[24],
+            backgroundColor: "rgba(52, 52, 52, 0)",
+          }}
+        >
+          <View style={{ flex: 1, justifyContent: "center" }}>
+            <VStack
+              style={{
+                backgroundColor: Colors.WHITE,
+                borderRadius: Spacing[48],
+                minHeight: Spacing[256],
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              horizontal={Spacing[24]}
+              vertical={Spacing[24]}
+            >
+              {renderMoodModal()}
+            </VStack>
+          </View>
+        </Modal>
         <SettingsButton goToSettings={goToSettings} />
       </VStack>
     )
   },
 )
 
-export default Homepage;
+export default Homepage
