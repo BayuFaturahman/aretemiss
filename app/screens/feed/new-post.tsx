@@ -244,7 +244,9 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
 
     if (!data.category.id ) {
       setIsCategoryError(true)
-      return
+      return 
+    } else {
+      setIsCategoryError(false)
     }
 
     feedStore.formReset()
