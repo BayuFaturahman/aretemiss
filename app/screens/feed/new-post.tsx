@@ -25,6 +25,7 @@ import ActionSheet from "react-native-actions-sheet/index"
 
 import Spinner from "react-native-loading-spinner-overlay"
 import { Formik } from "formik"
+import {debounce} from "lodash";
 
 const NEW_ITEM_CONTAINER: StyleProp<any> = {
   zIndex: 10,
@@ -91,22 +92,10 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
   const [selectionPictLimit, setSelectionPictLimit] = useState<number>(4)
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [isCategoryError, setIsCategoryError] = useState<boolean>(false)
+  const [feedCategory, setFeedCategory] = useState(feedStore.listFeedCategory)
 
-  const feedCategory = [ {
-    id: '0',
-    key: 'Project_Initiatives',
-    item: '#Project_Initiatives'
-  },
-  {
-    id: '1',
-    key: 'Culture_Program',
-    item: '#Culture_Program'
-  },
-  {
-    id: '2',
-    key: 'Culture_Program',
-    item: '#Culture_Program'
-  }]
+
+  // const feedCategory = feedStore.listFeedCategory
 
   // const onRefresh = React.useCallback(async() => {
   //   setCoachingData([])
@@ -212,11 +201,6 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
     )
   }, [])
 
-  const getListFeed = useCallback(async () => {
-    feedStore.formReset()
-    await feedStore.getListFeeds()
-  }, [])
-
   useEffect(() => {
     if (selectedPicture.length === 4) {
       setIsAddPictDisabled(true)
@@ -237,6 +221,17 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
     selectionPictLimit,
   ])
 
+  useEffect(() => {
+    firstLoadFeedCategory()
+    console.log('get list feed category')
+  },[])
+
+  
+  const firstLoadFeedCategory = debounce( async () => {
+    await feedStore.getListFeedCategory()
+    setFeedCategory(feedStore.listFeedCategory)
+  }, 500)
+  
   const submitNewPost = useCallback(async (data: newPostForm) => {
     const imagesUrl = uploadedPicture.join(';')
     console.log('imagesUrl ', imagesUrl)
@@ -252,7 +247,8 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
     feedStore.formReset()
     await feedStore.createPost({ 
       "description": data.description,
-      "images_url": imagesUrl
+      "images_url": imagesUrl,
+      "type_id": data.category.id
     });
 
     if (feedStore.errorCode === null) {
@@ -418,3 +414,4 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
 })
 
 export default NewPost
+
