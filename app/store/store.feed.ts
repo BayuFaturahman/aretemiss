@@ -258,6 +258,7 @@ export default class FeedStore {
         photo: data.feed_author_photo,
         mood: data.feed_author_mood
       },
+      type: data.feed_type_name,
       commentCount: data.feed_comment_count,
       isNew: lastSeen.getTime() < postCreated.getTime(),
       createdAt: data.feed_created_at,
