@@ -1,7 +1,7 @@
 import { ApiResponse } from "apisauce"
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
-import { GetListFeedsResult, PostUploadFeedImagesResult, CreatePostResult, DeletePostResult, GetListCommentResult, CreateCommentResult, CreateCommentToResult, DeleteCommentResult, GetListCommentNotification, GetPostDetailResult } from "@services/api/feed/feed-api.types"
+import { GetListFeedsResult, PostUploadFeedImagesResult, CreatePostResult, DeletePostResult, GetListCommentResult, CreateCommentResult, CreateCommentToResult, DeleteCommentResult, GetListCommentNotification, GetPostDetailResult, GetListFeedCategoryResult } from "@services/api/feed/feed-api.types"
 import { CreateCommentToType, CreateCommentType, CreatePostType } from "@screens/feed/feed.type"
 
 export class FeedApi {
@@ -363,6 +363,42 @@ export class FeedApi {
         limit: limit,
         page: page
       })
+      if (response.status === 400) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // console.log(response.data)
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data
+
+      // console.log(res)
+      console.log(response.status)
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      console.log(e)
+      console.log("error")
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data" }
+    }
+  }
+
+  async getListFeedCategory(page: number, limit: number): Promise<GetListFeedCategoryResult> {
+    console.log("getListFeedCategory()")
+    try {
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.get(`/feed-type`, {
+        limit: limit,
+        page: page
+      })
+
       if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }

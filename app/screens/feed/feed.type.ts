@@ -9,6 +9,7 @@ export type FeedItemType = {
     photo: string
     mood: string
   }
+  type?: string
   isDeleted: boolean
   createdAt: string
   updatedAt: string
@@ -53,6 +54,7 @@ export type CommentNotificationType = {
 export type CreatePostType = {
   "description": string
   "images_url": string
+  "type_id": string
 }
 
 
@@ -70,4 +72,10 @@ export type CreateCommentToType = {
 export type FeedTimelineItems = {
     // date: string
     posts: Array<FeedItemType>
+}
+
+export type FeedCategoryType = {
+    id: string,
+    item: string,
+    key: string
 }
