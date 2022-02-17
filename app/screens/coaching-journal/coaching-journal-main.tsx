@@ -19,6 +19,7 @@ import { useStores } from "../../bootstrap/context.boostrap"
 import arrowYellow from "@assets/icons/coachingJournal/empty/arrow-yellow.png"
 import { dimensions } from "@config/platform.config"
 import { EmptyList } from "@screens/coaching-journal/components/empty-list"
+import {debounce} from "lodash";
 
 const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJournalMain">> =
   observer(({ navigation }) => {
@@ -42,8 +43,7 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
     const onRefresh = React.useCallback(async () => {
       setCoachingData([])
       setCurrentPage(2)
-      await coachingStore.clearJournal()
-      await coachingStore.getJournal()
+      firstLoadJournal()
     }, [])
 
     const goBack = () => {
@@ -105,12 +105,12 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
       })
     }, [])
 
-    useEffect(() => {
-      const firstLoadJournal = async () => {
-        await coachingStore.clearJournal()
-        await loadJournal(1)
-      }
+    const firstLoadJournal = debounce( async () => {
+      await coachingStore.clearJournal()
+      await loadJournal(1)
+    }, 500)
 
+    useEffect(() => {
       firstLoadJournal()
     }, [])
 
@@ -179,7 +179,7 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
             style={{ backgroundColor: Colors.WHITE }}
             refreshControl={
               <RefreshControl
-                refreshing={coachingStore.isLoading}
+                refreshing={false}
                 onRefresh={onRefresh}
                 tintColor={Colors.MAIN_RED}
               />
