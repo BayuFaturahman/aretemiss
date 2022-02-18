@@ -163,7 +163,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     // const [feedData, setFeedDAta] = useState<FeedItemType>(FEED_EXAMPLE_DATA_ITEM);
     const [feedData, setFeedData] = useState<FeedItemType>(null)
     const [coachingJournalData, setCoachingJournalData] = useState<CoachingJournalItem>(null)
-    const { mainStore, coachingStore, authStore, feedStore } = useStores()
+    const { mainStore, coachingStore, authStore, feedStore, leaderboardStore } = useStores()
 
     const userProfile: ProfileUpdateForm = {
       fullname: mainStore.userProfile.user_fullname,
@@ -219,6 +219,10 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     const getUserProfile = useCallback(async () => {
       await mainStore.getProfile()
     }, [])
+
+    const getLeaderboardPosition = useCallback(async () => {
+      await leaderboardStore.getLeaderboardPosition(mainStore.userProfile.user_id);
+    }, []);
 
     const getJournalList = useCallback(async () => {
       await coachingStore.clearJournal()
@@ -277,6 +281,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     const loadData = debounce(async () => {
       await getUserProfile()
       await getJournalList()
+      await getLeaderboardPosition();
       await getListFeed()
       if (feedStore.listFeeds) {
         setFeedData(feedStore.listFeeds[0])
@@ -390,7 +395,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
             <Spacer height={Spacing[12]} />
             <HStack>
               <HomepageCardWrapper animationDuration={1000} horizontal={Spacing[16]}>
-                <LeaderboardComponent leaderboardPosition="1" goToLeaderboard={goToLeaderboards}/>
+                <LeaderboardComponent leaderboardPosition={leaderboardStore?.leaderboardPosition || ''} goToLeaderboard={goToLeaderboards}/>
               </HomepageCardWrapper>
               <Spacer width={Spacing[12]} />
               <HomepageCardWrapper animationDuration={1000} horizontal={Spacing[14]}>
