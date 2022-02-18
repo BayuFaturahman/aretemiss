@@ -71,7 +71,7 @@ export default class LeaderboardStore {
         this.formError(response.response)
       } else if (response.kind === "ok") {
         this.getListLeaderboardsSuccess(response.response.data?.leaderboard);
-        this.getSelfLeaderboardPointSuccess(+response.response.data.my_score);
+        this.getSelfLeaderboardPointSuccess(response.response.data.my_score || 0);
       } else if (response.kind === 'unauthorized'){
         console.log('token expired journal')
         console.log(response)

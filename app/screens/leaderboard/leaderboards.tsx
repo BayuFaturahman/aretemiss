@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from "react"
+import React, { FC, useCallback, useEffect, useState, useRef } from "react"
 import {
   ActivityIndicator,
   FlatList,
@@ -87,6 +87,8 @@ const PODIUM_EXAMPLE: LeaderBoardItem[] = [
   },
 ]
 
+let rankIteration = 1
+
 const PodiumComponent = ({ data = PODIUM_EXAMPLE }: { data: LeaderBoardItem[] }) => {
   const BASE_HEIGHT = CustomSpacing(140)
 
@@ -98,6 +100,7 @@ const PodiumComponent = ({ data = PODIUM_EXAMPLE }: { data: LeaderBoardItem[] })
           backgroundColor: Colors.HONEY_YELLOW,
           height: data.length > 1 ? (data[1].score / data[0].score) * BASE_HEIGHT : BASE_HEIGHT * 0.5,
           borderTopStartRadius: Spacing[12],
+          borderTopEndRadius: Spacing[12],
           borderBottomStartRadius: Spacing[12],
           borderColor: Colors.HONEY_YELLOW,
           right: -1,
@@ -157,6 +160,7 @@ const PodiumComponent = ({ data = PODIUM_EXAMPLE }: { data: LeaderBoardItem[] })
           backgroundColor: Colors.HONEY_YELLOW,
           height: data.length > 2 ? (data[2].score / data[1].score) * BASE_HEIGHT : BASE_HEIGHT * 0.5,
           borderTopEndRadius: Spacing[12],
+          borderTopLeftRadius: Spacing[12],
           borderBottomEndRadius: Spacing[12],
           left: -1,
           justifyContent: "center",
@@ -181,6 +185,7 @@ const PodiumComponent = ({ data = PODIUM_EXAMPLE }: { data: LeaderBoardItem[] })
 
 const Leaderboards: FC<StackScreenProps<NavigatorParamList, "notificationList">> = observer(
   ({ navigation }) => {
+    const mounted = useRef(false);
     const [point, setPoint] = useState<number>(65)
     const [podiumData, setPodiumData] = useState<LeaderBoardItem[]>(PODIUM_EXAMPLE)
     const [rankData, setRankData] = useState<LeaderBoardItem[]>(PODIUM_EXAMPLE)
@@ -197,6 +202,14 @@ const Leaderboards: FC<StackScreenProps<NavigatorParamList, "notificationList">>
     const [currentPage, setCurrentPage] = useState<number>(2);
 
     let rankIteration = 1;
+
+    useEffect(() => {
+      mounted.current = true;
+
+      return () => {
+          mounted.current = false;
+      };
+  }, []);
 
     const onLoadMore = React.useCallback(async () => {
       setLoading(true);
@@ -330,8 +343,9 @@ const Leaderboards: FC<StackScreenProps<NavigatorParamList, "notificationList">>
                 if (item.score !== leaderboardStore?.listLeaderboards[index - 1].score) {
                   rankIteration++;
                 }
+              } else {
+                rankIteration = 1
               }
-              console.log(item.score, 'line 333')
               return (
                 <HStack horizontal={Spacing[32]} style={{ backgroundColor: Colors.WHITE }}>
                   <Text
