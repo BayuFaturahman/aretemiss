@@ -28,10 +28,11 @@ import {
 import { notifications } from "@screens/notification"
 import { homepage, moodTeam } from "@screens/homepage"
 import { JournalEntryType } from "@screens/coaching-journal/new-journal-entry"
-import { FeedItemType } from "@screens/homepage/components/feed-homepage-component"
 import changeDivision from "@screens/settings/change-division"
-import { leaderboards, guidePoints, assessment } from "@screens/leaderboard"
+import { leaderboards, guidePoints, assessment, juaraAssessment } from "@screens/leaderboard"
 import { JLDetail } from "app/store/store.coaching"
+import juaraAssessmentQuiz from "@screens/leaderboard/juara-assessment-quiz"
+import { FeedItemType } from "@screens/feed/feed.type"
 
 const screens: AppRoute[] = [
   {
@@ -142,6 +143,14 @@ const screens: AppRoute[] = [
     name: "assessment",
     component: assessment,
   },
+  {
+    name: "juaraAssesment",
+    component: juaraAssessment,
+  },
+  {
+    name: "juaraAssesmentQuiz",
+    component: juaraAssessmentQuiz,
+  },
 ]
 
 export type NavigatorParamList = {
@@ -205,6 +214,8 @@ export type NavigatorParamList = {
   leaderboards: undefined
   guidePoints: undefined
   assessment: undefined
+  juaraAssesment: undefined
+  juaraAssesmentQuiz: undefined
 }
 
 export default screens
