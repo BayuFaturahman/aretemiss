@@ -29,6 +29,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import {launchImageLibrary, launchCamera, ImagePickerResponse, } from 'react-native-image-picker';
 
 import ActionSheet from "react-native-actions-sheet";
+import { MoodComponent } from "@screens/homepage/components/mood-component"
 
 export type ProfileUpdateForm = {
   fullname: string
@@ -57,7 +58,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
     const [isModalVisible, setModalVisible] = useState<boolean>(false)
     const [modalTitle, setModalTitle] = useState<string>('')
     const [modalDesc, setModalDesc] = useState<string>('')
-    const [modalIcon, setModalIcon] = useState(smileYellow)
+    const [modalIcon, setModalIcon] = useState('senang')
 
     const [isEmailValid, setIsEmailValid] = useState<boolean>(false)
     const [emailErrorMessage, setEmailErrorMessage] = useState<string>('')
@@ -151,12 +152,12 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
             await mainStore.updateProfile(mainStore.userProfile.user_id, userProfile)
             if (mainStore.errorCode === null) {
               setIsDisableEditBtn(true);
-              setModalContent('Hore!', 'Profil kamu sudah berhasil diganti.', smileYellow)
+              setModalContent('Hore!', 'Profil kamu sudah berhasil diganti.', 'senang')
               
               await mainStore.getProfile();
               toggleModal()
             } else {
-              setModalContent('Oh no! :(', 'Perubahannya gagal diproses.\nCoba lagi ya!', angry)
+              setModalContent('Oh no! :(', 'Perubahannya gagal diproses.\nCoba lagi ya!', 'marah')
 
               console.log('error code ', mainStore.errorCode)
               if (mainStore.errorCode === 500) {
@@ -191,7 +192,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
       }
     }, [mainStore.errorCode, userProfile, isDisableEditBtn])
 
-    const setModalContent = (title: string, desc: string, icon) => {
+    const setModalContent = (title: string, desc: string, icon:string) => {
       setModalTitle(title)
       setModalDesc(desc)
       setModalIcon(icon)
@@ -541,14 +542,15 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                   <Spacer height={Spacing[20]} />
                   <HStack bottom={Spacing[32]}>
                     <Spacer />
-                    <FastImage
+                    <MoodComponent data={modalIcon} height={Spacing[64]} width={Spacing[64]}/>
+                    {/* <FastImage
                       style={{
                         height: Spacing[64],
                         width: Spacing[64],
                       }}
                       source={modalIcon}
                       resizeMode={"contain"}
-                    />
+                    /> */}
                     <Spacer />
                   </HStack>
                   <HStack bottom={Spacing[24]}>

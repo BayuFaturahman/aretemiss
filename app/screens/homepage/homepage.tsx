@@ -29,12 +29,11 @@ import { HomepageCardWrapper } from "@screens/homepage/components/homepage-card-
 import { CoachingJournalComponent } from "@screens/homepage/components/coaching-journal-component"
 import { FeedItemComponent } from "@screens/homepage/components/feed-homepage-component"
 import { FeedItemType } from "@screens/feed/feed.type"
-import { MoodHomepageComponent} from "@screens/homepage/components/mood-homepage-component";
+import { MoodHomepageComponent } from "@screens/homepage/components/mood-homepage-component"
 import { HomepageErrorCard } from "@screens/homepage/components/homepage-error-card"
 import { ProfileComponent, ProfileItemType } from "@screens/homepage/components/profile-component"
 import { LeaderboardComponent } from "@screens/homepage/components/leaderboard-component"
 import { AssessmentComponent } from "@screens/homepage/components/assessment-component"
-
 
 import RNAnimated from "react-native-animated-component"
 import { debounce } from "lodash"
@@ -42,7 +41,23 @@ import messaging from "@react-native-firebase/messaging"
 
 import Modal from "react-native-modalbox"
 import { ProfileUpdateForm } from "@screens/settings/my-account"
-import { SenyumActive, SenyumInactive, MarahActive, SedihActive, SickActive, SurprisedActive, SenyumActiveBorder, MarahActiveBorder, MarahInactive, SedihActiveBorder, SedihInactive, SickInactive, SickActiveBorder, SurprisedActiveBorder, SurprisedInactive } from "@assets/svgs"
+import {
+  SenyumActive,
+  SenyumInactive,
+  MarahActive,
+  SedihActive,
+  SickActive,
+  SurprisedActive,
+  SenyumActiveBorder,
+  MarahActiveBorder,
+  MarahInactive,
+  SedihActiveBorder,
+  SedihInactive,
+  SickInactive,
+  SickActiveBorder,
+  SurprisedActiveBorder,
+  SurprisedInactive,
+} from "@assets/svgs"
 import { MoodComponent } from "./components/mood-component"
 
 const FEED_EXAMPLE_DATA_ITEM: FeedItemType[] = [
@@ -116,12 +131,12 @@ const FEED_EXAMPLE_DATA_ITEM: FeedItemType[] = [
 ]
 
 // const MOOD_EXAMPLE_DATA:MoodItemType = {
- 
+
 //   moodType: ''
 // }
 
-const PROFILE_EXAMPLE_DATA:ProfileItemType = {
-  avatarUrl: '',
+const PROFILE_EXAMPLE_DATA: ProfileItemType = {
+  avatarUrl: "",
   user: {
     name: "",
     title: "",
@@ -145,10 +160,10 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     const [, forceUpdate] = useReducer((x) => x + 1, 0)
 
     const [selectedActivities, setSelectedActivities] = useState<string>("")
-    const [isHomepageError, setHomepageError] = useState<boolean>(false);
+    const [isHomepageError, setHomepageError] = useState<boolean>(false)
 
-    const [moodData, setMoodData] = useState<string>('');
-    const [profileData, setProfileData] = useState<ProfileItemType>(PROFILE_EXAMPLE_DATA);
+    const [moodData, setMoodData] = useState<string>("")
+    const [profileData, setProfileData] = useState<ProfileItemType>(PROFILE_EXAMPLE_DATA)
     const [selectedMood, setSelectedMood] = useState<string>("")
     const [isMoodUpdated, setIsMoodUpdated] = useState<boolean>(false)
     const [isModalVisible, setModalVisible] = useState<boolean>(false)
@@ -243,7 +258,10 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
         const profileDataTemp = PROFILE_EXAMPLE_DATA
         profileDataTemp.user.name = mainStore.userProfile.user_fullname
-        profileDataTemp.user.title = (mainStore.userProfile.team1_name? ( mainStore.userProfile.team1_name) : '')  + (mainStore.userProfile.team2_name? (', ' + mainStore.userProfile.team2_name) : '') + (mainStore.userProfile.team3_name? (', ' + mainStore.userProfile.team3_name) : '')
+        profileDataTemp.user.title =
+          (mainStore.userProfile.team1_name ? mainStore.userProfile.team1_name : "") +
+          (mainStore.userProfile.team2_name ? ", " + mainStore.userProfile.team2_name : "") +
+          (mainStore.userProfile.team3_name ? ", " + mainStore.userProfile.team3_name : "")
         profileDataTemp.avatarUrl = mainStore.userProfile.user_photo
         setProfileData(profileDataTemp)
 
@@ -346,6 +364,8 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
     const goToAssessment = () => navigation.navigate("assessment")
 
+    const goToJuaraAssessment = () => navigation.navigate("juaraAssesment")
+
     const goToTeamMood = () => {
       setModalVisible(false)
       navigation.navigate("moodTeam")
@@ -425,7 +445,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
             </HomepageCardWrapper>
             <Spacer height={Spacing[12]} />
             <HomepageCardWrapper animationDuration={700}>
-              <AssessmentComponent data={profileData} goToAssessment={goToAssessment}/>
+              <AssessmentComponent data={profileData} goToAssessment={goToJuaraAssessment} />
             </HomepageCardWrapper>
             <Spacer height={Spacing[12]} />
           </VStack>
@@ -464,56 +484,57 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
       const renderUserMood = () => {
         if (!selectedMood) {
-           return <MoodComponent data={type}/>
+          return <MoodComponent data={type} />
         }
 
         if (selectedMood) {
-          if (type === 'senang') {
+          if (type === "senang") {
             if (selectedMood === type) {
-              return <SenyumActiveBorder height={Spacing[42]} width={Spacing[42]}/>
+              return <SenyumActiveBorder height={Spacing[42]} width={Spacing[42]} />
             } else {
-              return <SenyumInactive height={Spacing[42]} width={Spacing[42]}/>
+              return <SenyumInactive height={Spacing[42]} width={Spacing[42]} />
             }
-            
-          } else if (type === 'marah') {
+          } else if (type === "marah") {
             if (selectedMood === type) {
-              return <MarahActiveBorder height={Spacing[42]} width={Spacing[42]}/>
+              return <MarahActiveBorder height={Spacing[42]} width={Spacing[42]} />
             } else {
-              return <MarahInactive height={Spacing[42]} width={Spacing[42]}/>
+              return <MarahInactive height={Spacing[42]} width={Spacing[42]} />
             }
-            
-          } else if (type === 'sedih') {
+          } else if (type === "sedih") {
             if (selectedMood === type) {
-              return <SedihActiveBorder height={Spacing[42]} width={Spacing[42]}/>
+              return <SedihActiveBorder height={Spacing[42]} width={Spacing[42]} />
             } else {
-              return <SedihInactive height={Spacing[42]} width={Spacing[42]}/>
+              return <SedihInactive height={Spacing[42]} width={Spacing[42]} />
             }
-          } else if (type === 'sakit') {
+          } else if (type === "sakit") {
             if (selectedMood === type) {
-              return <SickActiveBorder height={Spacing[42]} width={Spacing[42]}/>
+              return <SickActiveBorder height={Spacing[42]} width={Spacing[42]} />
             } else {
-              return <SickInactive height={Spacing[42]} width={Spacing[42]}/>
+              return <SickInactive height={Spacing[42]} width={Spacing[42]} />
             }
-          } else if (type === 'terkejut') {
+          } else if (type === "terkejut") {
             if (selectedMood === type) {
-              return <SurprisedActiveBorder height={Spacing[42]} width={Spacing[42]}/>
+              return <SurprisedActiveBorder height={Spacing[42]} width={Spacing[42]} />
             } else {
-              return <SurprisedInactive height={Spacing[42]} width={Spacing[42]}/>
+              return <SurprisedInactive height={Spacing[42]} width={Spacing[42]} />
             }
-          } 
+          }
         }
       }
 
       return (
         <VStack>
-          <TouchableOpacity onPress={selectMood.bind(this, type)} style={{backgroundColor: Colors.WHITE}}>
-          <VStack>
-            {renderUserMood()}
-            <Text
-            type={"body"}
-            style={{ fontSize: Spacing[18], textAlign: "center" }}
-            text={selectedMood === "" || selectedMood === type ? type : " "}
-          />
+          <TouchableOpacity
+            onPress={selectMood.bind(this, type)}
+            style={{ backgroundColor: Colors.WHITE }}
+          >
+            <VStack>
+              {renderUserMood()}
+              <Text
+                type={"body"}
+                style={{ fontSize: Spacing[18], textAlign: "center" }}
+                text={selectedMood === "" || selectedMood === type ? type : " "}
+              />
             </VStack>
           </TouchableOpacity>
         </VStack>
@@ -650,7 +671,11 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
               <Spacer height={Spacing[32]} />
               <HStack bottom={Spacing[28]}>
                 <Spacer />
-                <MoodComponent data={selectedMood.toLowerCase()} height={Spacing[84]} width={Spacing[84]}/>
+                <MoodComponent
+                  data={selectedMood.toLowerCase()}
+                  height={Spacing[84]}
+                  width={Spacing[84]}
+                />
                 <Spacer />
               </HStack>
               <Spacer height={Spacing[14]} />
