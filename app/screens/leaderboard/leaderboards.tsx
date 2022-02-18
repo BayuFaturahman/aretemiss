@@ -219,10 +219,10 @@ const Leaderboards: FC<StackScreenProps<NavigatorParamList, "notificationList">>
     }, [])
 
     useEffect(() => {
-      if (leaderboardStore.listLeaderboards) {
-        setLeaderboardsData(leaderboardStore.listLeaderboards)
+      if (leaderboardStore?.listLeaderboards) {
+        setLeaderboardsData(leaderboardStore?.listLeaderboards)
       }
-    }, [leaderboardStore.listLeaderboards, leaderboardStore.getListLeaderboardsSuccess])
+    }, [leaderboardStore?.listLeaderboards, leaderboardStore.getListLeaderboardsSuccess])
 
     const HeaderComponent = ({}) => {
       return (
@@ -280,7 +280,7 @@ const Leaderboards: FC<StackScreenProps<NavigatorParamList, "notificationList">>
             </TouchableOpacity>
 
             <Spacer height={Spacing[42]} />
-            <PodiumComponent data={leaderboardStore.listLeaderboards} />
+            <PodiumComponent data={leaderboardStore?.listLeaderboards} />
           </VStack>
           <VStack
             style={{
@@ -323,11 +323,11 @@ const Leaderboards: FC<StackScreenProps<NavigatorParamList, "notificationList">>
               />
             }
             showsVerticalScrollIndicator={false}
-            data={leaderboardStore.listLeaderboards}
+            data={leaderboardStore?.listLeaderboards}
             ListEmptyComponent={() => <EmptyList description={"Oops. Sepertinya belum ada yang jadi JUARA-nya nih. Yuk, mulai dapetin poinnya!"} navigateTo={goBack} />}
             renderItem={({ item, index }) => {
               if (index !== 0) {
-                if (item.score !== leaderboardStore.listLeaderboards[index - 1].score) {
+                if (item.score !== leaderboardStore?.listLeaderboards[index - 1].score) {
                   rankIteration++;
                 }
               }

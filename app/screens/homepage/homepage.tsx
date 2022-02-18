@@ -423,10 +423,10 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
                 goToNewPost={goToNewPost}
               />
             </HomepageCardWrapper>
-            <Spacer height={Spacing[12]} />
+            {/* <Spacer height={Spacing[12]} />
             <HomepageCardWrapper animationDuration={700}>
               <AssessmentComponent data={profileData} goToAssessment={goToAssessment}/>
-            </HomepageCardWrapper>
+            </HomepageCardWrapper> */}
             <Spacer height={Spacing[12]} />
           </VStack>
         </>
