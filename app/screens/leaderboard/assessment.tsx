@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useReducer, useState } from "react"
+import React, { FC, useReducer, useState } from "react"
 import { SafeAreaView, ScrollView, TouchableOpacity } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
