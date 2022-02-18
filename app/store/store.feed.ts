@@ -5,8 +5,8 @@ import { makeAutoObservable } from "mobx"
 import ServiceStore from "./store.service"
 import { Api } from "@services/api"
 import { FeedApi } from "@services/api/feed/feed-api"
-import { CommentApiModel, CommentNotifApiModel, ErrorFormResponse, FeedApiModel } from "@services/api/feed/feed-api.types"
-import { CommentNotificationType, CreateCommentToType, CreateCommentType, CreatePostType, FeedItemType, FeedPostCommentType } from "@screens/feed/feed.type"
+import { CommentApiModel, CommentNotifApiModel, ErrorFormResponse, FeedApiModel, FeedCategoryApiModel } from "@services/api/feed/feed-api.types"
+import { CommentNotificationType, CreateCommentToType, CreateCommentType, CreatePostType, FeedCategoryType, FeedItemType, FeedPostCommentType } from "@screens/feed/feed.type"
 
 
 export default class FeedStore {
@@ -29,6 +29,8 @@ export default class FeedStore {
   listCommentNotif: CommentNotificationType[]
   newNotif: number
 
+  listFeedCategory: FeedCategoryType[]
+
   constructor(serviceStore: ServiceStore, api: Api) {
     this.serviceStore = serviceStore
     this.api = api
@@ -39,6 +41,7 @@ export default class FeedStore {
     this.errorCode = null
     this.errorMessage = null
 
+    this.listFeedCategory = []
     this.postDetail = null
     this.listFeeds = []
     this.listMyFeed = []
@@ -91,6 +94,7 @@ export default class FeedStore {
           photo: post.feed_author_photo,
           mood: post.feed_author_mood
         },
+        type: post.feed_type_name,
         commentCount: post.feed_comment_count,
         isNew: lastSeen.getTime() < postCreated.getTime(),
         createdAt: post.feed_created_at,
@@ -193,6 +197,7 @@ export default class FeedStore {
           photo: post.feed_author_photo,
           mood: post.feed_author_mood
         },
+        type: post.feed_type_name,
         commentCount: post.feed_comment_count,
         isNew: lastSeen.getTime() < postCreated.getTime(),
         createdAt: post.feed_created_at,
@@ -253,6 +258,7 @@ export default class FeedStore {
         photo: data.feed_author_photo,
         mood: data.feed_author_mood
       },
+      type: data.feed_type_name,
       commentCount: data.feed_comment_count,
       isNew: lastSeen.getTime() < postCreated.getTime(),
       createdAt: data.feed_created_at,
@@ -529,6 +535,48 @@ export default class FeedStore {
     this.listCommentNotif = []
     console.log('clear list comment notif')
     // console.log("list feed: ", this.listFeeds)
+  }
+
+  async getListFeedCategory(page = 1, limit = 10) {
+    this.isLoading = true
+    try {
+      const response = await this.feedApi.getListFeedCategory(page, limit)
+
+      console.log('response.response.data', response.response.data)
+
+      if (response.kind === "form-error") {
+        this.formError(response.response)
+      }
+
+      if (response.kind === "ok") {
+        this.getListFeedCategorySuccess(response.response.data)
+      }
+    } catch (e) {
+      console.log(e)
+      this.setErrorMessage(e)
+    } finally {
+      console.log("getListMyFeeds done")
+      this.isLoading = false
+    }
+  }
+
+  getListFeedCategorySuccess(data: FeedCategoryApiModel[]) {
+    console.log("getListFeedCategorySuccess data", data)
+    const temptListCategory: FeedCategoryType[] = []
+    data.forEach(category => {
+      
+      temptListCategory.push({
+        id: category.feed_type_id,
+        item: category.feed_type_name,
+        key: category.feed_type_name,
+      })
+    })
+    
+    
+    this.listFeedCategory = temptListCategory
+    console.log('this.listFeedCategory ', this.listFeedCategory)
+    this.isLoading = false
+    this.refreshData = true    
   }
 
   formReset() {

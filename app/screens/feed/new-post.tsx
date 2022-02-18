@@ -10,7 +10,7 @@ import {
 } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
-import { Text, BackNavigation, Button, TextField } from "@components"
+import { Text, BackNavigation, Button, TextField, DropDownPicker, DropDownItem } from "@components"
 import { NavigatorParamList } from "@navigators/feed-navigator"
 import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
@@ -24,6 +24,8 @@ import insertPict from "@assets/icons/feed/insertPict.png"
 import ActionSheet from "react-native-actions-sheet/index"
 
 import Spinner from "react-native-loading-spinner-overlay"
+import { Formik } from "formik"
+import {debounce} from "lodash";
 
 const NEW_ITEM_CONTAINER: StyleProp<any> = {
   zIndex: 10,
@@ -64,6 +66,17 @@ const addImageStyle: StyleProp<any> = {
   marginRight: Spacing[14],
 }
 
+export type newPostForm = {
+  description: string,
+  category: DropDownItem
+}
+
+
+const newPostInitialForm: newPostForm = {
+  description: '',
+  category: null
+}
+
 const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({ navigation }) => {
   // empty list state
   const { feedStore } = useStores()
@@ -72,12 +85,17 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
   const maxWidthImage = 1024
   const maxHeightImage = 1024
 
-  const [description, setDescription] = useState<string>('')
+  // const [description, setDescription] = useState<string>('')
   const [selectedPicture, setSelectedPicture] = useState([])
   const [uploadedPicture, setUploadedPicture] = useState([])
   const [isAddPictDisabled, setIsAddPictDisabled] = useState<boolean>(false)
   const [selectionPictLimit, setSelectionPictLimit] = useState<number>(4)
   const [errorMessage, setErrorMessage] = useState<string>('')
+  const [isCategoryError, setIsCategoryError] = useState<boolean>(false)
+  const [feedCategory, setFeedCategory] = useState(feedStore.listFeedCategory)
+
+
+  // const feedCategory = feedStore.listFeedCategory
 
   // const onRefresh = React.useCallback(async() => {
   //   setCoachingData([])
@@ -183,11 +201,6 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
     )
   }, [])
 
-  const getListFeed = useCallback(async () => {
-    feedStore.formReset()
-    await feedStore.getListFeeds()
-  }, [])
-
   useEffect(() => {
     if (selectedPicture.length === 4) {
       setIsAddPictDisabled(true)
@@ -208,14 +221,34 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
     selectionPictLimit,
   ])
 
-  const submitNewPost = useCallback(async () => {
+  useEffect(() => {
+    firstLoadFeedCategory()
+    console.log('get list feed category')
+  },[])
+
+  
+  const firstLoadFeedCategory = debounce( async () => {
+    await feedStore.getListFeedCategory()
+    setFeedCategory(feedStore.listFeedCategory)
+  }, 500)
+  
+  const submitNewPost = useCallback(async (data: newPostForm) => {
     const imagesUrl = uploadedPicture.join(';')
     console.log('imagesUrl ', imagesUrl)
+    console.log('data', data)
+
+    if (!data.category.id ) {
+      setIsCategoryError(true)
+      return 
+    } else {
+      setIsCategoryError(false)
+    }
 
     feedStore.formReset()
     await feedStore.createPost({ 
-      "description": description,
-      "images_url": imagesUrl
+      "description": data.description,
+      "images_url": imagesUrl,
+      "type_id": data.category.id
     });
 
     if (feedStore.errorCode === null) {
@@ -226,7 +259,7 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
       setErrorMessage(feedStore.errorMessage)
       console.log(feedStore.errorCode, ' : ', feedStore.errorMessage )
     }
-  }, [description, setDescription, feedStore.errorCode, selectedPicture, uploadedPicture, setUploadedPicture])
+  }, [feedStore.errorCode, selectedPicture, uploadedPicture, setUploadedPicture])
 
 
   return (
@@ -245,86 +278,111 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
             />
           }
         >
-          <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
-            <HStack>
-              <Text type={"left-header"} style={{}} text="Update your Feed." />
-              <Spacer />
+           <Formik initialValues={newPostInitialForm} onSubmit={submitNewPost}>
+              {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => (
+            <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
               <HStack>
-                <Button type={"transparent"} text={"Cancel"} onPress={goBack} />
+                <Text type={"left-header"} style={{}} text="Update your Feed." />
+                <Spacer />
+                <HStack>
+                  <Button type={"transparent"} text={"Cancel"} onPress={goBack} />
+                </HStack>
               </HStack>
-            </HStack>
 
-            {/* <Spacer height={Spacing[8]} /> */}
-            <VStack top={Spacing[12]}>
-              <TextField
-                style={{ paddingTop: 0, textAlign: "left" }}
-                inputStyle={{ minHeight: Spacing[128],textAlign: 'left', paddingLeft: Spacing[12]}}
-                isRequired={false}
-                secureTextEntry={false}
-                isTextArea={true}
-                placeholder={"Mau cerita tentang apa nih?"}
-                onChangeText={(value) => setDescription(value)}
-                charCounter={false}
-                value={description}
-              />
-              
-            </VStack>
-            <Text type={"warning"} style={{ textAlign: "center" }}>
-                {errorMessage}
-            </Text>
-            <HStack>
+              {/* <Spacer height={Spacing[8]} /> */}
+              <VStack top={Spacing[12]}>
+                <TextField
+                  value={values.description}
+                  style={{ paddingTop: 0, textAlign: "left" }}
+                  inputStyle={{ minHeight: Spacing[128],textAlign: 'left', paddingLeft: Spacing[12]}}
+                  isRequired={true}
+                  secureTextEntry={false}
+                  isTextArea={true}
+                  placeholder={"Mau cerita tentang apa nih?"}
+                  onChangeText={handleChange("description")}
+                  // onChangeText={(value) => setDescription(value)}
+                  charCounter={false}
+                  // value={description}
+                />
+                
+              </VStack>
+              <Text type={"warning"} style={{ textAlign: "center" }}>
+                  {errorMessage}
+              </Text>
               <HStack>
-                <TouchableOpacity
-                  disabled={isAddPictDisabled}
-                  onPress={() => {
-                    actionSheetRef.current?.setModalVisible(true)
-                  }}
-                >
-                  <View
-                    style={addImageStyle}
+                <HStack>
+                  <TouchableOpacity
+                    disabled={isAddPictDisabled}
+                    onPress={() => {
+                      actionSheetRef.current?.setModalVisible(true)
+                    }}
                   >
-                    <FastImage
-                      style={{
-                        backgroundColor: Colors.MAIN_BLUE,
-                        height: Spacing[24],
-                        width: Spacing[24],
-                        borderRadius: Spacing[8],
-                      }}
-                      source={insertPict}
-                      resizeMode={"contain"}
-                    />
-                  </View>
-                </TouchableOpacity>
+                    <View
+                      style={addImageStyle}
+                    >
+                      <FastImage
+                        style={{
+                          backgroundColor: Colors.MAIN_BLUE,
+                          height: Spacing[24],
+                          width: Spacing[24],
+                          borderRadius: Spacing[8],
+                        }}
+                        source={insertPict}
+                        resizeMode={"contain"}
+                      />
+                    </View>
+                  </TouchableOpacity>
 
-                <ScrollView style={{ maxWidth: "65%" }} horizontal={true}>
-                  {selectedPicture.map((pic, id) => {
-                    return (
-                      <VStack key={id}>
-                        <NotificationCounter id={id} />
-                        <FastImage
-                          key={id}
-                          style={feedImageStyle}
-                          source={pic}
-                          resizeMode={"cover"}
-                        />
-                      </VStack>
-                    )
-                  })}
-                </ScrollView>
+                  <ScrollView style={{ maxWidth: "65%" }} horizontal={true}>
+                    {selectedPicture.map((pic, id) => {
+                      return (
+                        <VStack key={id}>
+                          <NotificationCounter id={id} />
+                          <FastImage
+                            key={id}
+                            style={feedImageStyle}
+                            source={pic}
+                            resizeMode={"cover"}
+                          />
+                        </VStack>
+                      )
+                    })}
+                  </ScrollView>
+                </HStack>
+                <Button
+                  type={"primary"}
+                  text={"Update"}
+                  style={updateButtonStyle}
+                  textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
+                  onPress={handleSubmit}
+                />
               </HStack>
-              <Button
-                type={"primary"}
-                text={"Update"}
-                style={updateButtonStyle}
-                textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
-                onPress={submitNewPost}
+              {/* <HStack>
+                <Spacer />
+                <Spacer />
+              </HStack> */}
+              <DropDownPicker
+                items={feedCategory}
+                label='Pilih Kategori'
+                isRequired={false}
+                // value={values.lea}
+                onValueChange={(value: DropDownItem | DropDownItem[]) => {
+                  setFieldValue("category", value)
+                }}
+                placeholder={"Pilih kategori"}
+                containerStyle={{ marginTop: Spacing[4] }}
+                isError={isCategoryError}
+                multiple={false}
               />
-            </HStack>
-            <HStack>
-              <Spacer />
-              <Spacer />
-            </HStack>
-          </VStack>
+              <Spacer height={Spacing[12]} />
+              { isCategoryError && 
+                <Text type={"warning"} style={{ textAlign: "center" }}>
+                  Woops. Kamu belum memilih kategori post Feed-mu. Dipilih dulu yuk!
+                </Text>
+              }
+            </VStack>
+           )}
+           </Formik>
         </ScrollView>
       </SafeAreaView>
       <Spinner visible={feedStore.isLoading} textContent={"Memuat..."} />
@@ -356,3 +414,4 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
 })
 
 export default NewPost
+
