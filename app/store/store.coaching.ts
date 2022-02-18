@@ -46,10 +46,11 @@ export type JournalDetail = {
   journal_strength: string
   journal_type: string
   journal_date: string
+  journal_label: string
 
-  jl_lesson_learned: JLDetail[]
-  jl_commitment: JLDetail[]
-  jl_content: JLDetail[]
+  jl_lesson_learned
+  jl_commitment
+  jl_content
 
 
   jl_learner_fullname: []
@@ -59,17 +60,23 @@ export type JournalDetail = {
   is_coachee: boolean
 }
 
+export type JournalLearnerModel = {
+  jl_id: string
+  jl_learner_id: string
+  jl_fullname: string
+}
+
 export type JournalModel = {
   journal_id : string
   journal_title : string
   journal_created_at : string
-  jl_id: string
+  journal_date: string
   coach_id: string
   journal_type: string
+  journal_label: string
   coach_fullname: string
-  learner_id: string
-  learner_fullname: string
-  journal_date: string
+  is_coachee: boolean
+  jourrnal_learner: JournalLearnerModel[]
 }
 
 export default class CoachingStore {

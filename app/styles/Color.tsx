@@ -11,7 +11,7 @@ export const Preset = {
 // Black & White
 export const BLACK = '#000000';
 export const WHITE = '#FFFFFF';
-
+export const TRANSPARENT = '#00000a0';
 // Gray
 export const GRAY100 = '#F7FAFC';
 export const GRAY200 = '#EDF2F7';
