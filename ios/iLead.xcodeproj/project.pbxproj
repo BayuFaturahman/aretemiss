@@ -337,7 +337,7 @@
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = M2L9Z4F4CF;
 						LastSwiftMigration = 1120;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 					};
 					2D02E47A1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -737,9 +737,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = iLead/iLead.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 25;
+				CODE_SIGN_IDENTITY = "Apple Distribution: Salsabila Athaya Zahra (M2L9Z4F4CF)";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 27;
 				DEVELOPMENT_TEAM = M2L9Z4F4CF;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = iLead/Info.plist;
@@ -752,7 +752,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kubik.ilead;
 				PRODUCT_NAME = iLead;
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "distrib-stef";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -767,9 +767,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = iLead/iLead.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 25;
+				CODE_SIGN_IDENTITY = "Apple Distribution: Salsabila Athaya Zahra (M2L9Z4F4CF)";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 27;
 				DEVELOPMENT_TEAM = M2L9Z4F4CF;
 				INFOPLIST_FILE = iLead/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -781,7 +781,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kubik.ilead;
 				PRODUCT_NAME = iLead;
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "distrib-stef";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";

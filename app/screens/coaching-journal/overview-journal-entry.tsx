@@ -152,12 +152,12 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
       if (isCoachee) {
         console.log("is coachee true")
         console.log(coachingStore.journalDetail)
-        journalEntryInitialValue.learner = coachingStore.journalDetail.jl_learner_fullname
+        // journalEntryInitialValue.learner = coachingStore.journalDetail.jl_learner_fullname
         journalEntryInitialValue.jlContent = coachingStore.journalDetail.jl_content
         journalEntryInitialValue.jlLessonLearned = coachingStore.journalDetail.jl_lesson_learned
         journalEntryInitialValue.jlCommitment = coachingStore.journalDetail.jl_commitment
-        // journalEntryInitialValue.type = coachingStore.journalDetail.journal_type;
-        // journalEntryInitialValue.label = coachingStore.journalDetail.journal_label;
+        journalEntryInitialValue.type = coachingStore.journalDetail.journal_type;
+        journalEntryInitialValue.label = coachingStore.journalDetail.journal_label;
 
 
         setJlLessonLearned(coachingStore.journalDetail.jl_lesson_learned)
@@ -391,30 +391,40 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
 
                     <VStack>
                       <Spacer height={Spacing[8]} />
-                      <ScrollView
-                        style={{
-                          width: "100%",
-                          backgroundColor: Colors.MAIN_BLUE,
-                          borderRadius: Spacing[20],
-                          minHeight: 44,
-                        }}
-                        horizontal={true}
-                      >
-                        <TextField
-                          value={title}
-                          isRequired={false}
-                          editable={false}
-                          inputStyle={{
-                            backgroundColor: Colors.MAIN_BLUE,
-                            color: Colors.WHITE,
-                            textAlign: "left",
-                            paddingHorizontal: 10,
-                            fontWeight: "bold",
+                      <View  
+                      style={{
+                        maxWidth: "100%",
+                        backgroundColor: Colors.MAIN_BLUE,
+                        borderRadius: Spacing[20],
+                        minHeight: 44,
+                        paddingHorizontal: Spacing[8]
+                      }}>
+                        <ScrollView
+                          style={{
+                            width: "100%",
+                            borderRadius: Spacing[20],
+                            minHeight: 44,
                           }}
-                          style={{ paddingVertical: 0 }}
-                          secureTextEntry={false}
-                        />
-                      </ScrollView>
+                          horizontal={true}
+                        >
+                          <TextField
+                            value={title}
+                            isRequired={false}
+                            editable={false}
+                            inputStyle={{
+                              backgroundColor: Colors.TRANSPARENT,
+                              color: Colors.WHITE,
+                              textAlign: "left",
+                              paddingHorizontal: 10,
+                              fontWeight: "bold",
+                              borderWidth: 0
+                            }}
+                            style={{ paddingVertical: 0 }}
+                            secureTextEntry={false}
+                          />
+                        </ScrollView>
+                      </View>
+                      
                       {isCoachee ? (
                         <HStack top={Spacing[8]}>
                           <VStack left={Spacing[24]} right={Spacing[8]}>

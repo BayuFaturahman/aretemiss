@@ -89,6 +89,10 @@ export const CoachingJournalItemRender = (
       <VStack style={{alignItems: 'flex-start'}}>
 
         {item.activities.map((activitiesItem, activitiesIndex)=>{
+          let listLearner = ''
+          activitiesItem.journal_learner.forEach(learner => {
+            listLearner = listLearner===''? learner.jl_fullname : listLearner +', '+ learner.jl_fullname
+          })
 
           let statusColor:string = Colors.MAIN_BLUE
 
@@ -147,7 +151,7 @@ export const CoachingJournalItemRender = (
             <VStack style={[Layout.widthFull,{minWidth: dimensions.screenWidth - Spacing[72]}]}>
               {/* {renderContent} */}
               {selectedActivities === activitiesItem.id ? renderButtonTagged(activitiesItem.isTagged, activitiesItem.id, activitiesItem.coach_id) :
-                <TouchableOpacity key={activitiesItem.jl_id} onPress={()=>{onPressActivity(activitiesItem.id)}}>
+                <TouchableOpacity key={activitiesItem.id} onPress={()=>{onPressActivity(activitiesItem.id)}}>
                   <HStack horizontal={Spacing[8]} style={{maxWidth: dimensions.screenWidth - Spacing[144], minHeight:Spacing[64]}}>
                     <View style={{height: Spacing[16], width: Spacing[16], backgroundColor: statusColor, borderRadius: Spacing[128]}} />
                     <Spacer width={Spacing[12]}/>
@@ -169,7 +173,7 @@ export const CoachingJournalItemRender = (
                               {`${activitiesItem.coach_fullname}`}
                             </Text> :
                             <Text type={'body'} style={{color: Colors.UNDERTONE_BLUE}}>
-                              {`${activitiesItem.learner_fullname}`}
+                              {`${listLearner}`}
                             </Text>
                           }
                         </Text> : null}

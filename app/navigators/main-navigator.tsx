@@ -1,179 +1,221 @@
-import {AppRoute} from "@navigators/navigation-type";
+import { AppRoute } from "@navigators/navigation-type"
 import {
   coachingJournalMain,
   newJournalEntry,
   fillFeedback,
   quizForm,
   fillFeedbackDetail,
-  overviewJournalEntry, fillFeedbackCoachee, overviewJournalEntryByCoachee
-} from "@screens/coaching-journal";
-import {commentList, feedTimelineMain, feedGuideline, myFeedList, newPost, postDetails} from "@screens/feed";
-import {settings, myAccount, myAccountVerifyOTP, changePassword, changePhone, notification} from "@screens/settings";
-import {notifications} from "@screens/notification";
-import {homepage, moodTeam} from "@screens/homepage";
-import {createProfile} from "@screens";
-import {JournalEntryType} from "@screens/coaching-journal/new-journal-entry";
-import { FeedItemType } from "@screens/homepage/components/feed-homepage-component";
-import changeDivision from "@screens/settings/change-division";
-import { JLDetail } from "app/store/store.coaching";
+  overviewJournalEntry,
+  fillFeedbackCoachee,
+  overviewJournalEntryByCoachee,
+} from "@screens/coaching-journal"
+import {
+  commentList,
+  feedTimelineMain,
+  feedGuideline,
+  myFeedList,
+  newPost,
+  postDetails,
+} from "@screens/feed"
+import {
+  settings,
+  myAccount,
+  myAccountVerifyOTP,
+  changePassword,
+  changePhone,
+  notification,
+} from "@screens/settings"
+import { notifications } from "@screens/notification"
+import { homepage, moodTeam } from "@screens/homepage"
+import { JournalEntryType } from "@screens/coaching-journal/new-journal-entry"
+import changeDivision from "@screens/settings/change-division"
+import { leaderboards, guidePoints, assessment, juaraAssessment } from "@screens/leaderboard"
+import { JLDetail } from "app/store/store.coaching"
+import juaraAssessmentQuiz from "@screens/leaderboard/juara-assessment-quiz"
+import { FeedItemType } from "@screens/feed/feed.type"
 
 const screens: AppRoute[] = [
   {
-    name: 'coachingJournalMain',
+    name: "coachingJournalMain",
     component: coachingJournalMain,
   },
   {
-    name: 'newJournalEntry',
+    name: "newJournalEntry",
     component: newJournalEntry,
   },
   {
-    name: 'fillFeedback',
+    name: "fillFeedback",
     component: fillFeedback,
   },
   {
-    name: 'settingsPage',
+    name: "settingsPage",
     component: settings,
   },
   {
-    name: 'myAccount',
+    name: "myAccount",
     component: myAccount,
   },
   {
-    name: 'myAccountVerifyOTP',
+    name: "myAccountVerifyOTP",
     component: myAccountVerifyOTP,
   },
   {
-    name: 'changePassword',
+    name: "changePassword",
     component: changePassword,
   },
   {
-    name: 'changeDivision',
+    name: "changeDivision",
     component: changeDivision,
   },
   {
-    name: 'changePhone',
+    name: "changePhone",
     component: changePhone,
   },
   {
-    name: 'quizForm',
+    name: "quizForm",
     component: quizForm,
   },
   {
-    name: 'notificationList',
+    name: "notificationList",
     component: notifications,
   },
   {
-    name: 'notificationSettings',
+    name: "notificationSettings",
     component: notification,
   },
   {
-    name: 'homepage',
+    name: "homepage",
     component: homepage,
   },
   {
-    name: 'moodTeam',
+    name: "moodTeam",
     component: moodTeam,
   },
   {
-    name: 'fillFeedbackDetail',
+    name: "fillFeedbackDetail",
     component: fillFeedbackDetail,
   },
   {
-    name: 'overviewJournalEntry',
+    name: "overviewJournalEntry",
     component: overviewJournalEntry,
   },
   {
-    name: 'overviewJournalEntryByCoachee',
+    name: "overviewJournalEntryByCoachee",
     component: overviewJournalEntryByCoachee,
   },
   {
-    name: 'fillFeedbackCoachee',
+    name: "fillFeedbackCoachee",
     component: fillFeedbackCoachee,
   },
   {
-    name: 'feedTimelineMain',
+    name: "feedTimelineMain",
     component: feedTimelineMain,
   },
   {
-    name: 'feedGuideline',
+    name: "feedGuideline",
     component: feedGuideline,
   },
   {
-    name: 'newPost',
+    name: "newPost",
     component: newPost,
   },
   {
-    name: 'commentList',
+    name: "commentList",
     component: commentList,
   },
   {
-    name: 'myFeedList',
+    name: "myFeedList",
     component: myFeedList,
   },
   {
-    name: 'postDetails',
+    name: "postDetails",
     component: postDetails,
   },
-];
+  {
+    name: "leaderboards",
+    component: leaderboards,
+  },
+  {
+    name: "guidePoints",
+    component: guidePoints,
+  },
+  {
+    name: "assessment",
+    component: assessment,
+  },
+  {
+    name: "juaraAssesment",
+    component: juaraAssessment,
+  },
+  {
+    name: "juaraAssesmentQuiz",
+    component: juaraAssessmentQuiz,
+  },
+]
 
 export type NavigatorParamList = {
-  coachingJournalMain: undefined;
+  coachingJournalMain: undefined
   feedTimelineMain: {
     newPost?: boolean
-  };
+  }
   feedGuideline: {
     savedAgreeTnc: string
-  };
-  settingsPage: undefined;
-  myAccount:{
-    newEmail?: string,
-    newNickname?: string,
-    photo?: string,
+  }
+  settingsPage: undefined
+  myAccount: {
+    newEmail?: string
+    newNickname?: string
+    photo?: string
     isPasswordChange?: boolean
-  };
+  }
   myAccountVerifyOTP: {
-    newEmail: string,
+    newEmail: string
     newNickname: string
     photo?: string
-  };
-  changePhone: undefined;
-  changePassword: undefined;
-  changeDivision: undefined;
+  }
+  changePhone: undefined
+  changePassword: undefined
+  changeDivision: undefined
   newJournalEntry: {
     isDetail: boolean
-  };
+  }
   fillFeedback: {
-    isDetail: boolean;
-    data: JournalEntryType;
-  };
-  quizForm: undefined;
-  notificationList: undefined;
-  notificationSettings: undefined;
-  homepage: undefined;
-  moodTeam: undefined;
-  fillFeedbackDetail: undefined;
+    isDetail: boolean
+    data: JournalEntryType
+  }
+  quizForm: undefined
+  notificationList: undefined
+  notificationSettings: undefined
+  homepage: undefined
+  moodTeam: undefined
+  fillFeedbackDetail: undefined
   overviewJournalEntry: {
-    journalId: string,
-    isCoachee: boolean
-  };
-  overviewJournalEntryByCoachee: {
-    title: string;
-    lessonsLearned: JLDetail[],
-    commitments: JLDetail[],
-    contents: JLDetail[],
-    learnersFullname: []
-  };
-  fillFeedbackCoachee: {
-    isFilled: boolean,
     journalId: string
-  };
-  newPost: undefined;
-  commentList: undefined;
-  myFeedList: undefined;
+    isCoachee: boolean
+  }
+  overviewJournalEntryByCoachee: {
+    title: string
+    lessonsLearned: JLDetail[]
+    commitments: JLDetail[]
+    contents: JLDetail[]
+    learnersFullname: []
+  }
+  fillFeedbackCoachee: {
+    isFilled: boolean
+    journalId: string
+  }
+  newPost: undefined
+  commentList: undefined
+  myFeedList: undefined
   postDetails: {
-    data: FeedItemType,
+    data: FeedItemType
     isFromMainFeed: boolean
-  };
-};
+  }
+  leaderboards: undefined
+  guidePoints: undefined
+  assessment: undefined
+  juaraAssesment: undefined
+  juaraAssesmentQuiz: undefined
+}
 
 export default screens

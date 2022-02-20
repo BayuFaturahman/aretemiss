@@ -8,8 +8,6 @@ import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
 import { Colors, Layout, Spacing } from "@styles"
 import Modal from "react-native-modalbox"
-import senang from "@assets/icons/mood/senyum.png"
-import marah from "@assets/icons/mood/marah.png"
 
 
 import { Formik } from "formik"
@@ -19,6 +17,7 @@ import Spinner from "react-native-loading-spinner-overlay"
 import { IOption } from "react-native-modal-selector"
 import { dimensions } from "@config/platform.config"
 import FastImage from "react-native-fast-image"
+import { MoodComponent } from "@screens/homepage/components/mood-component"
 
 export type TeamUpdateForm = {
   team1Id: string
@@ -42,7 +41,7 @@ const ChangeDivision: FC<StackScreenProps<NavigatorParamList, "changeDivision">>
     const [isModalVisible, setModalVisible] = useState<boolean>(false)
     const [modalTitle, setModalTitle] = useState<string>("")
     const [modalDesc, setModalDesc] = useState<string>("")
-    const [modalIcon, setModalIcon] = useState(senang)
+    const [modalIcon, setModalIcon] = useState('senang')
 
     const [team1Data, setTeam1Data] = useState(mainStore.userProfile.team1_id? {"id": mainStore.userProfile.team1_id, "item": mainStore.userProfile.team1_name}:{})
     const [team2Data, setTeam2Data] = useState(mainStore.userProfile.team2_id? {"id": mainStore.userProfile.team2_id, "item": mainStore.userProfile.team2_name}:{})
@@ -81,7 +80,7 @@ const ChangeDivision: FC<StackScreenProps<NavigatorParamList, "changeDivision">>
     }, [])
 
 
-    const setModalContent = (title: string, desc: string, icon) => {
+    const setModalContent = (title: string, desc: string, icon: string) => {
       setModalTitle(title)
       setModalDesc(desc)
       setModalIcon(icon)
@@ -111,11 +110,11 @@ const ChangeDivision: FC<StackScreenProps<NavigatorParamList, "changeDivision">>
 
       // setIsSubmitPasswordChange(false)
       if (mainStore.errorCode === null) {
-        setModalContent('Berhasil!', 'Permintaanmu berhasil dikirim. Silakan tunggu sampai team-mu berhasil diganti atau ditambahkan ya!', senang)
+        setModalContent('Berhasil!', 'Permintaanmu berhasil dikirim. Silakan tunggu sampai team-mu berhasil diganti atau ditambahkan ya!', 'senang')
         await mainStore.getProfile();
         toggleModal(true)
       } else {
-        setModalContent('Oh no! :(', 'Perubahannya gagal diproses.\nCoba lagi ya!', marah)
+        setModalContent('Oh no! :(', 'Perubahannya gagal diproses.\nCoba lagi ya!', 'marah')
         toggleModal(true)
       }
     }, [])
@@ -314,14 +313,15 @@ const ChangeDivision: FC<StackScreenProps<NavigatorParamList, "changeDivision">>
                   <Spacer height={Spacing[20]} />
                   <HStack bottom={Spacing[32]}>
                     <Spacer />
-                    <FastImage
+                    <MoodComponent data={modalIcon} width={Spacing[64]} height={Spacing[64]}/>
+                    {/* <FastImage
                       style={{
                         height: Spacing[64],
                         width: Spacing[64],
                       }}
                       source={modalIcon}
                       resizeMode={"contain"}
-                    />
+                    /> */}
                     <Spacer />
                   </HStack>
                   <HStack bottom={Spacing[24]}>

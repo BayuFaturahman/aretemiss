@@ -133,7 +133,7 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
                       {mainStore.errorMessage}
                     </Text>
 
-                    <Spacer height={Spacing[32]} />
+                    <Spacer height={Spacing[14]} />
                     <TextField
                       label="Nama lengkap:"
                       style={{ paddingTop: 0 }}
@@ -196,8 +196,8 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
                       zIndexInverse={3000}
                       dropDownDirection={"BOTTOM"}
                     />
-                    <VStack top={Spacing[8]}>
-                      <Text type={"body"} style={{ textAlign: "right" }}>
+                    {/* <VStack top={Spacing[8]}> */}
+                      {/* <Text type={"body"} style={{ textAlign: "right" }}>
                         * = Wajib diisi
                       </Text>
                       <Spacer height={Spacing[32]} />
@@ -214,7 +214,7 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
                         isError={false}
                         value={values.nickname}
                         onChangeText={handleChange("nickname")}
-                      />
+                      /> */}
                       {/* <TextField
                       label="Alamat e-mail:"
                       style={{ paddingTop: 0}}
@@ -223,7 +223,7 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
                       onChangeText={handleChange('email')}
                     /> */}
 
-                      <DropDownPicker
+                      {/* <DropDownPicker
                         items={handleAvailableTeamList(values)}
                         isRequired={true}
                         label="Pilih team:"
@@ -270,12 +270,12 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
                         <Text type={"body"} style={{ textAlign: "right" }}>
                           * = Wajib diisi
                         </Text>
-                      </VStack>
+                      </VStack> */}
                     </VStack>
-                    <VStack top={Spacing[32]} horizontal={Spacing[96]} style={{ zIndex: -10 }}>
+                    {/* <VStack top={Spacing[32]} horizontal={Spacing[96]} style={{ zIndex: -10 }}>
                       <Button type={"primary"} text={"Simpan"} onPress={() => handleSubmit()} />
-                    </VStack>
-                  </VStack>
+                    </VStack> */}
+                  {/* </VStack> */}
                   <VStack top={Spacing[32]} horizontal={Spacing[96]} style={{ zIndex: -10 }}>
                     <Button type={"primary"} text={"Simpan"} onPress={() => handleSubmit()} />
                   </VStack>
