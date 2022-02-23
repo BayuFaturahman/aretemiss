@@ -16,7 +16,7 @@ import { useStores } from "../../bootstrap/context.boostrap"
 
 import Spinner from 'react-native-loading-spinner-overlay';
 
-type ChoiceItemType = {
+export type ChoiceItemType = {
   id: string
   title: string
   choice: 0 | 1 | 2 | 3 | 4 | 5

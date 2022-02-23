@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from "react"
+import React, { FC, useCallback, useEffect, useState, useRef } from "react"
 import {
   ActivityIndicator,
   FlatList,
@@ -87,6 +87,8 @@ const PODIUM_EXAMPLE: LeaderBoardItem[] = [
   },
 ]
 
+let rankIteration = 1
+
 const PodiumComponent = ({ data = PODIUM_EXAMPLE }: { data: LeaderBoardItem[] }) => {
   const BASE_HEIGHT = CustomSpacing(140)
 
@@ -96,8 +98,9 @@ const PodiumComponent = ({ data = PODIUM_EXAMPLE }: { data: LeaderBoardItem[] })
         style={{
           flex: 1 / 3,
           backgroundColor: Colors.HONEY_YELLOW,
-          height: BASE_HEIGHT / 2,
+          height: data.length > 1 ? (data[1].score / data[0].score) * BASE_HEIGHT : BASE_HEIGHT * 0.5,
           borderTopStartRadius: Spacing[12],
+          borderTopEndRadius: Spacing[12],
           borderBottomStartRadius: Spacing[12],
           borderColor: Colors.HONEY_YELLOW,
           right: -1,
@@ -108,13 +111,13 @@ const PodiumComponent = ({ data = PODIUM_EXAMPLE }: { data: LeaderBoardItem[] })
         <Text
           type={"body-bold"}
           style={{ color: Colors.WHITE, top: -Spacing[20], position: "absolute" }}
-          text={`${data[1].name}`}
+          text={`${data.length > 1 ? data[1].user_fullname : '-'}`}
         />
         <Text type={"body-bold"} style={{ color: Colors.UNDERTONE_BLUE }} text="#2" />
         <Text
           type={"body-bold"}
           style={{ color: Colors.UNDERTONE_BLUE }}
-          text={`${data[1].point} poin`}
+          text={`${data.length > 1 ? data[1].score : ''} poin`}
         />
       </VStack>
       <VStack
@@ -140,7 +143,7 @@ const PodiumComponent = ({ data = PODIUM_EXAMPLE }: { data: LeaderBoardItem[] })
           <Text
             type={"body-bold"}
             style={{ color: Colors.UNDERTONE_BLUE }}
-            text={`${data[0].name}`}
+            text={`${data.length > 0 ? data[0].user_fullname : '-'}`}
           />
         </VStack>
         <Text type={"body-bold"} style={{ color: Colors.UNDERTONE_BLUE }} text="#1" />
@@ -148,15 +151,16 @@ const PodiumComponent = ({ data = PODIUM_EXAMPLE }: { data: LeaderBoardItem[] })
         <Text
           type={"body-bold"}
           style={{ color: Colors.UNDERTONE_BLUE }}
-          text={`${data[0].point} poin`}
+          text={`${data.length > 0 ? data[0].score : ''} poin`}
         />
       </VStack>
       <VStack
         style={{
           flex: 1 / 3,
           backgroundColor: Colors.HONEY_YELLOW,
-          height: BASE_HEIGHT / 3,
+          height: data.length > 2 ? (data[2].score / data[1].score) * BASE_HEIGHT : BASE_HEIGHT * 0.5,
           borderTopEndRadius: Spacing[12],
+          borderTopLeftRadius: Spacing[12],
           borderBottomEndRadius: Spacing[12],
           left: -1,
           justifyContent: "center",
@@ -166,13 +170,13 @@ const PodiumComponent = ({ data = PODIUM_EXAMPLE }: { data: LeaderBoardItem[] })
         <Text
           type={"body-bold"}
           style={{ color: Colors.WHITE, top: -Spacing[20], position: "absolute" }}
-          text={`${data[2].name}`}
+          text={`${data.length > 2 ? data[2].user_fullname : '-'}`}
         />
         <Text type={"body-bold"} style={{ color: Colors.UNDERTONE_BLUE }} text="#3" />
         <Text
           type={"body-bold"}
           style={{ color: Colors.UNDERTONE_BLUE }}
-          text={`${data[2].point} poin`}
+          text={`${data.length > 2 ? data[2].score : ''} poin`}
         />
       </VStack>
     </HStack>
@@ -181,30 +185,46 @@ const PodiumComponent = ({ data = PODIUM_EXAMPLE }: { data: LeaderBoardItem[] })
 
 const Leaderboards: FC<StackScreenProps<NavigatorParamList, "notificationList">> = observer(
   ({ navigation }) => {
+    const mounted = useRef(false);
     const [point, setPoint] = useState<number>(65)
     const [podiumData, setPodiumData] = useState<LeaderBoardItem[]>(PODIUM_EXAMPLE)
     const [rankData, setRankData] = useState<LeaderBoardItem[]>(PODIUM_EXAMPLE)
+    const [loading, setLoading] = useState<boolean>(false);
 
-    const [notificationsData, setNotificationsData] = useState<Array<NotificationItem>>([])
+    const [leaderboardsData, setLeaderboardsData] = useState<Array<NotificationItem>>([])
 
-    const { notificationStore, coachingStore, mainStore, feedStore } = useStores()
+    const { leaderboardStore } = useStores()
 
     const goBack = () => navigation.goBack()
 
     const goToGuidePoints = () => navigation.navigate("guidePoints")
 
-    const [currentPage, setCurrentPage] = useState<number>(2)
+    const [currentPage, setCurrentPage] = useState<number>(2);
+
+    let rankIteration = 1;
+
+    useEffect(() => {
+      mounted.current = true;
+
+      return () => {
+          mounted.current = false;
+      };
+  }, []);
 
     const onLoadMore = React.useCallback(async () => {
-      await notificationStore.getListNotifications(currentPage)
+      setLoading(true);
+      await leaderboardStore.getListLeaderboards(currentPage);
+      setLoading(false);
       setCurrentPage(currentPage + 1)
     }, [currentPage])
 
     const onRefresh = React.useCallback(async () => {
-      setNotificationsData([])
+      setLoading(true);
+      setLeaderboardsData([])
       setCurrentPage(2)
-      notificationStore.clearListNotifications()
-      await notificationStore.getListNotifications()
+      leaderboardStore.clearListLeaderboards()
+      await leaderboardStore.getListLeaderboards();
+      setLoading(false);
     }, [])
 
     useEffect(() => {
@@ -212,10 +232,10 @@ const Leaderboards: FC<StackScreenProps<NavigatorParamList, "notificationList">>
     }, [])
 
     useEffect(() => {
-      if (notificationStore.notificationsList) {
-        setNotificationsData(notificationStore.notificationsList)
+      if (leaderboardStore?.listLeaderboards) {
+        setLeaderboardsData(leaderboardStore?.listLeaderboards)
       }
-    }, [notificationStore.notificationsList, notificationStore.getNotificationsSuccess])
+    }, [leaderboardStore?.listLeaderboards, leaderboardStore.getListLeaderboardsSuccess])
 
     const HeaderComponent = ({}) => {
       return (
@@ -254,7 +274,7 @@ const Leaderboards: FC<StackScreenProps<NavigatorParamList, "notificationList">>
                 <Text
                   type={"body-bold"}
                   style={{ color: Colors.BRIGHT_BLUE }}
-                  text={`${point} poin!`}
+                  text={`${leaderboardStore?.selfLeaderboardPoints} poin!`}
                 />
               </Text>
             </VStack>
@@ -273,7 +293,7 @@ const Leaderboards: FC<StackScreenProps<NavigatorParamList, "notificationList">>
             </TouchableOpacity>
 
             <Spacer height={Spacing[42]} />
-            <PodiumComponent data={podiumData} />
+            <PodiumComponent data={leaderboardStore?.listLeaderboards} />
           </VStack>
           <VStack
             style={{
@@ -310,15 +330,22 @@ const Leaderboards: FC<StackScreenProps<NavigatorParamList, "notificationList">>
             )}
             refreshControl={
               <RefreshControl
-                refreshing={notificationStore.isLoading}
+                refreshing={loading}
                 onRefresh={onRefresh}
                 tintColor={Colors.MAIN_RED}
               />
             }
             showsVerticalScrollIndicator={false}
-            data={rankData}
-            ListEmptyComponent={() => <EmptyList navigateTo={goBack} />}
+            data={leaderboardStore?.listLeaderboards}
+            ListEmptyComponent={() => <EmptyList description={"Oops. Sepertinya belum ada yang jadi JUARA-nya nih. Yuk, mulai dapetin poinnya!"} navigateTo={goBack} />}
             renderItem={({ item, index }) => {
+              if (index !== 0) {
+                if (item.score !== leaderboardStore?.listLeaderboards[index - 1].score) {
+                  rankIteration++;
+                }
+              } else {
+                rankIteration = 1
+              }
               return (
                 <HStack horizontal={Spacing[32]} style={{ backgroundColor: Colors.WHITE }}>
                   <Text
@@ -328,7 +355,7 @@ const Leaderboards: FC<StackScreenProps<NavigatorParamList, "notificationList">>
                       flex: 1,
                       textAlign: "center",
                     }}
-                    text={`#${item.rank}`}
+                    text={`#${rankIteration}`}
                   />
                   <Text
                     type={"body-bold"}
@@ -337,7 +364,7 @@ const Leaderboards: FC<StackScreenProps<NavigatorParamList, "notificationList">>
                       flex: 1,
                       textAlign: "center",
                     }}
-                    text={`${item.point} poin`}
+                    text={`${item.score} poin`}
                   />
                   <Text
                     type={"body"}
@@ -346,7 +373,7 @@ const Leaderboards: FC<StackScreenProps<NavigatorParamList, "notificationList">>
                       flex: 1,
                       textAlign: "center",
                     }}
-                    text={`${item.name}`}
+                    text={`${item.user_fullname}`}
                   />
                 </HStack>
               )
@@ -356,12 +383,12 @@ const Leaderboards: FC<StackScreenProps<NavigatorParamList, "notificationList">>
             onEndReachedThreshold={0.1}
           />
         </SafeAreaView>
-        {notificationStore.isLoading ? (
+        {loading ? (
           <VStack
             vertical={Spacing[12]}
             style={{ position: "absolute", bottom: 0, width: dimensions.screenWidth }}
           >
-            <ActivityIndicator animating={notificationStore.isLoading} />
+            <ActivityIndicator animating={loading} />
           </VStack>
         ) : null}
       </VStack>

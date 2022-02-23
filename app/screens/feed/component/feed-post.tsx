@@ -197,6 +197,14 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
   return (
     <Fragment>
       <HStack>
+        <Text
+          type={"body"}
+          style={{ fontSize: Spacing[12], color: Colors.BRIGHT_BLUE }}
+          underlineWidth={Spacing[72]}
+          text={`${data.type !== null ? data.type: ''}`}
+        /> 
+        <Spacer width={Spacing[8]} />
+
         <View
           style={{
             flex: 1,

@@ -207,7 +207,7 @@ export function DropDownPicker(props: DropDownProps) {
   }
 }
 
-const K_OPTIONS = [
+export const K_OPTIONS = [
   {
     item: "Juventus",
     id: "JUVE",
