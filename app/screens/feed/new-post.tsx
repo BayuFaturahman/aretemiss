@@ -333,7 +333,7 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
                     </View>
                   </TouchableOpacity>
 
-                  <ScrollView style={{ maxWidth: "65%" }} horizontal={true}>
+                  <ScrollView style={{ maxWidth: "85%" }} horizontal={true}>
                     {selectedPicture.map((pic, id) => {
                       return (
                         <VStack key={id}>
@@ -349,18 +349,7 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
                     })}
                   </ScrollView>
                 </HStack>
-                <Button
-                  type={"primary"}
-                  text={"Update"}
-                  style={updateButtonStyle}
-                  textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
-                  onPress={handleSubmit}
-                />
               </HStack>
-              {/* <HStack>
-                <Spacer />
-                <Spacer />
-              </HStack> */}
               <DropDownPicker
                 items={feedCategory}
                 label='Pilih Kategori'
@@ -380,6 +369,16 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
                   Woops. Kamu belum memilih kategori post Feed-mu. Dipilih dulu yuk!
                 </Text>
               }
+              <Spacer height={Spacing[32]} />
+              <HStack>
+                <Button
+                  type={"primary"}
+                  text={"Update"}
+                  style={updateButtonStyle}
+                  textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
+                  onPress={handleSubmit}
+                />
+              </HStack>
             </VStack>
            )}
            </Formik>
