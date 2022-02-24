@@ -90,7 +90,7 @@ export const CoachingJournalItemRender = (
 
         {item.activities.map((activitiesItem, activitiesIndex)=>{
           let listLearner = ''
-          activitiesItem.journal_learner.forEach(learner => {
+          activitiesItem?.journal_learner?.forEach(learner => {
             listLearner = listLearner===''? learner.jl_fullname : listLearner +', '+ learner.jl_fullname
           })
 
@@ -167,7 +167,7 @@ export const CoachingJournalItemRender = (
                         </VStack>
                       </HStack>
                       {activitiesItem.coach_fullname ?
-                        <Text type={'body-bold'} style={{color: statusColor, fontSize: Spacing[12]}} numberOfLines={1} >
+                        <Text type={'body-bold'} style={{color: statusColor, fontSize: Spacing[12]}} >
                           {activitiesItem.is_coachee ? `Coached by ` : 'You Coached '}
                           {activitiesItem.is_coachee ? <Text type={'body'} style={{color: Colors.UNDERTONE_BLUE}}>
                               {`${activitiesItem.coach_fullname}`}

@@ -413,12 +413,12 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
               <ProfileComponent data={profileData} />
             </HomepageCardWrapper>
             <Spacer height={Spacing[12]} />
-            <HStack>
-              <HomepageCardWrapper animationDuration={1000} horizontal={Spacing[16]}>
+            <HStack style={{flex: 1, alignSelf: 'center'}}>
+              <HomepageCardWrapper animationDuration={1000} horizontal={Spacing[16]} width={"58%"}>
                 <LeaderboardComponent leaderboardPosition={leaderboardStore?.leaderboardPosition || ''} goToLeaderboard={goToLeaderboards}/>
               </HomepageCardWrapper>
               <Spacer width={Spacing[12]} />
-              <HomepageCardWrapper animationDuration={1000} horizontal={Spacing[14]}>
+              <HomepageCardWrapper animationDuration={1000} horizontal={Spacing[14]} width={"38%"}>
                 <MoodHomepageComponent data={moodData} goToMood={toggleModal} />
               </HomepageCardWrapper>
             </HStack>
@@ -529,7 +529,9 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
             style={{ backgroundColor: Colors.WHITE }}
           >
             <VStack>
-              {renderUserMood()}
+              <View style={{alignSelf: 'center'}}>
+                {renderUserMood()}
+              </View>
               <Text
                 type={"body"}
                 style={{ fontSize: Spacing[18], textAlign: "center" }}

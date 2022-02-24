@@ -77,6 +77,8 @@ const newPostInitialForm: newPostForm = {
   category: null
 }
 
+const actionSheetRef = createRef();
+
 const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({ navigation }) => {
   // empty list state
   const { feedStore } = useStores()
@@ -106,8 +108,6 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
   })
 
   const goBack = () => navigation.goBack()
-
-  const actionSheetRef = createRef()
 
   const NotificationCounter = ({ id }: { id: number }) => {
     return (
@@ -167,14 +167,14 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
         setSelectedPicture((selectedPicture) => [...selectedPicture, ...response.assets])
         setUploadedPicture((uploadedPicture) => [...uploadedPicture, ...listResponseUpload])
       }
-      
-      actionSheetRef.current?.setModalVisible(false)
+    
     } else {
       console.log("cancel")
     }
   }, [selectedPicture, setSelectedPicture, uploadedPicture, setUploadedPicture])
   
   const openGallery = useCallback(() => {
+    actionSheetRef.current?.setModalVisible(false)
     launchImageLibrary(
       {
         mediaType: "photo",
@@ -189,6 +189,7 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
   }, [])
 
   const openCamera = useCallback(() => {
+    actionSheetRef.current?.setModalVisible(false)
     launchCamera(
       {
         mediaType: "photo",
