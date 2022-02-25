@@ -380,6 +380,7 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
                   onPress={handleSubmit}
                 />
               </HStack>
+              <Spacer height={Spacing[32]} />
             </VStack>
            )}
            </Formik>
