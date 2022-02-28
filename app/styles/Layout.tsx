@@ -35,6 +35,10 @@ const LayoutStyles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
   },
+  flexTopCenter: {
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+  },
   flexTrailing: {
     alignItems: 'flex-end',
   },
