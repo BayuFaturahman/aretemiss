@@ -1,6 +1,6 @@
 import { JournalLearnerModel } from "app/store/store.coaching"
 
-export type CoachingActivitiesType = "coaching" | 'coached'
+export type CoachingActivitiesType = "Project Culture Coaching" | 'other' | 'KPI coaching'
 
 export type CoachingActivitiesItem = {
   type: CoachingActivitiesType

@@ -99,17 +99,17 @@ export const CoachingJournalItemRender = (
           if(activitiesItem.is_coachee){
             statusColor = Colors.SOFT_GREEN;
           } else {
-            // switch (activitiesItem.type){
-            //   case "formal_coaching":
+            switch (activitiesItem.type){
+              case "KPI coaching":
                 statusColor = Colors.HONEY_YELLOW;
-              //   break;
-              // case "informal_coaching":
-              //   statusColor = Colors.SOFT_PURPLE;
-              //   break;
-              // case "coached":
-              //   statusColor = Colors.SOFT_GREEN;
-                // break;
-            // }
+                break;
+              case "Project Culture Coaching":
+                statusColor = Colors.SOFT_PURPLE;
+                break;
+              case "other":
+                statusColor = Colors.SOFT_BLUE;
+                break;
+            }
           }
 
           // const renderContent = useMemo(()=>{
