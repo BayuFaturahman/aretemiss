@@ -57,6 +57,7 @@ export const EmptyList = ({}) => {
           <View style={{height: Spacing[24], width: Spacing[24], backgroundColor: Colors.HONEY_YELLOW, borderRadius: 999, position:'absolute', right: -Spacing[8], bottom: -Spacing[8]}} />
         </View>
       </HStack>
+      <Spacer height={Spacing[48]} />
     </VStack>
   )
 }
