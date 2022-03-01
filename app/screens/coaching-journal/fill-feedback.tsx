@@ -62,6 +62,7 @@ const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = o
     const { data, isDetail } = route.params
 
     // empty list state
+    const [isSubmitClicked, setIsSubmitClicked] = useState(false)
     const [feedbackData, setFeedbackData] = useState<Array<ChoiceItemType>>(EXAMPLE_DATA);
     const [isError, setError] = useState<string>(null)
     const [, forceUpdate] = useReducer(x => x + 1, 0);
@@ -89,20 +90,27 @@ const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = o
 
     const submit = useCallback(async ()=>{
       let counter = 0
+      let isFeedbackError = false
+      setIsSubmitClicked(true)
+
+      console.log('submit self-feedback ', feedbackData)
       feedbackData.map((item, index) => {
         if(item.choice === 0){
           counter += 1
         }
       })
+      // console.log("counter ", counter)
       if(counter > 0) {
+        isFeedbackError = true
         setError('choice')
       } else {
         setError(null)
       }
-      if(isError === null){
+      // console.log('is error ', isError)
+      if(!isFeedbackError){
         await coachingStore.createJournal(data)
       }
-    }, [feedbackData, isError])
+    }, [feedbackData, isError, isSubmitClicked])
 
     useEffect(() => {
       coachingStore.resetLoading()
@@ -134,9 +142,16 @@ const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = o
   },[coachingStore.messageCreateFeedback, coachingStore.createFeedbackSucced])
 
     const ChoiceItem = ({item, index, onPressItem}) => {
+      let isEmpty = false
+
+      if (isSubmitClicked && item.choice === 0) {
+        isEmpty = true
+        // console.log('SUUBMIT CLIECK = TRUE item ', item)
+      } 
+
       return(
         <VStack vertical={Spacing[8]}>
-          <Text type={'body'} style={{textAlign: 'center'}}>
+          <Text type={isEmpty? 'warning': 'body'} style={{textAlign: 'center'}}>
             {item.title}
           </Text>
           <HStack top={Spacing[12]} style={{justifyContent: 'space-around'}}>
@@ -188,7 +203,7 @@ const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = o
               </Text>
 
               <Spacer height={Spacing[12]} />
-              {isError !== null ? <Text type={"warning"} style={{textAlign:'center', fontSize: Spacing[12]}}>Ada yang belum diisi nih!</Text> : null}
+              {/* {isError !== null ? <Text type={"warning"} style={{textAlign:'center', fontSize: Spacing[12]}}>Ada yang belum diisi nih!</Text> : null} */}
               <Spacer height={Spacing[12]} />
             </VStack>
             <VStack top={Spacing[32]} horizontal={Spacing[24]} style={[Layout.heightFull, {backgroundColor: Colors.WHITE, borderTopStartRadius: Spacing[48], borderTopEndRadius: Spacing[48]}]}>
