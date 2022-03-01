@@ -98,7 +98,8 @@ const PodiumComponent = ({ data = PODIUM_EXAMPLE }: { data: LeaderBoardItem[] })
         style={{
           flex: 1 / 3,
           backgroundColor: Colors.HONEY_YELLOW,
-          height: data.length > 1 ? (data[1].score / data[0].score) * BASE_HEIGHT : BASE_HEIGHT * 0.5,
+          // height: data.length > 1 ? (data[1].score / data[0].score) * BASE_HEIGHT : BASE_HEIGHT * 0.5,
+          height: BASE_HEIGHT * 0.7,
           borderTopStartRadius: Spacing[12],
           borderTopEndRadius: Spacing[12],
           borderBottomStartRadius: Spacing[12],
@@ -158,7 +159,8 @@ const PodiumComponent = ({ data = PODIUM_EXAMPLE }: { data: LeaderBoardItem[] })
         style={{
           flex: 1 / 3,
           backgroundColor: Colors.HONEY_YELLOW,
-          height: data.length > 2 ? (data[2].score / data[1].score) * BASE_HEIGHT : BASE_HEIGHT * 0.5,
+          // height: data.length > 2 ? (data[2].score / data[1].score) * BASE_HEIGHT : BASE_HEIGHT * 0.5,
+          height: BASE_HEIGHT * 0.5,
           borderTopEndRadius: Spacing[12],
           borderTopLeftRadius: Spacing[12],
           borderBottomEndRadius: Spacing[12],
