@@ -26,6 +26,7 @@ export type ProfileUpdateForm = {
   team3Id: string
   isAllowNotification?: number
   isAllowReminderNotification?: number
+  winCulture: string
 }
 
 const ProfileUpdateInitialForm: ProfileUpdateForm = {
@@ -35,6 +36,7 @@ const ProfileUpdateInitialForm: ProfileUpdateForm = {
   team1Id: "",
   team2Id: "",
   team3Id: "",
+  winCulture: ""
 }
 
 const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> = observer(
@@ -44,6 +46,23 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
     const [teamList1, setTeamList1] = useState<DropDownItem[]>([])
 
     const { authStore, mainStore, serviceStore } = useStores()
+    const [winCultureData, setWinCultureData] = useState([
+      {
+        id: 'Counter Part (CP)',
+        // key: 'Counter Part (CP)',
+        item: 'Counter Part (CP)'
+      },
+      {
+        id: 'Culture Leader (CL)',
+        // key: 'Culture Leader (CL)',
+        item: 'Culture Leader (CL)',
+      },
+      {
+        id: 'Culture Agent (CA)',
+        // key: 'Culture Agent (CA)',
+        item: 'Culture Agent (CA)',
+      }
+    ]);
 
     const styles = StyleSheet.create({})
 
@@ -96,14 +115,14 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
         console.log(data)
         console.log(authStore.userId)
         // data.email = authStore.email
-        if (route.params.isFromVerifyOtp) {
+        if (route?.params?.isFromVerifyOtp) {
           await mainStore.updateProfile(authStore.userId, data)
         } else {
           console.log("mainStore.userProfile.user_id ", mainStore.userProfile.user_id)
           await mainStore.updateProfile(mainStore.userProfile.user_id, data)
         }
       },
-      [route.params.isFromVerifyOtp],
+      [route?.params?.isFromVerifyOtp],
     )
 
     const handleAvailableTeamList = (values: any) => {
@@ -189,6 +208,19 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
                       label="Pilih team ketiga (jika ada):"
                       onValueChange={(value: IOption) => {
                         setFieldValue("team3Id", value?.id ?? "")
+                      }}
+                      placeholder={"Pilih salah satu"}
+                      containerStyle={{ marginTop: Spacing[4] }}
+                      zIndex={1000}
+                      zIndexInverse={3000}
+                      dropDownDirection={"BOTTOM"}
+                    />
+                     <DropDownPicker
+                      items={winCultureData}
+                      isRequired={true}
+                      label="Pilih posisi di struktur Winning Culture:"
+                      onValueChange={(value: IOption) => {
+                        setFieldValue("winCulture", value?.id ?? "")
                       }}
                       placeholder={"Pilih salah satu"}
                       containerStyle={{ marginTop: Spacing[4] }}
