@@ -5,7 +5,6 @@ import {
   RefreshControl,
   SafeAreaView,
   TouchableOpacity,
-  View,
 } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
@@ -17,25 +16,11 @@ import { Colors, CustomSpacing, Layout, Spacing } from "@styles"
 
 import { useStores } from "../../bootstrap/context.boostrap"
 import { EmptyList } from "@screens/notification/components/empty-list"
-import FastImage from "react-native-fast-image"
 
-import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png"
 import { dimensions } from "@config/platform.config"
 import { NotificationItem } from "../../store/store.notification"
-import { FeedItemType } from "@screens/feed/feed.type"
 import layout from "@styles/Layout"
 import { InfoPoint, TrophyLeaderboards } from "@assets/svgs"
-
-type NotificationItemType = {
-  id: string
-  type: "tagged" | "liked" | "comment" | "feedback"
-  isNew: boolean
-  user: {
-    name: string
-    avatar: string
-  }
-  session: string
-}
 
 type LeaderBoardItem = { name: string; point: number; rank: number }
 
@@ -87,7 +72,7 @@ const PODIUM_EXAMPLE: LeaderBoardItem[] = [
   },
 ]
 
-let rankIteration = 1
+const rankIteration = 1
 
 const PodiumComponent = ({ data = PODIUM_EXAMPLE }: { data: LeaderBoardItem[] }) => {
   const BASE_HEIGHT = CustomSpacing(140)
