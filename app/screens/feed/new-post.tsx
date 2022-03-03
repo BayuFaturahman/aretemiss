@@ -77,11 +77,11 @@ const newPostInitialForm: newPostForm = {
   category: null
 }
 
-const actionSheetRef = createRef();
-
 const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({ navigation }) => {
   // empty list state
   const { feedStore } = useStores()
+
+  const actionSheetRef = createRef();
 
   const qualityImage = Platform.OS === "ios" ? 0.4 : 0.5
   const maxWidthImage = 1024
