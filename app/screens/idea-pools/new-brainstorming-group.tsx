@@ -161,20 +161,19 @@ const NewBrainstormingGroup: FC<StackScreenProps<NavigatorParamList, "newBrainst
         setErrorMessage("")
         setModalVisible(false)
 
-        if (mainStore.errorCode !== null) {
+        if (mainStore.errorCode === null) {
           setModalContent(
             "Berhasil!",
             "Brainstorming group-mu berhasil dibuat. Selamat bertukar ide! :)",
             "senang",
           )
-          await mainStore.getProfile()
           toggleModal(true)
         } else {
           setModalContent("Oh no! :(", "Permintaanmu gagal diproses :(\nCoba lagi ya!", "marah")
           toggleModal(true)
         }
       },
-      [selectedIcon],
+      [selectedIcon, isModalVisible],
     )
 
     const setModalContent = (title: string, desc: string, icon: string) => {
