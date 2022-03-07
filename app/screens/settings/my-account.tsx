@@ -80,7 +80,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
       isAllowNotification: mainStore.userProfile.user_is_allow_notification,
       isAllowReminderNotification: mainStore.userProfile.user_is_allow_reminder_notification,
       mood: mainStore.userProfile.user_mood,
-      winningCulture: 'Counter Part (CP)'
+      winningCulture: mainStore.userProfile.user_position
     }
 
     // console.log('mainStore.userProfile USer profile: ', mainStore.userProfile)

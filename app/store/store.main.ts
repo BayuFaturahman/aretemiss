@@ -56,6 +56,7 @@ export type ProfileModel = {
   user_is_allow_notification: number
   user_is_allow_reminder_notification: number
   user_fcm_token: string
+  user_position?: string
   team1_id: string
   team1_name: string
   team2_id: string
@@ -294,6 +295,7 @@ export default class MainStore {
           team3Id: response.response[0].user_team_3_id,
           phoneNumber: response.response[0].user_phone_number,
           user_mood: response.response[0].user_mood,
+          user_position: response.response[0].user_position ? response.response[0].user_position : '',
           isAllowNotification: response.response[0].user_is_allow_notification,
           isAllowReminderNotification: response.response[0].user_is_allow_reminder_notification,
           new_notification_count: response.response[0].new_notification_count,
@@ -365,6 +367,7 @@ export default class MainStore {
       user_is_allow_notification: data.user_is_allow_notification,
       user_is_allow_reminder_notification: data.user_is_allow_reminder_notification,
       user_fcm_token: data.user_fcm_token,
+      user_position: data.user_position? data.user_position: '',
       team1_id: data.user_team_1_id,
       team1_name: data.team1_name,
       team2_id: data.user_team_2_id,
@@ -512,6 +515,29 @@ export default class MainStore {
         newDiv2: newDiv2,
         oldDiv3: oldDiv3,
         newDiv3: newDiv3
+      })
+
+      if (response.kind === "form-error") {
+        this.formError(response.response)
+      }
+
+      if (response.kind === "ok") {
+      }
+    } catch (e) {
+      console.log("checkEmail error")
+      console.log(e)
+      this.checkEmailFailed(e)
+    } finally {
+      console.log("checkEmail done")
+      this.isLoading = false
+    }
+  }
+
+  async requestChangePosition(newPosition: string) {
+    this.isLoading = true
+    try {
+      const response = await this.profileApi.requestChangeDivision({
+        "position": newPosition
       })
 
       if (response.kind === "form-error") {
