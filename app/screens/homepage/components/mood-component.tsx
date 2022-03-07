@@ -1,13 +1,5 @@
-import React, { useState } from "react";
-import {HStack} from "@components/view-stack";
+import React from "react";
 import {Spacing} from "@styles"
-import { Source } from "react-native-fast-image";
-import {Text} from "@components";
-import Spacer from "@components/spacer";
-
-
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { View } from "react-native";
 
 import { MarahActive, MarahActiveBorder, MarahInactive, SedihActive, SedihActiveBorder, SedihInactive, SenyumActive, SenyumActiveBorder, SenyumInactive, SickActive, SickActiveBorder, SickInactive, SurprisedActive, SurprisedActiveBorder, SurprisedInactive } from "@assets/svgs"
 

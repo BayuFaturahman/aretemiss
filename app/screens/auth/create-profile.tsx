@@ -16,6 +16,7 @@ import Spinner from "react-native-loading-spinner-overlay"
 import { IOption } from "react-native-modal-selector"
 import { IleadLogo } from "@assets/svgs"
 import { dimensions } from "@config/platform.config"
+import { USER_POSITION } from "@screens/settings/change-winning-culture"
 
 export type ProfileUpdateForm = {
   fullname: string
@@ -26,6 +27,7 @@ export type ProfileUpdateForm = {
   team3Id: string
   isAllowNotification?: number
   isAllowReminderNotification?: number
+  winCulture: string
 }
 
 const ProfileUpdateInitialForm: ProfileUpdateForm = {
@@ -35,6 +37,7 @@ const ProfileUpdateInitialForm: ProfileUpdateForm = {
   team1Id: "",
   team2Id: "",
   team3Id: "",
+  winCulture: ""
 }
 
 const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> = observer(
@@ -44,6 +47,7 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
     const [teamList1, setTeamList1] = useState<DropDownItem[]>([])
 
     const { authStore, mainStore, serviceStore } = useStores()
+    const [winCultureData, setWinCultureData] = useState(USER_POSITION);
 
     const styles = StyleSheet.create({})
 
@@ -96,14 +100,14 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
         console.log(data)
         console.log(authStore.userId)
         // data.email = authStore.email
-        if (route.params.isFromVerifyOtp) {
+        if (route?.params?.isFromVerifyOtp) {
           await mainStore.updateProfile(authStore.userId, data)
         } else {
           console.log("mainStore.userProfile.user_id ", mainStore.userProfile.user_id)
           await mainStore.updateProfile(mainStore.userProfile.user_id, data)
         }
       },
-      [route.params.isFromVerifyOtp],
+      [route?.params?.isFromVerifyOtp],
     )
 
     const handleAvailableTeamList = (values: any) => {
@@ -189,6 +193,19 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
                       label="Pilih team ketiga (jika ada):"
                       onValueChange={(value: IOption) => {
                         setFieldValue("team3Id", value?.id ?? "")
+                      }}
+                      placeholder={"Pilih salah satu"}
+                      containerStyle={{ marginTop: Spacing[4] }}
+                      zIndex={1000}
+                      zIndexInverse={3000}
+                      dropDownDirection={"BOTTOM"}
+                    />
+                     <DropDownPicker
+                      items={winCultureData}
+                      isRequired={true}
+                      label="Pilih posisi di struktur Winning Culture:"
+                      onValueChange={(value: IOption) => {
+                        setFieldValue("winCulture", value?.id ?? "")
                       }}
                       placeholder={"Pilih salah satu"}
                       containerStyle={{ marginTop: Spacing[4] }}

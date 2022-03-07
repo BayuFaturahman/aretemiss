@@ -23,12 +23,13 @@ import {
   myAccountVerifyOTP,
   changePassword,
   changePhone,
+  changeDivision,
+  changeWinningCulture,
   notification,
 } from "@screens/settings"
 import { notifications } from "@screens/notification"
 import { homepage, moodTeam } from "@screens/homepage"
 import { JournalEntryType } from "@screens/coaching-journal/new-journal-entry"
-import changeDivision from "@screens/settings/change-division"
 import { leaderboards, guidePoints, assessment, juaraAssessment } from "@screens/leaderboard"
 import { JLDetail } from "app/store/store.coaching"
 import juaraAssessmentQuiz from "@screens/leaderboard/juara-assessment-quiz"
@@ -67,6 +68,10 @@ const screens: AppRoute[] = [
   {
     name: "changeDivision",
     component: changeDivision,
+  },
+  {
+    name: "changeWinningCulture",
+    component: changeWinningCulture,
   },
   {
     name: "changePhone",
@@ -185,6 +190,7 @@ export type NavigatorParamList = {
   changePhone: undefined
   changePassword: undefined
   changeDivision: undefined
+  changeWinningCulture: undefined
   newJournalEntry: {
     isDetail: boolean
   }

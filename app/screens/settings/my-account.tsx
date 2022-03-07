@@ -45,6 +45,7 @@ export type ProfileUpdateForm = {
   isAllowNotification?: number
   isAllowReminderNotification?: number
   mood: string
+  winningCulture: string
 }
 
 const qualityImage = Platform.OS === 'ios' ? 0.4 : 0.5;
@@ -78,7 +79,8 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
       photo: mainStore.userProfile.user_photo,
       isAllowNotification: mainStore.userProfile.user_is_allow_notification,
       isAllowReminderNotification: mainStore.userProfile.user_is_allow_reminder_notification,
-      mood: mainStore.userProfile.user_mood
+      mood: mainStore.userProfile.user_mood,
+      winningCulture: mainStore.userProfile.user_position
     }
 
     // console.log('mainStore.userProfile USer profile: ', mainStore.userProfile)
@@ -92,6 +94,8 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
     const goToChangePassword = () => navigation.navigate("changePassword")
 
     const goToChangeDivision = () => navigation.navigate("changeDivision")
+    
+    const goToChangeWinningCulture = () => navigation.navigate("changeWinningCulture")
 
     const goToVerifyOTP = (email, nickname, profile) => navigation.navigate("myAccountVerifyOTP", {
       newEmail: email,
@@ -468,6 +472,25 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                             editable={false}
                             value={(values.team1Name && values.team1Name !==null? values.team1Name : '' )+ (values.team2Name && values.team2Name !==null? ', '+ values.team2Name : '' )+ (values.team3Name && values.team3Name !==null? ', '+ values.team3Name : '')}
                             onPressChangeButton={goToChangeDivision}
+                          />
+                           {generalErrorMessage !== null && (
+                            <Text type={"warning"} style={{ textAlign: "center" }}>
+                              {generalErrorMessage}
+                            </Text>
+                          )}
+
+                          <TextField
+                            // value={password}
+                            label="Posisi Winning Culture:"
+                            style={{ paddingTop: 0}}
+                            inputStyle={{textAlign: 'left', paddingLeft: Spacing[12], paddingVertical: Spacing[4]}}
+                            isRequired={false}
+                            secureTextEntry={false}
+                            isTextArea={true}
+                            changeButton={true}
+                            editable={false}
+                            value={(values.winningCulture)}
+                            onPressChangeButton={goToChangeWinningCulture}
                           />
                            {generalErrorMessage !== null && (
                             <Text type={"warning"} style={{ textAlign: "center" }}>

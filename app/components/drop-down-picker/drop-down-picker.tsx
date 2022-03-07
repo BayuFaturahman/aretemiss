@@ -37,6 +37,7 @@ export interface DropDownProps {
   setItems?
   isRemovable: boolean
   multiple?: boolean
+  maxSelected?: number
 }
 
 /**
@@ -55,6 +56,7 @@ export function DropDownPicker(props: DropDownProps) {
     isRemovable,
     multiple = false,
     initialValue = {},
+    maxSelected,
     ...rest
   } = props
 
@@ -65,7 +67,7 @@ export function DropDownPicker(props: DropDownProps) {
 
   const [value, setValue] = useState({})
   const [values, setValues] = useState([])
-  
+
   useEffect(() => {
     onValueChange(value)
   }, [value])
@@ -203,7 +205,14 @@ export function DropDownPicker(props: DropDownProps) {
   }
 
   function onMultiChange() {
-    return (item) => setValues(xorBy(values, [item], "id"))
+    if (maxSelected) {
+      if (values.length < maxSelected) {
+        return (item) => setValues(xorBy(values, [item], "id"))  
+      }
+    } else {
+      return (item) => setValues(xorBy(values, [item], "id"))
+    }
+    
   }
 }
 

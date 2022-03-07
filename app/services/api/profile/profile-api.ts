@@ -111,12 +111,16 @@ export class ProfileApi {
     }
   }
 
-  async getTeamMember(id: string): Promise<GetTeamMemberResult> {
+  async getTeamMember(id: string, page: number, limit: number): Promise<GetTeamMemberResult> {
     try {
       console.log('getTeamMember())', id)
 
       // make the api call
-      const response: ApiResponse<any> = await this.api.apisauce.get(`/user?teamId=${id}`)
+      const response: ApiResponse<any> = await this.api.apisauce.get(`/user`, {
+        teamId: id,
+        limit: limit,
+        page: page
+      })
       console.log('ApiResponse():', response.data.data[0])
       if(response.status === 400){
         const res = response.data
@@ -287,6 +291,41 @@ export class ProfileApi {
       )
 
       // console.log('requestChangeDivision response', response)
+
+      if(response.status === 400){
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+      
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+
+      const res = response.data
+      console.log('response res', res)
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      console.log('error', e)
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data"}
+    }
+  }
+
+  async requestChangePosition(bodyRequest): Promise<RequestChangeDivisionResult> {
+    try {
+      // make the api call
+    
+      // console.log('body request: ', bodyRequest)
+      const response: ApiResponse<any> = await this.api.apisauce.post(
+        `/user/request-change-position`,
+        bodyRequest,
+      )
+
+      // console.log('requestChangePosition response', response)
 
       if(response.status === 400){
         const res = response.data

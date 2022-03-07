@@ -224,6 +224,12 @@ export function TextField(props: TextFieldProps) {
         maxLength={maxChar}
       />
       {renderChangeButton()}
+      {charCounter &&    
+        <HStack>
+          <Spacer />
+          {renderCharacterCount(props.value?.length ?? 0)}
+        </HStack>
+        }
     </View>
   )
 }
