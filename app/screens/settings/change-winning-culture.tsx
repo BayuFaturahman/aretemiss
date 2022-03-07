@@ -18,6 +18,22 @@ import { dimensions } from "@config/platform.config"
 import FastImage from "react-native-fast-image"
 import { MoodComponent } from "@screens/homepage/components/mood-component"
 
+
+export const USER_POSITION = [
+  {
+    id:"cp",
+    item: "Counter Part (CP)",
+  },
+  {
+    id: "cl",
+    item: "Culture Leader (CL)",
+  },
+  {
+    id: "ca",
+    item: "Culture Agent (CA)",
+  }
+]
+
 const ChangeWinningCulture: FC<StackScreenProps<NavigatorParamList, "changeWinningCulture">> =
   observer(({ navigation }) => {
     const { authStore, mainStore } = useStores()
@@ -29,30 +45,9 @@ const ChangeWinningCulture: FC<StackScreenProps<NavigatorParamList, "changeWinni
     const [modalDesc, setModalDesc] = useState<string>("")
     const [modalIcon, setModalIcon] = useState("senang")
 
-    const [winCultureOptionData, setWinCultureOptionData] = useState([
-      {
-        id: "Counter Part (CP)",
-        // key: 'Counter Part (CP)',
-        item: "Counter Part (CP)",
-      },
-      {
-        id: "Culture Leader (CL)",
-        // key: 'Culture Leader (CL)',
-        item: "Culture Leader (CL)",
-      },
-      {
-        id: "Culture Agent (CA)",
-        // key: 'Culture Agent (CA)',
-        item: "Culture Agent (CA)",
-      },
-    ])
+    const [winCultureOptionData, setWinCultureOptionData] = useState(USER_POSITION)
 
-    const [winCultureData, setWinCultureData] = useState(
-      //   mainStore.userProfile.team1_id
-      //     ? { id: mainStore.userProfile.team1_id, item: mainStore.userProfile.team1_name }
-      //     : {},
-      { id: "Counter Part (CP)", item: "Counter Part (CP)" },
-    )
+    const [winCultureData, setWinCultureData] = useState(mainStore.userProfile.user_position)
 
     const goBack = () => navigation.goBack()
 
@@ -76,6 +71,8 @@ const ChangeWinningCulture: FC<StackScreenProps<NavigatorParamList, "changeWinni
       setIsSubmitWinCultureChange(true)
       setErrorMessage("")
       setModalVisible(false)
+
+      console.log('submitted data to change', data)
 
       if (mainStore.errorCode === null) {
         setModalContent(
@@ -155,7 +152,7 @@ const ChangeWinningCulture: FC<StackScreenProps<NavigatorParamList, "changeWinni
                       initialValues={{
                         winningCulture: "",
                       }}
-                      onSubmit={(values) => changeWinningCulture(values)}
+                      onSubmit={changeWinningCulture}
                     >
                       {({
                         handleChange,

@@ -16,6 +16,7 @@ import Spinner from "react-native-loading-spinner-overlay"
 import { IOption } from "react-native-modal-selector"
 import { IleadLogo } from "@assets/svgs"
 import { dimensions } from "@config/platform.config"
+import { USER_POSITION } from "@screens/settings/change-winning-culture"
 
 export type ProfileUpdateForm = {
   fullname: string
@@ -46,23 +47,7 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
     const [teamList1, setTeamList1] = useState<DropDownItem[]>([])
 
     const { authStore, mainStore, serviceStore } = useStores()
-    const [winCultureData, setWinCultureData] = useState([
-      {
-        id: 'Counter Part (CP)',
-        // key: 'Counter Part (CP)',
-        item: 'Counter Part (CP)'
-      },
-      {
-        id: 'Culture Leader (CL)',
-        // key: 'Culture Leader (CL)',
-        item: 'Culture Leader (CL)',
-      },
-      {
-        id: 'Culture Agent (CA)',
-        // key: 'Culture Agent (CA)',
-        item: 'Culture Agent (CA)',
-      }
-    ]);
+    const [winCultureData, setWinCultureData] = useState(USER_POSITION);
 
     const styles = StyleSheet.create({})
 
