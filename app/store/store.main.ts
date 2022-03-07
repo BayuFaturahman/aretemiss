@@ -383,10 +383,10 @@ export default class MainStore {
     this.errorMessage = e
   }
 
-  async getListUser(id: string) {
+  async getListUser(id: string, page = 1, limit = 200) {
     this.isLoading = true
     try {
-      const result = await this.profileApi.getTeamMember(id)
+      const result = await this.profileApi.getTeamMember(id, page, limit)
       console.log("getListUser result", result)
 
       if (result.kind === "form-error") {

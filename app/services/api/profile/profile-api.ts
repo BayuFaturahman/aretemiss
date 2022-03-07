@@ -111,12 +111,16 @@ export class ProfileApi {
     }
   }
 
-  async getTeamMember(id: string): Promise<GetTeamMemberResult> {
+  async getTeamMember(id: string, page: number, limit: number): Promise<GetTeamMemberResult> {
     try {
       console.log('getTeamMember())', id)
 
       // make the api call
-      const response: ApiResponse<any> = await this.api.apisauce.get(`/user?teamId=${id}`)
+      const response: ApiResponse<any> = await this.api.apisauce.get(`/user`, {
+        teamId: id,
+        limit: limit,
+        page: page
+      })
       console.log('ApiResponse():', response.data.data[0])
       if(response.status === 400){
         const res = response.data
