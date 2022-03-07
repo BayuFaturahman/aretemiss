@@ -236,8 +236,8 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     }, [])
 
     const getLeaderboardPosition = useCallback(async () => {
-      await leaderboardStore.getLeaderboardPosition(mainStore.userProfile.user_id);
-    }, []);
+      await leaderboardStore.getLeaderboardPosition(mainStore.userProfile.user_id)
+    }, [])
 
     const getJournalList = useCallback(async () => {
       await coachingStore.clearJournal()
@@ -299,7 +299,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     const loadData = debounce(async () => {
       await getUserProfile()
       await getJournalList()
-      await getLeaderboardPosition();
+      await getLeaderboardPosition()
       await getListFeed()
       if (feedStore.listFeeds) {
         setFeedData(feedStore.listFeeds[0])
@@ -366,6 +366,8 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
     const goToJuaraAssessment = () => navigation.navigate("juaraAssesment")
 
+    const goToBrainstorms = () => navigation.navigate("brainstorms")
+
     const goToTeamMood = () => {
       setModalVisible(false)
       navigation.navigate("moodTeam")
@@ -386,6 +388,9 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
       return (
         <>
+          <HomepageCardWrapper animationDuration={700}>
+            <AssessmentComponent data={profileData} goToAssessment={goToBrainstorms} />
+          </HomepageCardWrapper>
           <VStack top={Spacing[48]} horizontal={Spacing[8]} bottom={Spacing[12]}>
             <VStack horizontal={Spacing[12]}>
               <RNAnimated appearFrom="left" animationDuration={500}>
@@ -413,9 +418,12 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
               <ProfileComponent data={profileData} />
             </HomepageCardWrapper>
             <Spacer height={Spacing[12]} />
-            <HStack style={{flex: 1, alignSelf: 'center'}}>
+            <HStack style={{ flex: 1, alignSelf: "center" }}>
               <HomepageCardWrapper animationDuration={1000} horizontal={Spacing[16]} width={"58%"}>
-                <LeaderboardComponent leaderboardPosition={leaderboardStore?.leaderboardPosition || ''} goToLeaderboard={goToLeaderboards}/>
+                <LeaderboardComponent
+                  leaderboardPosition={leaderboardStore?.leaderboardPosition || ""}
+                  goToLeaderboard={goToLeaderboards}
+                />
               </HomepageCardWrapper>
               <Spacer width={Spacing[12]} />
               <HomepageCardWrapper animationDuration={1000} horizontal={Spacing[14]} width={"38%"}>
@@ -529,9 +537,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
             style={{ backgroundColor: Colors.WHITE }}
           >
             <VStack>
-              <View style={{alignSelf: 'center'}}>
-                {renderUserMood()}
-              </View>
+              <View style={{ alignSelf: "center" }}>{renderUserMood()}</View>
               <Text
                 type={"body"}
                 style={{ fontSize: Spacing[18], textAlign: "center" }}
