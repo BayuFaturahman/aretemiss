@@ -496,36 +496,11 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
         }
 
         if (selectedMood) {
-          if (type === "senang") {
-            if (selectedMood === type) {
-              return <SenyumActiveBorder height={Spacing[42]} width={Spacing[42]} />
-            } else {
-              return <SenyumInactive height={Spacing[42]} width={Spacing[42]} />
-            }
-          } else if (type === "marah") {
-            if (selectedMood === type) {
-              return <MarahActiveBorder height={Spacing[42]} width={Spacing[42]} />
-            } else {
-              return <MarahInactive height={Spacing[42]} width={Spacing[42]} />
-            }
-          } else if (type === "sedih") {
-            if (selectedMood === type) {
-              return <SedihActiveBorder height={Spacing[42]} width={Spacing[42]} />
-            } else {
-              return <SedihInactive height={Spacing[42]} width={Spacing[42]} />
-            }
-          } else if (type === "sakit") {
-            if (selectedMood === type) {
-              return <SickActiveBorder height={Spacing[42]} width={Spacing[42]} />
-            } else {
-              return <SickInactive height={Spacing[42]} width={Spacing[42]} />
-            }
-          } else if (type === "terkejut") {
-            if (selectedMood === type) {
-              return <SurprisedActiveBorder height={Spacing[42]} width={Spacing[42]} />
-            } else {
-              return <SurprisedInactive height={Spacing[42]} width={Spacing[42]} />
-            }
+          if (type !== selectedMood) {
+            const moodInactive = type + "Inactive"
+            return <MoodComponent data={moodInactive} />
+          } else {
+            return <MoodComponent data={type} />
           }
         }
       }
