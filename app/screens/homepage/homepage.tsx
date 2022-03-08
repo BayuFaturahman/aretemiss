@@ -367,6 +367,8 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     const goToJuaraAssessment = () => navigation.navigate("juaraAssesment")
 
     const goToBrainstorms = () => navigation.navigate("brainstorms")
+    
+    const goToBrainstormsGroup = () => navigation.navigate("newBrainstormsGroup")
 
     const goToTeamMood = () => {
       setModalVisible(false)
@@ -388,9 +390,6 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
       return (
         <>
-          <HomepageCardWrapper animationDuration={700}>
-            <AssessmentComponent data={profileData} goToAssessment={goToBrainstorms} />
-          </HomepageCardWrapper>
           <VStack top={Spacing[48]} horizontal={Spacing[8]} bottom={Spacing[12]}>
             <VStack horizontal={Spacing[12]}>
               <RNAnimated appearFrom="left" animationDuration={500}>
@@ -450,6 +449,14 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
                 goToFeed={goToFeed}
                 goToNewPost={goToNewPost}
               />
+            </HomepageCardWrapper>
+            <Spacer height={Spacing[12]} />
+            <HomepageCardWrapper animationDuration={700}>
+              <VStack>
+                <Button type={"primary"} text={"Idea pools"} onPress={goToBrainstorms} />
+                <Spacer height={Spacing[12]} />
+                <Button type={"primary"} text={"Brainstorms"} onPress={goToBrainstormsGroup} />
+              </VStack>
             </HomepageCardWrapper>
             <Spacer height={Spacing[12]} />
             <HomepageCardWrapper animationDuration={700}>
