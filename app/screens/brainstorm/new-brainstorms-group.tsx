@@ -44,7 +44,7 @@ const newGroupInitialForm: newGroupForm = {
   icon: "",
 }
 
-const NewBrainstormingGroup: FC<StackScreenProps<NavigatorParamList, "newBrainstormingGroup">> =
+const NewBrainstormsGroup: FC<StackScreenProps<NavigatorParamList, "newBrainstormsGroup">> =
   observer(({ navigation }) => {
     // empty list state
     const { mainStore } = useStores()
@@ -350,4 +350,4 @@ const NewBrainstormingGroup: FC<StackScreenProps<NavigatorParamList, "newBrainst
     )
   })
 
-export default NewBrainstormingGroup
+export default NewBrainstormsGroup
