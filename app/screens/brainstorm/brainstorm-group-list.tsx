@@ -1,5 +1,5 @@
 import React, {FC, useState, useEffect, useCallback} from 'react';
-import {View, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
+import {View, StyleSheet, FlatList, TouchableOpacity, RefreshControl, ActivityIndicator} from 'react-native';
 import { HStack, VStack } from "@components/view-stack";
 import { GroupIconComponent } from './components/group-icon-component';
 import Spacer from "@components/spacer";
@@ -14,6 +14,7 @@ import moment from 'moment';
 const BrainstormGroupList: FC<StackScreenProps<NavigatorParamList, "newBrainstormsGroup">> =
   observer(({navigation}) => {
     const { brainstormStore } = useStores();
+    const [refreshing, setRefreshing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     const _goBack = () => navigation.goBack();
@@ -22,22 +23,32 @@ const BrainstormGroupList: FC<StackScreenProps<NavigatorParamList, "newBrainstor
       setIsLoading(true);
       await brainstormStore.getListBrainstormGroups();
       setIsLoading(false);
+      setRefreshing(false);
+    }, []);
+    const _onRefresh = useCallback(() => {
+      setRefreshing(true);
     }, []);
 
     useEffect(() => {
       _getBrainstormGroupList();
     }, []);
 
+    useEffect(() => {
+      if (refreshing) {
+        _getBrainstormGroupList();
+      }
+    }, [refreshing]);
+
     const renderGroupCreatedTime = (timestamp) => {
       const isToday = moment(timestamp).format('YYYY-MM-DD') === moment(new Date()).format('YYYY-MM-DD') && 'today';
       const isYesterday = moment(timestamp).format('YYYY-MM-DD') === moment(new Date()).subtract(1, 'days').format('YYYY-MM-DD') && 'yesterday';
       const customDate = moment(timestamp).format('DD/MM/YYYY');
       return (
-        <View style={{flexDirection: 'row', flex: 1, width: '79%', marginLeft: Spacing[28], marginBottom: Spacing[24]}}>
-          <View style={[styles.centerVertical, {width: '60%'}]}>
-            <View style={{borderWidth: 0.5, height: 0}}/>
+        <View style={styles.groupCreatedTimeOuterContainer}>
+          <View style={[styles.centerVertical, styles.groupCreatedTimeLineContainer]}>
+            <View style={styles.groupCreatedTimeLine}/>
           </View>
-          <Text style={{alignSelf: 'flex-end', width: '46%', textAlign: 'right'}}>Initiated {isToday || isYesterday || customDate}</Text>
+          <Text type={'label'} style={styles.groupCreatedTimeTxt}>Initiated {isToday || isYesterday || customDate}</Text>
         </View>
       )
     }
@@ -62,6 +73,22 @@ const BrainstormGroupList: FC<StackScreenProps<NavigatorParamList, "newBrainstor
       );
     }, []);
 
+    const renderGroupListContent = useCallback((item: any) => {
+      // tinggal tambahin kata Inactive di item.icon jika abu2
+      // tambah initiated by
+      return (
+        <>
+          <GroupIconComponent data={`${item.icon}` || ''} />
+          <View style={styles.centerVertical}>
+            <View style={styles.groupListContentDetail}>
+              <Text type={'body-bold'} style={styles.groupNameTxt} numberOfLines={1} ellipsizeMode={'tail'}>{item.name}</Text>
+              <Text type={'body'} style={styles.groupSubTxt} numberOfLines={1} ellipsizeMode={'tail'}>Initiated by</Text>
+            </View>
+          </View>
+        </>
+      )
+    }, []);
+
     // group list component
     const renderGroupList = useCallback((item: any, index: number) => {
       return (
@@ -71,24 +98,23 @@ const BrainstormGroupList: FC<StackScreenProps<NavigatorParamList, "newBrainstor
             {renderGroupCreatedTime(item.bg_created_at)}
           </View>
         )}
-        {index !== 0 ? 
-        <>
-          {
-            moment(item.bg_created_at).format('YYYY-MM-DD') !== moment(brainstormStore?.listBrainstormGroups[index - 1].bg_created_at).format('YYYY-MM-DD') && (
-              <View>
-                {renderGroupCreatedTime(item.bg_created_at)}
-              </View>
-            )
-          }
-        </> : (
-          <></>
-        )
+        {index !== 0 &&
+          <>
+            {
+              moment(item.bg_created_at).format('YYYY-MM-DD') !== moment(brainstormStore?.listBrainstormGroups[index - 1].bg_created_at).format('YYYY-MM-DD') && (
+                <View>
+                  {renderGroupCreatedTime(item.bg_created_at)}
+                </View>
+              )
+            }
+          </>
         }
-          <TouchableOpacity key={index} style={styles.groupOuterContainer}>
+          <TouchableOpacity key={index} style={[styles.groupOuterContainer, styles.disabledGroupContainer]}>
             <View style={styles.groupInnerContainer}>
-              <Text>{item.name}</Text>
+              {renderGroupListContent(item)}
             </View>
           </TouchableOpacity>
+          
         </>
       )
     }, []);
@@ -110,20 +136,28 @@ const BrainstormGroupList: FC<StackScreenProps<NavigatorParamList, "newBrainstor
                 onPress={_goToAddBrainstormGroup}
               />
               <Spacer height={Spacing[48]} />
-              <FlatList
-                ListHeaderComponent={
-                  <>
-                    <HStack horizontal={Spacing[24]}>
-                      <Text type={"left-header"} text="Brainstorming groups" />
-                    </HStack>
-                    <Spacer height={Spacing[24]} />
-                  </>
-                }
-                data={brainstormStore?.listBrainstormGroups}
-                keyExtractor={item => item.id}
-                showsVerticalScrollIndicator={false}
-                renderItem={({item, index}) => renderGroupList(item, index)}
-              />
+              {isLoading ? (
+                <ActivityIndicator size={'large'} color={Colors.UNDERTONE_BLUE} />
+              ) : (
+                <FlatList
+                  contentContainerStyle={{paddingBottom: 50 * 10}}
+                  refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={_onRefresh} />
+                  }
+                  ListHeaderComponent={
+                    <>
+                      <HStack horizontal={Spacing[24]}>
+                        <Text type={"left-header"} text="Brainstorming groups" />
+                      </HStack>
+                      <Spacer height={Spacing[24]} />
+                    </>
+                  }
+                  data={brainstormStore?.listBrainstormGroups}
+                  keyExtractor={item => item.id}
+                  showsVerticalScrollIndicator={false}
+                  renderItem={({item, index}) => renderGroupList(item, index)}
+                />
+              )}
             </View>
           </View>
         </VStack>
@@ -141,8 +175,33 @@ const styles = StyleSheet.create({
   centerVertical: {
     justifyContent: 'center',
   },
+  disabledGroupContainer: {
+    backgroundColor: Colors.CLOUD_GRAY,
+  },
+  groupCreatedTimeLine: {
+    borderWidth: 0.5,
+    height: 0,
+  },
+  groupCreatedTimeLineContainer: {
+    width: '65%',
+  },
+  groupCreatedTimeOuterContainer: {
+    flexDirection: 'row',
+    marginBottom: Spacing[24],
+    marginLeft: Spacing[28],
+    width: '79%',
+  },
+  groupCreatedTimeTxt: {
+    alignSelf: 'flex-end',
+    textAlign: 'right',
+    width: '40%',
+  },
   groupInnerContainer: {
+    flexDirection: 'row',
     padding: Spacing[12],
+  },
+  groupListContentDetail: {
+    marginLeft: Spacing[20],
   },
   groupListOuterContainer: {
     backgroundColor: Colors.WHITE,
@@ -150,12 +209,20 @@ const styles = StyleSheet.create({
     borderTopStartRadius: Spacing[48],
     height: '100%',
   },
+  groupNameTxt: {
+    fontSize: Spacing[18],
+    width: 200,
+  },
   groupOuterContainer: {
     borderColor: Colors.UNDERTONE_BLUE,
     borderRadius: Spacing[14],
     borderWidth: 2,
     marginBottom: Spacing[14],
     marginHorizontal: Spacing[28],
+  },
+  groupSubTxt: {
+    fontSize: Spacing[15],
+    width: 200,
   },
   innerContainer: {
     backgroundColor: Colors.UNDERTONE_BLUE,
