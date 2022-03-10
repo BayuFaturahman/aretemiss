@@ -73,8 +73,16 @@ export function DropDownPicker(props: DropDownProps) {
   }, [value])
 
   useEffect(() => {
-    onValueChange(values)
-    console.log(values)
+    if (maxSelected && values.length > maxSelected) {
+      console.log("Reach max selected value")
+      const lastValue = values[values.length - 1]
+      const newValues = values.filter((val) => val.id !== lastValue.id)
+      setValues(newValues)
+      console.log("New selected values", newValues)
+      // return
+    } else {
+      onValueChange(values)
+    }
   }, [values])
 
   useEffect(() => {
@@ -205,14 +213,7 @@ export function DropDownPicker(props: DropDownProps) {
   }
 
   function onMultiChange() {
-    if (maxSelected) {
-      if (values.length < maxSelected) {
-        return (item) => setValues(xorBy(values, [item], "id"))  
-      }
-    } else {
-      return (item) => setValues(xorBy(values, [item], "id"))
-    }
-    
+    return (item) => setValues(xorBy(values, [item], "id"))
   }
 }
 
