@@ -47,7 +47,7 @@ const ChangeUserPosition: FC<StackScreenProps<NavigatorParamList, "changeUserPos
 
     const [winCultureOptionData, setWinCultureOptionData] = useState(USER_POSITION)
 
-    const [winCultureData, setWinCultureData] = useState(mainStore.userProfile.user_position)
+    const [userPositionData, setUserPositionData] = useState(mainStore.userProfile.user_position? USER_POSITION.filter((position) => position.id === mainStore.userProfile.user_position)[0] : {})
 
     const goBack = () => navigation.goBack()
 
@@ -66,13 +66,15 @@ const ChangeUserPosition: FC<StackScreenProps<NavigatorParamList, "changeUserPos
     /**
      * Not finish: how to do show error message from API
      */
-    const changeWinningCulture = useCallback(async (data) => {
+    const changeUserPosition = useCallback(async (data) => {
       authStore.formReset()
       setIsSubmitWinCultureChange(true)
       setErrorMessage("")
       setModalVisible(false)
 
-      console.log('submitted data to change', data)
+      console.log('submitted data to change position', data)
+
+      await mainStore.requestChangePosition(data);
 
       if (mainStore.errorCode === null) {
         setModalContent(
@@ -101,7 +103,7 @@ const ChangeUserPosition: FC<StackScreenProps<NavigatorParamList, "changeUserPos
           style={Layout.flex}
         >
           <VStack
-            testID="ChangeWinningCulture"
+            testID="ChangeUserPosition"
             style={{ backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: "center" }}
           >
             <SafeAreaView style={Layout.flex}>
@@ -150,9 +152,9 @@ const ChangeUserPosition: FC<StackScreenProps<NavigatorParamList, "changeUserPos
 
                     <Formik
                       initialValues={{
-                        winningCulture: "",
+                        position: "",
                       }}
-                      onSubmit={changeWinningCulture}
+                      onSubmit={changeUserPosition}
                     >
                       {({
                         handleChange,
@@ -177,7 +179,7 @@ const ChangeUserPosition: FC<StackScreenProps<NavigatorParamList, "changeUserPos
                             isRequired={false}
                             label="Posisi Winning Culture:"
                             onValueChange={(value: IOption) => {
-                              setFieldValue("winningCulture", value?.id ?? "")
+                              setFieldValue("position", value?.id ?? "")
                             }}
                             placeholder={"Pilih salah satu"}
                             containerStyle={{ marginTop: Spacing[4] }}
@@ -185,7 +187,7 @@ const ChangeUserPosition: FC<StackScreenProps<NavigatorParamList, "changeUserPos
                             zIndexInverse={3000}
                             dropDownDirection={"BOTTOM"}
                             isRemovable={false}
-                            initialValue={winCultureData}
+                            initialValue={userPositionData}
                           />
                           {/* </VStack> */}
                           {authStore.errorCode === 37 && (
