@@ -30,6 +30,7 @@ import {launchImageLibrary, launchCamera, ImagePickerResponse, } from 'react-nat
 
 import ActionSheet from "react-native-actions-sheet";
 import { MoodComponent } from "@screens/homepage/components/mood-component"
+import { USER_POSITION } from "./change-user-position"
 
 export type ProfileUpdateForm = {
   fullname: string
@@ -45,7 +46,7 @@ export type ProfileUpdateForm = {
   isAllowNotification?: number
   isAllowReminderNotification?: number
   mood: string
-  winningCulture: string
+  userPosition: string
 }
 
 const qualityImage = Platform.OS === 'ios' ? 0.4 : 0.5;
@@ -80,11 +81,12 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
       isAllowNotification: mainStore.userProfile.user_is_allow_notification,
       isAllowReminderNotification: mainStore.userProfile.user_is_allow_reminder_notification,
       mood: mainStore.userProfile.user_mood,
-      winningCulture: mainStore.userProfile.user_position
+      userPosition: mainStore.userProfile.user_position? USER_POSITION.filter((position) => position.id === mainStore.userProfile.user_position)[0].item : ''
     }
 
-    // console.log('mainStore.userProfile USer profile: ', mainStore.userProfile)
-    // console.log('USer profile: ', userProfile)
+
+    console.log('mainStore.userProfile USer profile: ', mainStore.userProfile)
+    console.log('USer profile: ', userProfile)
     const actionSheetRef = createRef();
 
     const [profilePicture, setProfilePicture] = useState(userProfile.photo)
@@ -95,7 +97,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
 
     const goToChangeDivision = () => navigation.navigate("changeDivision")
     
-    const goToChangeWinningCulture = () => navigation.navigate("changeWinningCulture")
+    const goToChangePosition = () => navigation.navigate("changeUserPosition")
 
     const goToVerifyOTP = (email, nickname, profile) => navigation.navigate("myAccountVerifyOTP", {
       newEmail: email,
@@ -489,8 +491,8 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                             isTextArea={true}
                             changeButton={true}
                             editable={false}
-                            value={(values.winningCulture)}
-                            onPressChangeButton={goToChangeWinningCulture}
+                            value={(values.userPosition)}
+                            onPressChangeButton={goToChangePosition}
                           />
                            {generalErrorMessage !== null && (
                             <Text type={"warning"} style={{ textAlign: "center" }}>

@@ -34,7 +34,7 @@ export const USER_POSITION = [
   }
 ]
 
-const ChangeWinningCulture: FC<StackScreenProps<NavigatorParamList, "changeWinningCulture">> =
+const ChangeUserPosition: FC<StackScreenProps<NavigatorParamList, "changeUserPosition">> =
   observer(({ navigation }) => {
     const { authStore, mainStore } = useStores()
     const [isSubmitWinCultureChange, setIsSubmitWinCultureChange] = useState<boolean>(false)
@@ -277,4 +277,4 @@ const ChangeWinningCulture: FC<StackScreenProps<NavigatorParamList, "changeWinni
     )
   })
 
-export default ChangeWinningCulture
+export default ChangeUserPosition

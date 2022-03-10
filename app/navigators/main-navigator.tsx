@@ -24,7 +24,7 @@ import {
   changePassword,
   changePhone,
   changeDivision,
-  changeWinningCulture,
+  changeUserPosition,
   notification,
 } from "@screens/settings"
 import { notifications } from "@screens/notification"
@@ -70,8 +70,8 @@ const screens: AppRoute[] = [
     component: changeDivision,
   },
   {
-    name: "changeWinningCulture",
-    component: changeWinningCulture,
+    name: "changeUserPosition",
+    component: changeUserPosition,
   },
   {
     name: "changePhone",
@@ -190,7 +190,7 @@ export type NavigatorParamList = {
   changePhone: undefined
   changePassword: undefined
   changeDivision: undefined
-  changeWinningCulture: undefined
+  changeUserPosition: undefined
   newJournalEntry: {
     isDetail: boolean
   }
