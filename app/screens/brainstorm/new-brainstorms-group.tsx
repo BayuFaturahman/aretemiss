@@ -10,7 +10,7 @@ import {
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Text, BackNavigation, Button, TextField, DropDownPicker, DropDownItem } from "@components"
-import { NavigatorParamList } from "@navigators/idea-pools-navigator"
+import { NavigatorParamList } from "@navigators/brainstorms-navigator"
 import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
 import { Colors, Layout, Spacing } from "@styles"
@@ -47,7 +47,7 @@ const newGroupInitialForm: newGroupForm = {
 const NewBrainstormsGroup: FC<StackScreenProps<NavigatorParamList, "newBrainstormsGroup">> =
   observer(({ navigation }) => {
     // empty list state
-    const { mainStore } = useStores()
+    const { mainStore, brainstormStore } = useStores()
 
     const [dataTeamMember, setDataTeamMember] = useState<DropDownItem[]>([])
     const [selectedIcon, setSelectedIcon] = useState<string>("")
@@ -161,7 +161,14 @@ const NewBrainstormsGroup: FC<StackScreenProps<NavigatorParamList, "newBrainstor
         setErrorMessage("")
         setModalVisible(false)
 
-        if (mainStore.errorCode === null) {
+        await brainstormStore.createBrainstormGroup({
+          initiator_id: mainStore.userProfile.user_id,
+          name: data.name,
+          member_ids: data.memberIds,
+          icon: data.icon,
+        })
+
+        if (brainstormStore.errorCode === null) {
           setModalContent(
             "Berhasil!",
             "Brainstorming group-mu berhasil dibuat. Selamat bertukar ide! :)",
