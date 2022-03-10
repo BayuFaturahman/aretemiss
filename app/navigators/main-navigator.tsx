@@ -34,7 +34,7 @@ import { leaderboards, guidePoints, assessment, juaraAssessment } from "@screens
 import { JLDetail } from "app/store/store.coaching"
 import juaraAssessmentQuiz from "@screens/leaderboard/juara-assessment-quiz"
 import { FeedItemType } from "@screens/feed/feed.type"
-import { addIdea, brainstorms } from "@screens/brainstorm"
+import { addIdea, brainstorms, brainstormGroupList, newBrainstormsGroup } from "@screens/brainstorm"
 
 const screens: AppRoute[] = [
   {
@@ -165,6 +165,14 @@ const screens: AppRoute[] = [
     name: "addIdea",
     component: addIdea,
   },
+  {
+    name: 'brainstormGroupList',
+    component: brainstormGroupList,
+  },
+  {
+    name: 'newBrainstormsGroup',
+    component: newBrainstormsGroup,
+  }
 ]
 
 export type NavigatorParamList = {
@@ -236,7 +244,9 @@ export type NavigatorParamList = {
     isEdit: boolean
     isVote: boolean
     byLeaders: boolean
-  }
+  },
+  brainstormGroupList: undefined,
+  newBrainstormsGroup: undefined
 }
 
 export default screens

@@ -14,55 +14,46 @@ import { NavigatorParamList } from "@navigators/idea-pools-navigator"
 import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
 import { Colors, Layout, Spacing } from "@styles"
-
 import { useStores } from "../../bootstrap/context.boostrap"
-
 import Spinner from "react-native-loading-spinner-overlay"
 import { Formik } from "formik"
 import { debounce } from "lodash"
-import { GroupIconComponent } from "../brainstorm/components/group-icon-component"
-import { MoodComponent } from "@screens/homepage/components/mood-component"
+import { GroupIconComponent } from "./components/group-icon-component";
+import { MoodComponent } from "@screens/homepage/components/mood-component";
 import Modal from "react-native-modalbox"
 import { dimensions } from "@config/platform.config"
-
 const updateButtonStyle: StyleProp<any> = {
   height: Spacing[32],
   paddingHorizontal: Spacing[16],
   right: 0,
   position: "absolute",
 }
-
 export type newGroupForm = {
   name: string
   memberIds: string[]
   icon: string
 }
-
 const newGroupInitialForm: newGroupForm = {
   name: "",
   memberIds: [],
   icon: "",
 }
 
-const NewBrainstormingGroup: FC<StackScreenProps<NavigatorParamList, "newBrainstormingGroup">> =
+const NewBrainstormsGroup: FC<StackScreenProps<NavigatorParamList, "newBrainstormsGroup">> =
   observer(({ navigation }) => {
     // empty list state
     const { mainStore } = useStores()
-
     const [dataTeamMember, setDataTeamMember] = useState<DropDownItem[]>([])
     const [selectedIcon, setSelectedIcon] = useState<string>("")
     const [errorMessage, setErrorMessage] = useState<string>("")
-
     const [isModalVisible, setModalVisible] = useState<boolean>(false)
     const [modalTitle, setModalTitle] = useState<string>("")
     const [modalDesc, setModalDesc] = useState<string>("")
     const [modalIcon, setModalIcon] = useState("senang")
-
     const getListUser = useCallback(async (id: string) => {
       await mainStore.getListUser(id)
       console.log("useEffect mainStore.listUserProfile", mainStore.listUserProfile)
     }, [])
-
     const loadData = debounce(async () => {
       await getListUser(mainStore.userProfile.team1_id)
       if (mainStore.listUserProfile) {
@@ -77,21 +68,16 @@ const NewBrainstormingGroup: FC<StackScreenProps<NavigatorParamList, "newBrainst
       }
       console.log("loading data for new branstorming group")
     }, 500)
-
     useEffect(() => {
       loadData()
     }, [])
-
     const goBack = () => navigation.goBack()
-
     const getIcon = (icon: string) => {
       const type = icon.toLowerCase()
-
       const renderGroupIcon = () => {
         if (!selectedIcon) {
           return <GroupIconComponent data={type} />
         }
-
         if (selectedIcon) {
           if (type !== selectedIcon) {
             const iconInactive = type + "Inactive"
@@ -101,7 +87,6 @@ const NewBrainstormingGroup: FC<StackScreenProps<NavigatorParamList, "newBrainst
           }
         }
       }
-
       const selectIcon = useCallback(
         (selectedIcon) => {
           setSelectedIcon(selectedIcon)
@@ -109,7 +94,6 @@ const NewBrainstormingGroup: FC<StackScreenProps<NavigatorParamList, "newBrainst
         },
         [selectedIcon, setSelectedIcon],
       )
-
       return (
         <VStack>
           <TouchableOpacity
@@ -124,11 +108,9 @@ const NewBrainstormingGroup: FC<StackScreenProps<NavigatorParamList, "newBrainst
         </VStack>
       )
     }
-
     const toggleModal = (value: boolean) => {
       setModalVisible(value)
     }
-
     const onSubmit = useCallback(
       async (data: newGroupForm) => {
         console.log("Data ", data)
@@ -143,24 +125,18 @@ const NewBrainstormingGroup: FC<StackScreenProps<NavigatorParamList, "newBrainst
           isError = true
           console.log("icon")
         }
-
         if (isError) {
           return null
         }
-
         data.memberIds = data.memberIds.map((member) => {
           return member["id"]
         })
         console.log("new branstorrming data: ", data)
         data.icon = selectedIcon
-
         // console.log("journalEntryForm mau ke feedback", journalEntryForm)
-
         // toggleEncouragementModal()
-
         setErrorMessage("")
         setModalVisible(false)
-
         if (mainStore.errorCode === null) {
           setModalContent(
             "Berhasil!",
@@ -175,13 +151,11 @@ const NewBrainstormingGroup: FC<StackScreenProps<NavigatorParamList, "newBrainst
       },
       [selectedIcon, isModalVisible],
     )
-
     const setModalContent = (title: string, desc: string, icon: string) => {
       setModalTitle(title)
       setModalDesc(desc)
       setModalIcon(icon)
     }
-
     return (
       <VStack
         testID="newPost"
@@ -204,9 +178,7 @@ const NewBrainstormingGroup: FC<StackScreenProps<NavigatorParamList, "newBrainst
                   <HStack>
                     <Text type={"left-header"} style={{}} text="Tambah brainstorming group." />
                   </HStack>
-
                   {/* <Spacer height={Spacing[8]} /> */}
-
                   <VStack>
                     <TextField
                       value={values.name}
@@ -284,7 +256,6 @@ const NewBrainstormingGroup: FC<StackScreenProps<NavigatorParamList, "newBrainst
           </ScrollView>
         </SafeAreaView>
         <Spinner visible={false} textContent={"Memuat..."} />
-
         <Modal
           isOpen={isModalVisible}
           style={{
@@ -350,4 +321,4 @@ const NewBrainstormingGroup: FC<StackScreenProps<NavigatorParamList, "newBrainst
     )
   })
 
-export default NewBrainstormingGroup
+export default NewBrainstormsGroup
