@@ -18,6 +18,9 @@ import { Colors, Layout, Spacing } from "@styles"
 import { dimensions } from "@config/platform.config"
 import { AddTask } from "@assets/svgs"
 
+import { useStores } from "../../bootstrap/context.boostrap"
+import { debounce } from "lodash"
+
 type StickyNoteItemProps = { id: string; color: string; colorShade: string; text: string }
 
 const STICKY_LIST_EXAMPLE: StickyNoteItemProps[] = [
@@ -144,7 +147,9 @@ const StickyNoteItem = ({
 }
 
 const Brainstorms: FC<StackScreenProps<NavigatorParamList, "notificationList">> = observer(
-  ({ navigation }) => {
+  ({ navigation, route }) => {
+    // const { groupId } = route.params.groupId
+    const { mainStore, brainstormStore } = useStores()
     const [loading, setLoading] = useState<boolean>(false)
 
     const [brainstorms, setBrainstorms] = useState<StickyNoteItemProps[]>(STICKY_LIST_EXAMPLE)
@@ -179,8 +184,12 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "notificationList">> 
         isVote: false,
       })
 
+    const loadIdeas = debounce(async (groupId: string) => {
+      await brainstormStore.getIdeaPoolsByBrainstormsGroup(groupId)
+    }, 500)
+
     useEffect(() => {
-      // onRefresh()
+      loadIdeas('id')
     }, [])
 
     return (
