@@ -368,7 +368,9 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
     const goToBrainstorms = () => navigation.navigate("brainstorms")
     
-    const goToBrainstormsGroup = () => navigation.navigate("newBrainstormsGroup")
+    // const goToBrainstormsGroup = () => navigation.navigate("newBrainstormsGroup")
+
+    const goToBrainstormsGroup = () => navigation.navigate("brainstormGroupList")
 
     const goToTeamMood = () => {
       setModalVisible(false)
