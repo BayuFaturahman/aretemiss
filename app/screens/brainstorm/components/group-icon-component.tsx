@@ -33,6 +33,8 @@ export const GroupIconComponent = ({data, height=Spacing[54], width=Spacing[54]}
         return <TreeActive height={height} width={width}/>
     } else if (data === 'treeInactive') {
         return <TreeInActive height={height} width={width}/>
+    } else {
+        return <></>
     }
 
 }
