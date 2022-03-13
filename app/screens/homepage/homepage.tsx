@@ -367,6 +367,10 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     const goToJuaraAssessment = () => navigation.navigate("juaraAssesment")
 
     const goToBrainstorms = () => navigation.navigate("brainstorms")
+    
+    // const goToBrainstormsGroup = () => navigation.navigate("newBrainstormsGroup")
+
+    const goToBrainstormsGroup = () => navigation.navigate("brainstormGroupList")
 
     const goToTeamMood = () => {
       setModalVisible(false)
@@ -388,9 +392,6 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
       return (
         <>
-          <HomepageCardWrapper animationDuration={700}>
-            <AssessmentComponent data={profileData} goToAssessment={goToBrainstorms} />
-          </HomepageCardWrapper>
           <VStack top={Spacing[48]} horizontal={Spacing[8]} bottom={Spacing[12]}>
             <VStack horizontal={Spacing[12]}>
               <RNAnimated appearFrom="left" animationDuration={500}>
@@ -453,6 +454,14 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
             </HomepageCardWrapper>
             <Spacer height={Spacing[12]} />
             <HomepageCardWrapper animationDuration={700}>
+              <VStack>
+                <Button type={"primary"} text={"Idea pools"} onPress={goToBrainstorms} />
+                <Spacer height={Spacing[12]} />
+                <Button type={"primary"} text={"Brainstorms"} onPress={goToBrainstormsGroup} />
+              </VStack>
+            </HomepageCardWrapper>
+            <Spacer height={Spacing[12]} />
+            <HomepageCardWrapper animationDuration={700}>
               <AssessmentComponent data={profileData} goToAssessment={goToJuaraAssessment} />
             </HomepageCardWrapper>
             <Spacer height={Spacing[12]} />
@@ -496,36 +505,11 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
         }
 
         if (selectedMood) {
-          if (type === "senang") {
-            if (selectedMood === type) {
-              return <SenyumActiveBorder height={Spacing[42]} width={Spacing[42]} />
-            } else {
-              return <SenyumInactive height={Spacing[42]} width={Spacing[42]} />
-            }
-          } else if (type === "marah") {
-            if (selectedMood === type) {
-              return <MarahActiveBorder height={Spacing[42]} width={Spacing[42]} />
-            } else {
-              return <MarahInactive height={Spacing[42]} width={Spacing[42]} />
-            }
-          } else if (type === "sedih") {
-            if (selectedMood === type) {
-              return <SedihActiveBorder height={Spacing[42]} width={Spacing[42]} />
-            } else {
-              return <SedihInactive height={Spacing[42]} width={Spacing[42]} />
-            }
-          } else if (type === "sakit") {
-            if (selectedMood === type) {
-              return <SickActiveBorder height={Spacing[42]} width={Spacing[42]} />
-            } else {
-              return <SickInactive height={Spacing[42]} width={Spacing[42]} />
-            }
-          } else if (type === "terkejut") {
-            if (selectedMood === type) {
-              return <SurprisedActiveBorder height={Spacing[42]} width={Spacing[42]} />
-            } else {
-              return <SurprisedInactive height={Spacing[42]} width={Spacing[42]} />
-            }
+          if (type !== selectedMood) {
+            const moodInactive = type + "Inactive"
+            return <MoodComponent data={moodInactive} />
+          } else {
+            return <MoodComponent data={type} />
           }
         }
       }

@@ -7,6 +7,7 @@
 import ServiceStore from "../store/store.service";
 import MainStore from "../store/store.main";
 import AuthStore from "../store/store.auth"
+import BrainstormStore from "../store/store.brainstorm";
 import CoachingStore from "../store/store.coaching"
 import FeedStore from "../store/store.feed";
 import NotificationStore from "../store/store.notification";
@@ -18,11 +19,12 @@ export default class RootStore {
   authStore: AuthStore;
   serviceStore: ServiceStore;
   mainStore: MainStore;
+  brainstormStore: BrainstormStore;
   api: Api;
   coachingStore: CoachingStore;
   feedStore: FeedStore;
   notificationStore: NotificationStore;
-  leaderboardStore: LeaderboardStore
+  leaderboardStore: LeaderboardStore;
 
   constructor(api: Api) {
 
@@ -35,5 +37,6 @@ export default class RootStore {
     this.feedStore = new FeedStore(this.serviceStore, this.api);
     this.notificationStore = new NotificationStore(this.api);
     this.leaderboardStore = new LeaderboardStore(this.api);
+    this.brainstormStore = new BrainstormStore(this.api);
   }
 }
