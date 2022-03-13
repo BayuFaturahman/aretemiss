@@ -12,7 +12,6 @@ import CoachingStore from "../store/store.coaching"
 import FeedStore from "../store/store.feed";
 import NotificationStore from "../store/store.notification";
 import LeaderboardStore from "../store/store.leaderboard";
-import BrainStormsStore from "../store/store.brainstorms";
 
 import {Api} from "@services/api";
 
