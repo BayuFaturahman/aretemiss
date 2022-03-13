@@ -16,7 +16,7 @@ import Spinner from "react-native-loading-spinner-overlay"
 import { IOption } from "react-native-modal-selector"
 import { IleadLogo } from "@assets/svgs"
 import { dimensions } from "@config/platform.config"
-import { USER_POSITION } from "@screens/settings/change-winning-culture"
+import { USER_POSITION } from "@screens/settings/change-user-position"
 
 export type ProfileUpdateForm = {
   fullname: string
