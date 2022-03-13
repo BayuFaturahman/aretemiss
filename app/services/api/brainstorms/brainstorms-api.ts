@@ -1,7 +1,7 @@
 import { ApiResponse } from "apisauce"
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
-import { CreateBrainstormGroupType, CreateBrainstormsGroupResult, GetIdeaPoolsByBrainstormsGroupResult } from "./brainstorms-api.types"
+import { CreateBrainstormGroupType, CreateBrainstormsGroupResult, GetIdeaPoolsByBrainstormGroupResult } from "./brainstorms-api.types"
 
 export class BrainstormsApi {
   private api: Api
@@ -43,7 +43,7 @@ export class BrainstormsApi {
     }
   }
 
-  async getIdeaPoolsByBrainstormGroup(groupId: string): Promise<GetIdeaPoolsByBrainstormsGroupResult> {
+  async getIdeaPoolsByBrainstormGroup(groupId: string): Promise<GetIdeaPoolsByBrainstormGroupResult> {
     console.log("getListFeeds()")
     try {
       // make the api call

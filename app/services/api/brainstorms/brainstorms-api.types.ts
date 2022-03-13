@@ -41,16 +41,16 @@ export type IdeaApiModel = {
   ip_votes: number
 }
 
-export type IdeaPoolsByBrainstormsGroupApiModel = {
+export type IdeaPoolsByBrainstormGroupApiModel = {
   brainstormed: IdeaApiModel[]
   shortlisted: IdeaApiModel[]
   selected: IdeaApiModel[]
 }
 
-export type GetIdeaPoolsByBrainstormsGroupResponse = {
+export type GetIdeaPoolsByBrainstormGroupResponse = {
   message: string
   token: string
-  data: IdeaPoolsByBrainstormsGroupApiModel
+  data: IdeaPoolsByBrainstormGroupApiModel
 }
 
 export interface CreateBrainstormsGroupResponse {
@@ -68,7 +68,7 @@ export type CreateBrainstormsGroupResult =
   | GeneralApiProblem
 
 
-  export type GetIdeaPoolsByBrainstormsGroupResult =
+  export type GetIdeaPoolsByBrainstormGroupResult =
   | { kind: "form-error"; response: ErrorFormResponse }
-  | { kind: "ok"; response: GetIdeaPoolsByBrainstormsGroupResponse }
+  | { kind: "ok"; response: GetIdeaPoolsByBrainstormGroupResponse }
   | GeneralApiProblem

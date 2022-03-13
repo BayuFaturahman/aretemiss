@@ -67,18 +67,18 @@ export type IdeaApiModel = {
   ip_votes: number
 }
 
-export type IdeaPoolsByBrainstormsGroupApiModel = {
+export type IdeaPoolsByBrainstormGroupApiModel = {
   brainstormed: IdeaApiModel[]
   shortlisted: IdeaApiModel[]
   selected: IdeaApiModel[]
 }
 
-export type GetIdeaPoolsByBrainstormsGroupResponse = {
+export type GetIdeaPoolsByBrainstormGroupResponse = {
   message: string
   token: string
-  data: IdeaPoolsByBrainstormsGroupApiModel
+  data: IdeaPoolsByBrainstormGroupApiModel
 }
 
 export type GetListBrainstormGroupsResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListBrainstormGroupsResponse }  | GeneralApiProblem
 export type CreateBrainstormsGroupResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreateBrainstormsGroupResponse } | GeneralApiProblem
-export type GetIdeaPoolsByBrainstormsGroupResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetIdeaPoolsByBrainstormsGroupResponse } | GeneralApiProblem
+export type GetIdeaPoolsByBrainstormGroupResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetIdeaPoolsByBrainstormGroupResponse } | GeneralApiProblem

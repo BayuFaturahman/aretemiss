@@ -20,63 +20,64 @@ import { AddTask } from "@assets/svgs"
 
 import { useStores } from "../../bootstrap/context.boostrap"
 import { debounce } from "lodash"
+import { IdeaType } from "./brainstorms.type"
 
-type StickyNoteItemProps = { id: string; color: string; colorShade: string; text: string }
+// type StickyNoteItemProps = { id: string; color: string; colorShade: string; description: string }
 
-const STICKY_LIST_EXAMPLE: StickyNoteItemProps[] = [
+const STICKY_LIST_EXAMPLE: IdeaType[] = [
   {
     id: "1",
     color: "#F2C94C",
     colorShade: "#F2994A",
-    text: "Senam SKJ setiap Jumat",
+    description: "Senam SKJ setiap Jumat",
   },
   {
     id: "2",
     color: "#F2C94C",
     colorShade: "#F2994A",
-    text: "Senam SKJ setiap Jumat",
+    description: "Senam SKJ setiap Jumat",
   },
   {
     id: "3",
     color: "#F2C94C",
     colorShade: "#F2994A",
-    text: "Senam SKJ setiap Jumat",
+    description: "Senam SKJ setiap Jumat",
   },
   {
     id: "4",
     color: "#F2C94C",
     colorShade: "#F2994A",
-    text: "Senam SKJ setiap Jumat",
+    description: "Senam SKJ setiap Jumat",
   },
   {
     id: "5",
     color: "#F2C94C",
     colorShade: "#F2994A",
-    text: "Senam SKJ setiap Jumat",
+    description: "Senam SKJ setiap Jumat",
   },
   {
     id: "6",
     color: "#F2C94C",
     colorShade: "#F2994A",
-    text: "Senam SKJ setiap Jumat",
+    description: "Senam SKJ setiap Jumat",
   },
   {
     id: "7",
     color: "#F2C94C",
     colorShade: "#F2994A",
-    text: "Senam SKJ setiap Jumat",
+    description: "Senam SKJ setiap Jumat",
   },
   {
     id: "8",
     color: "#F2C94C",
     colorShade: "#F2994A",
-    text: "Senam SKJ setiap Jumat",
+    description: "Senam SKJ setiap Jumat",
   },
   {
     id: "9",
     color: "#F2C94C",
     colorShade: "#F2994A",
-    text: "Senam SKJ setiap Jumat",
+    description: "Senam SKJ setiap Jumat",
   },
 ]
 
@@ -146,13 +147,15 @@ const StickyNoteItem = ({
   )
 }
 
-const Brainstorms: FC<StackScreenProps<NavigatorParamList, "notificationList">> = observer(
+const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = observer(
   ({ navigation, route }) => {
-    // const { groupId } = route.params.groupId
+    const { groupId } = route.params.groupId
     const { mainStore, brainstormStore } = useStores()
     const [loading, setLoading] = useState<boolean>(false)
 
-    const [brainstorms, setBrainstorms] = useState<StickyNoteItemProps[]>(STICKY_LIST_EXAMPLE)
+    const [brainstorms, setBrainstorms] = useState<IdeaType[]>([])
+    const [shortlisted, setShortlisted] = useState<IdeaType[]>([])
+    const [selected, setSelected] = useState<IdeaType[]>([])
 
     const goBack = () => navigation.goBack()
 
@@ -185,11 +188,17 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "notificationList">> 
       })
 
     const loadIdeas = debounce(async (groupId: string) => {
-      await brainstormStore.getIdeaPoolsByBrainstormsGroup(groupId)
+      console.log('groupId ',groupId)
+      await brainstormStore.getIdeaPoolsByBrainstormGroup(route.params.groupId)
+      console.log('brainstormStore.ideaPoolsByGroup: ', brainstormStore.ideaPoolsByGroup)
+      setBrainstorms(brainstormStore.ideaPoolsByGroup.brainstormed)
+      setShortlisted(brainstormStore.ideaPoolsByGroup.shortlisted)
+      setSelected(brainstormStore.ideaPoolsByGroup.selected)
     }, 500)
 
     useEffect(() => {
-      loadIdeas('id')
+      // console.log('route.params ', route.params)
+      loadIdeas(groupId)
     }, [])
 
     return (
@@ -260,7 +269,7 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "notificationList">> 
                           <StickyNoteItem
                             key={"sticky-main-" + item.id}
                             id={item.id}
-                            text={item.text}
+                            text={item.description}
                             color={item.color}
                           />
                         </VStack>
@@ -288,14 +297,14 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "notificationList">> 
                 <VStack style={styles.container} top={Spacing[24]} horizontal={Spacing[24]}>
                   {/* HERE */}
 
-                  {brainstorms.slice(0, 5).map((item) => {
+                  {shortlisted.slice(0, 5).map((item) => {
                     return (
                       <TouchableOpacity style={styles.item}>
                         <VStack bottom={Spacing[12]}>
                           <StickyNoteItem
                             key={"sticky-main-" + item.id}
                             id={item.id}
-                            text={item.text}
+                            text={item.description}
                             color={item.color}
                           />
                         </VStack>
@@ -322,14 +331,14 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "notificationList">> 
                 <VStack style={styles.container} top={Spacing[24]} horizontal={Spacing[24]}>
                   {/* HERE */}
 
-                  {brainstorms.slice(0, 3).map((item) => {
+                  {selected.slice(0, 3).map((item) => {
                     return (
                       <TouchableOpacity style={styles.item}>
                         <VStack bottom={Spacing[12]}>
                           <StickyNoteItem
                             key={"sticky-main-" + item.id}
                             id={item.id}
-                            text={item.text}
+                            text={item.description}
                             color={item.color}
                           />
                         </VStack>

@@ -4,7 +4,8 @@
 import ServiceStore from "./store.service"
 import { Api } from "@services/api"
 import { BrainstormApi } from "@services/api/brainstorm/brainstorm-api"
-import { CreateBrainstormGroupType, ErrorFormResponse } from "@services/api/brainstorm/brainstorm-api.types";
+import { CreateBrainstormGroupType, ErrorFormResponse, IdeaPoolsByBrainstormGroupApiModel } from "@services/api/brainstorm/brainstorm-api.types";
+import { IdeaPoolsByGroupType } from "@screens/brainstorm/brainstorms.type";
 
 
 export default class BrainstormStore {
@@ -101,15 +102,15 @@ export default class BrainstormStore {
     this.refreshData = true
   }
 
-  async getIdeaPoolsByBrainstormsGroup(groupId: string) {
+  async getIdeaPoolsByBrainstormGroup(groupId: string) {
     this.isLoading = true
     try {
-      const response = await this.brainstormsApi.getIdeaPoolsByBrainstormGroup(groupId)
+      const response = await this.brainstormApi.getIdeaPoolsByBrainstormGroup(groupId)
 
       if (response.kind === "form-error") {
         this.formError(response.response)
       } else if (response.kind === "ok") {
-        this.getIdeaPoolsByBrainstormsGroupSuccess(response.response.data)
+        this.getIdeaPoolsByBrainstormGroupSuccess(response.response.data)
       } else if (response.kind === "unauthorized") {
         console.log("token expired journal")
         console.log(response)
@@ -126,8 +127,8 @@ export default class BrainstormStore {
     }
   }
 
-  getIdeaPoolsByBrainstormsGroupSuccess(data: IdeaPoolsByBrainstormsGroupApiModel) {
-    console.log("getIdeaPoolsByBrainstormsGroupSuccess")
+  getIdeaPoolsByBrainstormGroupSuccess(data: IdeaPoolsByBrainstormGroupApiModel) {
+    console.log("getIdeaPoolsByBrainstormGroupSuccess", data)
     // this.listFeeds = []
     const tempListIdeas: IdeaPoolsByGroupType = {
       brainstormed: [],
@@ -138,39 +139,39 @@ export default class BrainstormStore {
     data.brainstormed?.forEach((idea) => {
       tempListIdeas.brainstormed.push({
         id: idea.ip_id,
-        brainstormGroupId: idea.ip_brainstorm_group_id,
-        title: idea.ip_title,
+        // brainstormGroupId: idea.ip_brainstorm_group_id,
+        // title: idea.ip_title,
         description: idea.ip_description,
         color: idea.ip_color,
-        shadow: idea.ip_shadow,
-        is_selected: idea.ip_is_selected,
-        votes: idea.ip_votes,
+        colorShade: idea.ip_shadow,
+        // is_selected: idea.ip_is_selected,
+        // votes: idea.ip_votes,
       })
     })
 
     data.shortlisted?.forEach((idea) => {
       tempListIdeas.shortlisted.push({
         id: idea.ip_id,
-        brainstormGroupId: idea.ip_brainstorm_group_id,
-        title: idea.ip_title,
+        // brainstormGroupId: idea.ip_brainstorm_group_id,
+        // title: idea.ip_title,
         description: idea.ip_description,
         color: idea.ip_color,
-        shadow: idea.ip_shadow,
-        is_selected: idea.ip_is_selected,
-        votes: idea.ip_votes,
+        colorShade: idea.ip_shadow,
+        // is_selected: idea.ip_is_selected,
+        // votes: idea.ip_votes,
       })
     })
 
     data.selected?.forEach((idea) => {
       tempListIdeas.selected.push({
         id: idea.ip_id,
-        brainstormGroupId: idea.ip_brainstorm_group_id,
-        title: idea.ip_title,
+        // brainstormGroupId: idea.ip_brainstorm_group_id,
+        // title: idea.ip_title,
         description: idea.ip_description,
         color: idea.ip_color,
-        shadow: idea.ip_shadow,
-        is_selected: idea.ip_is_selected,
-        votes: idea.ip_votes,
+        colorShade: idea.ip_shadow,
+        // is_selected: idea.ip_is_selected,
+        // votes: idea.ip_votes,
       })
     })
 

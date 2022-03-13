@@ -8,7 +8,7 @@ import { BrainstormsApi } from "@services/api/brainstorms/brainstorms-api"
 import { BrainstormGroupType, IdeaPoolsByGroupType } from "@screens/brainstorm/brainstorms.type"
 import {
   CreateBrainstormGroupType,
-  IdeaPoolsByBrainstormsGroupApiModel,
+  IdeaPoolsByBrainstormGroupApiModel,
 } from "@services/api/brainstorms/brainstorms-api.types"
 
 export default class BrainStormsStore {
@@ -72,7 +72,7 @@ export default class BrainStormsStore {
     this.refreshData = true
   }
 
-  async getIdeaPoolsByBrainstormsGroup(groupId: string) {
+  async getIdeaPoolsByBrainstormGroup(groupId: string) {
     this.isLoading = true
     try {
       const response = await this.brainstormsApi.getIdeaPoolsByBrainstormGroup(groupId)
@@ -80,7 +80,7 @@ export default class BrainStormsStore {
       if (response.kind === "form-error") {
         this.formError(response.response)
       } else if (response.kind === "ok") {
-        this.getIdeaPoolsByBrainstormsGroupSuccess(response.response.data)
+        this.getIdeaPoolsByBrainstormGroupSuccess(response.response.data)
       } else if (response.kind === "unauthorized") {
         console.log("token expired journal")
         console.log(response)
@@ -97,8 +97,8 @@ export default class BrainStormsStore {
     }
   }
 
-  getIdeaPoolsByBrainstormsGroupSuccess(data: IdeaPoolsByBrainstormsGroupApiModel) {
-    console.log("getIdeaPoolsByBrainstormsGroupSuccess")
+  getIdeaPoolsByBrainstormGroupSuccess(data: IdeaPoolsByBrainstormsGroupApiModel) {
+    console.log("getIdeaPoolsByBrainstormGroupSuccess")
     // this.listFeeds = []
     const tempListIdeas: IdeaPoolsByGroupType = {
       brainstormed: [],

@@ -1,7 +1,5 @@
 import {AppRoute} from "@navigators/navigation-type";
-import brainstormGroupList from '@screens/brainstorm/brainstorm-group-list';
-import newBrainstormsGroup from "@screens/brainstorm/new-brainstorms-group";
-
+import { brainstorms, brainstormGroupList, newBrainstormsGroup } from "@screens/brainstorm";
 
 const screens: AppRoute[] = [
   {
@@ -11,12 +9,19 @@ const screens: AppRoute[] = [
   {
     name: 'newBrainstormsGroup',
     component: newBrainstormsGroup,
-  }
+  },
+  {
+    name: "brainstorms",
+    component: brainstorms,
+  },
 ];
 
 export type NavigatorParamList = {
   brainstormGroupList: undefined,
-  newBrainstormsGroup: undefined;
+  newBrainstormsGroup: undefined,
+  brainstorms: {
+    groupId: string
+  }
 };
 
 export default screens

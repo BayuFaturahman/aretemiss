@@ -3,6 +3,7 @@ import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
 import {
   CreateBrainstormsGroupResult,
+  GetIdeaPoolsByBrainstormGroupResult,
   GetListBrainstormGroupsResult,
 } from "@services/api/brainstorm/brainstorm-api.types"
 import { CreateBrainstormGroupType } from "../brainstorms/brainstorms-api.types"
@@ -56,7 +57,7 @@ export class BrainstormApi {
       const response: ApiResponse<any> = await this.api.apisauce.post(`/brainstorm-group`, data)
 
       // console.log('createPost response', response)
-      console.log("createBrainstormsGroup response.data", response.data)
+      // console.log("createBrainstormsGroup response.data", response.data)
       if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
@@ -82,13 +83,12 @@ export class BrainstormApi {
     }
   }
 
-  async getIdeaPoolsByBrainstormGroup(groupId: string): Promise<GetIdeaPoolsByBrainstormsGroupResult> {
+  async getIdeaPoolsByBrainstormGroup(groupId: string): Promise<GetIdeaPoolsByBrainstormGroupResult> {
     console.log("getListFeeds()")
     try {
       // make the api call
-      const response: ApiResponse<any> = await this.api.apisauce.get(`/feed`, {
-        id: groupId
-      })
+      const response: ApiResponse<any> = await this.api.apisauce.get(`/brainstorm-group/${groupId}/idea-pools`)
+
       if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }

@@ -10,13 +10,13 @@ export type BrainstormGroupType = {
 
 export type IdeaType = {
   id: string
-  brainstormGroupId: string
-  title: string
+  // brainstormGroupId: string
+  // title: string
   description: string
   color: string
-  shadow: string
-  is_selected: number
-  votes: number
+  colorShade: string
+  // is_selected: number
+  // votes: number
 }
 
 export type IdeaPoolsByGroupType = {
