@@ -5,7 +5,7 @@ import {
   CreateBrainstormsGroupResult,
   GetListBrainstormGroupsResult,
 } from "@services/api/brainstorm/brainstorm-api.types"
-import { CreateBrainstormGroupType } from "../brainstorms/brainstorms-api.types"
+import { CreateBrainstormGroupType } from "../brainstorm/brainstorm-api.types"
 
 export class BrainstormApi {
   private api: Api
