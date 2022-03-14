@@ -149,7 +149,7 @@ const StickyNoteItem = ({
 
 const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = observer(
   ({ navigation, route }) => {
-    const { groupId } = route.params.groupId
+    const { groupId } = route.params
     const { mainStore, brainstormStore } = useStores()
     const [loading, setLoading] = useState<boolean>(false)
 
@@ -161,28 +161,28 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
 
     const createIdea = () =>
       navigation.navigate("addIdea", {
-        isEdit: false,
+        isView: false,
         byLeaders: false,
         isVote: false,
       })
 
     const editIdea = () =>
       navigation.navigate("addIdea", {
-        isEdit: true,
+        isView: true,
         byLeaders: false,
         isVote: false,
       })
 
     const voteIdea = () =>
       navigation.navigate("addIdea", {
-        isEdit: false,
+        isView: false,
         byLeaders: false,
         isVote: true,
       })
 
     const selectIdea = () =>
       navigation.navigate("addIdea", {
-        isEdit: false,
+        isView: false,
         byLeaders: true,
         isVote: false,
       })

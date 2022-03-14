@@ -243,7 +243,7 @@ export type NavigatorParamList = {
     groupId: string
   }
   addIdea: {
-    isEdit: boolean
+    isView: boolean
     isVote: boolean
     byLeaders: boolean
   },

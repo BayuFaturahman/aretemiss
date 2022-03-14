@@ -1,4 +1,4 @@
-import React, { FC } from "react"
+import React, { FC, useEffect, useState } from "react"
 import { SafeAreaView, ScrollView, TouchableOpacity, View } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
@@ -24,46 +24,59 @@ import { typography } from "@theme"
 import { Formik } from "formik"
 import { SOFT_PURPLE } from "@styles/Color"
 
-export type AssessmentQuizItem = {
-  id: string
-  question: string
-  answers: string[]
+export type ideaForm = {
+  title: string
+  description: string
 }
 
-const AddIdea: FC<StackScreenProps<NavigatorParamList, "guidePoints">> = observer(
-  ({ navigation }) => {
+const ideaInitialForm: ideaForm = {
+  title: "",
+  description: "",
+}
+
+const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
+  ({ navigation, route }) => {
     const goBack = () => navigation.goBack()
 
-    const startQuiz = () => navigation.navigate("juaraAssesmentQuiz")
+    const { isView, byLeaders, isVote } = route.params
+    const [titleBgColour, setTitleBgColour] = useState<string>(Colors.WHITE)
+    const [isViewMode, setIsViewMode] = useState<boolean>(true)
+    const [errorField, setErrorField] = useState<string>("")
 
-    const FinishedComponent = ({ score = 9, total = 10 }: { score: number; total: number }) => {
-      return (
-        <VStack>
-          <Button
-            type={"primary-dark"}
-            text={"Nilai assessment-mu bulan ini:"}
-            disabled={true}
-            style={{ paddingHorizontal: Spacing[8] }}
-          />
-          <Spacer height={Spacing[24]} />
-          <Text
-            style={{ textAlign: "center", fontSize: Spacing[72], color: Colors.BRIGHT_BLUE }}
-            type={"body-bold"}
-          >
-            {score}
-          </Text>
-          <Text style={{ textAlign: "center" }} type={"body"}>
-            {`dari ${total}`}
-          </Text>
-          <Spacer height={Spacing[24]} />
-          <Text style={{ textAlign: "center" }} type={"body"}>
-            {`Ada ${total} rekan kerjamu  yang sudah menilai apakah kamu memang JUARA-nya.`}
-          </Text>
-          <Spacer height={Spacing[24]} />
-          <Button type={"primary-dark"} text={"Beri assessment ke:"} disabled={true} />
-          <Spacer height={Spacing[24]} />
-        </VStack>
-      )
+    useEffect(() => {
+      if (isView) {
+        setIsViewMode(true)
+        console.log("View Mode")
+      } else {
+        setIsViewMode(false)
+        console.log("Start to Create new idea ")
+      }
+    }, [route.params, isViewMode])
+
+    const onSubmit = (data: ideaForm) => {
+      let isError = false
+      if (data.title === "") {
+        setErrorField("title")
+        isError = true
+      } else if (data.description === "") {
+        setErrorField("title")
+        isError = true
+      }
+
+      if (isError === true) {
+        return
+      }
+
+      if (isView) {
+        console.log("on submit is view")
+      } else {
+        console.log("on submit NOT IS view")
+        handleSubmitNewIdea(data)
+      }
+    }
+
+    const handleSubmitNewIdea = (data) => {
+      console.log("handleSubmitNewIdea", data)
     }
 
     return (
@@ -71,12 +84,7 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "guidePoints">> = observe
         testID="Assesment"
         style={{ backgroundColor: Colors.WHITE, flex: 1, justifyContent: "center" }}
       >
-        <Formik
-        // initialValues={journalEntryForm}
-        // validationSchema={JournalEntryTypeSchema}
-        // onSubmit={onSubmit}
-        // validate={validate}
-        >
+        <Formik initialValues={ideaInitialForm} onSubmit={onSubmit}>
           {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => (
             <>
               <SafeAreaView style={Layout.flex}>
@@ -102,17 +110,17 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "guidePoints">> = observe
                           </Text>
                         </Text>
                         <TextField
-                          // value={values.title}
-                          // onChangeText={handleChange("title")}
+                          value={values.title}
+                          onChangeText={handleChange("title")}
                           isRequired={false}
-                          // editable={!coachingStore.isDetail}
-                          // isError={isError === "title"}
+                          editable={true}
+                          isError={false}
                           secureTextEntry={false}
                           placeholder={"Tulis judul disini"}
                           charCounter={true}
                           maxChar={30}
                           inputStyle={{
-                            backgroundColor: Colors.SOFT_PURPLE,
+                            backgroundColor: titleBgColour,
                           }}
                         />
 
@@ -125,47 +133,39 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "guidePoints">> = observe
                         </Text>
                         <TextField
                           isRequired={false}
-                          // editable={!coachingStore.isDetail}
-                          // isError={isError === "title"}
+                          editable={true}
+                          isError={false}
                           secureTextEntry={false}
                           placeholder={"Tulis deskripsi disini"}
-                          isTextArea
+                          isTextArea={true}
                           inputStyle={{ minHeight: Spacing[64] }}
                           charCounter={true}
+                          value={values.description}
+                          onChangeText={handleChange("description")}
                         />
 
-                        <VStack>
-                          <VStack
-                          // style={{bottom: -Spacing[24]}}
-                          >
-                            <Text type={"body-bold"} style={{ color: Colors.BRIGHT_BLUE }}>
-                              Ide
-                              <Text type={"body-bold"} style={[]}>
-                                {" dicetuskan oleh"}
+                        {isViewMode && (
+                          <VStack>
+                            <VStack
+                            // style={{bottom: -Spacing[24]}}
+                            >
+                              <Text type={"body-bold"} style={{ color: Colors.BRIGHT_BLUE }}>
+                                Ide
+                                <Text type={"body-bold"} style={[]}>
+                                  {" dicetuskan oleh"}
+                                </Text>
                               </Text>
-                            </Text>
+                            </VStack>
+                            <TextField
+                              // value={values.title}
+                              // onChangeText={handleChange("title")}
+                              isRequired={false}
+                              // editable={!coachingStore.isDetail}
+                              // isError={isError === "title"}
+                              secureTextEntry={false}
+                            />
                           </VStack>
-                          <TextField
-                            // value={values.title}
-                            // onChangeText={handleChange("title")}
-                            isRequired={false}
-                            // editable={!coachingStore.isDetail}
-                            // isError={isError === "title"}
-                            secureTextEntry={false}
-                          />
-                          {/* <DropDownPicker */}
-                          {/*  items={K_OPTIONS} */}
-                          {/*  // isRequired={true} */}
-                          {/*  // label="Pilih team:" */}
-                          {/*  onValueChange={(value: IOption) => null} */}
-                          {/*  placeholder={"Pilih salah satu"} */}
-                          {/*  containerStyle={{ marginTop: Spacing[4] }} */}
-                          {/*  zIndex={3000} */}
-                          {/*  zIndexInverse={1000} */}
-                          {/*  dropDownDirection={"BOTTOM"} */}
-                          {/* /> */}
-                        </VStack>
-
+                        )}
                         <VStack horizontal={Spacing[72]} top={Spacing[24]}>
                           <Button type={"primary"} text={"Submit"} onPress={handleSubmit} />
                         </VStack>
