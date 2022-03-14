@@ -53,7 +53,9 @@ export interface ErrorFormResponse {
 export interface GetListBrainstormGroupsResponse {
   message: string
   token: string
-  data: BrainstormGroup[] 
+  data: {
+    brainstorm_group: BrainstormGroup[] 
+  }
 }
 
 export type IdeaApiModel = {
