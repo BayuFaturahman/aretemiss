@@ -188,9 +188,9 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
       })
 
     const loadIdeas = debounce(async (groupId: string) => {
-      console.log('groupId ',groupId)
+      // console.log("groupId ", groupId)
       await brainstormStore.getIdeaPoolsByBrainstormGroup(route.params.groupId)
-      console.log('brainstormStore.ideaPoolsByGroup: ', brainstormStore.ideaPoolsByGroup)
+      // console.log("brainstormStore.ideaPoolsByGroup: ", brainstormStore.ideaPoolsByGroup)
       setBrainstorms(brainstormStore.ideaPoolsByGroup.brainstormed)
       setShortlisted(brainstormStore.ideaPoolsByGroup.shortlisted)
       setSelected(brainstormStore.ideaPoolsByGroup.selected)
@@ -262,20 +262,28 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
                 <VStack style={styles.container} top={Spacing[24]} horizontal={Spacing[24]}>
                   {/* HERE */}
 
-                  {brainstorms.map((item) => {
-                    return (
-                      <TouchableOpacity style={styles.item} onPress={editIdea}>
-                        <VStack bottom={Spacing[12]}>
-                          <StickyNoteItem
-                            key={"sticky-main-" + item.id}
-                            id={item.id}
-                            text={item.description}
-                            color={item.color}
-                          />
-                        </VStack>
-                      </TouchableOpacity>
-                    )
-                  })}
+                  {brainstorms.length === 0 ? (
+                    <Text
+                      type={"label"}
+                      text={`It’s time to show off your creativity! Tambah idemu sekarang.`}
+                    />
+                  ) : (
+                    brainstorms.map((item) => {
+                      return (
+                        <TouchableOpacity style={styles.item} onPress={editIdea}>
+                          <VStack bottom={Spacing[12]}>
+                            <StickyNoteItem
+                              key={"sticky-main-" + item.id}
+                              id={item.id}
+                              text={item.description}
+                              color={item.color}
+                              colorShade={item.colorShade}
+                            />
+                          </VStack>
+                        </TouchableOpacity>
+                      )
+                    })
+                  )}
                 </VStack>
 
                 <Spacer height={Spacing[24]} />
@@ -297,20 +305,28 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
                 <VStack style={styles.container} top={Spacing[24]} horizontal={Spacing[24]}>
                   {/* HERE */}
 
-                  {shortlisted.slice(0, 5).map((item) => {
-                    return (
-                      <TouchableOpacity style={styles.item}>
-                        <VStack bottom={Spacing[12]}>
-                          <StickyNoteItem
-                            key={"sticky-main-" + item.id}
-                            id={item.id}
-                            text={item.description}
-                            color={item.color}
-                          />
-                        </VStack>
-                      </TouchableOpacity>
-                    )
-                  })}
+                  {shortlisted.length === 0 ? (
+                    <Text
+                      type={"label"}
+                      text={`It’s time to show off your creativity! Tambah idemu sekarang.`}
+                    />
+                  ) : (
+                    shortlisted.slice(0, 5).map((item) => {
+                      return (
+                        <TouchableOpacity style={styles.item} key={"sticky-main-" + item.id}>
+                          <VStack bottom={Spacing[12]}>
+                            <StickyNoteItem
+                              key={"sticky-main-" + item.id}
+                              id={item.id}
+                              text={item.description}
+                              color={item.color}
+                              colorShade={item.colorShade}
+                            />
+                          </VStack>
+                        </TouchableOpacity>
+                      )
+                    })
+                  )}
                 </VStack>
                 <Spacer height={Spacing[24]} />
               </VStack>
@@ -331,20 +347,28 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
                 <VStack style={styles.container} top={Spacing[24]} horizontal={Spacing[24]}>
                   {/* HERE */}
 
-                  {selected.slice(0, 3).map((item) => {
-                    return (
-                      <TouchableOpacity style={styles.item}>
-                        <VStack bottom={Spacing[12]}>
-                          <StickyNoteItem
-                            key={"sticky-main-" + item.id}
-                            id={item.id}
-                            text={item.description}
-                            color={item.color}
-                          />
-                        </VStack>
-                      </TouchableOpacity>
-                    )
-                  })}
+                  {selected.length === 0 ? (
+                    <Text
+                      type={"label"}
+                      text={`Belum ada ide yang dipilih, nih. Masih bisa tambah ide & voting. Yuk tambah lagi!`}
+                    />
+                  ) : (
+                    selected.slice(0, 3).map((item) => {
+                      return (
+                        <TouchableOpacity style={styles.item} key={"sticky-main-" + item.id}>
+                          <VStack bottom={Spacing[12]}>
+                            <StickyNoteItem
+                              key={"sticky-main-" + item.id}
+                              id={item.id}
+                              text={item.description}
+                              color={item.color}
+                              colorShade={item.colorShade}
+                            />
+                          </VStack>
+                        </TouchableOpacity>
+                      )
+                    })
+                  )}
                 </VStack>
                 <Spacer height={Spacing[24]} />
               </VStack>
