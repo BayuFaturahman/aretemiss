@@ -16,7 +16,7 @@ import Spinner from "react-native-loading-spinner-overlay"
 import { IOption } from "react-native-modal-selector"
 import { IleadLogo } from "@assets/svgs"
 import { dimensions } from "@config/platform.config"
-import { USER_POSITION } from "@screens/settings/change-winning-culture"
+import { USER_POSITION } from "@screens/settings/change-user-position"
 
 export type ProfileUpdateForm = {
   fullname: string
@@ -27,7 +27,7 @@ export type ProfileUpdateForm = {
   team3Id: string
   isAllowNotification?: number
   isAllowReminderNotification?: number
-  winCulture: string
+  position: string
 }
 
 const ProfileUpdateInitialForm: ProfileUpdateForm = {
@@ -37,7 +37,7 @@ const ProfileUpdateInitialForm: ProfileUpdateForm = {
   team1Id: "",
   team2Id: "",
   team3Id: "",
-  winCulture: ""
+  position: "",
 }
 
 const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> = observer(
@@ -47,7 +47,8 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
     const [teamList1, setTeamList1] = useState<DropDownItem[]>([])
 
     const { authStore, mainStore, serviceStore } = useStores()
-    const [winCultureData, setWinCultureData] = useState(USER_POSITION);
+    const [winCultureData, setWinCultureData] = useState(USER_POSITION)
+    const [isFieldError, setIsFieldError] = useState('')
 
     const styles = StyleSheet.create({})
 
@@ -97,9 +98,35 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
 
     const onSubmit = useCallback(
       async (data: ProfileUpdateForm) => {
-        console.log(data)
+        console.log("Data ", data)
         console.log(authStore.userId)
-        // data.email = authStore.email
+
+        let isError = false
+        if (data.fullname === "") {
+          isError = true
+          setIsFieldError('fullname')
+          console.log("fullname empty")
+        } else if (data.nickname=== "") {
+          isError = true
+          setIsFieldError('nickname')
+          console.log("nickname empty")
+        } else if (data.team1Id === "") {
+          isError = true
+          setIsFieldError('team1')
+          console.log("team1Id empty")
+        } else if (data.position=== "") {
+          isError = true
+          setIsFieldError('position')
+          console.log("position empty")
+        }
+
+
+        if (isError) {
+          return null
+        }
+
+        setIsFieldError('')  
+        data.email = authStore.email
         if (route?.params?.isFromVerifyOtp) {
           await mainStore.updateProfile(authStore.userId, data)
         } else {
@@ -141,14 +168,14 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
                     <TextField
                       label="Nama lengkap:"
                       style={{ paddingTop: 0 }}
-                      isError={false}
+                      isError={isFieldError === 'fullname'}
                       value={values.fullname}
                       onChangeText={handleChange("fullname")}
                     />
                     <TextField
                       label="Nama panggilan:"
                       style={{ paddingTop: 0 }}
-                      isError={false}
+                      isError={isFieldError === 'nickname'}
                       value={values.nickname}
                       onChangeText={handleChange("nickname")}
                     />
@@ -164,6 +191,7 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
                       items={handleAvailableTeamList(values)}
                       isRequired={true}
                       label="Pilih team:"
+                      isError={isFieldError === 'team1'}
                       // onValueChange={(value:IOption)=> setFieldValue('team1Id', value.id)}
                       onValueChange={(value: IOption) => {
                         setFieldValue("team1Id", value?.id ?? "")
@@ -186,6 +214,7 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
                       zIndex={2000}
                       zIndexInverse={2000}
                       dropDownDirection={"BOTTOM"}
+                      isRemovable={true}
                     />
                     <DropDownPicker
                       items={handleAvailableTeamList(values)}
@@ -199,22 +228,24 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
                       zIndex={1000}
                       zIndexInverse={3000}
                       dropDownDirection={"BOTTOM"}
+                      isRemovable={true}
                     />
-                     <DropDownPicker
+                    <DropDownPicker
                       items={winCultureData}
                       isRequired={true}
                       label="Pilih posisi di struktur Winning Culture:"
                       onValueChange={(value: IOption) => {
-                        setFieldValue("winCulture", value?.id ?? "")
+                        setFieldValue("position", value?.id ?? "")
                       }}
                       placeholder={"Pilih salah satu"}
                       containerStyle={{ marginTop: Spacing[4] }}
                       zIndex={1000}
                       zIndexInverse={3000}
                       dropDownDirection={"BOTTOM"}
+                      isError={isFieldError === 'position'}
                     />
                     {/* <VStack top={Spacing[8]}> */}
-                      {/* <Text type={"body"} style={{ textAlign: "right" }}>
+                    {/* <Text type={"body"} style={{ textAlign: "right" }}>
                         * = Wajib diisi
                       </Text>
                       <Spacer height={Spacing[32]} />
@@ -232,7 +263,7 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
                         value={values.nickname}
                         onChangeText={handleChange("nickname")}
                       /> */}
-                      {/* <TextField
+                    {/* <TextField
                       label="Alamat e-mail:"
                       style={{ paddingTop: 0}}
                       isError={false}
@@ -240,7 +271,7 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
                       onChangeText={handleChange('email')}
                     /> */}
 
-                      {/* <DropDownPicker
+                    {/* <DropDownPicker
                         items={handleAvailableTeamList(values)}
                         isRequired={true}
                         label="Pilih team:"
@@ -288,8 +319,8 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
                           * = Wajib diisi
                         </Text>
                       </VStack> */}
-                    </VStack>
-                    {/* <VStack top={Spacing[32]} horizontal={Spacing[96]} style={{ zIndex: -10 }}>
+                  </VStack>
+                  {/* <VStack top={Spacing[32]} horizontal={Spacing[96]} style={{ zIndex: -10 }}>
                       <Button type={"primary"} text={"Simpan"} onPress={() => handleSubmit()} />
                     </VStack> */}
                   {/* </VStack> */}

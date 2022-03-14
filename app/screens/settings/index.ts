@@ -5,7 +5,7 @@ import changePhone from './change-phone'
 import notification from './notification'
 import myAccountVerifyOTP from './verify-otp'
 import changeDivision from './change-division'
-import changeWinningCulture from './change-winning-culture'
+import changeUserPosition from './change-user-position'
 
 export {
   settings,
@@ -13,7 +13,7 @@ export {
   changePassword,
   changePhone,
   changeDivision,
-  changeWinningCulture,
+  changeUserPosition,
   notification,
   myAccountVerifyOTP
 }

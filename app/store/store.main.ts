@@ -536,10 +536,10 @@ export default class MainStore {
   async requestChangePosition(newPosition: string) {
     this.isLoading = true
     try {
-      const response = await this.profileApi.requestChangeDivision({
-        "position": newPosition
-      })
+      console.log('Requuest change position to ', newPosition)
+      const response = await this.profileApi.requestChangePosition(newPosition)
 
+      console.log('requestChangePosition response', response)
       if (response.kind === "form-error") {
         this.formError(response.response)
       }
