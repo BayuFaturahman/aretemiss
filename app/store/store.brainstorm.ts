@@ -4,7 +4,7 @@
 import ServiceStore from "./store.service"
 import { Api } from "@services/api"
 import { BrainstormApi } from "@services/api/brainstorm/brainstorm-api"
-import { CreateBrainstormGroupType, ErrorFormResponse, IdeaPoolsByBrainstormGroupApiModel } from "@services/api/brainstorm/brainstorm-api.types";
+import { CreateBrainstormGroupType, CreateIdeaType, ErrorFormResponse, IdeaPoolsByBrainstormGroupApiModel } from "@services/api/brainstorm/brainstorm-api.types";
 import { IdeaPoolsByGroupType } from "@screens/brainstorm/brainstorms.type";
 
 
@@ -176,6 +176,36 @@ export default class BrainstormStore {
     })
 
     this.ideaPoolsByGroup = tempListIdeas
+  }
+
+  async createIdea(data: CreateIdeaType) {
+    console.log("createIdea with body request", data)
+    this.isLoading = true
+    try {
+      const result = await this.brainstormApi.createIdea(data)
+
+      console.log("result createIdea: ", result)
+      if (result.kind === "ok") {
+        this.createIdeaSuccess()
+      } else if (result.kind === "form-error") {
+        this.formError(result.response)
+        // } else if () {
+      } else {
+        __DEV__ && console.tron.log(result.kind)
+      }
+    } catch (e) {
+      console.log("createBrainstormGroup error")
+      console.log(e)
+      this.setErrorMessage(e)
+    } finally {
+      console.log("createBrainstormGroup done")
+      this.isLoading = false
+    }
+  }
+
+  createIdeaSuccess() {
+    console.log("createIdeaSuccess success")
+    this.refreshData = true
   }
 
   clearListBrainstormGroups() {

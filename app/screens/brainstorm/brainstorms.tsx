@@ -164,6 +164,7 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
         isView: false,
         byLeaders: false,
         isVote: false,
+        groupId: groupId,
       })
 
     const editIdea = () =>
@@ -171,6 +172,7 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
         isView: true,
         byLeaders: false,
         isVote: false,
+        groupId: groupId,
       })
 
     const voteIdea = () =>
@@ -178,6 +180,7 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
         isView: false,
         byLeaders: false,
         isVote: true,
+        groupId: groupId,
       })
 
     const selectIdea = () =>
@@ -185,6 +188,7 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
         isView: false,
         byLeaders: true,
         isVote: false,
+        groupId: groupId,
       })
 
     const loadIdeas = debounce(async (groupId: string) => {
@@ -197,8 +201,15 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
     }, 500)
 
     useEffect(() => {
-      // console.log('route.params ', route.params)
+      console.log("route.params ", route.params)
       loadIdeas(groupId)
+    }, [])
+
+    useEffect(() => {
+      navigation.addListener("focus", () => {
+        console.log("brainstormStore.refreshData ", brainstormStore.refreshData)
+        loadIdeas(groupId)
+      })
     }, [])
 
     return (
