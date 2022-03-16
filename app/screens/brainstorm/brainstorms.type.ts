@@ -24,3 +24,17 @@ export type IdeaPoolsByGroupType = {
   shortlisted: IdeaType[]
   selected: IdeaType[]
 }
+
+export type IdeaPoolsDetail = {
+  id: string
+  title: string
+  description: string
+  color: string
+  votes: number
+  authorId: string
+  authorFullname: string
+  isSelected: number
+  groupInitiatorId: string
+  isAuthor: boolean
+  isInitiator: boolean
+}

@@ -5,7 +5,7 @@ import { observer } from "mobx-react-lite"
 import { NavigatorParamList } from "@navigators/main-navigator"
 import { HStack, VStack } from "@components/view-stack"
 import { Colors, Layout, Spacing } from "@styles"
-import Spinner from 'react-native-loading-spinner-overlay';
+import Spinner from "react-native-loading-spinner-overlay"
 
 import {
   BackNavigation,
@@ -27,15 +27,11 @@ import { Formik } from "formik"
 import { SOFT_PURPLE } from "@styles/Color"
 import { useStores } from "../../bootstrap/context.boostrap"
 import { MoodComponent } from "@screens/homepage/components/mood-component"
+import { IdeaPoolsDetail } from "./brainstorms.type"
 
 export type ideaForm = {
   title: string
   description: string
-}
-
-const ideaInitialForm: ideaForm = {
-  title: "",
-  description: "",
 }
 
 const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
@@ -44,6 +40,8 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
     const { isView, byLeaders, isVote, groupId } = route.params
     const [titleBgColour, setTitleBgColour] = useState<string>(Colors.WHITE)
     const [isViewMode, setIsViewMode] = useState<boolean>(isView)
+    const [isEditMode, setIsEditMode] = useState<boolean>(false)
+    const [isMyIdea, setIsMyidea] = useState<boolean>(false)
     const [errorField, setErrorField] = useState<string>("")
 
     const [isModalVisible, setModalVisible] = useState<boolean>(false)
@@ -51,17 +49,13 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
     const [modalDesc, setModalDesc] = useState<string>("")
     const [modalIcon, setModalIcon] = useState("senang")
 
-    const goBack = () => navigation.goBack()
+    const ideaInitialForm: ideaForm = {
+      title: "",
+      description: "",
+    }
+    const [ideaDetail, setIdeaDetail] = useState<IdeaPoolsDetail>()
 
-    useEffect(() => {
-      if (isView) {
-        setIsViewMode(true)
-        console.log("View Mode")
-      } else {
-        setIsViewMode(false)
-        console.log("Start to Create new idea ")
-      }
-    }, [route.params, isViewMode])
+    const goBack = () => navigation.goBack()
 
     const setModalContent = (title: string, desc: string, icon: string) => {
       setModalTitle(title)
@@ -72,6 +66,52 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
     const toggleModal = (value: boolean) => {
       setModalVisible(value)
     }
+
+    const loadIdea = useCallback(
+      async (id: string) => {
+        console.log("loadIdea ")
+        await brainstormStore.getIdeaDetail(id)
+        setIdeaDetail(brainstormStore.ideaDetail)
+        ideaInitialForm.title = brainstormStore.ideaDetail.title
+        ideaInitialForm.description = brainstormStore.ideaDetail.description
+        setTitleBgColour(brainstormStore.ideaDetail.color)
+
+        setIsMyidea(brainstormStore.ideaDetail.authorId === mainStore.userProfile.user_id)
+
+        console.log("ideaDetail ", ideaDetail)
+        brainstormStore.isLoading = false
+      },
+      [brainstormStore.ideaDetail, ideaInitialForm],
+    )
+
+    useEffect(() => {
+      if (isViewMode) {
+        // setIsViewMode(true)
+        console.log("View Mode")
+        loadIdea(route.params.ideaId)
+      } else {
+        // setIsViewMode(false)
+        console.log("Start to Create new idea ")
+      }
+    }, [route.params, isViewMode])
+
+    // useEffect(() => {
+    //   console.log(" ideaInitialForm useeffecr", ideaInitialForm)
+    // }, [ideaInitialForm])
+
+    const onClickEdit = useCallback(
+      (editMode: boolean) => {
+        console.log("editMode ", editMode)
+        if (!editMode) {
+          ideaInitialForm.title = "lalala"
+          ideaInitialForm.description = ideaDetail.description
+          console.log("ideaDetail !editmode ", ideaDetail)
+        }
+        setIsEditMode(editMode)
+        console.log("ideaInitialForm onedit", ideaInitialForm)
+      },
+      [ideaInitialForm, isEditMode],
+    )
 
     const onSubmit = (data: ideaForm) => {
       brainstormStore.formReset()
@@ -136,11 +176,11 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
                     <HStack>
                       <Text type={"left-header"}>Tentang ide projek!</Text>
                       <Spacer />
-                      {isViewMode && (
+                      {isViewMode && isMyIdea && (
                         <Button
                           type={"negative"}
-                          text={"Edit"}
-                          // onPress={onClickEditEntry}
+                          text={isEditMode ? `Cancel` : `Edit`}
+                          onPress={onClickEdit.bind(this, !isEditMode)}
                         />
                       )}
                     </HStack>
@@ -157,7 +197,7 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
                           value={values.title}
                           onChangeText={handleChange("title")}
                           isRequired={false}
-                          editable={true}
+                          editable={isEditMode}
                           isError={errorField === "title"}
                           secureTextEntry={false}
                           placeholder={"Tulis judul disini"}
@@ -177,7 +217,7 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
                         </Text>
                         <TextField
                           isRequired={false}
-                          editable={true}
+                          editable={isEditMode}
                           isError={errorField === "description"}
                           secureTextEntry={false}
                           placeholder={"Tulis deskripsi disini"}
@@ -188,7 +228,7 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
                           onChangeText={handleChange("description")}
                         />
 
-                        {isViewMode && (
+                        {isViewMode && !isMyIdea && (
                           <VStack>
                             <VStack
                             // style={{bottom: -Spacing[24]}}
@@ -205,15 +245,38 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
                               // onChangeText={handleChange("title")}
                               isRequired={false}
                               // editable={!coachingStore.isDetail}
-                              // isError={isError === "title"}
+                              // isError={isError === "title"}}
                               secureTextEntry={false}
                             />
                           </VStack>
                         )}
+
+                        {/* <HStack>
+                          <Button
+                            type={"primary"}
+                            text={"Update"}
+                            style={updateButtonStyle}
+                            textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
+                            onPress={handleSubmit}
+                          />
+                        </HStack> */}
                         <VStack horizontal={Spacing[72]} top={Spacing[24]}>
-                          <Button type={"primary"} text={"Submit"} onPress={handleSubmit} />
+                          {isViewMode && !isEditMode && (
+                            <Button
+                              type={"warning"}
+                              text={"Hapus"}
+                              onPress={handleSubmit}
+                              style={{ right: 0, width: Spacing[84], position: "absolute" }}
+                            />
+                          )}
+                          {isViewMode && isEditMode && (
+                            <Button type={"primary"} text={"Simpan"} onPress={handleSubmit} />
+                          )}
+                          {!isViewMode && (
+                            <Button type={"primary"} text={"Submit"} onPress={handleSubmit} />
+                          )}
                         </VStack>
-                        {isViewMode && (
+                        {isViewMode && !isMyIdea && (
                           <HStack>
                             <Button
                               type={"primary"}

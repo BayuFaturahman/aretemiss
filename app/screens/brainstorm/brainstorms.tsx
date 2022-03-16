@@ -167,12 +167,12 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
         groupId: groupId,
       })
 
-    const editIdea = () =>
+    const editIdea = (id: string) =>
       navigation.navigate("addIdea", {
         isView: true,
         byLeaders: false,
         isVote: false,
-        groupId: groupId,
+        ideaId: id,
       })
 
     const voteIdea = () =>
@@ -281,7 +281,7 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
                   ) : (
                     brainstorms.map((item) => {
                       return (
-                        <TouchableOpacity style={styles.item} onPress={editIdea}>
+                        <TouchableOpacity style={styles.item} onPress={editIdea.bind(this, item.id)} key={"sticky-main-" + item.id}>
                           <VStack bottom={Spacing[12]}>
                             <StickyNoteItem
                               key={"sticky-main-" + item.id}
