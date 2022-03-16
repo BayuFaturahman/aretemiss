@@ -74,15 +74,13 @@ const BrainstormGroupList: FC<StackScreenProps<NavigatorParamList, "newBrainstor
     }, []);
 
     const renderGroupListContent = useCallback((item: any) => {
-      // tinggal tambahin kata Inactive di item.icon jika abu2
-      // tambah initiated by
       return (
         <>
-          <GroupIconComponent data={`${item.icon}` || ''} />
+          <GroupIconComponent data={!item?.bg_is_selected ? `${item?.bg_icon}` : `${item?.bg_icon}Inactive`} />
           <View style={styles.centerVertical}>
             <View style={styles.groupListContentDetail}>
-              <Text type={'body-bold'} style={styles.groupNameTxt} numberOfLines={1} ellipsizeMode={'tail'}>{item.name}</Text>
-              <Text type={'body'} style={styles.groupSubTxt} numberOfLines={1} ellipsizeMode={'tail'}>Initiated by</Text>
+              <Text type={'body-bold'} style={styles.groupNameTxt} numberOfLines={1} ellipsizeMode={'tail'}>{item?.bg_name}</Text>
+              <Text type={'body'} style={styles.groupSubTxt} numberOfLines={1} ellipsizeMode={'tail'}>Initiated by {item?.bg_initiator_name}</Text>
             </View>
           </View>
         </>
@@ -109,7 +107,7 @@ const BrainstormGroupList: FC<StackScreenProps<NavigatorParamList, "newBrainstor
             }
           </>
         }
-          <TouchableOpacity key={index} style={[styles.groupOuterContainer, styles.disabledGroupContainer]}>
+          <TouchableOpacity key={index} style={[styles.groupOuterContainer, item?.bg_is_selected && styles.disabledGroupContainer]}>
             <View style={styles.groupInnerContainer}>
               {renderGroupListContent(item)}
             </View>

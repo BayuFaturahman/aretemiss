@@ -39,7 +39,7 @@ export default class BrainstormStore {
         this.formError(response.response)
       } else if (response.kind === "ok") {
         console.log(response.response.data, 'line 41');
-        this.getListBrainstormGroupsSuccess(response.response.data?.brainstormGroup);
+        this.getListBrainstormGroupsSuccess(response.response.data?.brainstorm_group);
       } else if (response.kind === 'unauthorized'){
         console.log('token expired journal')
         console.log(response)
