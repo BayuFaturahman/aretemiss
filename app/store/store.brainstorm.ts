@@ -10,6 +10,7 @@ import {
   ErrorFormResponse,
   IdeaPoolDetailsApiModel,
   IdeaPoolsByBrainstormGroupApiModel,
+  UpdateIdeaType,
 } from "@services/api/brainstorm/brainstorm-api.types"
 import { IdeaPoolsByGroupType, IdeaPoolsDetail } from "@screens/brainstorm/brainstorms.type"
 
@@ -258,6 +259,36 @@ export default class BrainstormStore {
     }
 
     this.ideaDetail = tempIdeaDetail
+    this.refreshData = true
+  }
+
+  async updateIdea(data: UpdateIdeaType) {
+    console.log("updateIdea with body request", data)
+    this.isLoading = true
+    try {
+      const result = await this.brainstormApi.updateIdea(data)
+
+      console.log("result createIdea: ", result)
+      if (result.kind === "ok") {
+        this.updateIdeaSuccess()
+      } else if (result.kind === "form-error") {
+        this.formError(result.response)
+        // } else if () {
+      } else {
+        __DEV__ && console.tron.log(result.kind)
+      }
+    } catch (e) {
+      console.log("updateIdea error")
+      console.log(e)
+      this.setErrorMessage(e)
+    } finally {
+      console.log("updateIdea done")
+      this.isLoading = false
+    }
+  }
+
+  updateIdeaSuccess() {
+    console.log("updateIdeaSuccess success")
     this.refreshData = true
   }
 

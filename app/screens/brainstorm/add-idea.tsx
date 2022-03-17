@@ -32,6 +32,7 @@ import { IdeaPoolsDetail } from "./brainstorms.type"
 export type ideaForm = {
   title: string
   description: string
+  authorFullname: string
 }
 
 const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
@@ -42,6 +43,7 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
     const [isViewMode, setIsViewMode] = useState<boolean>(isView)
     const [isEditMode, setIsEditMode] = useState<boolean>(false)
     const [isMyIdea, setIsMyidea] = useState<boolean>(false)
+    const [totalVotes, setTotalVotes] = useState<number>(0)
     const [errorField, setErrorField] = useState<string>("")
 
     const [isModalVisible, setModalVisible] = useState<boolean>(false)
@@ -52,6 +54,7 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
     const ideaInitialForm: ideaForm = {
       title: "",
       description: "",
+      authorFullname: "",
     }
     const [ideaDetail, setIdeaDetail] = useState<IdeaPoolsDetail>()
 
@@ -74,14 +77,27 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
         setIdeaDetail(brainstormStore.ideaDetail)
         ideaInitialForm.title = brainstormStore.ideaDetail.title
         ideaInitialForm.description = brainstormStore.ideaDetail.description
-        setTitleBgColour(brainstormStore.ideaDetail.color)
+        ideaInitialForm.authorFullname = brainstormStore.ideaDetail.authorFullname
 
-        setIsMyidea(brainstormStore.ideaDetail.authorId === mainStore.userProfile.user_id)
+        setTitleBgColour(brainstormStore.ideaDetail.color)
+        setTotalVotes(brainstormStore.ideaDetail.votes)
+        setIsMyidea(brainstormStore.ideaDetail.isAuthor)
+        console.log("brainstormStore.ideaDetail.isAuthor ", brainstormStore.ideaDetail.isAuthor)
+        if (!brainstormStore.ideaDetail.isAuthor) {
+          console.log("not author")
+        }
 
         console.log("ideaDetail ", ideaDetail)
+        console.log("brainstormStore.ideaDetail ", brainstormStore.ideaDetail)
+        console.log("ideaInitialForm ", ideaInitialForm)
         brainstormStore.isLoading = false
       },
-      [brainstormStore.ideaDetail, ideaInitialForm],
+      [
+        brainstormStore.ideaDetail,
+        brainstormStore.getIdeaDetailSuccess,
+        ideaInitialForm,
+        ideaDetail,
+      ],
     )
 
     useEffect(() => {
@@ -95,10 +111,6 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
       }
     }, [route.params, isViewMode])
 
-    // useEffect(() => {
-    //   console.log(" ideaInitialForm useeffecr", ideaInitialForm)
-    // }, [ideaInitialForm])
-
     const onClickEdit = useCallback(
       (editMode: boolean) => {
         console.log("editMode ", editMode)
@@ -111,6 +123,30 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
         console.log("ideaInitialForm onedit", ideaInitialForm)
       },
       [ideaInitialForm, isEditMode],
+    )
+
+    const onUpdateIdea = useCallback(
+      async (data: ideaForm) => {
+        console.log("onUpdateIdea ", data)
+        await brainstormStore.updateIdea({
+          ideaPoolsId: brainstormStore.ideaDetail.id,
+          title: data.title,
+          description: data.description,
+        })
+
+        if (brainstormStore.errorCode === null) {
+          setModalContent("Hore!", "Idemu sudah berhasil diedit.", "senang")
+          toggleModal(true)
+        } else {
+          setModalContent(
+            "Oh no :(",
+            "Idemu gagal diedit, nih. Coba lagi yuk.",
+            "marah",
+          )
+          toggleModal(true)
+        }
+      },
+      [brainstormStore.ideaDetail],
     )
 
     const onSubmit = (data: ideaForm) => {
@@ -147,14 +183,10 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
         })
 
         if (brainstormStore.errorCode === null) {
-          setModalContent(
-            "Berhasil!",
-            "Brainstorming group-mu berhasil dibuat. Selamat bertukar ide! :)",
-            "senang",
-          )
+          setModalContent("Berhasil!", "Idemu sudah ditambahkan. Yuk tambah ide lagi!", "senang")
           toggleModal(true)
         } else {
-          setModalContent("Oh no! :(", "Permintaanmu gagal diproses :(\nCoba lagi ya!", "marah")
+          setModalContent("Yah :(", "Idemu belum berhasil ditambahkan. Coba tambahkan idenya lagi yaa...", "marah")
           toggleModal(true)
         }
       },
@@ -197,7 +229,7 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
                           value={values.title}
                           onChangeText={handleChange("title")}
                           isRequired={false}
-                          editable={isEditMode}
+                          editable={isEditMode || !isView}
                           isError={errorField === "title"}
                           secureTextEntry={false}
                           placeholder={"Tulis judul disini"}
@@ -217,7 +249,7 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
                         </Text>
                         <TextField
                           isRequired={false}
-                          editable={isEditMode}
+                          editable={isEditMode || !isView}
                           isError={errorField === "description"}
                           secureTextEntry={false}
                           placeholder={"Tulis deskripsi disini"}
@@ -241,11 +273,11 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
                               </Text>
                             </VStack>
                             <TextField
-                              // value={values.title}
-                              // onChangeText={handleChange("title")}
+                              value={values.authorFullname}
+                              onChangeText={handleChange("authorFullname")}
                               isRequired={false}
-                              // editable={!coachingStore.isDetail}
-                              // isError={isError === "title"}}
+                              editable={false}
+                              isError={false}
                               secureTextEntry={false}
                             />
                           </VStack>
@@ -261,7 +293,7 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
                           />
                         </HStack> */}
                         <VStack horizontal={Spacing[72]} top={Spacing[24]}>
-                          {isViewMode && !isEditMode && (
+                          {isViewMode && !isEditMode && isMyIdea && (
                             <Button
                               type={"warning"}
                               text={"Hapus"}
@@ -270,7 +302,11 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
                             />
                           )}
                           {isViewMode && isEditMode && (
-                            <Button type={"primary"} text={"Simpan"} onPress={handleSubmit} />
+                            <Button
+                              type={"primary"}
+                              text={"Simpan"}
+                              onPress={onUpdateIdea.bind(this, values)}
+                            />
                           )}
                           {!isViewMode && (
                             <Button type={"primary"} text={"Submit"} onPress={handleSubmit} />
@@ -285,9 +321,11 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
                               style={{ width: Spacing[64] }}
                             />
                             <Spacer />
-                            <Text type={"body-bold"} style={[]}>
-                              Ide sudah di-vote 7 kali.
-                            </Text>
+                            <Text
+                              type={"body-bold"}
+                              style={[]}
+                              text={`Ide sudah di-vote ${totalVotes} kali.`}
+                            />
                           </HStack>
                         )}
                       </VStack>

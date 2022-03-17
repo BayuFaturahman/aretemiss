@@ -130,8 +130,27 @@ export type GetIdeaDetailResponse = {
   data: IdeaPoolDetailsApiModel
 }
 
+export type UpdateIdeaType = {
+  ideaPoolsId: string
+  title: string
+  description: string
+}
+
+export type UpdateIdeaApiModel = {
+  ideaPoolsId: string
+  title: string
+  description: string
+}
+
+export type UpdateIdeaResponse = {
+  message: string
+  token: string
+  data: UpdateIdeaApiModel
+}
+
 export type GetListBrainstormGroupsResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListBrainstormGroupsResponse }  | GeneralApiProblem
 export type CreateBrainstormsGroupResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreateBrainstormsGroupResponse } | GeneralApiProblem
 export type GetIdeaPoolsByBrainstormGroupResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetIdeaPoolsByBrainstormGroupResponse } | GeneralApiProblem
 export type CreateIdeaResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreateIdeaResponse } | GeneralApiProblem
 export type GetIdeaDetailResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetIdeaDetailResponse } | GeneralApiProblem
+export type UpdateIdeaResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: UpdateIdeaResponse } | GeneralApiProblem
