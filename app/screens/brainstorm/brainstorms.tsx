@@ -149,7 +149,7 @@ const StickyNoteItem = ({
 
 const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = observer(
   ({ navigation, route }) => {
-    const { groupId } = route.params.groupId
+    const { groupId } = route.params
     const { mainStore, brainstormStore } = useStores()
     const [loading, setLoading] = useState<boolean>(false)
 
@@ -161,30 +161,34 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
 
     const createIdea = () =>
       navigation.navigate("addIdea", {
-        isEdit: false,
+        isView: false,
         byLeaders: false,
         isVote: false,
+        groupId: groupId,
       })
 
     const editIdea = () =>
       navigation.navigate("addIdea", {
-        isEdit: true,
+        isView: true,
         byLeaders: false,
         isVote: false,
+        groupId: groupId,
       })
 
     const voteIdea = () =>
       navigation.navigate("addIdea", {
-        isEdit: false,
+        isView: false,
         byLeaders: false,
         isVote: true,
+        groupId: groupId,
       })
 
     const selectIdea = () =>
       navigation.navigate("addIdea", {
-        isEdit: false,
+        isView: false,
         byLeaders: true,
         isVote: false,
+        groupId: groupId,
       })
 
     const loadIdeas = debounce(async (groupId: string) => {
@@ -197,8 +201,15 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
     }, 500)
 
     useEffect(() => {
-      // console.log('route.params ', route.params)
+      console.log("route.params ", route.params)
       loadIdeas(groupId)
+    }, [])
+
+    useEffect(() => {
+      navigation.addListener("focus", () => {
+        console.log("brainstormStore.refreshData ", brainstormStore.refreshData)
+        loadIdeas(groupId)
+      })
     }, [])
 
     return (
