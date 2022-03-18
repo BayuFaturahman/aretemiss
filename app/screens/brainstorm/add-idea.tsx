@@ -59,6 +59,20 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
     const [ideaDetail, setIdeaDetail] = useState<IdeaPoolsDetail>()
 
     const goBack = () => navigation.goBack()
+    const sendEmailScreen = () =>
+      navigation.navigate("sendEmail", {
+        title: "Miro Untuk Brainstorming",
+      })
+
+    useEffect(() => {
+      if (isView) {
+        setIsViewMode(true)
+        console.log("View Mode")
+      } else {
+        setIsViewMode(false)
+        console.log("Start to Create new idea ")
+      }
+    }, [route.params, isViewMode])
 
     const setModalContent = (title: string, desc: string, icon: string) => {
       setModalTitle(title)
@@ -354,6 +368,12 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
                     </VStack>
 
                     <Spacer height={Spacing[24]} />
+                    <Button
+                      type={"primary"}
+                      text={"Kirim Email ke CP screen"}
+                      onPress={sendEmailScreen}
+                      style={{ width: Spacing[64] }}
+                    />
                     <Spacer height={Spacing[24]} />
                   </VStack>
                 </ScrollView>
