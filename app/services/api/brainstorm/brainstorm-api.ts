@@ -3,6 +3,7 @@ import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
 import {
   CreateBrainstormsGroupResult,
+  GetIdeaPoolsByBrainstormGroupResult,
   GetListBrainstormGroupsResult,
 } from "@services/api/brainstorm/brainstorm-api.types"
 import { CreateBrainstormGroupType } from "../brainstorm/brainstorm-api.types"
@@ -56,7 +57,7 @@ export class BrainstormApi {
       const response: ApiResponse<any> = await this.api.apisauce.post(`/brainstorm-group`, data)
 
       // console.log('createPost response', response)
-      console.log("createBrainstormsGroup response.data", response.data)
+      // console.log("createBrainstormsGroup response.data", response.data)
       if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
@@ -77,6 +78,39 @@ export class BrainstormApi {
 
       return { kind: "ok", response: res }
     } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data" }
+    }
+  }
+
+  async getIdeaPoolsByBrainstormGroup(groupId: string): Promise<GetIdeaPoolsByBrainstormGroupResult> {
+    console.log("getListFeeds()")
+    try {
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.get(`/brainstorm-group/${groupId}/idea-pools`)
+
+      if (response.status === 400) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // console.log(response.data)
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data
+
+      // console.log(res)
+      console.log(response.status)
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      console.log(e)
+      console.log("error")
       __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data" }
     }
