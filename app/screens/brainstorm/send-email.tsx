@@ -27,23 +27,19 @@ import { Formik } from "formik"
 import { SOFT_PURPLE } from "@styles/Color"
 import { useStores } from "../../bootstrap/context.boostrap"
 import { MoodComponent } from "@screens/homepage/components/mood-component"
-import { IdeaPoolsDetail } from "./brainstorms.type"
+import { SenyumActive } from "@assets/svgs"
 
 export type ideaForm = {
   title: string
   description: string
-  authorFullname: string
 }
 
-const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
+const SendEmail: FC<StackScreenProps<NavigatorParamList, "sendEmail">> = observer(
   ({ navigation, route }) => {
     const { mainStore, brainstormStore } = useStores()
-    const { isView, byLeaders, isVote, groupId } = route.params
-    const [titleBgColour, setTitleBgColour] = useState<string>(Colors.WHITE)
-    const [isViewMode, setIsViewMode] = useState<boolean>(isView)
-    const [isEditMode, setIsEditMode] = useState<boolean>(false)
-    const [isMyIdea, setIsMyidea] = useState<boolean>(false)
-    const [totalVotes, setTotalVotes] = useState<number>(0)
+    const { title } = route.params
+    const [titleBgColour, setTitleBgColour] = useState<string>(Colors.SOFT_PURPLE)
+    const [isViewMode, setIsViewMode] = useState<boolean>(true)
     const [errorField, setErrorField] = useState<string>("")
 
     const [isModalVisible, setModalVisible] = useState<boolean>(false)
@@ -51,28 +47,24 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
     const [modalDesc, setModalDesc] = useState<string>("")
     const [modalIcon, setModalIcon] = useState("senang")
 
+    // const [title, setTitle] = useState<string>("")
+
     const ideaInitialForm: ideaForm = {
-      title: "",
+      title: title,
       description: "",
-      authorFullname: "",
     }
-    const [ideaDetail, setIdeaDetail] = useState<IdeaPoolsDetail>()
 
     const goBack = () => navigation.goBack()
-    const sendEmailScreen = () =>
-      navigation.navigate("sendEmail", {
-        title: "Miro Untuk Brainstorming",
-      })
 
-    useEffect(() => {
-      if (isView) {
-        setIsViewMode(true)
-        console.log("View Mode")
-      } else {
-        setIsViewMode(false)
-        console.log("Start to Create new idea ")
-      }
-    }, [route.params, isViewMode])
+    // useEffect(() => {
+    //   if (true) {
+    //     setIsViewMode(true)
+    //     console.log("View Mode")
+    //   } else {
+    //     setIsViewMode(false)
+    //     console.log("Start to Create new idea ")
+    //   }
+    // }, [route.params, isViewMode])
 
     const setModalContent = (title: string, desc: string, icon: string) => {
       setModalTitle(title)
@@ -83,85 +75,6 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
     const toggleModal = (value: boolean) => {
       setModalVisible(value)
     }
-
-    const loadIdea = useCallback(
-      async (id: string) => {
-        console.log("loadIdea ")
-        await brainstormStore.getIdeaDetail(id)
-        setIdeaDetail(brainstormStore.ideaDetail)
-        ideaInitialForm.title = brainstormStore.ideaDetail.title
-        ideaInitialForm.description = brainstormStore.ideaDetail.description
-        ideaInitialForm.authorFullname = brainstormStore.ideaDetail.authorFullname
-
-        setTitleBgColour(brainstormStore.ideaDetail.color)
-        setTotalVotes(brainstormStore.ideaDetail.votes)
-        setIsMyidea(brainstormStore.ideaDetail.isAuthor)
-        console.log("brainstormStore.ideaDetail.isAuthor ", brainstormStore.ideaDetail.isAuthor)
-        if (!brainstormStore.ideaDetail.isAuthor) {
-          console.log("not author")
-        }
-
-        console.log("ideaDetail ", ideaDetail)
-        console.log("brainstormStore.ideaDetail ", brainstormStore.ideaDetail)
-        console.log("ideaInitialForm ", ideaInitialForm)
-        brainstormStore.isLoading = false
-      },
-      [
-        brainstormStore.ideaDetail,
-        brainstormStore.getIdeaDetailSuccess,
-        ideaInitialForm,
-        ideaDetail,
-      ],
-    )
-
-    useEffect(() => {
-      if (isViewMode) {
-        // setIsViewMode(true)
-        console.log("View Mode")
-        loadIdea(route.params.ideaId)
-      } else {
-        // setIsViewMode(false)
-        console.log("Start to Create new idea ")
-      }
-    }, [route.params, isViewMode])
-
-    const onClickEdit = useCallback(
-      (editMode: boolean) => {
-        console.log("editMode ", editMode)
-        if (!editMode) {
-          ideaInitialForm.title = "lalala"
-          ideaInitialForm.description = ideaDetail.description
-          console.log("ideaDetail !editmode ", ideaDetail)
-        }
-        setIsEditMode(editMode)
-        console.log("ideaInitialForm onedit", ideaInitialForm)
-      },
-      [ideaInitialForm, isEditMode],
-    )
-
-    const onUpdateIdea = useCallback(
-      async (data: ideaForm) => {
-        console.log("onUpdateIdea ", data)
-        await brainstormStore.updateIdea({
-          ideaPoolsId: brainstormStore.ideaDetail.id,
-          title: data.title,
-          description: data.description,
-        })
-
-        if (brainstormStore.errorCode === null) {
-          setModalContent("Hore!", "Idemu sudah berhasil diedit.", "senang")
-          toggleModal(true)
-        } else {
-          setModalContent(
-            "Oh no :(",
-            "Idemu gagal diedit, nih. Coba lagi yuk.",
-            "marah",
-          )
-          toggleModal(true)
-        }
-      },
-      [brainstormStore.ideaDetail],
-    )
 
     const onSubmit = (data: ideaForm) => {
       brainstormStore.formReset()
@@ -179,32 +92,36 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
       }
 
       setErrorField("")
-      if (isView) {
-        console.log("on submit is view")
-      } else {
-        console.log("on submit NOT IS view")
-        handleSubmitNewIdea(data)
-      }
+      // if (isView) {
+      //   console.log("on submit is view")
+      // } else {
+      //   console.log("on submit NOT IS view")
+      //   handleSubmitNewIdea(data)
+      // }
     }
 
     const handleSubmitNewIdea = useCallback(
       async (data: ideaForm) => {
         console.log("handleSubmitNewIdea", data)
         await brainstormStore.createIdea({
-          brainstormGroupId: groupId,
+          // brainstormGroupId: groupId,
           title: data.title,
           description: data.description,
         })
 
         if (brainstormStore.errorCode === null) {
-          setModalContent("Berhasil!", "Idemu sudah ditambahkan. Yuk tambah ide lagi!", "senang")
+          setModalContent(
+            "Berhasil!",
+            "Brainstorming group-mu berhasil dibuat. Selamat bertukar ide! :)",
+            "senang",
+          )
           toggleModal(true)
         } else {
-          setModalContent("Yah :(", "Idemu belum berhasil ditambahkan. Coba tambahkan idenya lagi yaa...", "marah")
+          setModalContent("Oh no! :(", "Permintaanmu gagal diproses :(\nCoba lagi ya!", "marah")
           toggleModal(true)
         }
       },
-      [groupId, brainstormStore.errorCode],
+      [brainstormStore.errorCode],
     )
 
     return (
@@ -219,31 +136,29 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
                 <ScrollView>
                   <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
                   <VStack horizontal={Spacing[24]}>
-                    <HStack>
-                      <Text type={"left-header"}>Tentang ide projek!</Text>
-                      <Spacer />
-                      {isViewMode && isMyIdea && (
-                        <Button
-                          type={"negative"}
-                          text={isEditMode ? `Cancel` : `Edit`}
-                          onPress={onClickEdit.bind(this, !isEditMode)}
-                        />
-                      )}
-                    </HStack>
+                    <VStack style={Layout.flexCenterMid} horizontal={Spacing[24]}>
+                      <SenyumActive height={Spacing[64]} width={Spacing[64]} />
+                      <Spacer height={Spacing[24]} />
+                      <Text
+                        type={"body-bold"}
+                        style={{ color: Colors.BRIGHT_BLUE, textAlign: "center" }}
+                      >
+                        Hore!
+                        <Text type={"body-bold"} style={[]}>
+                          {
+                            " Ide telah berhasil dipilih. Kirimkan informasi mengenai pilihan ide group brainstorming-mu kepada CP-mu."
+                          }
+                        </Text>
+                      </Text>
+                    </VStack>
 
                     <VStack>
                       <VStack top={Spacing[20]}>
-                        <Text type={"body-bold"} style={{ color: Colors.BRIGHT_BLUE }}>
-                          Judul
-                          <Text type={"body-bold"} style={[]}>
-                            {" idenya apa nih?"}
-                          </Text>
-                        </Text>
                         <TextField
                           value={values.title}
                           onChangeText={handleChange("title")}
                           isRequired={false}
-                          editable={isEditMode || !isView}
+                          editable={true}
                           isError={errorField === "title"}
                           secureTextEntry={false}
                           placeholder={"Tulis judul disini"}
@@ -263,7 +178,7 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
                         </Text>
                         <TextField
                           isRequired={false}
-                          editable={isEditMode || !isView}
+                          editable={true}
                           isError={errorField === "description"}
                           secureTextEntry={false}
                           placeholder={"Tulis deskripsi disini"}
@@ -274,7 +189,7 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
                           onChangeText={handleChange("description")}
                         />
 
-                        {isViewMode && !isMyIdea && (
+                        {isViewMode && (
                           <VStack>
                             <VStack
                             // style={{bottom: -Spacing[24]}}
@@ -287,71 +202,38 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
                               </Text>
                             </VStack>
                             <TextField
-                              value={values.authorFullname}
-                              onChangeText={handleChange("authorFullname")}
+                              // value={values.title}
+                              // onChangeText={handleChange("title")}
                               isRequired={false}
-                              editable={false}
-                              isError={false}
+                              // editable={!coachingStore.isDetail}
+                              // isError={isError === "title"}
                               secureTextEntry={false}
                             />
                           </VStack>
                         )}
 
-                        {/* <HStack>
-                          <Button
-                            type={"primary"}
-                            text={"Update"}
-                            style={updateButtonStyle}
-                            textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
-                            onPress={handleSubmit}
-                          />
-                        </HStack> */}
+                        <DropDownPicker
+                          items={K_OPTIONS}
+                          isRequired={false}
+                          // value={values.lea}
+                          label={"Kirim e-mail ke CP-mu!"}
+                          onValueChange={(value: DropDownItem | DropDownItem[]) => {
+                            setFieldValue("memberIds", value)
+                          }}
+                          placeholder={"Pilih CP-mu."}
+                          containerStyle={{ marginTop: Spacing[4] }}
+                          isError={false}
+                          multiple={true}
+                          maxSelected={10}
+                        />
+
                         <VStack horizontal={Spacing[72]} top={Spacing[24]}>
-                          {isViewMode && !isEditMode && isMyIdea && (
-                            <Button
-                              type={"warning"}
-                              text={"Hapus"}
-                              onPress={handleSubmit}
-                              style={{ right: 0, width: Spacing[84], position: "absolute" }}
-                            />
-                          )}
-                          {isViewMode && isEditMode && (
-                            <Button
-                              type={"primary"}
-                              text={"Simpan"}
-                              onPress={onUpdateIdea.bind(this, values)}
-                            />
-                          )}
-                          {!isViewMode && (
-                            <Button type={"primary"} text={"Submit"} onPress={handleSubmit} />
-                          )}
+                          <Button type={"primary"} text={"Kirim"} onPress={handleSubmit} />
                         </VStack>
-                        {isViewMode && !isMyIdea && (
-                          <HStack>
-                            <Button
-                              type={"primary"}
-                              text={"Vote"}
-                              onPress={handleSubmit}
-                              style={{ width: Spacing[64] }}
-                            />
-                            <Spacer />
-                            <Text
-                              type={"body-bold"}
-                              style={[]}
-                              text={`Ide sudah di-vote ${totalVotes} kali.`}
-                            />
-                          </HStack>
-                        )}
                       </VStack>
                     </VStack>
 
                     <Spacer height={Spacing[24]} />
-                    <Button
-                      type={"primary"}
-                      text={"Kirim Email ke CP screen"}
-                      onPress={sendEmailScreen}
-                      style={{ width: Spacing[64] }}
-                    />
                     <Spacer height={Spacing[24]} />
                   </VStack>
                 </ScrollView>
@@ -431,4 +313,4 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
   },
 )
 
-export default AddIdea
+export default SendEmail
