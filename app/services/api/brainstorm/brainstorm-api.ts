@@ -7,6 +7,8 @@ import {
   GetIdeaDetailResult,
   GetIdeaPoolsByBrainstormGroupResult,
   GetListBrainstormGroupsResult,
+  SelectIdeaApiResponse,
+  SelectIdeaType,
   UpdateIdeaResult,
   UpdateIdeaType,
   VoteIdeaResult,
@@ -226,6 +228,38 @@ export class BrainstormApi {
       const response: ApiResponse<any> = await this.api.apisauce.post(`/vote-idea-pools`, data)
 
       console.log("voteIdea response", response)
+
+      if (response.status === 400) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      if (response.status === 500) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data" }
+    }
+  }
+
+  async selectIdea(data: SelectIdeaType): Promise<SelectIdeaApiResponse> {
+    try {
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.post(`/select-idea-pools`, data)
+
+      console.log("selectIdea response", response)
 
       if (response.status === 400) {
         const res = response.data

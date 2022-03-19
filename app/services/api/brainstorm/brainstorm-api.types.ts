@@ -162,6 +162,18 @@ export type VoteIdeaApiResponse = {
   data: VoteIdeaApiModel
 }
 
+export type SelectIdeaType = {
+  ideaPoolsId: string
+}
+
+export type SelectIdeaApiResponse = {
+  message: string
+  token: string
+  data: {
+    
+  }
+}
+
 export type GetListBrainstormGroupsResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListBrainstormGroupsResponse }  | GeneralApiProblem
 export type CreateBrainstormsGroupResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreateBrainstormsGroupResponse } | GeneralApiProblem
 export type GetIdeaPoolsByBrainstormGroupResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetIdeaPoolsByBrainstormGroupResponse } | GeneralApiProblem
@@ -169,3 +181,4 @@ export type CreateIdeaResult = { kind: "form-error"; response: ErrorFormResponse
 export type GetIdeaDetailResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetIdeaDetailResponse } | GeneralApiProblem
 export type UpdateIdeaResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: UpdateIdeaResponse } | GeneralApiProblem
 export type VoteIdeaResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: VoteIdeaApiResponse } | GeneralApiProblem
+export type SelectIdeaResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: SelectIdeaApiResponse } | GeneralApiProblem

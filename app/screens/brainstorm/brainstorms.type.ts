@@ -11,7 +11,7 @@ export type BrainstormGroupType = {
 export type IdeaType = {
   id: string
   // brainstormGroupId: string
-  // title: string
+  title: string
   description: string
   color: string
   colorShade: string
