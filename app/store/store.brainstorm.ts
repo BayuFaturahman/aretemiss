@@ -5,6 +5,7 @@ import ServiceStore from "./store.service"
 import { Api } from "@services/api"
 import { BrainstormApi } from "@services/api/brainstorm/brainstorm-api"
 import {
+  CpApiModel,
   CreateBrainstormGroupType,
   CreateIdeaType,
   ErrorFormResponse,
@@ -12,7 +13,7 @@ import {
   IdeaPoolsByBrainstormGroupApiModel,
   UpdateIdeaType,
 } from "@services/api/brainstorm/brainstorm-api.types"
-import { IdeaPoolsByGroupType, IdeaPoolsDetail } from "@screens/brainstorm/brainstorms.type"
+import { CpUser, IdeaPoolsByGroupType, IdeaPoolsDetail } from "@screens/brainstorm/brainstorms.type"
 
 export default class BrainstormStore {
   // #region PROPERTIES
@@ -28,6 +29,8 @@ export default class BrainstormStore {
   ideaPoolsByGroup: IdeaPoolsByGroupType
   ideaDetail: IdeaPoolsDetail
 
+  listCpUser: CpUser[]
+
   constructor(api: Api) {
     this.api = api
     this.isLoading = true
@@ -38,11 +41,13 @@ export default class BrainstormStore {
     this.errorMessage = null
     this.listBrainstormGroups = []
     this.ideaDetail = null
+    this.listCpUser = []
 
     this.brainstormApi = new BrainstormApi(this.api)
   }
 
   async getListBrainstormGroups() {
+    this.formReset();
     this.isLoading = true
     try {
       const response = await this.brainstormApi.getListBrainstormGroups()
@@ -82,6 +87,7 @@ export default class BrainstormStore {
 
   async createBrainstormGroup(data: CreateBrainstormGroupType) {
     console.log("createBrainstormGroup with body request", data)
+    this.formReset();
     this.isLoading = true
     try {
       const result = await this.brainstormApi.createBrainstormsGroup(data)
@@ -112,6 +118,7 @@ export default class BrainstormStore {
 
   async getIdeaPoolsByBrainstormGroup(groupId: string) {
     this.isLoading = true
+    this.formReset();
     try {
       const response = await this.brainstormApi.getIdeaPoolsByBrainstormGroup(groupId)
 
@@ -189,6 +196,7 @@ export default class BrainstormStore {
   async createIdea(data: CreateIdeaType) {
     console.log("createIdea with body request", data)
     this.isLoading = true
+    this.formReset();
     try {
       const result = await this.brainstormApi.createIdea(data)
 
@@ -219,6 +227,7 @@ export default class BrainstormStore {
   async getIdeaDetail(id: string) {
     console.log("getIdeaDetail with body request", id)
     this.isLoading = true
+    this.formReset();
     try {
       const result = await this.brainstormApi.getIdea(id)
 
@@ -246,16 +255,16 @@ export default class BrainstormStore {
 
     const tempIdeaDetail: IdeaPoolsDetail = {
       id: data.ip_id,
-      title : data.ip_title,
-      description : data.ip_description,
-      color : data.ip_color,
-      votes : data.ip_votes,
-      authorId : data.ip_author_id,
-      authorFullname : data.ip_author_fullname,
-      isSelected : data.ip_is_selected,
-      groupInitiatorId : data.bg_initiator_id,
-      isAuthor : data.is_author,
-      isInitiator : data.is_initiator
+      title: data.ip_title,
+      description: data.ip_description,
+      color: data.ip_color,
+      votes: data.ip_votes,
+      authorId: data.ip_author_id,
+      authorFullname: data.ip_author_fullname,
+      isSelected: data.ip_is_selected,
+      groupInitiatorId: data.bg_initiator_id,
+      isAuthor: data.is_author,
+      isInitiator: data.is_initiator,
     }
 
     this.ideaDetail = tempIdeaDetail
@@ -265,6 +274,7 @@ export default class BrainstormStore {
   async updateIdea(data: UpdateIdeaType) {
     console.log("updateIdea with body request", data)
     this.isLoading = true
+    this.formReset();
     try {
       const result = await this.brainstormApi.updateIdea(data)
 
@@ -295,6 +305,7 @@ export default class BrainstormStore {
   async deleteIdea(id: string) {
     console.log("deleteIdea with body request", id)
     this.isLoading = true
+    this.formReset();
     try {
       const result = await this.brainstormApi.deleteIdea(id)
 
@@ -325,9 +336,10 @@ export default class BrainstormStore {
   async voteIdea(ideaId: string) {
     console.log("voteIdea with body request", ideaId)
     this.isLoading = true
+    this.formReset();
     try {
       const result = await this.brainstormApi.voteIdea({
-        ideaPoolsId: ideaId
+        ideaPoolsId: ideaId,
       })
 
       console.log("result voteIdea: ", result)
@@ -357,9 +369,10 @@ export default class BrainstormStore {
   async selectIdea(ideaId: string) {
     console.log("selectIdea with body request", ideaId)
     this.isLoading = true
+    this.formReset();
     try {
       const result = await this.brainstormApi.selectIdea({
-        ideaPoolsId: ideaId
+        ideaPoolsId: ideaId,
       })
 
       console.log("result voteIdea: ", result)
@@ -384,6 +397,47 @@ export default class BrainstormStore {
   selectIdeaSuccess() {
     console.log("selectIdeaSuccess success")
     this.refreshData = true
+  }
+
+  async getListCP(page = 1, limit = 200) {
+    this.isLoading = true
+    this.formReset();
+    try {
+      const result = await this.brainstormApi.getListCP(page, limit)
+      console.log("getListCP result", result)
+
+      if (result.kind === "form-error") {
+        this.formError(result.response)
+      }
+
+      if (result.kind === "ok") {
+        await this.getListCPSucceed(result.response.data)
+      }
+    } catch (e) {
+      console.log("getListCP error")
+      console.log(e)
+      this.setErrorMessage(e)
+    } finally {
+      console.log("getListUser done")
+      this.isLoading = false
+    }
+  }
+
+  async getListCPSucceed(listCP: CpApiModel[]) {
+    console.log("getListCPSucceed", listCP)
+
+    this.listCpUser = []
+
+    listCP?.forEach((data) => {
+      this.listCpUser.push({
+        id: data.id,
+        item: data.fullname
+      })
+    })
+
+
+    this.errorMessage = null
+    this.isLoading = false
   }
 
   clearListBrainstormGroups() {

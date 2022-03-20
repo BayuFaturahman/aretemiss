@@ -8,6 +8,7 @@ import {
   GetIdeaDetailResult,
   GetIdeaPoolsByBrainstormGroupResult,
   GetListBrainstormGroupsResult,
+  GetListCpResult,
   SelectIdeaApiResponse,
   SelectIdeaType,
   UpdateIdeaResult,
@@ -296,6 +297,41 @@ export class BrainstormApi {
       const response: ApiResponse<any> = await this.api.apisauce.post(`/select-idea-pools`, data)
 
       console.log("selectIdea response", response)
+
+      if (response.status === 400) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      if (response.status === 500) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data" }
+    }
+  }
+
+  async getListCP(page: number, limit: number): Promise<GetListCpResult> {
+    try {
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.get(`/user/counter-part?search&`,  {
+        limit: limit,
+        page: page
+      })
+
+      console.log("getListCP response", response)
 
       if (response.status === 400) {
         const res = response.data

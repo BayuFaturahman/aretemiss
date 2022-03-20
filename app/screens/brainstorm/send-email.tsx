@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useState } from "react"
-import { SafeAreaView, ScrollView, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, SafeAreaView, ScrollView, TouchableOpacity, View } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { NavigatorParamList } from "@navigators/main-navigator"
@@ -28,10 +28,12 @@ import { SOFT_PURPLE } from "@styles/Color"
 import { useStores } from "../../bootstrap/context.boostrap"
 import { MoodComponent } from "@screens/homepage/components/mood-component"
 import { SenyumActive } from "@assets/svgs"
+import { CpUser } from "./brainstorms.type"
 
 export type ideaForm = {
   title: string
   description: string
+  authorFullname: string
 }
 
 const SendEmail: FC<StackScreenProps<NavigatorParamList, "sendEmail">> = observer(
@@ -41,6 +43,8 @@ const SendEmail: FC<StackScreenProps<NavigatorParamList, "sendEmail">> = observe
     const [titleBgColour, setTitleBgColour] = useState<string>(Colors.SOFT_PURPLE)
     const [isViewMode, setIsViewMode] = useState<boolean>(true)
     const [errorField, setErrorField] = useState<string>("")
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [listCp, setListCp] = useState<CpUser[]>([])
 
     const [isModalVisible, setModalVisible] = useState<boolean>(false)
     const [modalTitle, setModalTitle] = useState<string>("")
@@ -50,21 +54,26 @@ const SendEmail: FC<StackScreenProps<NavigatorParamList, "sendEmail">> = observe
     // const [title, setTitle] = useState<string>("")
 
     const ideaInitialForm: ideaForm = {
-      title: title,
-      description: "",
+      title: brainstormStore.ideaDetail.title,
+      description: brainstormStore.ideaDetail.description,
+      authorFullname: brainstormStore.ideaDetail.authorFullname,
     }
 
     const goBack = () => navigation.goBack()
 
-    // useEffect(() => {
-    //   if (true) {
-    //     setIsViewMode(true)
-    //     console.log("View Mode")
-    //   } else {
-    //     setIsViewMode(false)
-    //     console.log("Start to Create new idea ")
-    //   }
-    // }, [route.params, isViewMode])
+    const loadData = useCallback(async () => {
+      console.log("loadIdea ")
+      setIsLoading(true)
+      await brainstormStore.getListCP()
+
+      setIsLoading(false)
+      setListCp(brainstormStore.listCpUser)
+    }, [isLoading, brainstormStore.getListCPSucceed, brainstormStore.listCpUser])
+
+    useEffect(() => {
+      setTitleBgColour(brainstormStore.ideaDetail.color)
+      loadData()
+    }, [])
 
     const setModalContent = (title: string, desc: string, icon: string) => {
       setModalTitle(title)
@@ -151,88 +160,96 @@ const SendEmail: FC<StackScreenProps<NavigatorParamList, "sendEmail">> = observe
                         </Text>
                       </Text>
                     </VStack>
+                    {isLoading ? (
+                      <VStack
+                        vertical={Spacing[12]}
+                        style={{ position: "absolute", bottom: 0, width: dimensions.screenWidth }}
+                      >
+                        <ActivityIndicator animating={isLoading} />
+                      </VStack>
+                    ) : (
+                      <VStack>
+                        <VStack top={Spacing[20]}>
+                          <TextField
+                            value={values.title}
+                            onChangeText={handleChange("title")}
+                            isRequired={false}
+                            editable={false}
+                            isError={errorField === "title"}
+                            secureTextEntry={false}
+                            placeholder={"Tulis judul disini"}
+                            charCounter={true}
+                            maxChar={30}
+                            inputStyle={{
+                              backgroundColor: titleBgColour,
+                              borderWidth: Spacing[0],
+                            }}
+                          />
 
-                    <VStack>
-                      <VStack top={Spacing[20]}>
-                        <TextField
-                          value={values.title}
-                          onChangeText={handleChange("title")}
-                          isRequired={false}
-                          editable={true}
-                          isError={errorField === "title"}
-                          secureTextEntry={false}
-                          placeholder={"Tulis judul disini"}
-                          charCounter={true}
-                          maxChar={30}
-                          inputStyle={{
-                            backgroundColor: titleBgColour,
-                          }}
-                        />
-
-                        <Text type={"body-bold"} style={[]}>
-                          Tulislah
-                          <Text type={"body-bold"} style={{ color: Colors.BRIGHT_BLUE }}>
-                            {" deskripsi "}
+                          <Text type={"body-bold"} style={[]}>
+                            Tulislah
+                            <Text type={"body-bold"} style={{ color: Colors.BRIGHT_BLUE }}>
+                              {" deskripsi "}
+                            </Text>
+                            idemu.
                           </Text>
-                          idemu.
-                        </Text>
-                        <TextField
-                          isRequired={false}
-                          editable={true}
-                          isError={errorField === "description"}
-                          secureTextEntry={false}
-                          placeholder={"Tulis deskripsi disini"}
-                          isTextArea={true}
-                          inputStyle={{ minHeight: Spacing[64] }}
-                          charCounter={true}
-                          value={values.description}
-                          onChangeText={handleChange("description")}
-                        />
+                          <TextField
+                            isRequired={false}
+                            editable={false}
+                            isError={errorField === "description"}
+                            secureTextEntry={false}
+                            placeholder={"Tulis deskripsi disini"}
+                            isTextArea={true}
+                            inputStyle={{ minHeight: Spacing[64] }}
+                            charCounter={true}
+                            value={values.description}
+                            onChangeText={handleChange("description")}
+                          />
 
-                        {isViewMode && (
-                          <VStack>
-                            <VStack
-                            // style={{bottom: -Spacing[24]}}
-                            >
-                              <Text type={"body-bold"} style={{ color: Colors.BRIGHT_BLUE }}>
-                                Ide
-                                <Text type={"body-bold"} style={[]}>
-                                  {" dicetuskan oleh"}
+                          {isViewMode && (
+                            <VStack>
+                              <VStack
+                              // style={{bottom: -Spacing[24]}}
+                              >
+                                <Text type={"body-bold"} style={{ color: Colors.BRIGHT_BLUE }}>
+                                  Ide
+                                  <Text type={"body-bold"} style={[]}>
+                                    {" dicetuskan oleh"}
+                                  </Text>
                                 </Text>
-                              </Text>
+                              </VStack>
+                              <TextField
+                                value={values.authorFullname}
+                                onChangeText={handleChange("authorFullname")}
+                                isRequired={false}
+                                editable={false}
+                                // isError={isError === "title"}
+                                secureTextEntry={false}
+                              />
                             </VStack>
-                            <TextField
-                              // value={values.title}
-                              // onChangeText={handleChange("title")}
-                              isRequired={false}
-                              // editable={!coachingStore.isDetail}
-                              // isError={isError === "title"}
-                              secureTextEntry={false}
-                            />
+                          )}
+
+                          <DropDownPicker
+                            items={listCp}
+                            isRequired={false}
+                            // value={values.lea}
+                            label={"Kirim e-mail ke CP-mu!"}
+                            onValueChange={(value: DropDownItem | DropDownItem[]) => {
+                              setFieldValue("memberIds", value)
+                            }}
+                            placeholder={"Pilih CP-mu."}
+                            containerStyle={{ marginTop: Spacing[4] }}
+                            isError={false}
+                            multiple={false}
+                            maxSelected={10}
+                          />
+
+                          <VStack horizontal={Spacing[72]} top={Spacing[24]}>
+                            <Button type={"primary"} text={"Kirim"} onPress={handleSubmit} />
                           </VStack>
-                        )}
-
-                        <DropDownPicker
-                          items={K_OPTIONS}
-                          isRequired={false}
-                          // value={values.lea}
-                          label={"Kirim e-mail ke CP-mu!"}
-                          onValueChange={(value: DropDownItem | DropDownItem[]) => {
-                            setFieldValue("memberIds", value)
-                          }}
-                          placeholder={"Pilih CP-mu."}
-                          containerStyle={{ marginTop: Spacing[4] }}
-                          isError={false}
-                          multiple={true}
-                          maxSelected={10}
-                        />
-
-                        <VStack horizontal={Spacing[72]} top={Spacing[24]}>
-                          <Button type={"primary"} text={"Kirim"} onPress={handleSubmit} />
                         </VStack>
                       </VStack>
-                    </VStack>
-
+                    )}
                     <Spacer height={Spacing[24]} />
                     <Spacer height={Spacing[24]} />
                   </VStack>

@@ -38,3 +38,8 @@ export type IdeaPoolsDetail = {
   isAuthor: boolean
   isInitiator: boolean
 }
+
+export type CpUser = {
+  id: string,
+  item: string
+}

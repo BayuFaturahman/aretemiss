@@ -179,10 +179,10 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
 
         setIsLoading(false)
         if (brainstormStore.errorCode === null) {
-          setModalContent("Hore!", "Idemu sudah berhasil dihapus.", "senang")
+          setModalContent("Berhasil!", "Idemu berhasil dihapus. Bikin ide baru, yuk!", "senang")
           toggleModal(true)
         } else {
-          setModalContent("Oh no :(", "Idemu gagal dihapus, nih. Coba lagi yuk.", "marah")
+          setModalContent("Tidaaaak :(", "Idemu belum berhasil dihapus. Coba lagi nanti, ya…", "marah")
           toggleModal(true)
         }
       },
@@ -231,7 +231,7 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
     const onSelectIdea = useCallback(async () => {
       console.log("start on select idea id ", ideaDetail.id)
       setIsLoading(true)
-      await brainstormStore.selectIdea(ideaDetail.id)
+      // await brainstormStore.selectIdea(ideaDetail.id)
 
       setIsLoading(false)
       if (brainstormStore.errorCode !== null) {
