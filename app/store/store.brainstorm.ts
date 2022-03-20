@@ -292,6 +292,36 @@ export default class BrainstormStore {
     this.refreshData = true
   }
 
+  async deleteIdea(id: string) {
+    console.log("deleteIdea with body request", id)
+    this.isLoading = true
+    try {
+      const result = await this.brainstormApi.deleteIdea(id)
+
+      console.log("result deleteIdea: ", result)
+      if (result.kind === "ok") {
+        this.deleteIdeaSuccess()
+      } else if (result.kind === "form-error") {
+        this.formError(result.response)
+        // } else if () {
+      } else {
+        __DEV__ && console.tron.log(result.kind)
+      }
+    } catch (e) {
+      console.log("deleteIdea error")
+      console.log(e)
+      this.setErrorMessage(e)
+    } finally {
+      console.log("deleteIdea done")
+      this.isLoading = false
+    }
+  }
+
+  deleteIdeaSuccess() {
+    console.log("deleteIdeaSuccess success")
+    this.refreshData = true
+  }
+
   async voteIdea(ideaId: string) {
     console.log("voteIdea with body request", ideaId)
     this.isLoading = true

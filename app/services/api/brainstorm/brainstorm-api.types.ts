@@ -148,6 +148,8 @@ export type UpdateIdeaResponse = {
   data: UpdateIdeaApiModel
 }
 
+
+
 export type VoteIdeaType = {
   ideaPoolsId: string
 }
@@ -182,3 +184,4 @@ export type GetIdeaDetailResult = { kind: "form-error"; response: ErrorFormRespo
 export type UpdateIdeaResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: UpdateIdeaResponse } | GeneralApiProblem
 export type VoteIdeaResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: VoteIdeaApiResponse } | GeneralApiProblem
 export type SelectIdeaResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: SelectIdeaApiResponse } | GeneralApiProblem
+export type DeleteIdeaResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: SelectIdeaApiResponse } | GeneralApiProblem

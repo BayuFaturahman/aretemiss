@@ -4,6 +4,7 @@ import { getGeneralApiProblem } from "../api-problem"
 import {
   CreateBrainstormsGroupResult,
   CreateIdeaType,
+  DeleteIdeaResult,
   GetIdeaDetailResult,
   GetIdeaPoolsByBrainstormGroupResult,
   GetListBrainstormGroupsResult,
@@ -221,6 +222,41 @@ export class BrainstormApi {
       return { kind: "bad-data" }
     }
   }
+
+  async deleteIdea(id: string): Promise<DeleteIdeaResult> {
+    try {
+      // make the api call
+      console.log("body req ", id)
+      console.log(`/idea-pools/${id}`)
+      const response: ApiResponse<any> = await this.api.apisauce.delete(`/idea-pools/${id}`)
+
+      // console.log('createPost response', response)
+      // console.log("createBrainstormsGroup response.data", response.data)
+      if (response.status === 400) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      if (response.status === 500) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data" }
+    }
+  }
+
 
   async voteIdea(data: VoteIdeaType): Promise<VoteIdeaResult> {
     try {

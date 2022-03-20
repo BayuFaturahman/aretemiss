@@ -171,6 +171,24 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
       [brainstormStore.ideaDetail],
     )
 
+    const onDeleteIdea = useCallback(
+      async () => {
+        console.log("onDeleteIdea ")
+        setIsLoading(true)
+        await brainstormStore.deleteIdea(ideaDetail.id)
+
+        setIsLoading(false)
+        if (brainstormStore.errorCode === null) {
+          setModalContent("Hore!", "Idemu sudah berhasil dihapus.", "senang")
+          toggleModal(true)
+        } else {
+          setModalContent("Oh no :(", "Idemu gagal dihapus, nih. Coba lagi yuk.", "marah")
+          toggleModal(true)
+        }
+      },
+      [brainstormStore.ideaDetail],
+    )
+
     const onVoteIdea = useCallback(async () => {
       console.log("start on vote idea id ", ideaDetail.id)
       setIsLoading(true)
@@ -398,7 +416,7 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
                               <Button
                                 type={"warning"}
                                 text={"Hapus"}
-                                onPress={handleSubmit}
+                                onPress={onDeleteIdea}
                                 style={{ right: 0, width: Spacing[84], position: "absolute" }}
                               />
                             )}
