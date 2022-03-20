@@ -2,7 +2,7 @@ import React, { FC, useCallback, useEffect, useState } from "react"
 import { ActivityIndicator, SafeAreaView, ScrollView, TouchableOpacity, View } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
-import { NavigatorParamList } from "@navigators/main-navigator"
+import { NavigatorParamList } from "@navigators/idea-pools-navigator"
 import { HStack, VStack } from "@components/view-stack"
 import { Colors, Layout, Spacing } from "@styles"
 import Spinner from "react-native-loading-spinner-overlay"
@@ -38,7 +38,7 @@ export type ideaForm = {
 const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
   ({ navigation, route }) => {
     const { mainStore, brainstormStore } = useStores()
-    const { isView, byLeaders, isVote, groupId } = route.params
+    const { isView, groupId } = route.params
     const [titleBgColour, setTitleBgColour] = useState<string>(Colors.WHITE)
     const [isViewMode, setIsViewMode] = useState<boolean>(isView)
     const [isEditMode, setIsEditMode] = useState<boolean>(false)
@@ -231,7 +231,7 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
     const onSelectIdea = useCallback(async () => {
       console.log("start on select idea id ", ideaDetail.id)
       setIsLoading(true)
-      // await brainstormStore.selectIdea(ideaDetail.id)
+      await brainstormStore.selectIdea(ideaDetail.id)
 
       setIsLoading(false)
       if (brainstormStore.errorCode !== null) {

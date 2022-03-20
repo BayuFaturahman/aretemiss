@@ -172,7 +172,6 @@ export type SelectIdeaApiResponse = {
   message: string
   token: string
   data: {
-    
   }
 }
 
@@ -189,6 +188,12 @@ export type GetListCpApiResponse = {
   data: CpApiModel[]
 }
 
+export type SendIdeaToCpType = {
+  ideaPoolsId: string,
+  counterPartId: string
+}
+
+
 export type GetListBrainstormGroupsResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListBrainstormGroupsResponse }  | GeneralApiProblem
 export type CreateBrainstormsGroupResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreateBrainstormsGroupResponse } | GeneralApiProblem
 export type GetIdeaPoolsByBrainstormGroupResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetIdeaPoolsByBrainstormGroupResponse } | GeneralApiProblem
@@ -199,3 +204,4 @@ export type VoteIdeaResult = { kind: "form-error"; response: ErrorFormResponse }
 export type SelectIdeaResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: SelectIdeaApiResponse } | GeneralApiProblem
 export type DeleteIdeaResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: SelectIdeaApiResponse } | GeneralApiProblem
 export type GetListCpResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListCpApiResponse } | GeneralApiProblem
+export type SendIdeaToCpResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: SelectIdeaApiResponse } | GeneralApiProblem

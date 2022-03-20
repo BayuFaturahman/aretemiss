@@ -10,7 +10,7 @@ import {
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Text, BackNavigation } from "@components"
-import { NavigatorParamList } from "@navigators/main-navigator"
+import { NavigatorParamList } from "@navigators/idea-pools-navigator"
 import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
 import { Colors, Layout, Spacing } from "@styles"

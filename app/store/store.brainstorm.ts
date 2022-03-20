@@ -11,6 +11,7 @@ import {
   ErrorFormResponse,
   IdeaPoolDetailsApiModel,
   IdeaPoolsByBrainstormGroupApiModel,
+  SendIdeaToCpType,
   UpdateIdeaType,
 } from "@services/api/brainstorm/brainstorm-api.types"
 import { CpUser, IdeaPoolsByGroupType, IdeaPoolsDetail } from "@screens/brainstorm/brainstorms.type"
@@ -375,7 +376,7 @@ export default class BrainstormStore {
         ideaPoolsId: ideaId,
       })
 
-      console.log("result voteIdea: ", result)
+      console.log("selectIdea result: ", result)
       if (result.kind === "ok") {
         this.selectIdeaSuccess()
       } else if (result.kind === "form-error") {
@@ -411,7 +412,7 @@ export default class BrainstormStore {
       }
 
       if (result.kind === "ok") {
-        await this.getListCPSucceed(result.response.data)
+        await this.getListCPSuccess(result.response.data)
       }
     } catch (e) {
       console.log("getListCP error")
@@ -423,8 +424,8 @@ export default class BrainstormStore {
     }
   }
 
-  async getListCPSucceed(listCP: CpApiModel[]) {
-    console.log("getListCPSucceed", listCP)
+  async getListCPSuccess(listCP: CpApiModel[]) {
+    console.log("getListCPSuccess", listCP)
 
     this.listCpUser = []
 
@@ -438,6 +439,35 @@ export default class BrainstormStore {
 
     this.errorMessage = null
     this.isLoading = false
+  }
+
+  async sendIdeaToCp(data: SendIdeaToCpType) {
+    this.isLoading = true
+    this.formReset();
+    try {
+      const result = await this.brainstormApi.sendIdeaToCp(data)
+      console.log("getListCP result", result)
+
+      if (result.kind === "form-error") {
+        this.formError(result.response)
+      }
+
+      if (result.kind === "ok") {
+        await this.sendIdeaToCpSuccess()
+      }
+    } catch (e) {
+      console.log("getListCP error")
+      console.log(e)
+      this.setErrorMessage(e)
+    } finally {
+      console.log("getListUser done")
+      this.isLoading = false
+    }
+  }
+
+  sendIdeaToCpSuccess() {
+    console.log("sendIdeaToCpSuccess success")
+    this.refreshData = true
   }
 
   clearListBrainstormGroups() {

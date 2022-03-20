@@ -2,7 +2,7 @@ import React, { FC, useCallback, useEffect, useState } from "react"
 import { ActivityIndicator, SafeAreaView, ScrollView, TouchableOpacity, View } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
-import { NavigatorParamList } from "@navigators/main-navigator"
+import { NavigatorParamList } from "@navigators/idea-pools-navigator"
 import { HStack, VStack } from "@components/view-stack"
 import { Colors, Layout, Spacing } from "@styles"
 import Spinner from "react-native-loading-spinner-overlay"
@@ -34,6 +34,7 @@ export type ideaForm = {
   title: string
   description: string
   authorFullname: string
+  selectedCp: CpUser
 }
 
 const SendEmail: FC<StackScreenProps<NavigatorParamList, "sendEmail">> = observer(
@@ -57,9 +58,12 @@ const SendEmail: FC<StackScreenProps<NavigatorParamList, "sendEmail">> = observe
       title: brainstormStore.ideaDetail.title,
       description: brainstormStore.ideaDetail.description,
       authorFullname: brainstormStore.ideaDetail.authorFullname,
+      selectedCp: null,
     }
 
     const goBack = () => navigation.goBack()
+
+    const goToBrainstormsGroup = () => navigation.navigate("brainstormGroupList")
 
     const loadData = useCallback(async () => {
       console.log("loadIdea ")
@@ -68,7 +72,7 @@ const SendEmail: FC<StackScreenProps<NavigatorParamList, "sendEmail">> = observe
 
       setIsLoading(false)
       setListCp(brainstormStore.listCpUser)
-    }, [isLoading, brainstormStore.getListCPSucceed, brainstormStore.listCpUser])
+    }, [isLoading, brainstormStore.getListCPSuccess, brainstormStore.listCpUser])
 
     useEffect(() => {
       setTitleBgColour(brainstormStore.ideaDetail.color)
@@ -85,29 +89,32 @@ const SendEmail: FC<StackScreenProps<NavigatorParamList, "sendEmail">> = observe
       setModalVisible(value)
     }
 
-    const onSubmit = (data: ideaForm) => {
-      brainstormStore.formReset()
-      let isError = false
-      if (data.title === "") {
-        setErrorField("title")
-        isError = true
-      } else if (data.description === "") {
-        setErrorField("description")
-        isError = true
-      }
-
-      if (isError === true) {
+    const onSubmit = useCallback(async (data: ideaForm) => {
+      console.log('data ', data)
+      if (!data.selectedCp.id) {
+        console.log()
+        setErrorField("selectedCp")
         return
       }
 
+      
       setErrorField("")
-      // if (isView) {
-      //   console.log("on submit is view")
-      // } else {
-      //   console.log("on submit NOT IS view")
-      //   handleSubmitNewIdea(data)
-      // }
-    }
+      await brainstormStore.sendIdeaToCp({
+        ideaPoolsId: brainstormStore.ideaDetail.id,
+        counterPartId: data.selectedCp.id
+      })
+      if (brainstormStore.errorCode === null) {
+        setModalContent(
+          "Berhasil!",
+          "Informasi mengenai ide ini sudah terkirim melalui e-mail kepada CP-mu.",
+          "senang",
+        )
+        toggleModal(true)
+      } else {
+        setModalContent("Oh no! :(", "Permintaanmu gagal diproses :(\nCoba lagi ya!", "marah")
+        toggleModal(true)
+      }
+    }, [brainstormStore.errorCode, brainstormStore.sendIdeaToCpSuccess])
 
     const handleSubmitNewIdea = useCallback(
       async (data: ideaForm) => {
@@ -231,15 +238,15 @@ const SendEmail: FC<StackScreenProps<NavigatorParamList, "sendEmail">> = observe
 
                           <DropDownPicker
                             items={listCp}
-                            isRequired={false}
-                            // value={values.lea}
+                            isRequired={true}
+                            value={values.selectedCp}
                             label={"Kirim e-mail ke CP-mu!"}
                             onValueChange={(value: DropDownItem | DropDownItem[]) => {
-                              setFieldValue("memberIds", value)
+                              setFieldValue("selectedCp", value)
                             }}
                             placeholder={"Pilih CP-mu."}
                             containerStyle={{ marginTop: Spacing[4] }}
-                            isError={false}
+                            isError={errorField === "selectedCp"}
                             multiple={false}
                             maxSelected={10}
                           />
@@ -315,7 +322,7 @@ const SendEmail: FC<StackScreenProps<NavigatorParamList, "sendEmail">> = observe
                         text={"Kembali"}
                         style={{ height: Spacing[32], paddingHorizontal: Spacing[8] }}
                         textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
-                        onPress={goBack}
+                        onPress={goToBrainstormsGroup}
                       />
                     </VStack>
                     <Spacer />
