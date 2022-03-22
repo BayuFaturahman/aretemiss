@@ -123,6 +123,7 @@ const NewBrainstormsGroup: FC<StackScreenProps<NavigatorParamList, "newBrainstor
     }
     const onSubmit = useCallback(
       async (data: newGroupForm) => {
+        brainstormStore.formReset()
         console.log("Data ", data)
         let isError = false
         if (data.name === "") {
@@ -141,6 +142,8 @@ const NewBrainstormsGroup: FC<StackScreenProps<NavigatorParamList, "newBrainstor
         data.memberIds = data.memberIds.map((member) => {
           return member["id"]
         })
+
+        data.memberIds.push(mainStore.userProfile.user_id)
         console.log("new branstorrming data: ", data)
         data.icon = selectedIcon
 
@@ -158,6 +161,7 @@ const NewBrainstormsGroup: FC<StackScreenProps<NavigatorParamList, "newBrainstor
           icon: data.icon,
         })
 
+        console.log('tormStore.errorCode ', brainstormStore.errorCode)
         if (brainstormStore.errorCode === null) {
           setModalContent(
             "Berhasil!",
@@ -170,7 +174,7 @@ const NewBrainstormsGroup: FC<StackScreenProps<NavigatorParamList, "newBrainstor
           toggleModal(true)
         }
       },
-      [selectedIcon, isModalVisible],
+      [selectedIcon, isModalVisible, brainstormStore.errorCode],
     )
     const setModalContent = (title: string, desc: string, icon: string) => {
       setModalTitle(title)

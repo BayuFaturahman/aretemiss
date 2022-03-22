@@ -19,6 +19,11 @@ const BrainstormGroupList: FC<StackScreenProps<NavigatorParamList, "newBrainstor
 
     const _goBack = () => navigation.goBack();
     const _goToAddBrainstormGroup = () => navigation.navigate("newBrainstormsGroup");
+
+    const goToBrainstorms = (groupId) => navigation.navigate("brainstorms",{
+      groupId: groupId
+    })
+
     const _getBrainstormGroupList = useCallback(async () => {
       setIsLoading(true);
       await brainstormStore.getListBrainstormGroups();
@@ -30,6 +35,7 @@ const BrainstormGroupList: FC<StackScreenProps<NavigatorParamList, "newBrainstor
     }, []);
 
     useEffect(() => {
+      console.log('_getBrainstormGroupList')
       _getBrainstormGroupList();
     }, []);
 
@@ -107,7 +113,7 @@ const BrainstormGroupList: FC<StackScreenProps<NavigatorParamList, "newBrainstor
             }
           </>
         }
-          <TouchableOpacity key={index} style={[styles.groupOuterContainer, item?.bg_is_selected && styles.disabledGroupContainer]}>
+          <TouchableOpacity key={index} style={[styles.groupOuterContainer, item?.bg_is_selected && styles.disabledGroupContainer]} onPress={goToBrainstorms.bind(this, item.bg_id)}>
             <View style={styles.groupInnerContainer}>
               {renderGroupListContent(item)}
             </View>

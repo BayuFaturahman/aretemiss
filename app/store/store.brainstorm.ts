@@ -4,7 +4,8 @@
 import ServiceStore from "./store.service"
 import { Api } from "@services/api"
 import { BrainstormApi } from "@services/api/brainstorm/brainstorm-api"
-import { CreateBrainstormGroupType, ErrorFormResponse } from "@services/api/brainstorm/brainstorm-api.types";
+import { CreateBrainstormGroupType, CreateIdeaType, ErrorFormResponse, IdeaPoolsByBrainstormGroupApiModel } from "@services/api/brainstorm/brainstorm-api.types";
+import { IdeaPoolsByGroupType } from "@screens/brainstorm/brainstorms.type";
 
 
 export default class BrainstormStore {
@@ -17,6 +18,7 @@ export default class BrainstormStore {
   errorMessage: string
   brainstormApi: BrainstormApi
   listBrainstormGroups: any[]
+  ideaPoolsByGroup: IdeaPoolsByGroupType
 
   constructor(api: Api) {
     this.api = api
@@ -26,7 +28,8 @@ export default class BrainstormStore {
 
     this.errorCode = null
     this.errorMessage = null
-    this.listBrainstormGroups = [];
+    this.listBrainstormGroups = []
+    
     this.brainstormApi = new BrainstormApi(this.api)
   }
 
@@ -96,6 +99,112 @@ export default class BrainstormStore {
 
   createBrainstormGroupSuccess() {
     console.log("createBrainstormGroup success")
+    this.refreshData = true
+  }
+
+  async getIdeaPoolsByBrainstormGroup(groupId: string) {
+    this.isLoading = true
+    try {
+      const response = await this.brainstormApi.getIdeaPoolsByBrainstormGroup(groupId)
+
+      if (response.kind === "form-error") {
+        this.formError(response.response)
+      } else if (response.kind === "ok") {
+        this.getIdeaPoolsByBrainstormGroupSuccess(response.response.data)
+      } else if (response.kind === "unauthorized") {
+        console.log("token expired journal")
+        console.log(response)
+        this.formError(response.response)
+      } else {
+        __DEV__ && console.tron.log(response.kind)
+      }
+    } catch (e) {
+      console.log(e)
+      this.setErrorMessage(e)
+    } finally {
+      console.log("getListFeeds done")
+      this.isLoading = false
+    }
+  }
+
+  getIdeaPoolsByBrainstormGroupSuccess(data: IdeaPoolsByBrainstormGroupApiModel) {
+    console.log("getIdeaPoolsByBrainstormGroupSuccess", data)
+    // this.listFeeds = []
+    const tempListIdeas: IdeaPoolsByGroupType = {
+      brainstormed: [],
+      shortlisted: [],
+      selected: [],
+    }
+
+    data.brainstormed?.forEach((idea) => {
+      tempListIdeas.brainstormed.push({
+        id: idea.ip_id,
+        // brainstormGroupId: idea.ip_brainstorm_group_id,
+        // title: idea.ip_title,
+        description: idea.ip_description,
+        color: idea.ip_color,
+        colorShade: idea.ip_shadow,
+        // is_selected: idea.ip_is_selected,
+        // votes: idea.ip_votes,
+      })
+    })
+
+    data.shortlisted?.forEach((idea) => {
+      tempListIdeas.shortlisted.push({
+        id: idea.ip_id,
+        // brainstormGroupId: idea.ip_brainstorm_group_id,
+        // title: idea.ip_title,
+        description: idea.ip_description,
+        color: idea.ip_color,
+        colorShade: idea.ip_shadow,
+        // is_selected: idea.ip_is_selected,
+        // votes: idea.ip_votes,
+      })
+    })
+
+    data.selected?.forEach((idea) => {
+      tempListIdeas.selected.push({
+        id: idea.ip_id,
+        // brainstormGroupId: idea.ip_brainstorm_group_id,
+        // title: idea.ip_title,
+        description: idea.ip_description,
+        color: idea.ip_color,
+        colorShade: idea.ip_shadow,
+        // is_selected: idea.ip_is_selected,
+        // votes: idea.ip_votes,
+      })
+    })
+
+    this.ideaPoolsByGroup = tempListIdeas
+  }
+
+  async createIdea(data: CreateIdeaType) {
+    console.log("createIdea with body request", data)
+    this.isLoading = true
+    try {
+      const result = await this.brainstormApi.createIdea(data)
+
+      console.log("result createIdea: ", result)
+      if (result.kind === "ok") {
+        this.createIdeaSuccess()
+      } else if (result.kind === "form-error") {
+        this.formError(result.response)
+        // } else if () {
+      } else {
+        __DEV__ && console.tron.log(result.kind)
+      }
+    } catch (e) {
+      console.log("createBrainstormGroup error")
+      console.log(e)
+      this.setErrorMessage(e)
+    } finally {
+      console.log("createBrainstormGroup done")
+      this.isLoading = false
+    }
+  }
+
+  createIdeaSuccess() {
+    console.log("createIdeaSuccess success")
     this.refreshData = true
   }
 
