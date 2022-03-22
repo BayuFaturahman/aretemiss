@@ -196,8 +196,6 @@ export default class MainStore {
     try {
       const response = await this.profileApi.getTeamList()
 
-      console.log(response)
-
       if (response.kind === "form-error") {
         this.formError(response.response)
       }

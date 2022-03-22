@@ -1,5 +1,13 @@
 import React, {FC, useCallback, useEffect, useState,} from "react"
-import {FlatList, Modal as ModalReact, RefreshControl, SafeAreaView, View } from "react-native"
+import {
+  FlatList,
+  Modal as ModalReact,
+  RefreshControl,
+  SafeAreaView,
+  View,
+  StyleSheet,
+  TouchableOpacity
+} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {
@@ -25,6 +33,7 @@ import { dimensions } from "@config/platform.config"
 import FastImage from "react-native-fast-image"
 import sad from "@assets/icons/homepage/sad.png";
 import { FeedItemType } from "./feed.type"
+import {Close} from "@assets/svgs"
 
 const FEED_EXAMPLE_DATA_ITEM: FeedItemType[] = [
   {
@@ -278,16 +287,21 @@ const MyFeedList: FC<StackScreenProps<NavigatorParamList, "myFeedList">> = obser
           transparent={true}
           onRequestClose={() => toggleModal(false)}
         >
-          <ImageViewer
-            imageUrls={listImageViewer}
-            index={activeViewerIndex}
-            onSwipeDown={() => {
-              console.log('onSwipeDown');
-              toggleModal(false);
-            }}
-            onMove={data => console.log(data)}
-            enableSwipeDown={true}
-          />
+          <VStack style={styles.imageViewerOuter}>
+            <TouchableOpacity style={styles.closeImgViewerContainer} onPress={() => toggleModal(false)}>
+              <Close width={Spacing[24]} height={Spacing[24]} />
+            </TouchableOpacity>
+            <ImageViewer
+              imageUrls={listImageViewer}
+              index={activeViewerIndex}
+              onSwipeDown={() => {
+                console.log('onSwipeDown');
+                toggleModal(false);
+              }}
+              onMove={data => console.log(data)}
+              enableSwipeDown={true}
+            />
+          </VStack>
         </ModalReact>
         <Modal
           isOpen={isModalDeletePostVisible}
@@ -365,5 +379,17 @@ const MyFeedList: FC<StackScreenProps<NavigatorParamList, "myFeedList">> = obser
     )
   },
 )
+
+const styles = StyleSheet.create({
+  closeImgViewerContainer: {
+    alignSelf: 'flex-end',
+    marginRight: Spacing[16],
+    marginTop: Spacing[16],
+  },
+  imageViewerOuter: {
+    backgroundColor: Colors.BLACK,
+    flex: 1,
+  },
+});
 
 export default MyFeedList;

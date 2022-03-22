@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useReducer, useState, useEffect } from "react"
+import React, { FC, useCallback, useReducer, useState, useEffect, useRef } from "react"
 import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
@@ -30,6 +30,7 @@ import smileYellow from "@assets/icons/coachingJournal/empty/smile-yellow.png"
 
 const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalEntry">> = observer(
   ({ navigation, route }) => {
+    const formikRef = useRef();
     const { mainStore, coachingStore } = useStores()
 
     const { journalId, isCoachee } = route.params
@@ -356,6 +357,12 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
       setIsOnEditMode(false)
     }
 
+    useEffect(() => {
+      if (!isOnEditMode) {
+        formikRef?.current?.resetForm()
+      }
+    }, [isOnEditMode])
+
     return (
       <VStack
         testID="CoachingJournalMain"
@@ -365,6 +372,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
           <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
           <ScrollView>
             <Formik
+              innerRef={formikRef}
               initialValues={journalEntryInitialValue}
               onSubmit={(values) => {
                 verifyData(values)
