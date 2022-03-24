@@ -3,7 +3,7 @@ import { HStack, VStack } from "@components/view-stack"
 import { Colors, Spacing } from "@styles"
 import FastImage from "react-native-fast-image"
 
-import conversation from "@assets/icons/feed/conversation.png"
+import {Bell2} from "@assets/svgs";
 import newPost from "@assets/icons/feed/newPost.png"
 import user from "@assets/icons/feed/user.png"
 
@@ -134,14 +134,7 @@ export const FeedButton = ({ goToNewPost = () => null, goToMyFeed = () => null, 
           <VStack
             style={SIDE_CONTAINER}
           >
-            <FastImage
-              style={{
-                height: "100%",
-                width: "100%",
-              }}
-              source={conversation}
-              resizeMode={"contain"}
-            />
+            <Bell2 height={Spacing[32]} width={Spacing[32]} fill={'white'} />
             <NotificationCounter text={rightCounter} />
           </VStack>
         </TouchableOpacity>

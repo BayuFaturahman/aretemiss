@@ -18,6 +18,24 @@ import { IOption } from "react-native-modal-selector"
 import { dimensions } from "@config/platform.config"
 import FastImage from "react-native-fast-image"
 import { MoodComponent } from "@screens/homepage/components/mood-component"
+import { USER_POSITION } from "./change-user-position"
+
+export type ProfileUpdateForm = {
+  fullname: string
+  nickname: string
+  email: string
+  team1Id: string
+  team2Id: string
+  team3Id: string
+  team1Name: string
+  team2Name: string
+  team3Name: string
+  photo: string
+  isAllowNotification?: number
+  isAllowReminderNotification?: number
+  mood: string
+  userPosition: string
+}
 
 export type TeamUpdateForm = {
   team1Id: string
@@ -46,6 +64,23 @@ const ChangeDivision: FC<StackScreenProps<NavigatorParamList, "changeDivision">>
     const [team1Data, setTeam1Data] = useState(mainStore.userProfile.team1_id? {"id": mainStore.userProfile.team1_id, "item": mainStore.userProfile.team1_name}:{})
     const [team2Data, setTeam2Data] = useState(mainStore.userProfile.team2_id? {"id": mainStore.userProfile.team2_id, "item": mainStore.userProfile.team2_name}:{})
     const [team3Data, setTeam3Data] = useState(mainStore.userProfile.team3_id? {"id": mainStore.userProfile.team3_id, "item": mainStore.userProfile.team3_name}:{})
+
+    const userProfile: ProfileUpdateForm = {
+      fullname: mainStore.userProfile.user_fullname,
+      nickname: mainStore.userProfile.user_nickname,
+      email: mainStore.userProfile.user_email,
+      team1Id: mainStore.userProfile.team1_id,
+      team2Id: mainStore.userProfile.team2_id,
+      team3Id: mainStore.userProfile.team3_id,
+      team1Name: mainStore.userProfile.team1_name,
+      team2Name: mainStore.userProfile.team2_name,
+      team3Name: mainStore.userProfile.team3_name,
+      photo: mainStore.userProfile.user_photo,
+      isAllowNotification: mainStore.userProfile.user_is_allow_notification,
+      isAllowReminderNotification: mainStore.userProfile.user_is_allow_reminder_notification,
+      mood: mainStore.userProfile.user_mood,
+      userPosition: mainStore.userProfile.user_position? USER_POSITION.filter((position) => position.id === mainStore.userProfile.user_position)[0].item : ''
+    }
 
     const goBack = () => navigation.goBack()
 
@@ -102,11 +137,11 @@ const ChangeDivision: FC<StackScreenProps<NavigatorParamList, "changeDivision">>
 
       // console.log('team1Id, team2Id, team3Id ', team1Id, team2Id, team3Id)
       // console.log('user profile ', mainStore.userProfile)
-      await mainStore.requestChangeDivision(
-        mainStore.userProfile.team1_id? mainStore.userProfile.team1_id : '', team1Id,
-        mainStore.userProfile.team2_id? mainStore.userProfile.team2_id :'', team2Id,
-        mainStore.userProfile.team3_id? mainStore.userProfile.team3_id : '', team3Id
-        )
+      userProfile.team1Id = team1Id;
+      userProfile.team2Id = team2Id;
+      userProfile.team3Id = team3Id;
+      
+      await mainStore.updateProfile(mainStore.userProfile.user_id, userProfile)
 
       // setIsSubmitPasswordChange(false)
       if (mainStore.errorCode === null) {

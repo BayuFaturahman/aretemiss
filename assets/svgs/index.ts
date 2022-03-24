@@ -1,5 +1,7 @@
 export {default as AddTask} from "./addTask.svg"
 export {default as Bell} from "./bell.svg"
+export {default as Bell2} from "./bell2.svg"
+export {default as Close} from "./close.svg"
 export {default as CoachLihatFeedback} from "./coachLihatFeedback.svg"
 export {default as CoacheeLihatFeedback} from "./coacheeLihatFeedback.svg"
 export {default as IleadLogo} from "./ileadLogo.svg"

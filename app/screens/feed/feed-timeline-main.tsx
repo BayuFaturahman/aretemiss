@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   Modal,
   TouchableOpacity,
+  StyleSheet,
 } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
@@ -14,6 +15,7 @@ import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors, Layout, Spacing, Roundness } from "@styles"
+import {Close} from "@assets/svgs"
 
 import { useStores } from "../../bootstrap/context.boostrap"
 
@@ -306,20 +308,37 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
           transparent={true}
           onRequestClose={() => toggleModal(false)}
         >
-          <ImageViewer
-            imageUrls={listImageViewer}
-            index={activeViewerIndex}
-            onSwipeDown={() => {
-              console.log('onSwipeDown');
-              toggleModal(false);
-            }}
-            onMove={data => console.log(data)}
-            enableSwipeDown={true}
-          />
+          <VStack style={styles.imageViewerOuter}>
+            <TouchableOpacity style={styles.closeImgViewerContainer} onPress={() => toggleModal(false)}>
+              <Close width={Spacing[24]} height={Spacing[24]} />
+            </TouchableOpacity>
+            <ImageViewer
+              imageUrls={listImageViewer}
+              index={activeViewerIndex}
+              onSwipeDown={() => {
+                console.log('onSwipeDown');
+                toggleModal(false);
+              }}
+              onMove={data => console.log(data)}
+              enableSwipeDown={true}
+            />
+          </VStack>
         </Modal>
       </VStack>
     )
   },
 )
+
+const styles = StyleSheet.create({
+  closeImgViewerContainer: {
+    alignSelf: 'flex-end',
+    marginRight: Spacing[16],
+    marginTop: Spacing[16],
+  },
+  imageViewerOuter: {
+    backgroundColor: Colors.BLACK,
+    flex: 1,
+  },
+});
 
 export default FeedTimelineMain
