@@ -163,6 +163,28 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
       [brainstormStore.ideaDetail],
     )
 
+    const onVoteIdea = useCallback(async() => {
+      console.log('start on vote idea id ', ideaDetail.id)
+
+      await brainstormStore.voteIdea(ideaDetail.id)
+
+      if (brainstormStore.errorCode === null) {
+        setModalContent("Terima kasih!", "Kamu sudah berhasil nge-vote ide ini.", "senang")
+        toggleModal(true)
+      } else if (brainstormStore.errorCode === 77) {
+        setModalContent("Oops!", "Tampaknya kamu sudah pernah nge-vote ide ini. Kamu cuman bisa nge-vote satu kali per ide, yaa.", "marah")
+        toggleModal(true)
+      } else if (brainstormStore.errorCode === 76) {
+        setModalContent("Yah :(", "Tampaknya kamu sudah menghabiskan kuota voting kamu. Kamu hanya bisa voting 3x yaa.", "marah")
+        toggleModal(true)
+      } else {
+        setModalContent("Tidaaaak :(", "Ide ini belum berhasil di-vote nih. Coba lagi yah!", "marah")
+        toggleModal(true)
+      }
+
+
+    }, [ideaDetail, brainstormStore.errorCode, brainstormStore.voteIdeaSuccess])
+
     const onSubmit = (data: ideaForm) => {
       brainstormStore.formReset()
       let isError = false
@@ -204,7 +226,7 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
           toggleModal(true)
         }
       },
-      [groupId, brainstormStore.errorCode],
+      [groupId, brainstormStore.errorCode, brainstormStore.createIdeaSuccess],
     )
 
     return (
@@ -331,7 +353,7 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
                             <Button
                               type={"primary"}
                               text={"Vote"}
-                              onPress={handleSubmit}
+                              onPress={onVoteIdea}
                               style={{ width: Spacing[64] }}
                             />
                             <Spacer />

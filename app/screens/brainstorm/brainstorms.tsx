@@ -324,7 +324,7 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
                   ) : (
                     shortlisted.slice(0, 5).map((item) => {
                       return (
-                        <TouchableOpacity style={styles.item} key={"sticky-main-" + item.id}>
+                        <TouchableOpacity style={styles.item} key={"sticky-main-" + item.id} onPress={editIdea.bind(this, item.id)}>
                           <VStack bottom={Spacing[12]}>
                             <StickyNoteItem
                               key={"sticky-main-" + item.id}
@@ -366,7 +366,7 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
                   ) : (
                     selected.slice(0, 3).map((item) => {
                       return (
-                        <TouchableOpacity style={styles.item} key={"sticky-main-" + item.id}>
+                        <TouchableOpacity style={styles.item} key={"sticky-main-" + item.id} onPress={editIdea.bind(this, item.id)}>
                           <VStack bottom={Spacing[12]}>
                             <StickyNoteItem
                               key={"sticky-main-" + item.id}

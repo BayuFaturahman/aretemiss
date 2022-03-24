@@ -268,7 +268,7 @@ export default class BrainstormStore {
     try {
       const result = await this.brainstormApi.updateIdea(data)
 
-      console.log("result createIdea: ", result)
+      console.log("result updateIdea: ", result)
       if (result.kind === "ok") {
         this.updateIdeaSuccess()
       } else if (result.kind === "form-error") {
@@ -289,6 +289,38 @@ export default class BrainstormStore {
 
   updateIdeaSuccess() {
     console.log("updateIdeaSuccess success")
+    this.refreshData = true
+  }
+
+  async voteIdea(ideaId: string) {
+    console.log("voteIdea with body request", ideaId)
+    this.isLoading = true
+    try {
+      const result = await this.brainstormApi.voteIdea({
+        ideaPoolsId: ideaId
+      })
+
+      console.log("result voteIdea: ", result)
+      if (result.kind === "ok") {
+        this.updateIdeaSuccess()
+      } else if (result.kind === "form-error") {
+        this.formError(result.response)
+        // } else if () {
+      } else {
+        __DEV__ && console.tron.log(result.kind)
+      }
+    } catch (e) {
+      console.log("updateIdea error")
+      console.log(e)
+      this.setErrorMessage(e)
+    } finally {
+      console.log("updateIdea done")
+      this.isLoading = false
+    }
+  }
+
+  voteIdeaSuccess() {
+    console.log("voteIdeaSuccess success")
     this.refreshData = true
   }
 
