@@ -4,9 +4,16 @@ import { getGeneralApiProblem } from "../api-problem"
 import {
   CreateBrainstormsGroupResult,
   CreateIdeaType,
+  DeleteIdeaResult,
   GetIdeaDetailResult,
   GetIdeaPoolsByBrainstormGroupResult,
   GetListBrainstormGroupsResult,
+  GetListCpResult,
+  selectedCpType,
+  SelectIdeaApiResponse,
+  SelectIdeaType,
+  SendIdeaToCpResult,
+  SendIdeaToCpType,
   UpdateIdeaResult,
   UpdateIdeaType,
   VoteIdeaResult,
@@ -220,12 +227,146 @@ export class BrainstormApi {
     }
   }
 
+  async deleteIdea(id: string): Promise<DeleteIdeaResult> {
+    try {
+      // make the api call
+      console.log("body req ", id)
+      console.log(`/idea-pools/${id}`)
+      const response: ApiResponse<any> = await this.api.apisauce.delete(`/idea-pools/${id}`)
+
+      // console.log('createPost response', response)
+      // console.log("createBrainstormsGroup response.data", response.data)
+      if (response.status === 400) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      if (response.status === 500) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data" }
+    }
+  }
+
+
   async voteIdea(data: VoteIdeaType): Promise<VoteIdeaResult> {
     try {
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.post(`/vote-idea-pools`, data)
 
       console.log("voteIdea response", response)
+
+      if (response.status === 400) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      if (response.status === 500) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data" }
+    }
+  }
+
+  async selectIdea(data: SelectIdeaType): Promise<SelectIdeaApiResponse> {
+    try {
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.post(`/select-idea-pools`, data)
+
+      console.log("selectIdea response", response)
+
+      if (response.status === 400) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      if (response.status === 500) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data" }
+    }
+  }
+
+  async getListCP(page: number, limit: number): Promise<GetListCpResult> {
+    try {
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.get(`/user/counter-part?search&`,  {
+        limit: limit,
+        page: page
+      })
+
+      console.log("getListCP response", response)
+
+      if (response.status === 400) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      if (response.status === 500) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data" }
+    }
+  }
+
+  async sendIdeaToCp(data: SendIdeaToCpType): Promise<SendIdeaToCpResult> {
+    try {
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.post(`send-selected-idea-pools`, data)
+
+      console.log("sendIdeaToCp response", response)
 
       if (response.status === 400) {
         const res = response.data
