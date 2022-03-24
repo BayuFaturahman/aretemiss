@@ -6,7 +6,8 @@ import {
   RefreshControl,
   SafeAreaView,
   TouchableOpacity,
-  View
+  View,
+  StyleSheet,
 } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
@@ -31,6 +32,7 @@ import {dimensions} from "@config/platform.config";
 import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png";
 import trash from "@assets/icons/trash.png";
 import terkejut from "@assets/icons/mood/kaget.png";
+import {Close} from "@assets/svgs"
 
 import Spinner from "react-native-loading-spinner-overlay"
 
@@ -605,16 +607,21 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
           transparent={true}
           onRequestClose={() => toggleModal(false)}
         >
-          <ImageViewer
-            imageUrls={listImageViewer}
-            index={activeViewerIndex}
-            onSwipeDown={() => {
-              console.log('onSwipeDown');
-              toggleModal(false);
-            }}
-            onMove={data => console.log(data)}
-            enableSwipeDown={true}
-          />
+          <VStack style={styles.imageViewerOuter}>
+            <TouchableOpacity style={styles.closeImgViewerContainer} onPress={() => toggleModal(false)}>
+              <Close width={Spacing[24]} height={Spacing[24]} />
+            </TouchableOpacity>
+            <ImageViewer
+              imageUrls={listImageViewer}
+              index={activeViewerIndex}
+              onSwipeDown={() => {
+                console.log('onSwipeDown');
+                toggleModal(false);
+              }}
+              onMove={data => console.log(data)}
+              enableSwipeDown={true}
+            />
+          </VStack>
         </ModalReact>
         <Modal
           isOpen={isModalDeleteCommentVisible}
@@ -692,5 +699,17 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
     )
   },
 )
+
+const styles = StyleSheet.create({
+  closeImgViewerContainer: {
+    alignSelf: 'flex-end',
+    marginRight: Spacing[16],
+    marginTop: Spacing[16],
+  },
+  imageViewerOuter: {
+    backgroundColor: Colors.BLACK,
+    flex: 1,
+  },
+});
 
 export default PostDetails;

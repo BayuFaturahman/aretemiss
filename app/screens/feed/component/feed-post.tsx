@@ -17,9 +17,10 @@ type FeedPostProps = {
   goToDetail(data: FeedItemType): void;
   ownPost: boolean;
   deletePost?(id): void;
+  isFromHomePage?: boolean;
 }
 
-export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDetail = () => null }:FeedPostProps) => {
+export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDetail = () => null, isFromHomePage }:FeedPostProps) => {
 
   const listImage = data.imageUrl ? data.imageUrl.split(";") : []
 
@@ -45,6 +46,7 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
     return (
       <TouchableOpacity
         activeOpacity={0.8}
+        disabled={isFromHomePage}
         style={{
           marginBottom: marginBottom,
           height: height,
@@ -127,6 +129,7 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
       return (
         <TouchableOpacity
           activeOpacity={0.8}
+          disabled={isFromHomePage}
           style={{
             height: Spacing[128],
             borderRadius: Spacing[12],
@@ -225,8 +228,7 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
       <Spacer height={Spacing[2]} />
       {coverImage()}
       <Spacer height={Spacing[8]} />
-
-      <TouchableOpacity onPress={()=>{goToDetail(data)}}>
+      <TouchableOpacity onPress={()=>{goToDetail(data)}} disabled={isFromHomePage}>
         <HStack
           style={{ backgroundColor: Colors.LIGHT_GRAY, borderRadius: Spacing[8] }}
           horizontal={Spacing[12]}
@@ -252,7 +254,7 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
 
       <HStack left={Spacing[20]} top={Spacing[8]}>
         { !ownPost ?
-          <TouchableOpacity onPress={()=>{goToDetail(data)}}>
+          <TouchableOpacity onPress={()=>{goToDetail(data)}} disabled={isFromHomePage}>
             <HStack>
               <FastImage
                 style={{
@@ -281,6 +283,7 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
             style={{
               height: Spacing[24],
             }}
+            disabled={isFromHomePage}
             onPress={()=>{deletePost(data.id)}}>
             <Spacer height={Spacing[4]} />
             <FastImage
@@ -294,7 +297,7 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
           </TouchableOpacity>
         }
         <Spacer />
-        <TouchableOpacity onPress={()=>{goToDetail(data)}}>
+        <TouchableOpacity onPress={()=>{goToDetail(data)}} disabled={isFromHomePage}>
           <VStack>
             <Text
               type={"right-header"}
