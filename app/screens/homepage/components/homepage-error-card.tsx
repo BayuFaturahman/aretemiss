@@ -5,7 +5,6 @@ import {View} from "react-native";
 import FastImage from "react-native-fast-image";
 import {Button, Text} from "@components";
 import Spacer from "@components/spacer";
-import smileYellow from "@assets/icons/coachingJournal/empty/smile-yellow.png";
 import isError from "@assets/icons/homepage/isError.png";
 import surprissedPurple from "@assets/icons/coachingJournal/empty/surprised-purple.png";
 import {dimensions} from "@config/platform.config";

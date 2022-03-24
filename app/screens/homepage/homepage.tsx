@@ -542,12 +542,8 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       if (mainStore.errorCode === null) {
         setIsMoodUpdated(true)
         // setIsDisableEditBtn(true);
-        // setModalContent('Hore!', 'Profil kamu sudah berhasil diganti.', smileYellow)
-
         await mainStore.getProfile()
       } else {
-        // setModalContent('Oh no! :(', 'Perubahannya gagal diproses.\nCoba lagi ya!', angry)
-
         console.log("error code ", mainStore.errorCode)
         if (mainStore.errorCode === 500) {
           // setGeneralErrorMessage(mainStore.errorMessage)
