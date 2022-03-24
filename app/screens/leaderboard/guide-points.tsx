@@ -36,7 +36,7 @@ const guidePointsData: guidePointType[] = [
     ],
   },
   {
-    title: "Project or improvement initiatives",
+    title: "Feed posts",
     data: [
       { desc: "Membuat post di Feed", score: "+2" },
       { desc: "Jumlah komen dari rekan kerja lain di post Feed", score: "(+1 /komen)" },
