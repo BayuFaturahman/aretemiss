@@ -1,6 +1,7 @@
-import React, { FC, useEffect, useState } from "react"
+import React, { FC, useCallback, useEffect, useState } from "react"
 import {
   ActivityIndicator,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -191,29 +192,36 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
         groupId: groupId,
       })
 
-    const loadIdeas = debounce(async (groupId: string) => {
+    const firstLoadIdea = debounce(async () => {
+      await loadIdea()
+      console.log("brainstormStore.ideaPoolsByGroup: ", brainstormStore.ideaPoolsByGroup)
+    }, 500)
+
+    const loadIdea = useCallback(async () => {
       setIsLoading(true)
       // console.log("groupId ", groupId)
       await brainstormStore.getIdeaPoolsByBrainstormGroup(route.params.groupId)
-
       setIsLoading(false)
       setBrainstorms(brainstormStore.ideaPoolsByGroup.brainstormed)
       setShortlisted(brainstormStore.ideaPoolsByGroup.shortlisted)
       setSelected(brainstormStore.ideaPoolsByGroup.selected)
-
-      // console.log("brainstormStore.ideaPoolsByGroup: ", brainstormStore.ideaPoolsByGroup)
-    }, 500)
+    }, [])
 
     useEffect(() => {
       console.log("route.params ", route.params)
-      loadIdeas(groupId)
+      firstLoadIdea()
+    }, [])
+
+    const onRefresh = React.useCallback(async () => {
+      loadIdea()
     }, [])
 
     useEffect(() => {
       navigation.addListener("focus", () => {
         console.log("brainstormStore.refreshData ", brainstormStore.refreshData)
-        loadIdeas(groupId)
+        firstLoadIdea()
       })
+      console.log("brainstormStore.ideaPoolsByGroup abwah: ", brainstormStore.ideaPoolsByGroup)
     }, [])
 
     return (
@@ -223,7 +231,10 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
       >
         <VStack top={Spacing[48]} style={Layout.flex}>
           <BackNavigation goBack={goBack} />
-          <ScrollView style={{ backgroundColor: Colors.UNDERTONE_BLUE }}>
+          <ScrollView
+            style={{ backgroundColor: Colors.UNDERTONE_BLUE }}
+            refreshControl={<RefreshControl refreshing={isLoading} onRefresh={onRefresh} />}
+          >
             <VStack top={Spacing[8]} horizontal={Spacing[12]} bottom={Spacing[12]}>
               <Text
                 type={"header"}
@@ -443,6 +454,6 @@ const styles = StyleSheet.create({
   },
   item: {
     alignItems: "center",
-    width: "33,3%", // is 50% of container width
+    width: "33%", // is 50% of container width
   },
 })
