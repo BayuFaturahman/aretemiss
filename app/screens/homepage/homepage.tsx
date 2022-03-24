@@ -456,7 +456,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
             <Spacer height={Spacing[12]} />
             <HomepageCardWrapper animationDuration={700}>
               <VStack>
-                <BrainstormsComponent goToBrainstorms={goToJuaraAssessment} />
+                <BrainstormsComponent goToBrainstorms={goToBrainstormsGroup} />
               </VStack>
             </HomepageCardWrapper>
             <Spacer height={Spacing[12]} />
