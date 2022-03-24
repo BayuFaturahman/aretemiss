@@ -43,6 +43,12 @@ export default class BrainstormStore {
     this.listBrainstormGroups = []
     this.ideaDetail = null
     this.listCpUser = []
+    this.ideaPoolsByGroup = {
+      brainstormed: [],
+      shortlisted: [],
+      selected: [],
+    }
+
 
     this.brainstormApi = new BrainstormApi(this.api)
   }
@@ -151,6 +157,9 @@ export default class BrainstormStore {
       shortlisted: [],
       selected: [],
     }
+    this.ideaPoolsByGroup.brainstormed = []
+    this.ideaPoolsByGroup.selected = []
+    this.ideaPoolsByGroup.shortlisted = []
 
     data.brainstormed?.forEach((idea) => {
       tempListIdeas.brainstormed.push({
@@ -191,7 +200,9 @@ export default class BrainstormStore {
       })
     })
 
-    this.ideaPoolsByGroup = tempListIdeas
+    this.ideaPoolsByGroup.brainstormed = tempListIdeas.brainstormed
+    this.ideaPoolsByGroup.selected = tempListIdeas.selected
+    this.ideaPoolsByGroup.shortlisted = tempListIdeas.shortlisted
   }
 
   async createIdea(data: CreateIdeaType) {
