@@ -150,7 +150,7 @@ const StickyNoteItem = ({
 
 const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = observer(
   ({ navigation, route }) => {
-    const { groupId } = route.params
+    const { groupId, isMember } = route.params
     const { mainStore, brainstormStore } = useStores()
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -264,20 +264,22 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
                     zIndex: 10,
                   }}
                 >
-                  <TouchableOpacity
-                    onPress={createIdea}
-                    style={{
-                      height: Spacing[64],
-                      width: Spacing[64],
-                      backgroundColor: Colors.BRIGHT_BLUE,
-                      borderRadius: Spacing[64],
-                      flex: 1,
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <AddTask height={Spacing[36]} width={Spacing[36]} />
-                  </TouchableOpacity>
+                  {selected.length <= 0 && isMember &&(
+                    <TouchableOpacity
+                      onPress={createIdea}
+                      style={{
+                        height: Spacing[64],
+                        width: Spacing[64],
+                        backgroundColor: Colors.BRIGHT_BLUE,
+                        borderRadius: Spacing[64],
+                        flex: 1,
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <AddTask height={Spacing[36]} width={Spacing[36]} />
+                    </TouchableOpacity>
+                  )}
                 </VStack>
 
                 <Spacer height={Spacing[42]} />
@@ -306,6 +308,7 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
                           <TouchableOpacity
                             style={styles.item}
                             onPress={editIdea.bind(this, item.id)}
+                            disabled={!isMember}
                             key={"sticky-main-" + item.id}
                           >
                             <VStack bottom={Spacing[12]}>
@@ -362,6 +365,7 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
                             style={styles.item}
                             key={"sticky-main-" + item.id}
                             onPress={editIdea.bind(this, item.id)}
+                            disabled={!isMember}
                           >
                             <VStack bottom={Spacing[12]}>
                               <StickyNoteItem
@@ -416,6 +420,7 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
                             style={styles.item}
                             key={"sticky-main-" + item.id}
                             onPress={editIdea.bind(this, item.id)}
+                            disabled={!isMember}
                           >
                             <VStack bottom={Spacing[12]}>
                               <StickyNoteItem

@@ -251,6 +251,7 @@ export type NavigatorParamList = {
   juaraAssesmentQuiz: undefined
   brainstorms: {
     groupId: string
+    isMember: boolean
   }
   addIdea: {
     isView: boolean

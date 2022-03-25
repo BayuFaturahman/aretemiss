@@ -13,6 +13,7 @@ export type BrainstormGroup = {
   bg_created_at: string
   bg_updated_at: string
   bg_deleted_at: string
+  bg_is_member: boolean
 }
 
 export type CreateBrainstormGroupType = {

@@ -367,8 +367,6 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
     const goToJuaraAssessment = () => navigation.navigate("juaraAssesment")
 
-    const goToBrainstorms = () => navigation.navigate("brainstorms")
-
     // const goToBrainstormsGroup = () => navigation.navigate("newBrainstormsGroup")
 
     const goToBrainstormsGroup = () => navigation.navigate("brainstormGroupList")
