@@ -163,33 +163,29 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
     const createIdea = () =>
       navigation.navigate("addIdea", {
         isView: false,
-        byLeaders: false,
-        isVote: false,
         groupId: groupId,
+        hasSelectedIdea: selected.length > 0
       })
 
     const editIdea = (id: string) =>
       navigation.navigate("addIdea", {
         isView: true,
-        byLeaders: false,
-        isVote: false,
         ideaId: id,
+        hasSelectedIdea: selected.length > 0
       })
 
     const voteIdea = () =>
       navigation.navigate("addIdea", {
         isView: false,
-        byLeaders: false,
-        isVote: true,
         groupId: groupId,
+        hasSelectedIdea: selected.length > 0
       })
 
     const selectIdea = () =>
       navigation.navigate("addIdea", {
         isView: false,
-        byLeaders: true,
-        isVote: false,
         groupId: groupId,
+        hasSelectedIdea: selected.length > 0
       })
 
     const firstLoadIdea = debounce(async () => {

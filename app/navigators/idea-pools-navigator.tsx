@@ -35,6 +35,7 @@ export type NavigatorParamList = {
     isView: boolean
     groupId?: string
     ideaId?: string
+    hasSelectedIdea: boolean
   },
   sendEmail: undefined,
 };

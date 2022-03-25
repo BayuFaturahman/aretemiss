@@ -255,10 +255,9 @@ export type NavigatorParamList = {
   }
   addIdea: {
     isView: boolean
-    isVote: boolean
-    byLeaders: boolean
     groupId?: string
     ideaId?: string
+    hasSelectedIdea: boolean
   },
   brainstormGroupList: undefined,
   newBrainstormsGroup: undefined

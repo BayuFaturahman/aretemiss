@@ -21,10 +21,10 @@ const BrainstormGroupList: FC<StackScreenProps<NavigatorParamList, "newBrainstor
     const _goBack = () => navigation.goBack();
     const _goToAddBrainstormGroup = () => navigation.navigate("newBrainstormsGroup");
 
-    const goToBrainstorms = (group: BrainstormGroup) => {
+    const goToBrainstorms = (group) => {
       // console.log(group)
       navigation.navigate("brainstorms",{
-      groupId: group.id,
+      groupId: group.bg_id,
       isMember: group.bg_is_member
     })
   }
