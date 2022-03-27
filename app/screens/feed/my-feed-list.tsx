@@ -288,9 +288,11 @@ const MyFeedList: FC<StackScreenProps<NavigatorParamList, "myFeedList">> = obser
           onRequestClose={() => toggleModal(false)}
         >
           <VStack style={styles.imageViewerOuter}>
-            <TouchableOpacity style={styles.closeImgViewerContainer} onPress={() => toggleModal(false)}>
-              <Close width={Spacing[24]} height={Spacing[24]} />
-            </TouchableOpacity>
+            <SafeAreaView>
+              <TouchableOpacity style={styles.closeImgViewerContainer} onPress={() => toggleModal(false)}>
+                <Close width={Spacing[24]} height={Spacing[24]} />
+              </TouchableOpacity>
+            </SafeAreaView>
             <ImageViewer
               imageUrls={listImageViewer}
               index={activeViewerIndex}

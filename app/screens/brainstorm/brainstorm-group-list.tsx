@@ -1,5 +1,5 @@
 import React, {FC, useState, useEffect, useCallback} from 'react';
-import {View, StyleSheet, FlatList, TouchableOpacity, RefreshControl, ActivityIndicator} from 'react-native';
+import {View, StyleSheet, FlatList, TouchableOpacity, RefreshControl, ActivityIndicator, SafeAreaView} from 'react-native';
 import { HStack, VStack } from "@components/view-stack";
 import { GroupIconComponent } from './components/group-icon-component';
 import Spacer from "@components/spacer";
@@ -128,7 +128,7 @@ const BrainstormGroupList: FC<StackScreenProps<NavigatorParamList, "newBrainstor
         testID="BrainstormGroupList"
         style={styles.outerContainer}
       >
-        <VStack style={Layout.flex}>
+        <SafeAreaView style={Layout.flex}>
           <BackNavigation goBack={_goBack} />
           <View style={styles.innerContainer}>
             {renderHeader()}
@@ -164,7 +164,7 @@ const BrainstormGroupList: FC<StackScreenProps<NavigatorParamList, "newBrainstor
               )}
             </View>
           </View>
-        </VStack>
+        </SafeAreaView>
       </VStack>
     )
 })

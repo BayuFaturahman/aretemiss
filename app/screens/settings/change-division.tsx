@@ -79,7 +79,7 @@ const ChangeDivision: FC<StackScreenProps<NavigatorParamList, "changeDivision">>
       isAllowNotification: mainStore.userProfile.user_is_allow_notification,
       isAllowReminderNotification: mainStore.userProfile.user_is_allow_reminder_notification,
       mood: mainStore.userProfile.user_mood,
-      userPosition: mainStore.userProfile.user_position? USER_POSITION.filter((position) => position.id === mainStore.userProfile.user_position)[0].item : ''
+      userPosition: mainStore.userProfile.user_position? USER_POSITION.filter((position) => position.id === mainStore.userProfile.user_position).length > 0 ? USER_POSITION.filter((position) => position.id === mainStore.userProfile.user_position)[0].item : '' : '',
     }
 
     const goBack = () => navigation.goBack()
