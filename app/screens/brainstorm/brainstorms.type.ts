@@ -11,7 +11,7 @@ export type BrainstormGroupType = {
 export type IdeaType = {
   id: string
   // brainstormGroupId: string
-  // title: string
+  title: string
   description: string
   color: string
   colorShade: string
@@ -23,4 +23,23 @@ export type IdeaPoolsByGroupType = {
   brainstormed: IdeaType[]
   shortlisted: IdeaType[]
   selected: IdeaType[]
+}
+
+export type IdeaPoolsDetail = {
+  id: string
+  title: string
+  description: string
+  color: string
+  votes: number
+  authorId: string
+  authorFullname: string
+  isSelected: number
+  groupInitiatorId: string
+  isAuthor: boolean
+  isInitiator: boolean
+}
+
+export type CpUser = {
+  id: string,
+  item: string
 }

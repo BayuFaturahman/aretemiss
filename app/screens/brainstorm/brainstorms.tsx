@@ -1,6 +1,7 @@
-import React, { FC, useEffect, useState } from "react"
+import React, { FC, useCallback, useEffect, useState } from "react"
 import {
   ActivityIndicator,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -10,7 +11,7 @@ import {
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Text, BackNavigation } from "@components"
-import { NavigatorParamList } from "@navigators/main-navigator"
+import { NavigatorParamList } from "@navigators/idea-pools-navigator"
 import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
 import { Colors, Layout, Spacing } from "@styles"
@@ -29,55 +30,55 @@ const STICKY_LIST_EXAMPLE: IdeaType[] = [
     id: "1",
     color: "#F2C94C",
     colorShade: "#F2994A",
-    description: "Senam SKJ setiap Jumat",
+    title: "Senam SKJ setiap Jumat",
   },
   {
     id: "2",
     color: "#F2C94C",
     colorShade: "#F2994A",
-    description: "Senam SKJ setiap Jumat",
+    title: "Senam SKJ setiap Jumat",
   },
   {
     id: "3",
     color: "#F2C94C",
     colorShade: "#F2994A",
-    description: "Senam SKJ setiap Jumat",
+    title: "Senam SKJ setiap Jumat",
   },
   {
     id: "4",
     color: "#F2C94C",
     colorShade: "#F2994A",
-    description: "Senam SKJ setiap Jumat",
+    title: "Senam SKJ setiap Jumat",
   },
   {
     id: "5",
     color: "#F2C94C",
     colorShade: "#F2994A",
-    description: "Senam SKJ setiap Jumat",
+    title: "Senam SKJ setiap Jumat",
   },
   {
     id: "6",
     color: "#F2C94C",
     colorShade: "#F2994A",
-    description: "Senam SKJ setiap Jumat",
+    title: "Senam SKJ setiap Jumat",
   },
   {
     id: "7",
     color: "#F2C94C",
     colorShade: "#F2994A",
-    description: "Senam SKJ setiap Jumat",
+    title: "Senam SKJ setiap Jumat",
   },
   {
     id: "8",
     color: "#F2C94C",
     colorShade: "#F2994A",
-    description: "Senam SKJ setiap Jumat",
+    title: "Senam SKJ setiap Jumat",
   },
   {
     id: "9",
     color: "#F2C94C",
     colorShade: "#F2994A",
-    description: "Senam SKJ setiap Jumat",
+    title: "Senam SKJ setiap Jumat",
   },
 ]
 
@@ -151,7 +152,7 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
   ({ navigation, route }) => {
     const { groupId } = route.params
     const { mainStore, brainstormStore } = useStores()
-    const [loading, setLoading] = useState<boolean>(false)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const [brainstorms, setBrainstorms] = useState<IdeaType[]>([])
     const [shortlisted, setShortlisted] = useState<IdeaType[]>([])
@@ -167,12 +168,12 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
         groupId: groupId,
       })
 
-    const editIdea = () =>
+    const editIdea = (id: string) =>
       navigation.navigate("addIdea", {
         isView: true,
         byLeaders: false,
         isVote: false,
-        groupId: groupId,
+        ideaId: id,
       })
 
     const voteIdea = () =>
@@ -191,25 +192,36 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
         groupId: groupId,
       })
 
-    const loadIdeas = debounce(async (groupId: string) => {
+    const firstLoadIdea = debounce(async () => {
+      await loadIdea()
+      console.log("brainstormStore.ideaPoolsByGroup: ", brainstormStore.ideaPoolsByGroup)
+    }, 500)
+
+    const loadIdea = useCallback(async () => {
+      setIsLoading(true)
       // console.log("groupId ", groupId)
       await brainstormStore.getIdeaPoolsByBrainstormGroup(route.params.groupId)
-      // console.log("brainstormStore.ideaPoolsByGroup: ", brainstormStore.ideaPoolsByGroup)
+      setIsLoading(false)
       setBrainstorms(brainstormStore.ideaPoolsByGroup.brainstormed)
       setShortlisted(brainstormStore.ideaPoolsByGroup.shortlisted)
       setSelected(brainstormStore.ideaPoolsByGroup.selected)
-    }, 500)
+    }, [])
 
     useEffect(() => {
       console.log("route.params ", route.params)
-      loadIdeas(groupId)
+      firstLoadIdea()
+    }, [])
+
+    const onRefresh = React.useCallback(async () => {
+      loadIdea()
     }, [])
 
     useEffect(() => {
       navigation.addListener("focus", () => {
         console.log("brainstormStore.refreshData ", brainstormStore.refreshData)
-        loadIdeas(groupId)
+        firstLoadIdea()
       })
+      console.log("brainstormStore.ideaPoolsByGroup abwah: ", brainstormStore.ideaPoolsByGroup)
     }, [])
 
     return (
@@ -219,7 +231,10 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
       >
         <VStack top={Spacing[48]} style={Layout.flex}>
           <BackNavigation goBack={goBack} />
-          <ScrollView style={{ backgroundColor: Colors.UNDERTONE_BLUE }}>
+          <ScrollView
+            style={{ backgroundColor: Colors.UNDERTONE_BLUE }}
+            refreshControl={<RefreshControl refreshing={isLoading} onRefresh={onRefresh} />}
+          >
             <VStack top={Spacing[8]} horizontal={Spacing[12]} bottom={Spacing[12]}>
               <Text
                 type={"header"}
@@ -269,34 +284,45 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
                 <HStack horizontal={Spacing[12]}>
                   <Text type={"left-header"} text="Brainstorm-ed" />
                 </HStack>
+                {isLoading ? (
+                  <VStack
+                    vertical={Spacing[12]}
+                    style={{ position: "absolute", bottom: 0, width: dimensions.screenWidth }}
+                  >
+                    <ActivityIndicator animating={isLoading} />
+                  </VStack>
+                ) : (
+                  <VStack style={styles.container} top={Spacing[24]} horizontal={Spacing[24]}>
+                    {/* HERE */}
 
-                <VStack style={styles.container} top={Spacing[24]} horizontal={Spacing[24]}>
-                  {/* HERE */}
-
-                  {brainstorms.length === 0 ? (
-                    <Text
-                      type={"label"}
-                      text={`It’s time to show off your creativity! Tambah idemu sekarang.`}
-                    />
-                  ) : (
-                    brainstorms.map((item) => {
-                      return (
-                        <TouchableOpacity style={styles.item} onPress={editIdea}>
-                          <VStack bottom={Spacing[12]}>
-                            <StickyNoteItem
-                              key={"sticky-main-" + item.id}
-                              id={item.id}
-                              text={item.description}
-                              color={item.color}
-                              colorShade={item.colorShade}
-                            />
-                          </VStack>
-                        </TouchableOpacity>
-                      )
-                    })
-                  )}
-                </VStack>
-
+                    {brainstorms.length === 0 ? (
+                      <Text
+                        type={"label"}
+                        text={`It’s time to show off your creativity! Tambah idemu sekarang.`}
+                      />
+                    ) : (
+                      brainstorms.map((item) => {
+                        return (
+                          <TouchableOpacity
+                            style={styles.item}
+                            onPress={editIdea.bind(this, item.id)}
+                            key={"sticky-main-" + item.id}
+                          >
+                            <VStack bottom={Spacing[12]}>
+                              <StickyNoteItem
+                                key={"sticky-main-" + item.id}
+                                id={item.id}
+                                text={item.title}
+                                color={item.color}
+                                colorShade={item.colorShade}
+                              />
+                            </VStack>
+                          </TouchableOpacity>
+                        )
+                      })
+                    )}
+                  </VStack>
+                )}
                 <Spacer height={Spacing[24]} />
               </VStack>
 
@@ -313,32 +339,45 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
                   <Text type={"left-header"} text="Shortlisted" />
                 </HStack>
 
-                <VStack style={styles.container} top={Spacing[24]} horizontal={Spacing[24]}>
-                  {/* HERE */}
+                {isLoading ? (
+                  <VStack
+                    vertical={Spacing[12]}
+                    style={{ position: "absolute", bottom: 0, width: dimensions.screenWidth }}
+                  >
+                    <ActivityIndicator animating={isLoading} />
+                  </VStack>
+                ) : (
+                  <VStack style={styles.container} top={Spacing[24]} horizontal={Spacing[24]}>
+                    {/* HERE */}
 
-                  {shortlisted.length === 0 ? (
-                    <Text
-                      type={"label"}
-                      text={`It’s time to show off your creativity! Tambah idemu sekarang.`}
-                    />
-                  ) : (
-                    shortlisted.slice(0, 5).map((item) => {
-                      return (
-                        <TouchableOpacity style={styles.item} key={"sticky-main-" + item.id}>
-                          <VStack bottom={Spacing[12]}>
-                            <StickyNoteItem
-                              key={"sticky-main-" + item.id}
-                              id={item.id}
-                              text={item.description}
-                              color={item.color}
-                              colorShade={item.colorShade}
-                            />
-                          </VStack>
-                        </TouchableOpacity>
-                      )
-                    })
-                  )}
-                </VStack>
+                    {shortlisted.length === 0 ? (
+                      <Text
+                        type={"label"}
+                        text={`It’s time to show off your creativity! Tambah idemu sekarang.`}
+                      />
+                    ) : (
+                      shortlisted.slice(0, 5).map((item) => {
+                        return (
+                          <TouchableOpacity
+                            style={styles.item}
+                            key={"sticky-main-" + item.id}
+                            onPress={editIdea.bind(this, item.id)}
+                          >
+                            <VStack bottom={Spacing[12]}>
+                              <StickyNoteItem
+                                key={"sticky-main-" + item.id}
+                                id={item.id}
+                                text={item.title}
+                                color={item.color}
+                                colorShade={item.colorShade}
+                              />
+                            </VStack>
+                          </TouchableOpacity>
+                        )
+                      })
+                    )}
+                  </VStack>
+                )}
                 <Spacer height={Spacing[24]} />
               </VStack>
 
@@ -354,46 +393,50 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
                 <HStack horizontal={Spacing[12]}>
                   <Text type={"left-header"} text="Selected" />
                 </HStack>
+                {isLoading ? (
+                  <VStack
+                    vertical={Spacing[12]}
+                    style={{ position: "absolute", bottom: 0, width: dimensions.screenWidth }}
+                  >
+                    <ActivityIndicator animating={isLoading} />
+                  </VStack>
+                ) : (
+                  <VStack style={styles.container} top={Spacing[24]} horizontal={Spacing[24]}>
+                    {/* HERE */}
 
-                <VStack style={styles.container} top={Spacing[24]} horizontal={Spacing[24]}>
-                  {/* HERE */}
-
-                  {selected.length === 0 ? (
-                    <Text
-                      type={"label"}
-                      text={`Belum ada ide yang dipilih, nih. Masih bisa tambah ide & voting. Yuk tambah lagi!`}
-                    />
-                  ) : (
-                    selected.slice(0, 3).map((item) => {
-                      return (
-                        <TouchableOpacity style={styles.item} key={"sticky-main-" + item.id}>
-                          <VStack bottom={Spacing[12]}>
-                            <StickyNoteItem
-                              key={"sticky-main-" + item.id}
-                              id={item.id}
-                              text={item.description}
-                              color={item.color}
-                              colorShade={item.colorShade}
-                            />
-                          </VStack>
-                        </TouchableOpacity>
-                      )
-                    })
-                  )}
-                </VStack>
+                    {selected.length === 0 ? (
+                      <Text
+                        type={"label"}
+                        text={`Belum ada ide yang dipilih, nih. Masih bisa tambah ide & voting. Yuk tambah lagi!`}
+                      />
+                    ) : (
+                      selected.slice(0, 3).map((item) => {
+                        return (
+                          <TouchableOpacity
+                            style={styles.item}
+                            key={"sticky-main-" + item.id}
+                            onPress={editIdea.bind(this, item.id)}
+                          >
+                            <VStack bottom={Spacing[12]}>
+                              <StickyNoteItem
+                                key={"sticky-main-" + item.id}
+                                id={item.id}
+                                text={item.title}
+                                color={item.color}
+                                colorShade={item.colorShade}
+                              />
+                            </VStack>
+                          </TouchableOpacity>
+                        )
+                      })
+                    )}
+                  </VStack>
+                )}
                 <Spacer height={Spacing[24]} />
               </VStack>
             </VStack>
           </ScrollView>
         </VStack>
-        {loading ? (
-          <VStack
-            vertical={Spacing[12]}
-            style={{ position: "absolute", bottom: 0, width: dimensions.screenWidth }}
-          >
-            <ActivityIndicator animating={loading} />
-          </VStack>
-        ) : null}
       </VStack>
     )
   },
@@ -411,6 +454,6 @@ const styles = StyleSheet.create({
   },
   item: {
     alignItems: "center",
-    width: "33,3%", // is 50% of container width
+    width: "33%", // is 50% of container width
   },
 })

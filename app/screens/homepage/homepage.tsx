@@ -59,6 +59,7 @@ import {
   SurprisedInactive,
 } from "@assets/svgs"
 import { MoodComponent } from "./components/mood-component"
+import { BrainstormsComponent } from "@screens/homepage/components/brainstorms-component"
 
 const FEED_EXAMPLE_DATA_ITEM: FeedItemType[] = [
   {
@@ -367,7 +368,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     const goToJuaraAssessment = () => navigation.navigate("juaraAssesment")
 
     const goToBrainstorms = () => navigation.navigate("brainstorms")
-    
+
     // const goToBrainstormsGroup = () => navigation.navigate("newBrainstormsGroup")
 
     const goToBrainstormsGroup = () => navigation.navigate("brainstormGroupList")
@@ -455,9 +456,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
             <Spacer height={Spacing[12]} />
             <HomepageCardWrapper animationDuration={700}>
               <VStack>
-                <Button type={"primary"} text={"Idea pools"} onPress={goToBrainstorms} />
-                <Spacer height={Spacing[12]} />
-                <Button type={"primary"} text={"Brainstorms"} onPress={goToBrainstormsGroup} />
+                <BrainstormsComponent goToBrainstorms={goToBrainstormsGroup} />
               </VStack>
             </HomepageCardWrapper>
             <Spacer height={Spacing[12]} />
