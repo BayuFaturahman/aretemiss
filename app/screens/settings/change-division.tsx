@@ -300,11 +300,6 @@ const ChangeDivision: FC<StackScreenProps<NavigatorParamList, "changeDivision">>
                               onPress={() => handleSubmit()}
                             />
                           </VStack>
-
-                          <Text type={"warning"} style={{ textAlign: "center" }}>
-                            Setiap perubahan team yang kamu submit akan melalui tinjauan terlebih
-                            dahulu. Proses perubahan team akan membutuhkan waktu selama 1-3 hari.
-                          </Text>
                         </>
                       )}
                     </Formik>
