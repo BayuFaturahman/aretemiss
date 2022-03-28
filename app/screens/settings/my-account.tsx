@@ -22,8 +22,6 @@ import FastImage from "react-native-fast-image"
 import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png"
 import { dimensions } from "@config/platform.config"
 import Modal from "react-native-modalbox"
-import smileYellow from "@assets/icons/coachingJournal/empty/smile-yellow.png"
-import angry from "@assets/icons/mood/marah.png"
 import Spinner from 'react-native-loading-spinner-overlay';
 
 import {launchImageLibrary, launchCamera, ImagePickerResponse, } from 'react-native-image-picker';
@@ -185,7 +183,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
       console.log("submitEditProfile Data to be submitted", userProfile)
       await mainStore.updateProfile(mainStore.userProfile.user_id, userProfile)
       if (mainStore.errorCode === null) {
-        setModalContent('Hore!', 'Profil kamu sudah berhasil diganti.', smileYellow)
+        setModalContent('Hore!', 'Profil kamu sudah berhasil diganti.', 'senang')
         setIsDisableEditBtn(true);
         await mainStore.getProfile();
         // console.log('USER PROFILE ', userProfile)
@@ -220,7 +218,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
 
     useEffect(() => {
       if (route.params?.isPasswordChange) {
-        setModalContent('Hore!', 'Password kamu sudah berhasil diganti.', smileYellow)
+        setModalContent('Hore!', 'Password kamu sudah berhasil diganti.', 'senang')
         toggleModal()
       }
     }, [route.params?.isPasswordChange])

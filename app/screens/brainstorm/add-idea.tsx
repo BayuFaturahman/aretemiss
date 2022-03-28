@@ -452,7 +452,7 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
                                     width: Spacing[84],
                                     backgroundColor: isEditMode
                                       ? Colors.CLOUD_GRAY
-                                      : Colors.SOFT_PURPLE,
+                                      : Colors.BRIGHT_BLUE,
                                   }}
                                   textStyle={{ color: isEditMode ? "#BDBDBD" : Colors.WHITE }}
                                 />
