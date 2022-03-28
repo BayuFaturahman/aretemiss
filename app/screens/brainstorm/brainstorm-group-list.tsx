@@ -10,6 +10,7 @@ import { NavigatorParamList } from "@navigators/idea-pools-navigator";
 import { observer } from "mobx-react-lite";
 import { useStores } from '../../bootstrap/context.boostrap';
 import moment from 'moment';
+import { BrainstormGroup } from '@services/api/brainstorm/brainstorm-api.types';
 
 const BrainstormGroupList: FC<StackScreenProps<NavigatorParamList, "newBrainstormsGroup">> =
   observer(({navigation}) => {
@@ -20,9 +21,13 @@ const BrainstormGroupList: FC<StackScreenProps<NavigatorParamList, "newBrainstor
     const _goBack = () => navigation.goBack();
     const _goToAddBrainstormGroup = () => navigation.navigate("newBrainstormsGroup");
 
-    const goToBrainstorms = (groupId) => navigation.navigate("brainstorms",{
-      groupId: groupId
+    const goToBrainstorms = (group) => {
+      // console.log(group)
+      navigation.navigate("brainstorms",{
+      groupId: group.bg_id,
+      isMember: group.bg_is_member
     })
+  }
 
     const _getBrainstormGroupList = useCallback(async () => {
       setIsLoading(true);
@@ -113,7 +118,7 @@ const BrainstormGroupList: FC<StackScreenProps<NavigatorParamList, "newBrainstor
             }
           </>
         }
-          <TouchableOpacity key={index} style={[styles.groupOuterContainer, item?.bg_is_selected && styles.disabledGroupContainer]} onPress={goToBrainstorms.bind(this, item.bg_id)}>
+          <TouchableOpacity key={index} style={[styles.groupOuterContainer, item?.bg_is_selected && styles.disabledGroupContainer]} onPress={goToBrainstorms.bind(this, item)}>
             <View style={styles.groupInnerContainer}>
               {renderGroupListContent(item)}
             </View>

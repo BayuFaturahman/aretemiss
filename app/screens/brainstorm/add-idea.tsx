@@ -38,7 +38,7 @@ export type ideaForm = {
 const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
   ({ navigation, route }) => {
     const { mainStore, brainstormStore } = useStores()
-    const { isView, groupId } = route.params
+    const { isView, groupId, hasSelectedIdea } = route.params
     const [titleBgColour, setTitleBgColour] = useState<string>(Colors.WHITE)
     const [isViewMode, setIsViewMode] = useState<boolean>(isView)
     const [isEditMode, setIsEditMode] = useState<boolean>(false)
@@ -307,7 +307,7 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
                     <HStack>
                       <Text type={"left-header"}>Tentang ide projek!</Text>
                       <Spacer />
-                      {isViewMode && isMyIdea && isEditMode && !isSelected && (
+                      {isViewMode && isMyIdea && isEditMode && !isSelected && !hasSelectedIdea && (
                         <Button
                           type={"negative"}
                           text={`Cancel`}
@@ -319,7 +319,7 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
                           }}
                         />
                       )}
-                      {isViewMode && isMyIdea && !isEditMode && !isSelected && (
+                      {isViewMode && isMyIdea && !isEditMode && !isSelected && !hasSelectedIdea && (
                         <Button
                           type={"negative"}
                           text={`Edit`}
@@ -412,7 +412,7 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
                           />
                         </HStack> */}
                           <VStack horizontal={Spacing[72]} top={Spacing[24]} bottom={Spacing[24]}>
-                            {isViewMode && !isEditMode && isMyIdea && !isSelected && (
+                            {isViewMode && !isEditMode && isMyIdea && !isSelected && !hasSelectedIdea && (
                               <Button
                                 type={"warning"}
                                 text={"Hapus"}
@@ -434,7 +434,7 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
                           </VStack>
                           {isViewMode && (
                             <HStack>
-                              {!isMyIdea && !isInitiator && !isSelected && (
+                              {!isMyIdea && !isInitiator && !isSelected && !hasSelectedIdea && (
                                 <Button
                                   type={"primary"}
                                   text={"Vote"}
@@ -442,7 +442,7 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
                                   style={{ width: Spacing[64] }}
                                 />
                               )}
-                              {isInitiator && !isSelected && (
+                              {isInitiator && !isSelected && !hasSelectedIdea && (
                                 <Button
                                   type={"primary"}
                                   text={"Select"}

@@ -29,11 +29,13 @@ export type NavigatorParamList = {
   newBrainstormsGroup: undefined,
   brainstorms: {
     groupId: string
+    isMember: boolean
   }
   addIdea: {
     isView: boolean
     groupId?: string
     ideaId?: string
+    hasSelectedIdea: boolean
   },
   sendEmail: undefined,
 };
