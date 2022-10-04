@@ -1,6 +1,6 @@
 import React, {useState} from "react"
 import {StyleProp, TextInput, TextInputProps, TextStyle, TouchableOpacity, View, ViewStyle} from "react-native"
-import { color, spacing, typography } from "@theme/"
+import { color, spacing, typography } from "@theme"
 import { translate, TxKeyPath } from "../../i18n"
 import { Text } from "../text/text"
 import {Colors, Spacing} from "@styles";
@@ -112,7 +112,7 @@ export function TextField(props: TextFieldProps) {
     backgroundColor: color.palette.white,
     textAlign: 'center',
     borderRadius: Spacing[20],
-    borderColor: isError ? Colors.MAIN_RED : Colors.MAIN_BLUE,
+    borderColor: isError ? Colors.MAIN_RED : Colors.ABM_LIGHT_BLUE,
     borderWidth: Spacing[2]
   }
 
@@ -135,6 +135,7 @@ export function TextField(props: TextFieldProps) {
   }
 
   const renderChangeButton = () => {
+    // eslint-disable-next-line react-native/no-inline-styles
     return (changeButton === true ? <VStack style={{width: Spacing[72], position: 'absolute', right: 0, top: Spacing[12]}}>
         <Button
           type={"primary"}
@@ -195,7 +196,8 @@ export function TextField(props: TextFieldProps) {
           maxLength={maxChar}
         >
         </TextInput>
-        <TouchableOpacity style={{ position: 'absolute', right: changeButton === true ? null : 0, bottom: Spacing[20]}} onPress={()=>setShowPassword(!showPassword)}>
+        <TouchableOpacity
+          style={{ position: 'absolute', right: changeButton === true ? null : 0, bottom: Spacing[20]}} onPress={()=>setShowPassword(!showPassword)}>
           <FastImage style={EYES_ICON} source={showPassword ? eyeIconFalse : eyeIcon} resizeMode={"contain"}/>
         </TouchableOpacity>
         {renderChangeButton()}

@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useState } from "react"
-import {SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View} from "react-native"
+import {KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, TouchableOpacity, View} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { BackNavigation, Button, DismissKeyboard, Text, TextField } from "@components"
@@ -13,8 +13,9 @@ import { useStores } from "../../bootstrap/context.boostrap"
 
 import Spinner from "react-native-loading-spinner-overlay"
 import messaging from "@react-native-firebase/messaging";
-import {IleadLogo} from "@assets/svgs";
-import {dimensions} from "@config/platform.config";
+import {AuthBottomLogo} from "@components/auth-bottom-logo";
+import FastImage from "react-native-fast-image";
+import {images} from "@assets/images";
 
 const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = observer(
   ({ navigation }) => {
@@ -58,16 +59,6 @@ const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
       authStore.resetAuthStore()
     }, [])
 
-    // useFocusEffect(useCallback(() => {
-    //   authStore.formReset()
-    //   authStore.resetAuthStore()
-    // }, [authStore.otp, authStore.token, authStore.isLoading]))
-
-    useEffect(() => {
-      console.log("is loading")
-      console.log(authStore.isLoading)
-    }, [authStore.isLoading])
-
     useEffect(() => {
       console.log("is error")
       if (authStore.errorMessage !== null) {
@@ -85,8 +76,6 @@ const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
         nextScreen()
       }
     }, [authStore.otp])
-
-    const styles = StyleSheet.create({})
 
     const goBack = () => {
       navigation.goBack()
@@ -188,7 +177,7 @@ const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
               width: Spacing[24],
               backgroundColor: isSelected ? Colors.BRIGHT_BLUE : Colors.GRAY200,
               borderRadius: Spacing[128], borderWidth: Spacing[2],
-              borderColor: isError ? Colors.MAIN_RED : Colors.BRIGHT_BLUE
+              borderColor: isError ? Colors.MAIN_RED : Colors.ABM_LIGHT_BLUE
             }} />
           </VStack>
         </TouchableOpacity>
@@ -196,121 +185,125 @@ const VerifyPhone: FC<StackScreenProps<NavigatorParamList, "verifyPhone">> = obs
     }
 
     return (
-      <DismissKeyboard>
-        <VStack
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
           testID="CoachingJournalMain"
-          style={{ backgroundColor: Colors.WHITE, flex: 1, justifyContent: "center" }}
+          style={{ backgroundColor: Colors.ABM_BG_BLUE, flex: 1, justifyContent: "center" }}
         >
           <ScrollView bounces={false} style={[Layout.flex, Layout.heightFull]}>
-          <SafeAreaView style={{ flex: 1 }}>
-            <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
-            <Formik
-              initialValues={{ email: "", confirmEmail: "", password: "" }}
-              onSubmit={(values) => checkInputedData(values)}
-            >
-              {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
-                <>
-                  <VStack top={Spacing[24]} horizontal={Spacing[24]}>
-                    <Text type={"header"} text="Selamat datang di iLEAD." />
+            {/*<SafeAreaView>*/}
+              <Spacer height={Spacing[42]}/>
+              <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
+              <FastImage style={{
+                height: Spacing[256],
+                width: '100%'
+              }} source={images.abmWoman} resizeMode={"contain"}/>
+              <Formik
+                initialValues={{ email: "", confirmEmail: "", password: "" }}
+                onSubmit={(values) => checkInputedData(values)}
+              >
+                {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+                  <>
+                    <VStack top={Spacing[24]} horizontal={Spacing[24]}>
+                      <Text type={"header"} text="Selamat datang di iLEAD." />
 
-                    {authStore.errorCode !== 37 &&
-                      <Text type={"warning"} style={{ textAlign: "center" }}>
-                        {errorMessage || authStore.errorMessage}
-                      </Text>
-                    }
-
-                    <Spacer height={Spacing[16]} />
-                    <TextField
-                      label="Alamat E-mail:"
-                      style={{ paddingTop: 0 }}
-                      isRequired={true}
-                      isError={
-                        // isError &&
-                        (authStore.errorCode === 1 ||
-                          authStore.errorCode === 10 ||
-                          authStore.errorCode === 14 ||
-                          authStore.errorCode === 4 ||
-                          !isEmailValid ||
-                          !isEmailMatch)
+                      {authStore.errorCode !== 37 &&
+                        <Text type={"warning"} style={{ textAlign: "center" }}>
+                          {errorMessage || authStore.errorMessage}
+                        </Text>
                       }
-                      // onBlur={() => validateEmail(values.email)}
-                      onChangeText={handleChange("email")}
-                      value={values.email}
-                    />
-                    <TextField
-                      label="Masukan kembali alamat E-mail:"
-                      style={{ paddingTop: 0 }}
-                      isRequired={true}
-                      isError={
-                        // isError &&
-                        (authStore.errorCode === 1 ||
-                          authStore.errorCode === 10 ||
-                          authStore.errorCode === 14 ||
-                          authStore.errorCode === 4 ||
-                          !isConfirmEmailValid ||
-                          !isEmailMatch)
-                      }
-                      // onBlur={() => validateEmail(values.confirmEmail)}
-                      onChangeText={handleChange("confirmEmail")}
-                      value={values.confirmEmail}
-                    />
-                    <TextField
-                      label="Password baru:"
-                      style={{ paddingTop: 0 }}
-                      secureTextEntry={true}
-                      isRequired={true}
-                      isError={
-                        // isError &&
-                        (authStore.errorCode === 3 ||
-                          authStore.errorCode === 15 ||
-                          authStore.errorCode === 10 ||
-                          authStore.errorCode === 37 ||
-                          !isPasswordValid)
-                      }
-                      onChangeText={handleChange("password")}
-                      value={values.password}
-                    />
-                    {authStore.errorCode === 37 && (
-                      <Text type={"warning"} style={{ textAlign: "center" }}>
-                        {authStore.errorMessage}
-                      </Text>
-                    )}
-                  </VStack>
 
-                  <HStack horizontal={Spacing[48]}>
-                    <TCCheckBox onPress={toggleTermCons} isSelected={isTermConsSelected} isError={isTermConsError} />
-                    <Spacer width={Spacing[12]} />
-                    <Text type={"body"}>
-                      Saya telah membaca dan menyetujui{` \n`}
-                      <Text type={"body-bold"} style={{color: Colors.MAIN_RED}} onPress={goToTermsConds}>
-                        {`syarat dan ketentuan `}
-                      </Text>
-                      penggunaan aplikasi iLEAD.
-                    </Text>
-                  </HStack>
+                      <Spacer height={Spacing[16]} />
+                      <TextField
+                        label="Alamat E-mail:"
+                        style={{ paddingTop: 0 }}
+                        isRequired={true}
+                        isError={
+                          // isError &&
+                          (authStore.errorCode === 1 ||
+                            authStore.errorCode === 10 ||
+                            authStore.errorCode === 14 ||
+                            authStore.errorCode === 4 ||
+                            !isEmailValid ||
+                            !isEmailMatch)
+                        }
+                        // onBlur={() => validateEmail(values.email)}
+                        onChangeText={handleChange("email")}
+                        value={values.email}
+                      />
+                      <TextField
+                        label="Masukan kembali alamat E-mail:"
+                        style={{ paddingTop: 0 }}
+                        isRequired={true}
+                        isError={
+                          // isError &&
+                          (authStore.errorCode === 1 ||
+                            authStore.errorCode === 10 ||
+                            authStore.errorCode === 14 ||
+                            authStore.errorCode === 4 ||
+                            !isConfirmEmailValid ||
+                            !isEmailMatch)
+                        }
+                        // onBlur={() => validateEmail(values.confirmEmail)}
+                        onChangeText={handleChange("confirmEmail")}
+                        value={values.confirmEmail}
+                      />
+                      <TextField
+                        label="Password baru:"
+                        style={{ paddingTop: 0 }}
+                        secureTextEntry={true}
+                        isRequired={true}
+                        isError={
+                          // isError &&
+                          (authStore.errorCode === 3 ||
+                            authStore.errorCode === 15 ||
+                            authStore.errorCode === 10 ||
+                            authStore.errorCode === 37 ||
+                            !isPasswordValid)
+                        }
+                        onChangeText={handleChange("password")}
+                        value={values.password}
+                      />
+                      {authStore.errorCode === 37 && (
+                        <Text type={"warning"} style={{ textAlign: "center" }}>
+                          {authStore.errorMessage}
+                        </Text>
+                      )}
+                    </VStack>
 
-                  <VStack top={Spacing[32]} horizontal={Spacing[96]}>
-                    <Button
-                      type={"primary"}
-                      text={"Registrasi"}
-                      onPress={() => handleSubmit()}
-                    />
-                    <Spacer height={Spacing[8]} />
-                    <Button type={"secondary"} text={"Login"} onPress={goToLogin} />
-                  </VStack>
-                </>
-              )}
-            </Formik>
-            <Spacer height={Spacing[24]} />
-            <IleadLogo height={Spacing[72]} width={dimensions.screenWidth} />
-          </SafeAreaView>
+                    <HStack horizontal={Spacing[48]}>
+                      <TCCheckBox onPress={toggleTermCons} isSelected={isTermConsSelected} isError={isTermConsError} />
+                      <Spacer width={Spacing[12]} />
+                      <Text type={"body"}>
+                        Saya telah membaca dan menyetujui{` \n`}
+                        <Text type={"body-bold"} style={{color: Colors.MAIN_RED}} onPress={goToTermsConds}>
+                          {`syarat dan ketentuan `}
+                        </Text>
+                        penggunaan aplikasi iLEAD.
+                      </Text>
+                    </HStack>
+
+                    <VStack top={Spacing[32]} horizontal={Spacing[96]}>
+                      <Button
+                        type={"primary"}
+                        text={"Registrasi"}
+                        onPress={() => handleSubmit()}
+                      />
+                      <Spacer height={Spacing[8]} />
+                      <Button type={"secondary"} text={"Login"} onPress={goToLogin} />
+                    </VStack>
+                  </>
+                )}
+              </Formik>
+              <AuthBottomLogo />
+              <Spacer height={Spacing[42]}/>
+            {/*</SafeAreaView>*/}
           </ScrollView>
           <Spinner
             visible={authStore.isLoading}
             textContent={"Memuat..."}
           />
-        </VStack>
-      </DismissKeyboard>
+        </KeyboardAvoidingView>
     )
   },
 )

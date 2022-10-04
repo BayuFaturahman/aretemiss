@@ -28,7 +28,7 @@ export function Text(props: TextProps) {
         <ReactNativeText {...rest} style={[style, presets.bold, {fontSize: Spacing[24], textAlign: 'center'} ,styleOverride ]}>
           {content}
         </ReactNativeText>
-        <View style={{height: Spacing[6], backgroundColor: Colors.MAIN_RED, maxWidth: underlineWidth || 144, width: '100%', marginLeft: 'auto', marginRight: 'auto'}}></View>
+        <View style={{height: Spacing[6], backgroundColor: Colors.ABM_YELLOW, maxWidth: underlineWidth || 144, width: '100%', marginLeft: 'auto', marginRight: 'auto'}}></View>
       </VStack>
     )
   }
@@ -39,7 +39,7 @@ export function Text(props: TextProps) {
         <ReactNativeText {...rest} style={[style, presets.bold, { fontSize: Spacing[18], textAlign: 'center', lineHeight: Spacing[20]} ,styleOverride ]}>
           {content}
         </ReactNativeText>
-        <View style={{height: Spacing[6], backgroundColor: Colors.MAIN_RED, width: underlineWidth || Spacing[128]}}></View>
+        <View style={{height: Spacing[6], backgroundColor: Colors.ABM_YELLOW, width: underlineWidth || Spacing[128]}}></View>
       </VStack>
     )
   }
@@ -52,7 +52,7 @@ export function Text(props: TextProps) {
         </ReactNativeText>
         <View style={{
           height: Spacing[6],
-          backgroundColor: Colors.MAIN_RED,
+          backgroundColor: Colors.ABM_YELLOW,
           width: underlineWidth || Spacing[128]
         }}/>
       </VStack>
@@ -105,7 +105,7 @@ export function Text(props: TextProps) {
         <ReactNativeText {...rest} style={[style, presets.bold, { fontSize: Spacing[12], textAlign: 'center', lineHeight: Spacing[20], zIndex: 100, top: Spacing[10]} ,styleOverride ]}>
           {content}
         </ReactNativeText>
-        <View style={{height: Spacing[6], backgroundColor: Colors.MAIN_RED, width: underlineWidth || Spacing[42], marginLeft: 'auto', marginRight: 'auto'}}></View>
+        <View style={{height: Spacing[6], backgroundColor: Colors.ABM_YELLOW, width: underlineWidth || Spacing[42], marginLeft: 'auto', marginRight: 'auto'}}></View>
         
       </VStack>
     )
@@ -133,7 +133,7 @@ export function Text(props: TextProps) {
         <ReactNativeText {...rest} style={[style, presets.bold, {fontSize: Spacing[14], textAlign: 'center', lineHeight: Spacing[20], zIndex: 100, top: Spacing[8]} ,styleOverride ]}>
           {content}
         </ReactNativeText>
-        <View style={{top: Spacing[4], height: Spacing[2], backgroundColor: Colors.MAIN_RED, width: underlineWidth || Spacing[42], marginLeft: 'auto', marginRight: 'auto'}}></View>
+        <View style={{top: Spacing[4], height: Spacing[2], backgroundColor: Colors.ABM_YELLOW, width: underlineWidth || Spacing[42], marginLeft: 'auto', marginRight: 'auto'}}></View>
       </>
     )
   }

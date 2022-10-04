@@ -69,7 +69,7 @@ export function Button(props: ButtonProps) {
       }, styleOverride]} {...rest}>
         <Text type={'button'} tx={tx} text={text} style={[{
           textAlign: 'center',
-          color: Colors.UNDERTONE_BLUE,
+          color: Colors.ABM_LIGHT_BLUE,
           fontSize: Spacing[14]
         }, textStyleOverride]} />
       </TouchableOpacity>
