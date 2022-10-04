@@ -166,9 +166,10 @@ export function DropDownPicker(props: DropDownProps) {
       <VStack
         style={{
           flex: 1,
-          borderColor: isError ? Colors.MAIN_RED : Colors.MAIN_BLUE,
+          borderColor: isError ? Colors.MAIN_RED : Colors.ABM_LIGHT_BLUE,
           borderWidth: Spacing[2],
           borderRadius: Spacing[20],
+          backgroundColor: Colors.WHITE,
         }}
       >
         <SelectBox
@@ -197,11 +198,11 @@ export function DropDownPicker(props: DropDownProps) {
           isMulti={multiple}
           selectedValues={values}
           onTapClose={onMultiChange()}
-          arrowIconColor={Colors.MAIN_BLUE}
-          searchIconColor={Colors.MAIN_BLUE}
-          toggleIconColor={Colors.MAIN_BLUE}
+          arrowIconColor={Colors.ABM_LIGHT_BLUE}
+          searchIconColor={Colors.ABM_LIGHT_BLUE}
+          toggleIconColor={Colors.ABM_LIGHT_BLUE}
           multiOptionContainerStyle={{
-            backgroundColor: Colors.MAIN_BLUE,
+            backgroundColor: Colors.ABM_LIGHT_BLUE,
           }}
         />
       </VStack>

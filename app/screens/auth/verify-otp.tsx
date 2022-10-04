@@ -18,6 +18,7 @@ import {useStores} from "../../bootstrap/context.boostrap";
 import Spinner from 'react-native-loading-spinner-overlay';
 import {dimensions} from "@config/platform.config";
 import {IleadLogo} from "@assets/svgs";
+import {AuthBottomLogo} from "@components/auth-bottom-logo";
 
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 40 : 0
 
@@ -107,7 +108,7 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
 
     return (
       <DismissKeyboard>
-        <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.WHITE, flex: 1, justifyContent: 'center'}}>
+        <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.ABM_BG_BLUE, flex: 1, justifyContent: 'center'}}>
           <SafeAreaView style={{flex: 1}}>
             <KeyboardAvoidingView behavior='padding' keyboardVerticalOffset={keyboardVerticalOffset} style={{flex: 1}}>
               <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
@@ -130,10 +131,19 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
                 <SMSVerifyCode
                   verifyCodeLength={4}
                   containerPaddingHorizontal={Spacing[128]}
-                  codeViewStyle={{borderWidth: Spacing[2], borderRadius:Spacing[20], minWidth: Spacing[64], minHeight: Spacing[96]}}
+                  codeViewStyle={{
+                    borderWidth: Spacing[2],
+                    borderRadius: Spacing[20],
+                    minWidth: Spacing[64],
+                    minHeight: Spacing[96],
+                    backgroundColor: Colors.WHITE,
+                  }}
                   codeFontSize={Spacing[72]}
-                  containerStyle={{justifyContent:'center'}}
-                  codeViewBorderColor={Colors.UNDERTONE_BLUE}
+                  containerStyle={{
+                    justifyContent: 'center',
+                    backgroundColor: Colors.ABM_BG_BLUE,
+                  }}
+                  codeViewBorderColor={Colors.ABM_LIGHT_BLUE}
                   onInputCompleted={onInputCompleted}
                 />
               </VStack>
@@ -151,7 +161,7 @@ const VerifyOTP: FC<StackScreenProps<NavigatorParamList, "verifyOTP">> = observe
                 />
               </VStack>
               <Spacer />
-              <IleadLogo height={Spacing[72]} width={dimensions.screenWidth} />
+              <AuthBottomLogo />
             </KeyboardAvoidingView>
           </SafeAreaView>
           <Spinner

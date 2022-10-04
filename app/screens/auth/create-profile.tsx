@@ -17,6 +17,7 @@ import { IOption } from "react-native-modal-selector"
 import { IleadLogo } from "@assets/svgs"
 import { dimensions } from "@config/platform.config"
 import { USER_POSITION } from "@screens/settings/change-user-position"
+import {AuthBottomLogo} from "@components/auth-bottom-logo";
 
 export type ProfileUpdateForm = {
   fullname: string
@@ -147,7 +148,7 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
     return (
       <VStack
         testID="CoachingJournalMain"
-        style={{ backgroundColor: Colors.WHITE, flex: 1, justifyContent: "center" }}
+        style={{ backgroundColor: Colors.ABM_BG_BLUE, flex: 1, justifyContent: "center" }}
       >
         <KeyboardAvoidingView behavior="padding" style={{ height: dimensions.screenHeight * 2 }}>
           <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
@@ -331,7 +332,7 @@ const CreateProfile: FC<StackScreenProps<NavigatorParamList, "createProfile">> =
               )}
             </Formik>
             <Spacer height={Spacing[24]} />
-            <IleadLogo height={Spacing[72]} width={dimensions.screenWidth} />
+            <AuthBottomLogo />
             <Spacer height={Spacing[48]} />
           </ScrollView>
         </KeyboardAvoidingView>
