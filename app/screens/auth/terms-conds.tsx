@@ -7,8 +7,7 @@ import { NavigatorParamList } from "@navigators/auth-navigator"
 import {VStack} from "@components/view-stack";
 import {Colors, Layout, Spacing} from "@styles";
 import Spacer from "@components/spacer";
-import {IleadLogo} from "@assets/svgs";
-import {dimensions} from "@config/platform.config";
+import {AuthBottomLogo} from "@components/auth-bottom-logo";
 
 const TermsConds: FC<StackScreenProps<NavigatorParamList, "termsConds">> = observer(
   ({ navigation }) => {
@@ -28,11 +27,11 @@ const TermsConds: FC<StackScreenProps<NavigatorParamList, "termsConds">> = obser
 
           <ScrollView bounces={false}
                       style={[Layout.flex, Layout.heightFull, {margin: Spacing[12], borderWidth: Spacing[2], borderColor: Colors.UNDERTONE_BLUE, borderRadius: Spacing[16]}]}>
-            <VStack top={Spacing[24]} horizontal={Spacing[24]}>
+            <VStack top={Spacing[24]} horizontal={Spacing[24]} style={{backgroundColor: Colors.ABM_BG_BLUE}}>
               <Text type={"body"} text={TERMS_N_CONDITIONS} />
             </VStack>
           </ScrollView>
-          <IleadLogo height={Spacing[72]} width={dimensions.screenWidth} />
+          <AuthBottomLogo top={0} />
           <Spacer height={Spacing[24]} />
         </SafeAreaView>
       </VStack>
