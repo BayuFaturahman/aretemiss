@@ -125,6 +125,22 @@ export function Button(props: ButtonProps) {
     )
   }
 
+  if (type === 'light-blue') {
+    return (
+      <TouchableOpacity style={[{
+        backgroundColor: Colors.ABM_LIGHT_BLUE,
+        paddingVertical: Spacing[8],
+        borderRadius: Spacing[20]
+      }, styleOverride]} {...rest}>
+        <Text type={'button'} tx={tx} text={text} style={[{
+          textAlign: 'center',
+          color: Colors.WHITE,
+          fontSize: Spacing[14]
+        }, textStyleOverride]} />
+      </TouchableOpacity>
+    )
+  }
+
   return (
     <TouchableOpacity style={viewStyles} {...rest}>
       {content}

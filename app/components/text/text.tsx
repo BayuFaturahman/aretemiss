@@ -137,10 +137,34 @@ export function Text(props: TextProps) {
       </>
     )
   }
+   
+  if(props.type === 'coveredbg'){
+    return(
+      <VStack horizontal={Spacing[4]} style={[Layout.widthFull, {backgroundColor: Colors.ABM_GREEN, borderRadius: Spacing[24]}]}>
+        <ReactNativeText {...rest} style={[style, presets.bold, {fontSize: Spacing[24], textAlign: 'center', color: Colors.WHITE} ,styleOverride ]}>
+          {content}
+        </ReactNativeText>
+      </VStack>
+    )
+  }
+
+  if(props.type === 'light-blue'){
+    return(
+      <ReactNativeText {...rest} style={[style, presets.bold, {color: Colors.ABM_LIGHT_BLUE} ,styleOverride ]}>
+        {content}
+      </ReactNativeText>
+    )
+  }
 
   return (
     <ReactNativeText {...rest} style={styles}>
       {content}
     </ReactNativeText>
+  )
+}
+
+export const TextYellowLine = ({underlineWidth}) => {
+  return(
+    <View style={{height: Spacing[6], backgroundColor: Colors.ABM_YELLOW, maxWidth: underlineWidth || 144, width: '100%', marginLeft: 'auto', marginRight: 'auto'}}></View>
   )
 }

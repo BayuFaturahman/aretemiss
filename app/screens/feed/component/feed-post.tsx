@@ -230,7 +230,7 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
       <Spacer height={Spacing[8]} />
       <TouchableOpacity onPress={()=>{goToDetail(data)}} disabled={isFromHomePage}>
         <HStack
-          style={{ backgroundColor: Colors.LIGHT_GRAY, borderRadius: Spacing[8] }}
+          style={{ backgroundColor: Colors.ABM_BG_BLUE, borderRadius: Spacing[8] }}
           horizontal={Spacing[12]}
           vertical={Spacing[12]}
         >

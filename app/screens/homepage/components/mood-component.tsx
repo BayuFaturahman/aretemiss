@@ -1,7 +1,20 @@
 import React from "react";
 import {Spacing} from "@styles"
 
-import { MarahActive, MarahActiveBorder, MarahInactive, SedihActive, SedihActiveBorder, SedihInactive, SenyumActive, SenyumActiveBorder, SenyumInactive, SickActive, SickActiveBorder, SickInactive, SurprisedActive, SurprisedActiveBorder, SurprisedInactive } from "@assets/svgs"
+import {
+    AngryBw,
+    AngryColor,
+    HappyColor, IconSadColor, IconSickColor, IconSurprisedColor,
+    MarahActiveBorder,
+    SedihActiveBorder,
+    SedihInactive,
+    SenyumActiveBorder,
+    SenyumInactive,
+    SickActiveBorder,
+    SickInactive,
+    SurprisedActiveBorder,
+    SurprisedInactive
+} from "@assets/svgs"
 
 type MoodProps = {
     data: string
@@ -13,31 +26,31 @@ export const MoodComponent = ({data, height=Spacing[42], width=Spacing[42]}: Moo
 
   
     if (data === 'senang') {
-        return <SenyumActive height={height} width={width}/>
+        return <HappyColor height={height} width={width}/>
     } else if (data === 'senangBorder') {
         return <SenyumActiveBorder height={height} width={width}/>
     } else if (data === 'senangInactive') {
         return <SenyumInactive height={height} width={width}/>
     } else if (data === 'marah') {
-        return <MarahActive height={height} width={width}/>
+        return <AngryColor height={height} width={width}/>
     } else if (data === 'marahBorder') {
         return <MarahActiveBorder height={height} width={width}/>
     } else if (data === 'marahInactive') {
-        return <MarahInactive height={height} width={width}/>
+        return <AngryBw height={height} width={width}/>
     } else if (data === 'sedih') {
-        return <SedihActive height={height} width={width}/>
+        return <IconSadColor height={height} width={width}/>
     } else if (data === 'sedihBorder') {
         return <SedihActiveBorder height={height} width={width}/>
     } else if (data === 'sedihInactive') {
         return <SedihInactive height={height} width={width}/>
     } else if (data === 'sakit') {
-        return <SickActive height={height} width={width}/>
+        return <IconSickColor height={height} width={width}/>
     } else if (data === 'sakitBorder') {
         return <SickActiveBorder height={height} width={width}/>
     } else if (data === 'sakitInactive') {
         return <SickInactive height={height} width={width}/>
     } else if (data === 'terkejut') {
-        return <SurprisedActive height={height} width={width}/>
+        return <IconSurprisedColor height={height} width={width}/>
     } else if (data === 'terkejutBorder') {
         return <SurprisedActiveBorder height={height} width={width}/>
     } else if (data === 'terkejutInactive') {

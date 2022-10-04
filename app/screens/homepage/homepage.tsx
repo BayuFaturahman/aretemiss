@@ -9,7 +9,7 @@ import {
 } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
-import { Button, Text } from "@components"
+import {Button, Text, TextYellowLine} from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
 import { VStack, HStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
@@ -37,27 +37,10 @@ import { AssessmentComponent } from "@screens/homepage/components/assessment-com
 
 import RNAnimated from "react-native-animated-component"
 import { debounce } from "lodash"
-import messaging from "@react-native-firebase/messaging"
 
 import Modal from "react-native-modalbox"
 import { ProfileUpdateForm } from "@screens/settings/my-account"
-import {
-  SenyumActive,
-  SenyumInactive,
-  MarahActive,
-  SedihActive,
-  SickActive,
-  SurprisedActive,
-  SenyumActiveBorder,
-  MarahActiveBorder,
-  MarahInactive,
-  SedihActiveBorder,
-  SedihInactive,
-  SickInactive,
-  SickActiveBorder,
-  SurprisedActiveBorder,
-  SurprisedInactive,
-} from "@assets/svgs"
+
 import { MoodComponent } from "./components/mood-component"
 import { BrainstormsComponent } from "@screens/homepage/components/brainstorms-component"
 
@@ -611,7 +594,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
                   />
                   <Spacer height={Spacing[12]} />
                   <Button
-                    type={"warning"}
+                    type={"light-blue"}
                     text={"Lihat mood anggota team"}
                     style={{ height: Spacing[36], paddingHorizontal: Spacing[28] }}
                     textStyle={{ fontSize: Spacing[16], lineHeight: Spacing[20] }}
@@ -653,6 +636,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
                 style={{ textAlign: "center" }}
                 text={"Mood Anda hari ini sudah terpilih."}
               />
+              <TextYellowLine underlineWidth={120}/>
               <Spacer height={Spacing[32]} />
               <HStack bottom={Spacing[28]}>
                 <Spacer />
@@ -666,14 +650,14 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
               <Spacer height={Spacing[14]} />
               <Text type={"body"} style={{ textAlign: "center", fontSize: Spacing[16] }}>
                 Anda merasa
-                <Text type={"warning"}> {selectedMood}</Text>!
+                <Text type={"light-blue"}> {selectedMood}</Text>!
               </Text>
               <Spacer height={Spacing[32]} />
               <HStack bottom={Spacing[24]}>
                 <Spacer />
                 <VStack style={{ maxWidth: Spacing[256], minWidth: Spacing[128] }}>
                   <Button
-                    type={"primary"}
+                    type={"light-blue"}
                     text={"Kembali"}
                     style={{ height: Spacing[32], paddingHorizontal: Spacing[8] }}
                     textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
@@ -696,7 +680,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
         <SafeAreaView style={Layout.flex}>
           <VStack
             style={{
-              backgroundColor: Colors.UNDERTONE_BLUE,
+              backgroundColor: Colors.ABM_MAIN_BLUE,
               borderBottomLeftRadius: Spacing[48],
               borderBottomRightRadius: Spacing[48],
               position: "absolute",

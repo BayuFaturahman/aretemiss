@@ -5,6 +5,7 @@ import FastImage from "react-native-fast-image";
 import {Button, Text} from "@components";
 import Spacer from "@components/spacer";
 import sick from "@assets/icons/notifications/sick.png";
+import {Man1} from "@assets/svgs";
 
 
 export const EmptyList = ({
@@ -15,13 +16,10 @@ export const EmptyList = ({
 }) => {
   return(
     <VStack horizontal={Spacing[24]} top={Spacing[24]} style={Layout.widthFull}>
-      <VStack>
+      <VStack horizontal={Spacing[42]}>
         <HStack bottom={Spacing[12]}>
           <Spacer/>
-          <FastImage style={{
-            height: Spacing[48],
-            width: Spacing[48],
-          }} source={imageSource} resizeMode={"contain"}/>
+          <Man1 height={Spacing[256]} width={Spacing[256]} />
           <Spacer/>
         </HStack>
         <Text type={'body'} style={{textAlign: 'center'}} text={description} />
@@ -30,7 +28,7 @@ export const EmptyList = ({
           <Spacer />
           <VStack style={{maxWidth: Spacing[256], minWidth: Spacing[128]}}>
             <Button
-              type={"primary"}
+              type={"light-blue"}
               text={buttonLabel}
               style={{height:Spacing[32], paddingHorizontal: Spacing[8]}}
               textStyle={{fontSize: Spacing[14], lineHeight: Spacing[18]}}

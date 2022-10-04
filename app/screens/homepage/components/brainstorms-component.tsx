@@ -5,7 +5,7 @@ import FastImage, { Source } from "react-native-fast-image"
 import { Text } from "@components"
 import Spacer from "@components/spacer"
 
-import { BintangAssesment, IdeaPools, IleadLogo } from "@assets/svgs"
+import {BintangAssesment, IconIdeaPools, IdeaPools, IleadLogo} from "@assets/svgs"
 
 import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png"
 import { TouchableOpacity } from "react-native"
@@ -36,12 +36,12 @@ export const BrainstormsComponent = ({ goToBrainstorms = () => null }: ProfilePr
               />
               <Text
                 type={"left-header"}
-                style={{ fontSize: Spacing[14], maxWidth: Spacing[256] }}
+                style={{ fontSize: Spacing[14], maxWidth: Spacing[256], color: Colors.ABM_MAIN_BLUE }}
                 underlineWidth={Spacing[128] + Spacing[16]}
                 text={"Brainstorm ide dengan rekanmu!"}
               />
             </VStack>
-            <IdeaPools height={Spacing[72]} width={Spacing[112]} />
+            <IconIdeaPools height={Spacing[72]} width={Spacing[112]} />
           </HStack>
           <Spacer />
         </HStack>

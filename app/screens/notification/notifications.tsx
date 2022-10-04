@@ -19,6 +19,7 @@ import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png";
 import {dimensions} from "@config/platform.config";
 import {NotificationItem} from "../../store/store.notification";
 import {FeedItemType} from "@screens/feed/feed.type";
+import {backgroundColor} from "react-native-calendars/src/style";
 
 type NotificationItemType = {
   id: string
@@ -160,13 +161,13 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
     }
 
     return (
-      <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: 'center'}}>
-        <SafeAreaView style={Layout.flex}>
+      <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.ABM_MAIN_BLUE, flex: 1, justifyContent: 'center'}}>
+        <SafeAreaView style={[Layout.flex, {backgroundColor: Colors.ABM_MAIN_BLUE}]}>
           <FlatList
             style={{backgroundColor: Colors.WHITE}}
             ItemSeparatorComponent={()=> <VStack style={{backgroundColor: Colors.WHITE}}><Spacer height={Spacing[32]} /></VStack>}
             ListHeaderComponent={
-              <VStack style={{backgroundColor: Colors.UNDERTONE_BLUE}}>
+              <VStack style={{backgroundColor: Colors.ABM_MAIN_BLUE}}>
                 <BackNavigation goBack={goBack} />
                 <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
                   <Spacer height={Spacing[24]} />
@@ -184,7 +185,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
               />
             }
             showsVerticalScrollIndicator={false}
-            data={notificationsData}
+            data={[]}
             ListEmptyComponent={()=>
               <EmptyList navigateTo={goBack} />
             }

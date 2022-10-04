@@ -56,7 +56,9 @@ export const CoachingJournalComponent = ({
         selectedActivities={selectedActivities}
         onPressNote={onPressNote}
         onPressFeedback={onPressFeedback}
-        onPressNoteFeedback={onPressNoteFeedback} />
+        onPressNoteFeedback={onPressNoteFeedback}
+        isHomepageComponent
+      />
       <HStack top={Spacing[4]}>
         <Spacer />
         <TouchableOpacity onPress={goToCoaching}>

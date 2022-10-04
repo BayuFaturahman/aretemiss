@@ -18,6 +18,7 @@ type CoachingJournalItemRenderProps = {
   onPressNote(id: string, coach_id: string): void
   onPressFeedback(id: string, coach_id: string): void
   onPressNoteFeedback(id: string, coach_id: string): void
+  isHomepageComponent?: boolean
 }
 
 export const CoachingJournalItemRender = (
@@ -28,7 +29,8 @@ export const CoachingJournalItemRender = (
     onPressActivity = ()=> null,
     onPressNote = ()=> null,
     onPressFeedback = ()=> null,
-    onPressNoteFeedback = ()=> null
+    onPressNoteFeedback = ()=> null,
+    isHomepageComponent = false
   }:CoachingJournalItemRenderProps) => {
 
   const dateArr = item.date.split(' ')
@@ -62,7 +64,7 @@ export const CoachingJournalItemRender = (
               <Text type={'body-bold'} style={{lineHeight:Spacing[16]}} text={'Lihat \ncatatan.'} numberOfLines={2} />
             </HStack>
           </TouchableOpacity>
-          <View style={{backgroundColor: Colors.UNDERTONE_BLUE, width: Spacing[1], height: '100%'}} />
+          <View style={{backgroundColor: Colors.ABM_DARK_BLUE, width: Spacing[1], height: '100%'}} />
           <TouchableOpacity onPress={()=>onPressFeedback(id, coach_id)} style={{flex:1,backgroundColor: Colors.LIGHT_GRAY, borderTopEndRadius: Spacing[12], borderBottomEndRadius: Spacing[12], alignItems: 'center'}}>
             <HStack horizontal={Spacing[8]} style={{minHeight:Spacing[64]}}>
               <FastImage style={{
@@ -81,7 +83,7 @@ export const CoachingJournalItemRender = (
   return(
     <HStack>
       <View style={{height: '100%'}}>
-        <VStack horizontal={Spacing[8]} vertical={Spacing[2]} style={{flex:1, minWidth: Spacing[72], borderRadius: Spacing[12], alignItems: 'flex-end', justifyContent: 'flex-end', backgroundColor: index % 2 === 0 ? Colors.MAIN_BLUE : Colors.BRIGHT_BLUE}}>
+        <VStack horizontal={Spacing[8]} vertical={Spacing[2]} style={{flex:1, minWidth: Spacing[72], borderRadius: Spacing[12], alignItems: 'flex-end', justifyContent: 'flex-end', backgroundColor: isHomepageComponent ? Colors.ABM_LIGHT_BLUE : Colors.ABM_DARK_BLUE}}>
           <Text type={'button'} style={{color:Colors.WHITE, bottom: -Spacing[8]}} text={dateArr[0]} />
           <Text type={'button'} style={{color:Colors.WHITE}} text={dateArr[1]} />
         </VStack>
