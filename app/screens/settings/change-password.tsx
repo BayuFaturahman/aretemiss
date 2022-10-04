@@ -88,16 +88,16 @@ const ChangePassword: FC<StackScreenProps<NavigatorParamList, "changePassword">>
       >
         <VStack
           testID="CoachingJournalMain"
-          style={{ backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: "center" }}
+          style={{ backgroundColor: Colors.ABM_BG_BLUE, flex: 1, justifyContent: "center" }}
         >
           <SafeAreaView style={Layout.flex}>
-            <BackNavigation goBack={goBack} />
+            <BackNavigation goBack={goBack} color={Colors.ABM_DARK_BLUE} />
             <ScrollView>
             <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
               <Spacer height={Spacing[24]} />
               <Text
                 type={"header"}
-                style={{ color: Colors.WHITE, fontSize: Spacing[16] }}
+                style={{ fontSize: Spacing[16] }}
                 text="Change Password"
               />
               <Spacer height={Spacing[32]} />
@@ -167,9 +167,13 @@ const ChangePassword: FC<StackScreenProps<NavigatorParamList, "changePassword">>
                           onChangeText={handleChange("confirmNewPassword")}
                         />
                       </VStack>
-                      {authStore.errorCode===37 &&
+
+                      {authStore.errorCode===37 ?
                         <Text type={'warning'} style={{textAlign: 'center'}}>
                           {authStore.errorMessage}
+                        </Text> :
+                        <Text type={'body'} style={{textAlign: 'center'}}>
+                          Password minimal 8 karakter, memiliki huruf besar dan kecil, serta memiliki angka dan simbol (!, %, &, dkk.)
                         </Text>
                       }
                       <Spacer height={Spacing[12]} />

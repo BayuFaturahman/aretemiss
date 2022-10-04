@@ -33,12 +33,12 @@ const Settings: FC<StackScreenProps<NavigatorParamList, "settingsPage">> = obser
     }, [])
 
     return (
-      <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: 'center'}}>
+      <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.ABM_BG_BLUE, flex: 1, justifyContent: 'center'}}>
         <SafeAreaView style={Layout.flex}>
-          <BackNavigation goBack={goBack} />
+          <BackNavigation goBack={goBack} color={Colors.ABM_DARK_BLUE} />
           <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
             <Spacer height={Spacing[24]} />
-            <Text type={'header'} style={{color: Colors.WHITE, fontSize: Spacing[16]}} text="Settings" />
+            <Text type={'header'} style={{ fontSize: Spacing[16]}} text="Settings" />
             <Spacer height={Spacing[32]} />
           </VStack>
           <VStack top={Spacing[32]} horizontal={Spacing[24]} style={[Layout.heightFull, {backgroundColor: Colors.WHITE, borderTopStartRadius: Spacing[48], borderTopEndRadius: Spacing[48]}]}>

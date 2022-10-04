@@ -379,10 +379,10 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
         >
           <VStack
             testID="CoachingJournalMain"
-            style={{ backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: "center" }}
+            style={{ backgroundColor: Colors.ABM_BG_BLUE, flex: 1, justifyContent: "center" }}
           >
             <SafeAreaView style={Layout.flex}>
-              <BackNavigation goBack={goBack} />
+              <BackNavigation goBack={goBack} color={Colors.ABM_DARK_BLUE} />
               <ScrollView>
                 <Formik initialValues={userProfile} onSubmit={onClickEditProfile}>
                   {({ handleChange, handleBlur, handleSubmit, values, errors, touched, setFieldValue }) => (
@@ -392,7 +392,7 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
                         <Spacer height={Spacing[24]} />
                         <Text
                           type={"header"}
-                          style={{ color: Colors.WHITE, fontSize: Spacing[16] }}
+                          style={{ fontSize: Spacing[16] }}
                           text="My Account"
                         />
                         <Spacer height={Spacing[32]} />

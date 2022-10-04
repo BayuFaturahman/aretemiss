@@ -2,7 +2,7 @@ import React, { FC, useCallback, useState, useEffect } from "react"
 import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, View } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
-import { Text, BackNavigation, Button, TextField, DropDownPicker, DropDownItem } from "@components"
+import { Text, BackNavigation, Button, DropDownPicker, DropDownItem } from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
 import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
@@ -16,7 +16,6 @@ import { useStores } from "../../bootstrap/context.boostrap"
 import Spinner from "react-native-loading-spinner-overlay"
 import { IOption } from "react-native-modal-selector"
 import { dimensions } from "@config/platform.config"
-import FastImage from "react-native-fast-image"
 import { MoodComponent } from "@screens/homepage/components/mood-component"
 import { USER_POSITION } from "./change-user-position"
 
@@ -168,16 +167,16 @@ const ChangeDivision: FC<StackScreenProps<NavigatorParamList, "changeDivision">>
         >
           <VStack
             testID="CoachingJournalMain"
-            style={{ backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: "center" }}
+            style={{ backgroundColor: Colors.ABM_BG_BLUE, flex: 1, justifyContent: "center" }}
           >
             <SafeAreaView style={Layout.flex}>
-              <BackNavigation goBack={goBack} />
+              <BackNavigation goBack={goBack} color={Colors.ABM_DARK_BLUE} />
               <ScrollView>
                 <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
                   <Spacer height={Spacing[24]} />
                   <Text
                     type={"header"}
-                    style={{ color: Colors.WHITE, fontSize: Spacing[16] }}
+                    style={{ fontSize: Spacing[16] }}
                     text="My Account"
                   />
                   <Spacer height={Spacing[32]} />
@@ -198,7 +197,7 @@ const ChangeDivision: FC<StackScreenProps<NavigatorParamList, "changeDivision">>
                     <Text type={"body-bold"} style={{ fontSize: Spacing[14], textAlign: "center" }}>
                       Kamu bisa menggantikan dan menambahkan team kamu di sini. Setelah mengubah
                       atau menambahkan team, silakan tekan tombol
-                      <Text type="warning"> Submit</Text> di bawah.
+                      <Text type="light-blue"> Submit</Text> di bawah.
                     </Text>
                   </VStack>
 

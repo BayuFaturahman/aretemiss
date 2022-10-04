@@ -1,8 +1,8 @@
-import React, { FC, useCallback, useState, useEffect } from "react"
+import React, { FC, useCallback, useState } from "react"
 import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, View } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
-import { Text, BackNavigation, Button, TextField, DropDownPicker, DropDownItem } from "@components"
+import { Text, BackNavigation, Button, DropDownPicker } from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
 import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
@@ -15,7 +15,7 @@ import { useStores } from "../../bootstrap/context.boostrap"
 import Spinner from "react-native-loading-spinner-overlay"
 import { IOption } from "react-native-modal-selector"
 import { dimensions } from "@config/platform.config"
-import FastImage from "react-native-fast-image"
+
 import { MoodComponent } from "@screens/homepage/components/mood-component"
 
 
@@ -90,12 +90,6 @@ const ChangeUserPosition: FC<StackScreenProps<NavigatorParamList, "changeUserPos
       }
     }, [])
 
-    const goBackSuccess = () => {
-      navigation.navigate("myAccount", {
-        isPasswordChange: true,
-      })
-    }
-
     return (
       <>
         <KeyboardAvoidingView
@@ -104,16 +98,16 @@ const ChangeUserPosition: FC<StackScreenProps<NavigatorParamList, "changeUserPos
         >
           <VStack
             testID="ChangeUserPosition"
-            style={{ backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: "center" }}
+            style={{ backgroundColor: Colors.ABM_BG_BLUE, flex: 1, justifyContent: "center" }}
           >
             <SafeAreaView style={Layout.flex}>
-              <BackNavigation goBack={goBack} />
+              <BackNavigation goBack={goBack} color={Colors.ABM_DARK_BLUE} />
               <ScrollView>
                 <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
                   <Spacer height={Spacing[24]} />
                   <Text
                     type={"header"}
-                    style={{ color: Colors.WHITE, fontSize: Spacing[16] }}
+                    style={{ fontSize: Spacing[16] }}
                     text="Posisi Winning Culture"
                   />
                   <Spacer height={Spacing[32]} />
@@ -198,7 +192,7 @@ const ChangeUserPosition: FC<StackScreenProps<NavigatorParamList, "changeUserPos
                           <Spacer height={Spacing[28]} />
                           <VStack horizontal={Spacing[84]} vertical={Spacing[20]}>
                             <Button
-                              type={"warning"}
+                              type={"primary"}
                               text={"Submit"}
                               onPress={() => handleSubmit()}
                             />
@@ -208,7 +202,7 @@ const ChangeUserPosition: FC<StackScreenProps<NavigatorParamList, "changeUserPos
                     </Formik>
                   </VStack>
                 </VStack>
-                <Spacer height={Spacing[48]} />
+                <Spacer height={Spacing[256]} />
               </ScrollView>
             </SafeAreaView>
             <Spinner visible={mainStore.isLoading} textContent={"Memuat..."} />
