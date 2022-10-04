@@ -134,3 +134,11 @@ export const SOFT_GREEN = '#6FCF97';
 export const SOFT_BLUE = '#56CCF2';
 export const LIGHT_GRAY = '#F2F2F2';
 export const CLOUD_GRAY = '#E0E0E0';
+
+// New Color Pallete
+export const ABM_YELLOW = '#FED072';
+export const ABM_MAIN_BLUE = '#204B9A';
+export const ABM_DARK_BLUE = '#1F295A';
+export const ABM_BG_BLUE = '#DFEFFC';
+export const ABM_LIGHT_BLUE = '#33ACE3';
+export const ABM_GREEN = '#94C44E';

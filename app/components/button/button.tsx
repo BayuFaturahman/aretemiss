@@ -33,7 +33,7 @@ export function Button(props: ButtonProps) {
   if (type === 'primary') {
     return (
       <TouchableOpacity style={[{
-        backgroundColor: Colors.BRIGHT_BLUE,
+        backgroundColor: Colors.ABM_GREEN,
         paddingVertical: Spacing[8],
         borderRadius: Spacing[20]
       }, styleOverride]} {...rest}>
@@ -49,7 +49,7 @@ export function Button(props: ButtonProps) {
   if (type === 'primary-dark') {
     return (
       <TouchableOpacity style={[{
-        backgroundColor: Colors.UNDERTONE_BLUE,
+        backgroundColor: Colors.ABM_LIGHT_BLUE,
         paddingVertical: Spacing[8],
         borderRadius: Spacing[20]
       }, styleOverride]} {...rest}>
