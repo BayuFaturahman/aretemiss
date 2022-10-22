@@ -185,7 +185,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
               />
             }
             showsVerticalScrollIndicator={false}
-            data={[]}
+            data={notificationsData}
             ListEmptyComponent={()=>
               <EmptyList navigateTo={goBack} />
             }

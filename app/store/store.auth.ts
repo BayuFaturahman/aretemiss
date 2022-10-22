@@ -91,6 +91,8 @@ export default class AuthStore {
     try {
       const response = await this.apiAuth.login(email, password, fcmToken)
 
+      console.log(response)
+
       if(response.kind === 'form-error'){
         console.log(response.response.errorCode)
         console.log(response.response.message)

@@ -30,7 +30,14 @@ import {
 import { notifications } from "@screens/notification"
 import { homepage, moodTeam } from "@screens/homepage"
 import { JournalEntryType } from "@screens/coaching-journal/new-journal-entry"
-import { leaderboards, guidePoints, assessment, juaraAssessment } from "@screens/leaderboard"
+import {
+  leaderboards,
+  guidePoints,
+  assessment,
+  juaraAssessment,
+  juaraQuizMain,
+  juaraQuizResult
+} from "@screens/leaderboard"
 import { JLDetail } from "app/store/store.coaching"
 import juaraAssessmentQuiz from "@screens/leaderboard/juara-assessment-quiz"
 import { FeedItemType } from "@screens/feed/feed.type"
@@ -183,6 +190,14 @@ const screens: AppRoute[] = [
     name: "sendEmail",
     component: sendEmail,
   },
+  {
+    name: "juaraQuizMain",
+    component: juaraQuizMain,
+  },
+  {
+    name: "juaraQuizResult",
+    component: juaraQuizResult,
+  },
 ]
 
 export type NavigatorParamList = {
@@ -263,6 +278,11 @@ export type NavigatorParamList = {
   newBrainstormsGroup: undefined
   sendEmail: {
     title: string
+  },
+  juaraQuizMain: undefined
+  juaraQuizResult: {
+    score: number,
+    totalQuestions: number;
   }
 }
 

@@ -145,11 +145,12 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                         isRequired={false}
                         editable={false}
                         inputStyle={{
-                          backgroundColor: Colors.MAIN_BLUE,
+                          backgroundColor: Colors.ABM_MAIN_BLUE,
                           color: Colors.WHITE,
                           textAlign: "left",
                           paddingHorizontal: 10,
                           fontWeight: "bold",
+                          borderColor: Colors.ABM_MAIN_BLUE,
                         }}
                         secureTextEntry={false}
                       />
@@ -158,13 +159,14 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                         isRequired={false}
                         editable={false}
                         inputStyle={{
-                          backgroundColor: Colors.MAIN_BLUE,
+                          backgroundColor: Colors.ABM_MAIN_BLUE,
                           color: Colors.WHITE,
                           fontSize: Spacing[14],
                           fontWeight: "400",
                           minHeight: Spacing[12],
                           paddingHorizontal: Spacing[12],
                           paddingVertical: Spacing[2],
+                          borderColor: Colors.ABM_MAIN_BLUE,
                         }}
                         style={{ width: "auto", justifyContent: "center", alignItems: "center" }}
                         secureTextEntry={false}
@@ -187,7 +189,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                       <VStack top={Spacing[12]}>
                         <Text type={"body-bold"} style={{ textAlign: "center", top: Spacing[4] }}>
                           {`Tulislah`}
-                          <Text type={"body-bold"} style={{ color: Colors.BRIGHT_BLUE }}>
+                          <Text type={"body-bold"} style={{ color: Colors.ABM_LIGHT_BLUE }}>
                             {'"lessons learned"'}
                           </Text>
                           {`-mu di coaching session ini. `}
@@ -205,7 +207,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
 
                       <VStack top={Spacing[12]}>
                         <Text type={"body-bold"} style={{ textAlign: "center", top: Spacing[4] }}>
-                          <Text type={"body-bold"} style={{ color: Colors.BRIGHT_BLUE }}>
+                          <Text type={"body-bold"} style={{ color: Colors.ABM_LIGHT_BLUE }}>
                             {"Komitmen"}
                           </Text>
                           {` apa saja yang sudah disepakati bersama?`}

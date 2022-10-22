@@ -9,6 +9,7 @@ import { Colors, Layout, Spacing } from '@styles';
 import { observer } from 'mobx-react-lite';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import logoBottom from '@assets/icons/ilead-bottom-logo.png';
+import {AuthBottomLogo} from "@components/auth-bottom-logo";
 
 const FeedGuideline: FC<StackScreenProps<NavigatorParamList, "feedGuideline">> = observer(
   ({ navigation, route }) => {
@@ -67,7 +68,7 @@ const FeedGuideline: FC<StackScreenProps<NavigatorParamList, "feedGuideline">> =
                     <View style={styles.radioBtnFilled}/>
                   )}
                 </TouchableOpacity>
-                <Text>Saya telah menyetujui <Text type={'body-bold'} style={{color: Colors.MAIN_RED}}>Guideline Feed</Text> di atas. </Text>
+                <Text>Saya telah menyetujui <Text type={'body-bold'} style={{color: Colors.ABM_LIGHT_BLUE}}>Guideline Feed</Text> di atas. </Text>
               </HStack>
               <Button
                 type={'primary'}
@@ -79,7 +80,9 @@ const FeedGuideline: FC<StackScreenProps<NavigatorParamList, "feedGuideline">> =
           )}
         </SafeAreaView>
         {(alreadyAgreeTnc || savedAgreeTnc) && (
-          <FastImage style={styles.bottomLogo} source={logoBottom} resizeMode={"contain"}/>
+          <VStack bottom={Spacing[24]}>
+            <AuthBottomLogo />
+          </VStack>
         )}
       </VStack>
     )
@@ -109,31 +112,34 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   radioBtn: {
-    borderColor: Colors.UNDERTONE_BLUE,
+    backgroundColor: Colors.ABM_BG_BLUE,
+    borderColor: Colors.ABM_LIGHT_BLUE,
     borderRadius: 16,
     borderWidth: 1.5,
     height: Spacing[28],
     justifyContent: 'center',
     marginRight: Spacing[28],
-    width: Spacing[28],
+    width: Spacing[28]
   },
   radioBtnFilled: {
     alignSelf: 'center',
-    backgroundColor: Colors.UNDERTONE_BLUE,
-    borderColor: Colors.UNDERTONE_BLUE,
+    backgroundColor: Colors.ABM_LIGHT_BLUE,
+    borderColor: Colors.ABM_LIGHT_BLUE,
     borderRadius: 16,
     borderWidth: 1.5,
     height: Spacing[18],
     width: Spacing[18],
   },
   scrollBox: {
+    backgroundColor: Colors.ABM_BG_BLUE,
     borderColor: Colors.UNDERTONE_BLUE,
     borderRadius: Spacing[20],
     borderWidth: 1.5,
     height: 390,
   },
   scrollContent: {
-    paddingVertical: Spacing[12],
+    backgroundColor: Colors.ABM_BG_BLUE,
+    paddingVertical: Spacing[12]
   },
 })
 

@@ -39,7 +39,7 @@ export const CoachingJournalItemRender = (
     if(isTagged){
       return(
         <HStack left={Spacing[8]} style={{maxWidth: dimensions.screenWidth - Spacing[128]}}>
-          <TouchableOpacity onPress={()=>onPressNoteFeedback(id, coach_id)} style={[{backgroundColor: Colors.LIGHT_GRAY, borderRadius: Spacing[12], alignItems: 'center'}, Layout.widthFull]}>
+          <TouchableOpacity onPress={()=>onPressNoteFeedback(id, coach_id)} style={[{backgroundColor: Colors.ABM_BG_BLUE, borderRadius: Spacing[12], alignItems: 'center'}, Layout.widthFull]}>
             <HStack horizontal={Spacing[8]} style={{minHeight:Spacing[64]}}>
               <FastImage style={{
                 height: Spacing[24],
@@ -54,7 +54,7 @@ export const CoachingJournalItemRender = (
     }else{
       return(
         <HStack left={Spacing[8]} style={{maxWidth: dimensions.screenWidth - Spacing[128]}}>
-          <TouchableOpacity onPress={()=>onPressNote(id, coach_id)} style={{flex:1,backgroundColor: Colors.LIGHT_GRAY, borderTopStartRadius: Spacing[12], borderBottomStartRadius: Spacing[12], alignItems: 'center'}}>
+          <TouchableOpacity onPress={()=>onPressNote(id, coach_id)} style={{flex:1,backgroundColor: Colors.ABM_BG_BLUE, borderTopStartRadius: Spacing[12], borderBottomStartRadius: Spacing[12], alignItems: 'center'}}>
             <HStack horizontal={Spacing[8]} style={{minHeight:Spacing[64]}}>
               <FastImage style={{
                 height: Spacing[24],
@@ -65,7 +65,7 @@ export const CoachingJournalItemRender = (
             </HStack>
           </TouchableOpacity>
           <View style={{backgroundColor: Colors.ABM_DARK_BLUE, width: Spacing[1], height: '100%'}} />
-          <TouchableOpacity onPress={()=>onPressFeedback(id, coach_id)} style={{flex:1,backgroundColor: Colors.LIGHT_GRAY, borderTopEndRadius: Spacing[12], borderBottomEndRadius: Spacing[12], alignItems: 'center'}}>
+          <TouchableOpacity onPress={()=>onPressFeedback(id, coach_id)} style={{flex:1,backgroundColor: Colors.ABM_BG_BLUE, borderTopEndRadius: Spacing[12], borderBottomEndRadius: Spacing[12], alignItems: 'center'}}>
             <HStack horizontal={Spacing[8]} style={{minHeight:Spacing[64]}}>
               <FastImage style={{
                 height: Spacing[24],
@@ -99,7 +99,7 @@ export const CoachingJournalItemRender = (
           let statusColor:string = Colors.MAIN_BLUE
 
           if(activitiesItem.is_coachee){
-            statusColor = Colors.SOFT_GREEN;
+            statusColor = Colors.ABM_GREEN;
           } else {
             switch (activitiesItem.type){
               case "KPI coaching":
@@ -159,11 +159,11 @@ export const CoachingJournalItemRender = (
                     <Spacer width={Spacing[12]}/>
                     <VStack style={Layout.widthFull}>
                       <HStack>
-                        <VStack style={{backgroundColor: activitiesItem.is_coachee ? Colors.SOFT_GREEN : Colors.WHITE,
+                        <VStack style={{backgroundColor: activitiesItem.is_coachee ? Colors.ABM_GREEN : Colors.WHITE,
                           paddingHorizontal: activitiesItem.is_coachee ? Spacing[8] : 0, alignItems: 'center', justifyContent: 'center', borderRadius: Spacing[48]}}>
-                          <Text type={'body'} style={{}} numberOfLines={1} >
+                          <Text type={'body'} style={{color: Colors.WHITE}} numberOfLines={1} >
                             {activitiesItem.is_coachee ?
-                              <Text type={'body'} text={activitiesItem.title} numberOfLines={1} />
+                              <Text type={'body'} text={activitiesItem.title} style={{color: Colors.WHITE}} numberOfLines={1} />
                               : <Text type={'body'} text={activitiesItem.title} numberOfLines={1} /> }
                           </Text>
                         </VStack>

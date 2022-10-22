@@ -138,14 +138,14 @@ const FillFeedbackDetail: FC<StackScreenProps<NavigatorParamList, "fillFeedbackD
         <HStack style={{justifyContent: 'space-around'}}>
           {FEEDBACK_DETAIL_TYPE_CHOICE.map((item, index)=>{
             return(
-              <TouchableOpacity key={item.type} onPress={()=> setFeedbackType(item.type)} style={{backgroundColor: feedbackType === item.type ? Colors.WHITE : Colors.UNDERTONE_BLUE, borderRadius: Spacing[20], height: Spacing[42], justifyContent: 'center'}}>
+              <TouchableOpacity key={item.type} onPress={()=> setFeedbackType(item.type)} style={{backgroundColor: feedbackType === item.type ? Colors.WHITE : Colors.ABM_MAIN_BLUE, borderRadius: Spacing[20], height: Spacing[42], justifyContent: 'center'}}>
                 <HStack horizontal={Spacing[6]} style={{justifyContent: 'center'}}>
                   { item.type === 'same_answer' ? <View style={{
                     height: Spacing[16],
                     width: Spacing[16],
-                    backgroundColor: Colors.BRIGHT_BLUE,
+                    backgroundColor: Colors.ABM_GREEN,
                     borderRadius: Spacing[128], borderWidth: Spacing[2],
-                    borderColor: Colors.BRIGHT_BLUE
+                    borderColor: Colors.ABM_GREEN
                   }} /> : null }
 
                   { item.type === 'my_answer' ? <View style={{
@@ -159,9 +159,9 @@ const FillFeedbackDetail: FC<StackScreenProps<NavigatorParamList, "fillFeedbackD
                   { item.type === 'coachee_answer' ? <View style={{
                     height: Spacing[16],
                     width: Spacing[16],
-                    backgroundColor: Colors.MAIN_RED,
+                    backgroundColor: Colors.ABM_LIGHT_BLUE,
                     borderRadius: Spacing[128], borderWidth: Spacing[2],
-                    borderColor: Colors.MAIN_RED
+                    borderColor: Colors.ABM_LIGHT_BLUE
                   }} /> : null }
 
                   <Spacer width={Spacing[6]} />
@@ -241,7 +241,7 @@ const FillFeedbackDetail: FC<StackScreenProps<NavigatorParamList, "fillFeedbackD
     }
 
     return (
-      <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: 'center'}}>
+      <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.ABM_MAIN_BLUE, flex: 1, justifyContent: 'center'}}>
         <SafeAreaView style={Layout.flex}>
           <BackNavigation goBack={goBack} />
           <ScrollView>

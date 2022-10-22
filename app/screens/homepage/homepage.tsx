@@ -348,7 +348,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
     const goToAssessment = () => navigation.navigate("assessment")
 
-    const goToJuaraAssessment = () => navigation.navigate("juaraAssesment")
+    const goToJuaraAssessment = () => navigation.navigate("juaraQuizMain")
 
     // const goToBrainstormsGroup = () => navigation.navigate("newBrainstormsGroup")
 
@@ -675,7 +675,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     return (
       <VStack
         testID="CoachingJournalMain"
-        style={{ backgroundColor: Colors.CLOUD_GRAY, flex: 1, justifyContent: "center" }}
+        style={{ backgroundColor: Colors.ABM_BG_BLUE, flex: 1, justifyContent: "center" }}
       >
         <SafeAreaView style={Layout.flex}>
           <VStack

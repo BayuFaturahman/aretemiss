@@ -25,7 +25,7 @@ export const NewButton = ({ onPress = () => null }: NewButtonProps) => {
         style={{
           height: Spacing[64],
           width: Spacing[64],
-          backgroundColor: Colors.BRIGHT_BLUE,
+          backgroundColor: Colors.ABM_GREEN,
           borderRadius: Spacing[64],
           flex: 1,
           justifyContent: "center",

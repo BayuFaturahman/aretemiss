@@ -99,8 +99,8 @@ export const DemoScreen: FC<StackScreenProps<NavigatorParamList, "demo">> = obse
 
     const demoReactotron = React.useMemo(
       () => async () => {
-        console.tron.log("Your Friendly tron log message")
-        console.tron.logImportant("I am important")
+        // console.tron.log("Your Friendly tron log message")
+        // console.tron.logImportant("I am important")
         console.tron.display({
           name: "DISPLAY",
           value: {

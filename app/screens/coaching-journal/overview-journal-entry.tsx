@@ -386,10 +386,10 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                       <Spacer />
                       <HStack>
                         {isCoachee ? null : isOnEditMode ? (
-                          <Button type={"negative"} text={"Cancel"} onPress={onClickCancel} />
+                          <Button type={"light-bg"} text={"Cancel"} onPress={onClickCancel} />
                         ) : (
                           <Button
-                            type={"negative"}
+                            type={"light-bg"}
                             text={"Edit Entry"}
                             onPress={onClickEditEntry}
                           />
@@ -402,7 +402,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                       <View  
                       style={{
                         maxWidth: "100%",
-                        backgroundColor: Colors.MAIN_BLUE,
+                        backgroundColor: Colors.ABM_MAIN_BLUE,
                         borderRadius: Spacing[20],
                         minHeight: 44,
                         paddingHorizontal: Spacing[8]
@@ -451,7 +451,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                             isRequired={false}
                             editable={false}
                             inputStyle={{
-                              backgroundColor: Colors.MAIN_BLUE,
+                              backgroundColor: Colors.ABM_MAIN_BLUE,
                               color: Colors.WHITE,
                               textAlign: "left",
                               paddingHorizontal: 10,
@@ -484,7 +484,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                               borderRadius: Spacing[12],
                               alignItems: "flex-end",
                               justifyContent: "flex-end",
-                              backgroundColor: Colors.MAIN_BLUE,
+                              backgroundColor: Colors.ABM_MAIN_BLUE,
                             }}
                           >
                             <Text
@@ -507,7 +507,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                             ]}
                           >
                             {`Apa yang `}
-                            <Text type={"body-bold"} style={{ color: Colors.BRIGHT_BLUE }}>
+                            <Text type={"body-bold"} style={{ color: Colors.ABM_LIGHT_BLUE }}>
                               {"dibicarakan"}
                             </Text>
                             {` saat coaching?`}
@@ -522,7 +522,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                             inputStyle={
                               isOnEditMode
                                 ? { minHeight: Spacing[72] }
-                                : { minHeight: Spacing[72], backgroundColor: Colors.LIGHT_GRAY }
+                                : { minHeight: Spacing[72], backgroundColor: Colors.ABM_BG_BLUE }
                             }
                             editable={isOnEditMode}
                             isRequired={false}
@@ -541,7 +541,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                             ]}
                           >
                             {`Sebagai coach, apa yang sudah saya lakukan dengan `}
-                            <Text type={"body-bold"} style={{ color: Colors.BRIGHT_BLUE }}>
+                            <Text type={"body-bold"} style={{ color: Colors.ABM_LIGHT_BLUE }}>
                               {"efektif?"}
                             </Text>
                           </Text>
@@ -550,7 +550,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                             inputStyle={
                               isOnEditMode
                                 ? { minHeight: Spacing[48] }
-                                : { minHeight: Spacing[48], backgroundColor: Colors.LIGHT_GRAY }
+                                : { minHeight: Spacing[48], backgroundColor: Colors.ABM_BG_BLUE }
                             }
                             editable={isOnEditMode}
                             isRequired={false}
@@ -575,7 +575,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                             <Text
                               type={"body-bold"}
                               style={[
-                                { color: Colors.BRIGHT_BLUE },
+                                { color: Colors.ABM_LIGHT_BLUE },
                                 fieldError ? styles.textError : null,
                               ]}
                             >
@@ -587,7 +587,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                             inputStyle={
                               isOnEditMode
                                 ? { minHeight: Spacing[48] }
-                                : { minHeight: Spacing[48], backgroundColor: Colors.LIGHT_GRAY }
+                                : { minHeight: Spacing[48], backgroundColor: Colors.ABM_BG_BLUE }
                             }
                             editable={isOnEditMode}
                             isRequired={false}
@@ -611,7 +611,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                               ]}
                             >
                               {`Apa saja yang akan saya lakukan secara\nberbeda untuk`}
-                              <Text type={"body-bold"} style={{ color: Colors.BRIGHT_BLUE }}>
+                              <Text type={"body-bold"} style={{ color: Colors.ABM_LIGHT_BLUE }}>
                                 {" sesi selanjutnya?"}
                               </Text>
                             </Text>
@@ -620,7 +620,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                               inputStyle={
                                 isOnEditMode
                                   ? { minHeight: Spacing[128] }
-                                  : { minHeight: Spacing[128], backgroundColor: Colors.LIGHT_GRAY }
+                                  : { minHeight: Spacing[128], backgroundColor: Colors.ABM_BG_BLUE }
                               }
                               isRequired={false}
                               secureTextEntry={false}
@@ -645,7 +645,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                             ]}
                           >
                             {`Tulislah `}
-                            <Text type={"body-bold"} style={{ color: Colors.BRIGHT_BLUE }}>
+                            <Text type={"body-bold"} style={{ color: Colors.ABM_LIGHT_BLUE }}>
                               {'"lesson learned"'}
                             </Text>
                             {`-mu di coaching session ini.`}
@@ -658,7 +658,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                             inputStyle={
                               isOnEditMode
                                 ? { minHeight: Spacing[72] }
-                                : { minHeight: Spacing[72], backgroundColor: Colors.LIGHT_GRAY }
+                                : { minHeight: Spacing[72], backgroundColor: Colors.ABM_BG_BLUE }
                             }
                             editable={isOnEditMode}
                             isRequired={false}
@@ -674,7 +674,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                               isError == "content" ? styles.textError : null,
                             ]}
                           >
-                            <Text type={"body-bold"} style={{ color: Colors.BRIGHT_BLUE }}>
+                            <Text type={"body-bold"} style={{ color: Colors.ABM_LIGHT_BLUE }}>
                               {"Komitmen"}
                             </Text>
                             {` apa saja yang sudah disepakati bersama?`}
@@ -687,7 +687,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                             inputStyle={
                               isOnEditMode
                                 ? { minHeight: Spacing[72] }
-                                : { minHeight: Spacing[72], backgroundColor: Colors.LIGHT_GRAY }
+                                : { minHeight: Spacing[72], backgroundColor: Colors.ABM_BG_BLUE }
                             }
                             editable={isOnEditMode}
                             isRequired={false}
@@ -714,7 +714,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                           value={`${values.type}${(values.label !== '' && values.type === 'other') ? ` (${values.label})` : ''}`}
                           isError={isError === "jlCommitment"}
                           onChangeText={handleChange("jlCommitment")}
-                          inputStyle={{ minHeight: Spacing[48], backgroundColor: Colors.LIGHT_GRAY }
+                          inputStyle={{ minHeight: Spacing[48], backgroundColor: Colors.ABM_BG_BLUE }
                           }
                           editable={false}
                           isRequired={false}
@@ -766,7 +766,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                           inputStyle={
                             isOnEditMode
                               ? { minHeight: Spacing[72] }
-                              : { minHeight: Spacing[48], backgroundColor: Colors.LIGHT_GRAY }
+                              : { minHeight: Spacing[48], backgroundColor: Colors.ABM_BG_BLUE }
                           }
                           editable={isOnEditMode}
                           isRequired={false}
@@ -909,9 +909,9 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                   onDateChange={onDateChange}
                   textStyle={{
                     fontFamily: typography.primaryBold,
-                    colors: Colors.MAIN_BLUE,
+                    colors: Colors.ABM_MAIN_BLUE,
                   }}
-                  selectedDayColor={Colors.MAIN_BLUE}
+                  selectedDayColor={Colors.ABM_MAIN_BLUE}
                   selectedDayTextColor={Colors.WHITE}
                   style={{ padding: Spacing[20] }}
                   width={dimensions.screenWidth - Spacing[64]}

@@ -9,7 +9,7 @@ import {
 } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
-import {Text, BackNavigation} from "@components"
+import {Text, BackNavigation, TextYellowLine} from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
 import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
@@ -251,21 +251,26 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
                     horizontal={Spacing[12]}
                     vertical={Spacing[14]}
                     style={{
-                      backgroundColor: Colors.UNDERTONE_BLUE,
-                      borderRadius: Roundness.lm
+                      backgroundColor: Colors.ABM_BG_BLUE,
+                      borderRadius: Roundness.lm,
+                      borderColor: Colors.ABM_LIGHT_BLUE,
+                      borderWidth: Spacing[2]
                     }}>
                     <Text 
                       type={"body"}
-                      style={{color: Colors.WHITE}}
+                      style={{color: Colors.ABM_MAIN_BLUE}}
                     >
-                      Sebelum posting, lihat dulu yuk konten apa yang bisa di-post di Feed!{' '}
+                       Sebelum posting, lihat dulu yuk konten apa yang bisa di-post di Feed!{' '}
                     <TouchableOpacity onPress={goToGuideline}>
-                      <Text 
-                        type={"button-extrasmall"}
-                        style={{color: Colors.WHITE}}
-                        underlineWidth={Spacing[112]}>
+                      <VStack style={{top: Spacing[4]}}>
+                        <Text
+                          type={"body-bold"}
+                          style={{color: Colors.ABM_MAIN_BLUE}}
+                          underlineWidth={Spacing[112]}>
                           Baca guideline Feed.
-                      </Text>
+                        </Text>
+                        <TextYellowLine underlineWidth={120} color={Colors.ABM_GREEN}/>
+                      </VStack>
                     </TouchableOpacity>
                     </Text>
                   </HStack>

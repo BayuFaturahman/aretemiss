@@ -162,9 +162,9 @@ const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = o
                     <View style={{
                       height: Spacing[24],
                       width: Spacing[24],
-                      backgroundColor: item.choice === i + 1 ? Colors.BRIGHT_BLUE : Colors.CLOUD_GRAY,
+                      backgroundColor: item.choice === i + 1 ? Colors.ABM_LIGHT_BLUE : Colors.ABM_BG_BLUE,
                       borderRadius: Spacing[128], borderWidth: Spacing[2],
-                      borderColor: item.choice === i + 1 ? Colors.BRIGHT_BLUE : Colors.MAIN_RED
+                      borderColor: item.choice === i + 1 ? Colors.ABM_LIGHT_BLUE : Colors.ABM_LIGHT_BLUE
                     }} />
                     <Text type={'body'} style={{textAlign: 'center'}}>
                       {i + 1}
@@ -179,7 +179,7 @@ const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = o
     }
 
     return (
-      <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: 'center'}}>
+      <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.ABM_MAIN_BLUE, flex: 1, justifyContent: 'center'}}>
         <SafeAreaView style={Layout.flex}>
           <BackNavigation goBack={goBack} />
           <ScrollView>
@@ -196,8 +196,8 @@ const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = o
                 <Text type={"left-label"} style={{ color: Colors.WHITE, fontSize: Spacing[12], textAlign: 'center'}}>
                 {`Penting! `}</Text>
                 {`Catatan coaching-mu belum tersimpan sampai kamu \n klik `}
-                <VStack style={{backgroundColor: Colors.BRIGHT_BLUE, paddingHorizontal: Spacing[8], borderRadius: Spacing[48], maxWidth: Spacing[64], padding: Spacing[0]}}>
-                  <Text type={'body-bold'} text={`Submit`} numberOfLines={1}  style={{ color: Colors.WHITE, fontSize: Spacing[12], textAlign: 'center'}} />
+                <VStack style={{backgroundColor: Colors.ABM_GREEN, paddingHorizontal: Spacing[8], borderRadius: Spacing[48], maxWidth: Spacing[64], padding: Spacing[0]}}>
+                  <Text type={'body-bold'} text={`Submit`} numberOfLines={1}  style={{ color: Colors.ABM_MAIN_BLUE, fontSize: Spacing[12], textAlign: 'center'}} />
                 </VStack>
                  {` di bawah halaman ini.`}
               </Text>

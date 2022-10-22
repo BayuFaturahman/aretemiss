@@ -120,7 +120,7 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
             <Text type={'header'} text="Selamat datang di iLEAD." />
             <Spacer height={Spacing[24]} />
             <Text type={'warning'} style={{textAlign: 'center'}}>
-              {authStore.errorMessage}
+              {/*{authStore.errorMessage}*/}
             </Text>
             <Spacer height={Spacing[32]} />
             <TextField

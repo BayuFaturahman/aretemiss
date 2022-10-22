@@ -163,8 +163,8 @@ export function Text(props: TextProps) {
   )
 }
 
-export const TextYellowLine = ({underlineWidth}) => {
+export const TextYellowLine = ({underlineWidth = 12, color = Colors.ABM_YELLOW}) => {
   return(
-    <View style={{height: Spacing[6], backgroundColor: Colors.ABM_YELLOW, maxWidth: underlineWidth || 144, width: '100%', marginLeft: 'auto', marginRight: 'auto'}}></View>
+    <View style={{height: Spacing[6], backgroundColor: color, maxWidth: underlineWidth, width: '100%', marginLeft: 'auto', marginRight: 'auto'}}></View>
   )
 }

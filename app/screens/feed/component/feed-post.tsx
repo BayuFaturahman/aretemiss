@@ -3,13 +3,14 @@ import { HStack, VStack } from "@components/view-stack"
 import { Colors, Spacing } from "@styles"
 import {TouchableOpacity, View} from "react-native"
 import FastImage, { Source } from "react-native-fast-image"
-import { Text } from "@components"
+import {Text, TextYellowLine} from "@components"
 import Spacer from "@components/spacer"
 import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png"
 import { FeedItemType } from "../feed.type"
 
 import trash from "@assets/icons/trash.png";
 import moment from "moment"
+import {Hyperlink} from "react-native-hyperlink";
 
 type FeedPostProps = {
   data: FeedItemType;
@@ -153,14 +154,14 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
   }
 
   const getCreatedTime = () => {
-    var currDate = new Date()
-    var createdDate = new Date(data.createdAt)
+    const currDate = new Date()
+    const createdDate = new Date(data.createdAt)
 
-    var timeDiff = currDate.getTime() - createdDate.getTime()
+    const timeDiff = currDate.getTime() - createdDate.getTime()
 
-    var dayDiff = timeDiff/ (1000 * 3600 * 24);
-    var hrsDiff = Math.floor((timeDiff % 86400000) / 3600000); // hours
-    var minDiff = Math.floor(((timeDiff % 86400000) % 3600000) / 60000) //min
+    const dayDiff = timeDiff/ (1000 * 3600 * 24);
+    const hrsDiff = Math.floor((timeDiff % 86400000) / 3600000); // hours
+    const minDiff = Math.floor(((timeDiff % 86400000) % 3600000) / 60000) // min
 
     if (dayDiff === 1 ) {
       return Math.floor(dayDiff) + ' day ago'
@@ -201,8 +202,8 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
     <Fragment>
       <HStack>
         <Text
-          type={"body"}
-          style={{ fontSize: Spacing[12], color: Colors.BRIGHT_BLUE }}
+          type={"body-bold"}
+          style={{ fontSize: Spacing[12], color: Colors.ABM_LIGHT_BLUE }}
           underlineWidth={Spacing[72]}
           text={`${data.type !== null ? data.type: ''}`}
         /> 
@@ -213,12 +214,12 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
             flex: 1,
             width: "100%",
             height: Spacing[1],
-            backgroundColor: Colors.UNDERTONE_BLUE,
+            backgroundColor: Colors.ABM_YELLOW,
           }}
         />
         <Spacer width={Spacing[8]} />
         <Text
-          type={"body"}
+          type={"body-bold"}
           style={{ fontSize: Spacing[12] }}
           underlineWidth={Spacing[72]}
           text={`${getCreatedTime()}`}
@@ -248,7 +249,11 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
               }}
             />
           ) : null}
-          <Text type={"body"} text={data.description} />
+          <Hyperlink
+            linkDefault={ true }
+            linkText={ url => `${url.substring(0,25)}...` }>
+            <Text type={"body"} text={data.description} />
+          </Hyperlink>
         </HStack>
       </TouchableOpacity>
 
@@ -259,8 +264,8 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
               <FastImage
                 style={{
                   left: -Spacing[10],
-                  height: Spacing[32],
-                  width: Spacing[32],
+                  height: Spacing[42],
+                  width: Spacing[42],
                   borderRadius: Spacing[8],
                 }}
                 source={data.author.photo !== '' ? {
@@ -268,13 +273,13 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
                 }: nullProfileIcon}
                 resizeMode={"cover"}
               />
-              <VStack left={Spacing[8]} style={{width: '60%'}}>
+              <VStack left={Spacing[2]} style={{width: '50%'}}>
                 <Text
                   type={"body-bold"}
-                  style={{ fontSize: Spacing[12] }}
+                  style={{ fontSize: Spacing[14] }}
                   text={data.author.nickname}
                 />
-                <Text type={"body"} style={{ fontSize: Spacing[10] }} text={data.author.title} />
+                <Text type={"body"} style={{ fontSize: Spacing[10], top: -Spacing[4] }} text={data.author.title} />
               </VStack>
             </HStack>
           </TouchableOpacity>
@@ -299,13 +304,16 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
         <Spacer />
         <TouchableOpacity onPress={()=>{goToDetail(data)}} disabled={isFromHomePage}>
           <VStack>
-            <Text
-              type={"right-header"}
-              style={{ fontSize: Spacing[12] }}
-              underlineWidth={Spacing[64]}
-              text={`${data.commentCount} comments`}
-            />
-            <Spacer />
+            <VStack style={{ backgroundColor: Colors.ABM_GREEN, paddingHorizontal: Spacing[4], borderRadius: 99}}>
+              <Text
+                type={"body-bold"}
+                style={{ fontSize: Spacing[12], color: Colors.WHITE }}
+                underlineWidth={Spacing[64]}
+                text={`${data.commentCount} comments`}
+              />
+            </VStack>
+            <Spacer height={Spacing[4]} />
+            <TextYellowLine underlineWidth={Spacing[42]} />
           </VStack>
         </TouchableOpacity>
       </HStack>

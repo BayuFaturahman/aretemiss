@@ -10,6 +10,7 @@ import user from "@assets/icons/feed/user.png"
 import RNAnimated from "react-native-animated-component"
 import {StyleProp, TouchableOpacity} from "react-native";
 import {Text} from "@components";
+import {images} from "@assets/images";
 
 const SIDE_CONTAINER:StyleProp<any> = {
   height: Spacing[48],
@@ -17,7 +18,7 @@ const SIDE_CONTAINER:StyleProp<any> = {
   borderRadius: 999,
   alignItems: "center",
   justifyContent: "center",
-  backgroundColor: Colors.MAIN_BLUE,
+  backgroundColor: Colors.ABM_GREEN,
   padding: Spacing[8],
 }
 
@@ -27,7 +28,7 @@ const MID_CONTAINER:StyleProp<any> = {
   borderRadius: 999,
   alignItems: "center",
   justifyContent: "center",
-  backgroundColor: Colors.BRIGHT_BLUE,
+  backgroundColor: Colors.ABM_LIGHT_BLUE,
   marginHorizontal: Spacing[16]
 }
 
@@ -132,9 +133,17 @@ export const FeedButton = ({ goToNewPost = () => null, goToMyFeed = () => null, 
         </TouchableOpacity>
         <TouchableOpacity onPress={goToCommentList} style={[{ zIndex: 1 }, SHADOW_CONTAINER]}>
           <VStack
-            style={SIDE_CONTAINER}
+            style={[SIDE_CONTAINER, { backgroundColor: Colors.ABM_YELLOW}]}
           >
-            <Bell2 height={Spacing[32]} width={Spacing[32]} fill={'white'} />
+            <FastImage
+              style={{
+                height: Spacing[32],
+                width: Spacing[32],
+                zIndex: -1
+              }}
+              source={images.commentsIcon}
+              resizeMode={"contain"}
+            />
             <NotificationCounter text={rightCounter} />
           </VStack>
         </TouchableOpacity>

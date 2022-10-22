@@ -172,7 +172,7 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
     return (
       <VStack
         testID="CoachingJournalMain"
-        style={{ backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: "center" }}
+        style={{ backgroundColor: Colors.ABM_MAIN_BLUE, flex: 1, justifyContent: "center" }}
       >
         <SafeAreaView style={Layout.flex}>
           <FlatList
@@ -190,6 +190,7 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
               </VStack>
             )}
             data={coachingData}
+            // data={[]}
             ListEmptyComponent={() => <EmptyList />}
             renderItem={({ item, index }) => (
               <VStack horizontal={Spacing[24]} style={{ backgroundColor: Colors.WHITE }}>
@@ -205,7 +206,7 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
             )}
             keyExtractor={(item) => item.date}
             ListHeaderComponent={
-              <VStack style={{ backgroundColor: Colors.UNDERTONE_BLUE }}>
+              <VStack style={{ backgroundColor: Colors.ABM_MAIN_BLUE }}>
                 <BackNavigation goBack={goBack} />
                 <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
                   <Text type={"header"} style={{ color: Colors.WHITE }} text="Coaching Journal" />

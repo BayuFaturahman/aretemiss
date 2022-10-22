@@ -353,7 +353,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                         <Text type={"left-header"} style={{}} text="Tambah coaching journal" />
                         <Spacer />
                         <HStack>
-                          <Button type={"negative"} text={"Cancel"} onPress={goBack} />
+                          <Button type={"light-bg"} text={"Cancel"} onPress={goBack} />
                         </HStack>
                       </HStack>
 
@@ -426,7 +426,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                                 borderRadius: Spacing[12],
                                 alignItems: "flex-end",
                                 justifyContent: "flex-end",
-                                backgroundColor: Colors.MAIN_BLUE,
+                                backgroundColor: Colors.ABM_MAIN_BLUE,
                               }}
                             >
                               <Text
@@ -449,7 +449,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                               ]}
                             >
                               {`Apa yang `}
-                              <Text type={"body-bold"} style={{ color: Colors.BRIGHT_BLUE }}>
+                              <Text type={"body-bold"} style={{ color: Colors.ABM_LIGHT_BLUE }}>
                                 {"dibicarakan"}
                               </Text>
                               {` saat coaching?`}
@@ -478,7 +478,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                               ]}
                             >
                               {`Sebagai coach, apa yang sudah saya lakukan dengan `}
-                              <Text type={"body-bold"} style={{ color: Colors.BRIGHT_BLUE }}>
+                              <Text type={"body-bold"} style={{ color: Colors.ABM_LIGHT_BLUE }}>
                                 {"efektif?"}
                               </Text>
                             </Text>
@@ -509,7 +509,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                               <Text
                                 type={"body-bold"}
                                 style={[
-                                  { color: Colors.BRIGHT_BLUE },
+                                  { color: Colors.ABM_LIGHT_BLUE },
                                   fieldError ? styles.textError : null,
                                 ]}
                               >
@@ -540,7 +540,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                               ]}
                             >
                               {"Tulislah "}
-                              <Text type={"body-bold"} style={{ color: Colors.BRIGHT_BLUE }}>
+                              <Text type={"body-bold"} style={{ color: Colors.ABM_LIGHT_BLUE }}>
                                 {'"lessons learned"'}
                               </Text>
                               {`-mu dicoaching sessions ini.`}
@@ -568,7 +568,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                             ]}
                           >
                             Apa saja yang akan saya lakukan secara berbeda untuk
-                            <Text type={"body-bold"} style={{ color: Colors.BRIGHT_BLUE }}>
+                            <Text type={"body-bold"} style={{ color: Colors.ABM_LIGHT_BLUE }}>
                               {" sesi selanjutnya?"}
                             </Text>
                           </Text>
@@ -638,7 +638,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                              <Text
                               type={"body-bold"}
                               style={[
-                                { color: Colors.BRIGHT_BLUE, textAlign: "center" },
+                                { color: Colors.ABM_LIGHT_BLUE, textAlign: "center" },
                                 fieldError ? styles.textError : null,
                               ]}
                             >
@@ -673,7 +673,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                             textAlign: 'center',
                             marginTop: Spacing[4],
                             paddingBottom: Spacing[32],
-                            color: Colors.MAIN_RED
+                            color: Colors.ABM_LIGHT_BLUE
                           }}
                         >Penting! Catatan coaching-mu belum tersimpan sampai kamu klik “Submit” setelah melakukan feedback.</Text>
                       </VStack>
@@ -707,16 +707,17 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                             }}
                             textStyle={{
                               fontFamily: typography.primaryBold,
-                              colors: Colors.MAIN_BLUE,
+                              colors: Colors.ABM_MAIN_BLUE,
                             }}
-                            selectedDayColor={Colors.MAIN_BLUE}
-                            selectedDayTextColor={Colors.WHITE}
+                            selectedDayColor={Colors.ABM_YELLOW}
+                            selectedDayTextColor={Colors.ABM_MAIN_BLUE}
                             style={{ padding: Spacing[20] }}
                             width={dimensions.screenWidth - Spacing[64]}
                             maxDate={new Date()}
                           />
                           <HStack style={[Layout.widthFull, { justifyContent: "center" }]}>
-                            <Button type={"negative"} text={"Cancel"} onPress={toggleModal} />
+                            <Button type={"light-bg"} text={"Cancel"} onPress={toggleModal} />
+                            <Spacer width={Spacing[4]} />
                             <Button
                               type={"primary"}
                               text={"Pilih"}
@@ -761,8 +762,8 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
               >
                 <VStack horizontal={Spacing[24]} top={Spacing[24]} style={Layout.widthFull}>
                   <VStack style={{ alignItems: "flex-end" }}>
-                    <TouchableOpacity onPress={toggleEncouragementModal}>
-                      <Text type={"header"}>X</Text>
+                    <TouchableOpacity style={{backgroundColor: Colors.ABM_LIGHT_BLUE, borderRadius: 999, width: Spacing[32], height: Spacing[32], alignItems:'center'}} onPress={toggleEncouragementModal}>
+                      <Text type={"body-bold"} style={{color: Colors.WHITE, fontSize: Spacing[24], lineHeight: Spacing[32]}} >x</Text>
                     </TouchableOpacity>
                   </VStack>
                   <VStack>
@@ -788,7 +789,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                     <Spacer height={Spacing[24]} />
                     <Text
                       type={"body"}
-                      style={{ textAlign: "center", color: "red" }}
+                      style={{ textAlign: "center", color: Colors.ABM_LIGHT_BLUE }}
                       text={
                         "Penting! Coaching journal-mu belum tersimpan sampai kamu klik “Submit” setelah melakukan feedback."
                       }
