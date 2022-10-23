@@ -20,7 +20,7 @@ import { EmptyList } from "@screens/notification/components/empty-list"
 import { dimensions } from "@config/platform.config"
 import { NotificationItem } from "../../store/store.notification"
 import layout from "@styles/Layout"
-import { InfoPoint, TrophyLeaderboards } from "@assets/svgs"
+import {IconLeaderboard, InfoPoint, TrophyLeaderboards} from "@assets/svgs"
 
 type LeaderBoardItem = { name: string; point: number; rank: number }
 
@@ -82,13 +82,13 @@ const PodiumComponent = ({ data = PODIUM_EXAMPLE }: { data: LeaderBoardItem[] })
       <VStack
         style={{
           flex: 1 / 3,
-          backgroundColor: Colors.HONEY_YELLOW,
+          backgroundColor: Colors.ABM_YELLOW,
           // height: data.length > 1 ? (data[1].score / data[0].score) * BASE_HEIGHT : BASE_HEIGHT * 0.5,
           height: BASE_HEIGHT * 0.7,
           borderTopStartRadius: Spacing[12],
           borderTopEndRadius: Spacing[12],
           borderBottomStartRadius: Spacing[12],
-          borderColor: Colors.HONEY_YELLOW,
+          borderColor: Colors.ABM_YELLOW,
           right: -1,
           justifyContent: "center",
           alignItems: "center",
@@ -109,7 +109,7 @@ const PodiumComponent = ({ data = PODIUM_EXAMPLE }: { data: LeaderBoardItem[] })
       <VStack
         style={{
           flex: 1 / 3,
-          backgroundColor: Colors.HONEY_YELLOW,
+          backgroundColor: Colors.ABM_YELLOW,
           height: BASE_HEIGHT,
           borderTopStartRadius: Spacing[12],
           borderTopEndRadius: Spacing[12],
@@ -133,7 +133,7 @@ const PodiumComponent = ({ data = PODIUM_EXAMPLE }: { data: LeaderBoardItem[] })
           />
         </VStack>
         <Text type={"body-bold"} style={{ color: Colors.UNDERTONE_BLUE }} text="#1" />
-        <TrophyLeaderboards height={Spacing[64]} />
+        <IconLeaderboard height={Spacing[64]} />
         <Text
           type={"body-bold"}
           style={{ color: Colors.UNDERTONE_BLUE }}
@@ -143,7 +143,7 @@ const PodiumComponent = ({ data = PODIUM_EXAMPLE }: { data: LeaderBoardItem[] })
       <VStack
         style={{
           flex: 1 / 3,
-          backgroundColor: Colors.HONEY_YELLOW,
+          backgroundColor: Colors.ABM_YELLOW,
           // height: data.length > 2 ? (data[2].score / data[1].score) * BASE_HEIGHT : BASE_HEIGHT * 0.5,
           height: BASE_HEIGHT * 0.5,
           borderTopEndRadius: Spacing[12],
@@ -226,7 +226,7 @@ const Leaderboards: FC<StackScreenProps<NavigatorParamList, "notificationList">>
 
     const HeaderComponent = ({}) => {
       return (
-        <VStack style={{ backgroundColor: Colors.UNDERTONE_BLUE }}>
+        <VStack style={{ backgroundColor: Colors.ABM_MAIN_BLUE }}>
           <BackNavigation goBack={goBack} />
           <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
             <Text
@@ -299,7 +299,7 @@ const Leaderboards: FC<StackScreenProps<NavigatorParamList, "notificationList">>
     return (
       <VStack
         testID="CoachingJournalMain"
-        style={{ backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: "center" }}
+        style={{ backgroundColor: Colors.ABM_MAIN_BLUE, flex: 1, justifyContent: "center" }}
       >
         <SafeAreaView style={Layout.flex}>
           <FlatList

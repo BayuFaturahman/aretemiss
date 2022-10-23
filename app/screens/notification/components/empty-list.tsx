@@ -1,7 +1,6 @@
 import React from "react";
 import {HStack, VStack} from "@components/view-stack";
 import {Layout, Spacing} from "@styles";
-import FastImage from "react-native-fast-image";
 import {Button, Text} from "@components";
 import Spacer from "@components/spacer";
 import sick from "@assets/icons/notifications/sick.png";
@@ -10,7 +9,7 @@ import {Man1} from "@assets/svgs";
 
 export const EmptyList = ({
                             navigateTo = () => null,
-                            imageSource = sick,
+                            imageSource = () => <Man1 height={Spacing[256]} width={Spacing[256]} />,
                             description = 'Kamu belum mendapatkan notifikasi apapun. Apabila ada update terbaru seputar aktivitasmu di aplikasi ini, kami akan memberitahu lewat halaman ini ya!',
                             buttonLabel = 'Kembali'
 }) => {
@@ -19,7 +18,7 @@ export const EmptyList = ({
       <VStack horizontal={Spacing[42]}>
         <HStack bottom={Spacing[12]}>
           <Spacer/>
-          <Man1 height={Spacing[256]} width={Spacing[256]} />
+          {imageSource()}
           <Spacer/>
         </HStack>
         <Text type={'body'} style={{textAlign: 'center'}} text={description} />

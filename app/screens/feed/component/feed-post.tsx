@@ -11,6 +11,7 @@ import { FeedItemType } from "../feed.type"
 import trash from "@assets/icons/trash.png";
 import moment from "moment"
 import {Hyperlink} from "react-native-hyperlink";
+import {AngryColor, HappyColor, HeartColor, HeartGrey, IconLike, IconSadColor} from "@assets/svgs";
 
 type FeedPostProps = {
   data: FeedItemType;
@@ -21,7 +22,17 @@ type FeedPostProps = {
   isFromHomePage?: boolean;
 }
 
+const LIKE_ICON_LIST = [
+  HeartColor,
+  IconLike,
+  HappyColor,
+  IconSadColor,
+  AngryColor
+]
+
 export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDetail = () => null, isFromHomePage }:FeedPostProps) => {
+
+  const [isLikeModal, setIsLikeModal] = useState(false)
 
   const listImage = data.imageUrl ? data.imageUrl.split(";") : []
 
@@ -316,6 +327,42 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
             <TextYellowLine underlineWidth={Spacing[42]} />
           </VStack>
         </TouchableOpacity>
+        <VStack left={Spacing[8]}>
+          <HStack
+            vertical={Spacing[8]}
+            horizontal={Spacing[8]}
+            style={{
+              display: isLikeModal ? 'flex' : 'none',
+              position: 'absolute', backgroundColor: Colors.WHITE,
+              zIndex: 100, top: -Spacing[32], left: -Spacing[128],
+            borderRadius: Spacing[12], shadowColor: "#000",
+              shadowOffset: {
+                width: 0,
+                height: 1,
+              },
+              shadowOpacity: 0.20,
+              shadowRadius: 1.41,
+
+              elevation: 2}}>
+            {LIKE_ICON_LIST.map((iconItem)=>
+              <TouchableOpacity
+                onPress={()=>{setIsLikeModal(false)}}
+              >
+                <HStack horizontal={Spacing[2]}>
+                  {
+                    React.createElement(iconItem, {
+                      height: Spacing[24],
+                      width: Spacing[24]
+                    })
+                  }
+                </HStack>
+              </TouchableOpacity>
+            )}
+          </HStack>
+          <TouchableOpacity onPress={()=>{setIsLikeModal(!isLikeModal)}} disabled={isFromHomePage}>
+            <HeartGrey width={Spacing[24]} height={Spacing[24]} />
+          </TouchableOpacity>
+        </VStack>
       </HStack>
       <Spacer height={Spacing[8]} />
     </Fragment>

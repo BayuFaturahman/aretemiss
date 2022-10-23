@@ -11,6 +11,7 @@ import sick from "@assets/icons/notifications/sick.png"
 import { presets } from "@components/text/text.presets"
 import { FeedPost } from "@screens/feed/component/feed-post"
 import { FeedItemType } from "@screens/feed/feed.type"
+import {Man1} from "@assets/svgs";
 
 export const EmptyList = ({
   navigateTo = () => null,
@@ -22,14 +23,15 @@ export const EmptyList = ({
       <VStack>
         <HStack bottom={Spacing[12]}>
           <Spacer />
-          <FastImage
-            style={{
-              height: Spacing[48],
-              width: Spacing[48],
-            }}
-            source={imageSource}
-            resizeMode={"contain"}
-          />
+          {/* <FastImage */}
+          {/*  style={{ */}
+          {/*    height: Spacing[48], */}
+          {/*    width: Spacing[48], */}
+          {/*  }} */}
+          {/*  source={imageSource} */}
+          {/*  resizeMode={"contain"} */}
+          {/* /> */}
+          <Man1 height={Spacing[256]} width={Spacing[256]} />
           <Spacer />
         </HStack>
         <Text type={"body"} style={{ textAlign: "center" }}>

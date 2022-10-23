@@ -1,5 +1,5 @@
-import React, { FC, useCallback, useState } from "react"
-import { FlatList, SafeAreaView, ScrollView, TouchableOpacity, View } from "react-native"
+import React, {FC, useCallback, useEffect, useRef, useState} from "react"
+import {Animated, FlatList, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { NavigatorParamList } from "@navigators/main-navigator"
@@ -10,90 +10,39 @@ import { BackNavigation, Button, Text } from "@components"
 import Spacer from "@components/spacer"
 
 import { EmptyList } from "@screens/coaching-journal/components/empty-list"
+import {dimensions} from "@config/platform.config";
 
-export type ChoiceItemTypeAssesment = {
+export type QuizQuestionItem = {
   id: string
-  title: string
-  choice: 0 | 1 | 2 | 3 | 4 | 5 | 6
-  section?: string
+  question: string
+  answers: string[]
+  choice: 0 | 1 | 2 | 3 | 4
 }
 
-const EXAMPLE_DATA: Array<ChoiceItemTypeAssesment> = [
+const EXAMPLE_DATA: Array<QuizQuestionItem> = [
   {
     id: "0",
-    title: "berhasil memotivasi diri dan orang lain untuk mencapai hasil terbaik.",
+    question: "Sebagai seorang leader, jika ada anggota tim yang mengalami kesulitan untuk menyelesaikan tugasnya, apa yang sebaiknya dilakukan?",
     choice: 0,
-    section: "Performance Focused",
+    answers: ['a', 'b', 'c', 'd']
   },
   {
     id: "1",
-    title: "senantiasa mengembangkan kemampuan diri.",
+    question: "Sebagai seorang leader, jika ada anggota tim yang mengalami kesulitan untuk menyelesaikan tugasnya, apa yang sebaiknya dilakukan?",
     choice: 0,
+    answers: ['a', 'b', 'c', 'd']
   },
   {
     id: "2",
-    title: "proaktif memberikan penghargaan atas pencapaian kinerja.",
+    question: "Sebagai seorang leader, jika ada anggota tim yang mengalami kesulitan untuk menyelesaikan tugasnya, apa yang sebaiknya dilakukan?",
     choice: 0,
+    answers: ['a', 'b', 'c', 'd']
   },
   {
     id: "3",
-    title: "banyak mengapresiasi pendapat dan hasil kerja orang lain.",
+    question: "Sebagai seorang leader, jika ada anggota tim yang mengalami kesulitan untuk menyelesaikan tugasnya, apa yang sebaiknya dilakukan?",
     choice: 0,
-    section: "Synergy",
-  },
-  {
-    id: "4",
-    title: "menghargai keberagaman.",
-    choice: 0,
-  },
-  {
-    id: "5",
-    title: "mendukung antar semua pihak.",
-    choice: 0,
-  },
-  {
-    id: "6",
-    title: "berhasil menyampaikan pendapat secara jelas dan terbuka.",
-    choice: 0,
-  },
-  {
-    id: "7",
-    title: "secara proaktif mengidentifikasi peluang perbaikan di area kerjanya.",
-    choice: 0,
-    section: "Innovation",
-  },
-  {
-    id: "8",
-    title:
-      "dapat menciptakan solusi terbaik untuk peningkatan produktivitas dan kepuasan pelanggan.",
-    choice: 0,
-  },
-  {
-    id: "9",
-    title: "melibatkan berbagai pihak untuk menghasilkan ide atau solusi terbaik.",
-    choice: 0,
-  },
-  {
-    id: "10",
-    title:
-      "mempunyai rasa memiliki yang kuat, berpikir dan bertindak sebagaimana layaknya pemilik perubahan.",
-    choice: 0,
-    section: "Accountable",
-  },
-  {
-    id: "11",
-    title: "menunjukan gairah dan harapan untuk hasil terbaik.",
-    choice: 0,
-  },
-  {
-    id: "12",
-    title: "mencurahkan segenap potensi kepemimpinan untuk hasil terbaik.",
-    choice: 0,
-  },
-  {
-    id: "12",
-    title: "melaksanakan sepenuhnya tugas dan tanggung jawab untuk mencapai hasil terbaik.",
-    choice: 0,
+    answers: ['a', 'b', 'c', 'd']
   },
 ]
 
@@ -101,123 +50,135 @@ const JuaraAssesmentQuiz: FC<StackScreenProps<NavigatorParamList, "juaraAssesmen
   ({ navigation }) => {
     const goBack = () => navigation.goBack()
 
-    const [feedbackData, setFeedbackData] = useState<Array<ChoiceItemTypeAssesment>>(EXAMPLE_DATA)
-    const [userName, setUserName] = useState<string>("Jack Subagyo")
+    // const scrollRef:React.MutableRefObject<ScrollView> = useRef(null)
+    const [scrollRef, setScrollRef] = useState(null)
+    const currentScrollPos:number = useRef(0)
 
-    const selectFeedbackItem = useCallback(
-      (id, choice) => {
-        const updated = feedbackData.map((item) => {
-          if (item.id === id) {
-            return { ...item, choice: choice }
-          }
-          return item
-        })
+    const [questions, setQuestions] = useState<Array<QuizQuestionItem>>(EXAMPLE_DATA)
+    const [activeQuestion, setActiveQuestion] = useState<string>("1")
+    const [currentScroll, setCurrentScroll] = useState<number>(0)
 
-        setFeedbackData(updated)
-      },
-      [feedbackData],
-    )
+    const scrollNext = useCallback(()=>{
+      scrollRef.current.scrollTo({
+        y: currentScroll + 1,
+        animated: true
+      })
+      console.log(currentScroll)
+    },[currentScroll, scrollRef])
 
-    const ChoiceItem = ({ item, index }) => {
-      return (
-        <VStack vertical={Spacing[8]}>
-          <VStack horizontal={Spacing[48]} bottom={Spacing[8]}>
-            {item.section ? (
-              <Button
-                style={{ paddingVertical: Spacing[4] }}
-                type={"primary"}
-                text={item.section}
-                disabled={true}
-              />
-            ) : null}
-          </VStack>
-          <Text type={"body"} style={{ textAlign: "center" }}>
-            {`"${userName} ${item.title}"`}
-          </Text>
-          <HStack top={Spacing[12]} style={{ justifyContent: "space-around" }}>
-            {Array(6)
-              .fill(0)
-              .map((value, i, array) => {
-                return (
-                  <TouchableOpacity
-                    onPress={() => selectFeedbackItem(item.id, i + 1)}
-                    // disabled={isAlreadyFilled}
-                  >
-                    <VStack>
-                      <View
-                        style={{
-                          height: Spacing[24],
-                          width: Spacing[24],
-                          backgroundColor:
-                            item.choice === i + 1 ? Colors.MAIN_RED : Colors.CLOUD_GRAY,
-                          borderRadius: Spacing[128],
-                          borderWidth: Spacing[2],
-                          borderColor: item.choice === i + 1 ? Colors.MAIN_RED : Colors.MAIN_RED,
-                        }}
-                      />
-                      <Text type={"body"} style={{ textAlign: "center" }}>
-                        {i + 1}
-                      </Text>
-                    </VStack>
-                  </TouchableOpacity>
-                )
-              })}
+    // const selectFeedbackItem = useCallback(
+    //   (id, choice) => {
+    //     const updated = feedbackData.map((item) => {
+    //       if (item.id === id) {
+    //         return { ...item, choice: choice }
+    //       }
+    //       return item
+    //     })
+    //
+    //     setFeedbackData(updated)
+    //   },
+    //   [feedbackData],
+    // )
+
+    useEffect(()=>{
+      console.log(currentScroll)
+    },[currentScroll])
+    
+    const AnswerItemComponent = ({answer, index, selectedIndex}: {answer: string, index: number, selectedIndex: number}) => {
+      const isSelected:boolean = selectedIndex === index
+
+      const styles = StyleSheet.create({
+        bullet: {backgroundColor: isSelected ? Colors.ABM_YELLOW : Colors.WHITE, borderColor: isSelected ? Colors.ABM_YELLOW : Colors.ABM_MAIN_BLUE, borderRadius: Spacing[32], borderWidth: Spacing[2], height: Spacing[16], width: Spacing[16]},
+        container: {backgroundColor: isSelected ? Colors.ABM_LIGHT_BLUE : Colors.WHITE, borderColor: Colors.ABM_LIGHT_BLUE, borderRadius: Spacing[32], borderWidth: Spacing[2]},
+        text: { color: isSelected ? Colors.WHITE : Colors.ABM_MAIN_BLUE, fontSize: Spacing[14], textAlign: "center" }
+      });
+      
+      return(
+        <TouchableOpacity>
+          <HStack vertical={Spacing[4]} horizontal={Spacing[12]} style={styles.container}>
+            <View style={styles.bullet} />
+            <Spacer width={Spacing[4]} />
+            <Text
+              type={"body-bold"}
+              style={styles.text}
+            >
+              {answer}
+            </Text>
           </HStack>
-        </VStack>
+          <Spacer height={Spacing[8]} />
+        </TouchableOpacity>
       )
     }
 
     return (
       <VStack
         testID="Assesment"
-        style={{ backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: "center" }}
+        style={{ backgroundColor: Colors.WHITE, flex: 1, justifyContent: "center" }}
       >
         <SafeAreaView style={Layout.flex}>
-          <ScrollView>
-            <BackNavigation goBack={goBack} />
-            <VStack top={Spacing[8]} horizontal={Spacing[32]} bottom={Spacing[12]}>
-              <Text type={"left-header"} style={{ color: Colors.WHITE }} text="JUARA Assessment" />
-              <Spacer height={Spacing[24]} />
-              <Text
-                type={"header"}
-                style={{ color: Colors.WHITE, textAlign: "center", fontSize: Spacing[12] }}
+          <BackNavigation color={Colors.ABM_MAIN_BLUE} goBack={goBack} />
+          <HStack top={Spacing[12]} horizontal={Spacing[32]}>
+            <Text type={"left-header"} style={{ color: Colors.ABM_MAIN_BLUE }} text="JUARA Assessment" />
+            <Spacer />
+            <Button
+              type={'primary-dark'}
+              text={'Back'}
+              onPress={goBack}
+              style={{paddingHorizontal: Spacing[24]}}
+            />
+          </HStack>
+          <Spacer height={Spacing[24]} />
+          <ScrollView
+            onScroll={Animated.event(
+              [],
+              {useNativeDriver: false, listener: (event) => setCurrentScroll(event.nativeEvent.contentOffset.x)})}
+            ref={setScrollRef}
+                      horizontal
+                      snapToInterval={dimensions.screenWidth}
+                      decelerationRate={"fast"}
+                      showsHorizontalScrollIndicator={false}
+                      // onScrollEndDrag={(event)=>{
+                      //   currentScrollPos = event.nativeEvent.contentOffset.y
+                      //   setCurrentScroll(event.nativeEvent.contentOffset.y)
+                      // }}
+          >
+            {questions.map((value)=>
+              <VStack key={`q-${value.id}`} style={{ width: dimensions.screenWidth}}>
+              <VStack top={Spacing[8]} horizontal={Spacing[32]} bottom={Spacing[12]}>
+                <Text
+                  type={"body-bold"}
+                  style={{ color: Colors.ABM_MAIN_BLUE, textAlign: "center", fontSize: Spacing[12] }}
+                >
+                  {value.question}
+                </Text>
+                <Spacer height={Spacing[32]} />
+              </VStack>
+              <VStack
+                top={Spacing[32]}
+                horizontal={Spacing[24]}
               >
-                {`Rekan kerjamu butuh bantuan. Berikan penilaian bagi ${userName} sesuai dengan kinerjanya selama satu bulan ke belakang.`}
-              </Text>
-              <Spacer height={Spacing[32]} />
-            </VStack>
-            <VStack
-              top={Spacing[32]}
-              horizontal={Spacing[24]}
-              style={[
-                Layout.heightFull,
-                {
-                  backgroundColor: Colors.WHITE,
-                  borderTopStartRadius: Spacing[48],
-                  borderTopEndRadius: Spacing[48],
-                },
-              ]}
-            >
-              <FlatList
-                ItemSeparatorComponent={() => <Spacer height={Spacing[24]} />}
-                data={feedbackData}
-                ListEmptyComponent={() => <EmptyList />}
-                renderItem={({ item, index }) => <ChoiceItem item={item} index={index} />}
-                keyExtractor={(item) => item.id}
-                ListFooterComponent={
-                  <VStack horizontal={Spacing[72]} vertical={Spacing[24]}>
-                    <Button
-                      type={"primary"}
-                      text={"Submit"}
-                      // onPress={submit}
-                      style={{ minWidth: Spacing[72] }}
-                    />
-                  </VStack>
-                }
-              />
-              <Spacer height={Spacing[32]} />
-            </VStack>
+                {value.answers.map((answer, answerIndex)=> {
+                  return(
+                    <AnswerItemComponent key={`${value.id}-${answer}`} answer={answer} index={answerIndex} selectedIndex={1} />
+                  )
+                })}
+                <Spacer height={Spacing[32]} />
+              </VStack>
+            </VStack>)}
           </ScrollView>
+          {/* <Button */}
+          {/*  key={`n-${currentScroll}`} */}
+          {/*  type={'primary'} */}
+          {/*  text={'Next'} */}
+          {/*  onPress={()=>{ */}
+          {/*    scrollRef.scrollTo({ */}
+          {/*      y: currentScroll + 1, */}
+          {/*      animated: true */}
+          {/*    }) */}
+          {/*    console.log(currentScroll) */}
+          {/*  }} */}
+          {/*  style={{paddingHorizontal: Spacing[24]}} */}
+          {/* /> */}
         </SafeAreaView>
       </VStack>
     )

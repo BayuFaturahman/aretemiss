@@ -10,6 +10,7 @@ import {EmptyList} from "@screens/notification/components/empty-list";
 import sad from "@assets/icons/homepage/sad.png";
 import {CoachingJournalItemRender} from "@screens/coaching-journal/components/coaching-journal-item-render";
 import downArrow from "@assets/icons/down-arrow.png";
+import {IconSadColor} from "@assets/svgs";
 
 export type CoachingJournalComponentProps = {
   data: CoachingJournalItem;
@@ -38,7 +39,7 @@ export const CoachingJournalComponent = ({
         <Spacer width={Spacing[24]} />
         <EmptyList buttonLabel={'Tambah sekarang!'}
                    description={'Kamu belum menambahkan catatan coaching journal.'}
-                   imageSource={sad} navigateTo={goToCoaching}/>
+                   imageSource={()=> <IconSadColor height={Spacing[42]} width={Spacing[42]}/>} navigateTo={goToCoaching}/>
       </VStack>
     )
   }
