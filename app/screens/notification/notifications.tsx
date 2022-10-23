@@ -1,5 +1,5 @@
 import React, {FC, useCallback, useEffect, useState,} from "react"
-import {ActivityIndicator, FlatList, RefreshControl, SafeAreaView, View} from "react-native"
+import {ActivityIndicator, FlatList, ImageBackground, RefreshControl, SafeAreaView, View} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {
@@ -20,6 +20,7 @@ import {dimensions} from "@config/platform.config";
 import {NotificationItem} from "../../store/store.notification";
 import {FeedItemType} from "@screens/feed/feed.type";
 import {backgroundColor} from "react-native-calendars/src/style";
+import {images} from "@assets/images";
 
 type NotificationItemType = {
   id: string
@@ -162,19 +163,21 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
 
     return (
       <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.ABM_MAIN_BLUE, flex: 1, justifyContent: 'center'}}>
-        <SafeAreaView style={[Layout.flex, {backgroundColor: Colors.ABM_MAIN_BLUE}]}>
+        <View style={Layout.flex}>
           <FlatList
             style={{backgroundColor: Colors.WHITE}}
             ItemSeparatorComponent={()=> <VStack style={{backgroundColor: Colors.WHITE}}><Spacer height={Spacing[32]} /></VStack>}
             ListHeaderComponent={
-              <VStack style={{backgroundColor: Colors.ABM_MAIN_BLUE}}>
-                <BackNavigation goBack={goBack} />
-                <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
-                  <Spacer height={Spacing[24]} />
-                  <Text type={'header'} style={{color: Colors.WHITE, fontSize: Spacing[16]}} text="Notifications" />
-                  <Spacer height={Spacing[32]} />
-                </VStack>
-                <VStack style={{backgroundColor: Colors.WHITE, borderTopStartRadius: Spacing[32], borderTopEndRadius: Spacing[32], height:Spacing[48], width: dimensions.screenWidth, bottom: -1}}/>
+              <VStack top={Spacing[32]} style={{backgroundColor: Colors.ABM_MAIN_BLUE}}>
+                <ImageBackground source={images.bgPattern} style={{width: '100%'}} resizeMode={"cover"}>
+                  <BackNavigation goBack={goBack} />
+                  <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
+                    <Spacer height={Spacing[24]} />
+                    <Text type={'header'} style={{color: Colors.WHITE, fontSize: Spacing[16]}} text="Notifications" />
+                    <Spacer height={Spacing[32]} />
+                  </VStack>
+                  <VStack style={{backgroundColor: Colors.WHITE, borderTopStartRadius: Spacing[32], borderTopEndRadius: Spacing[32], height:Spacing[48], width: dimensions.screenWidth, bottom: -1}}/>
+                </ImageBackground>
               </VStack>
             }
             refreshControl={
@@ -273,7 +276,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
             onEndReached={onLoadMore}
             onEndReachedThreshold={0.1}
           />
-        </SafeAreaView>
+        </View>
         {
           notificationStore.isLoading ?
             <VStack vertical={Spacing[12]} style={{position:'absolute',bottom: 0, width: dimensions.screenWidth}}>

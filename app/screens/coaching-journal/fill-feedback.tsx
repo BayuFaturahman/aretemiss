@@ -1,5 +1,5 @@
 import React, {FC, useCallback, useEffect, useReducer, useState} from "react"
-import {FlatList, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View} from "react-native"
+import {FlatList, ImageBackground, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {
@@ -16,6 +16,7 @@ import { useStores } from "../../bootstrap/context.boostrap"
 
 import Spinner from 'react-native-loading-spinner-overlay';
 import {FeedbackJLSixth} from "../../store/store.coaching";
+import {images} from "@assets/images";
 
 type ChoiceItemType = {
   id: string
@@ -184,25 +185,25 @@ const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = o
           <BackNavigation goBack={goBack} />
           <ScrollView>
             <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
-              <Text type={'left-header'} style={{color: Colors.WHITE}} text="Self-reflection feedback" />
-              <Spacer height={Spacing[24]} />
-              <Text type={"header"} style={{color: Colors.WHITE, textAlign:'center', fontSize: Spacing[12]}}>Berilah rating pada pernyataan berikut ini
-                sesuai dengan sesi coaching yang sudah kamu lakukan.</Text>
-              <Spacer height={Spacing[12]} />
+              <ImageBackground source={images.bgPattern} style={{width: '100%'}} resizeMode={"cover"}>
+                <Text type={'left-header'} style={{color: Colors.WHITE}} text="Self-reflection feedback" />
+                <Spacer height={Spacing[24]} />
+                <Text type={"header"} style={{color: Colors.WHITE, textAlign:'center', fontSize: Spacing[12]}}>Berilah rating pada pernyataan berikut ini
+                  sesuai dengan sesi coaching yang sudah kamu lakukan.</Text>
+                <Spacer height={Spacing[12]} />
 
+                <Text type={"label"} style={{ color: Colors.WHITE, fontSize: Spacing[12], textAlign: 'center'}}>
+                  <Text type={"left-label"} style={{ color: Colors.WHITE, fontSize: Spacing[12], textAlign: 'center'}}>
+                    {`Penting! `}</Text>
+                  {`Catatan coaching-mu belum tersimpan sampai kamu \n klik `}
+                  <VStack style={{backgroundColor: Colors.ABM_GREEN, paddingHorizontal: Spacing[8], borderRadius: Spacing[48], maxWidth: Spacing[64], padding: Spacing[0]}}>
+                    <Text type={'body-bold'} text={`Submit`} numberOfLines={1}  style={{ color: Colors.ABM_MAIN_BLUE, fontSize: Spacing[12], textAlign: 'center'}} />
+                  </VStack>
+                  {` di bawah halaman ini.`}
+                </Text>
 
-
-              <Text type={"label"} style={{ color: Colors.WHITE, fontSize: Spacing[12], textAlign: 'center'}}>
-                <Text type={"left-label"} style={{ color: Colors.WHITE, fontSize: Spacing[12], textAlign: 'center'}}>
-                {`Penting! `}</Text>
-                {`Catatan coaching-mu belum tersimpan sampai kamu \n klik `}
-                <VStack style={{backgroundColor: Colors.ABM_GREEN, paddingHorizontal: Spacing[8], borderRadius: Spacing[48], maxWidth: Spacing[64], padding: Spacing[0]}}>
-                  <Text type={'body-bold'} text={`Submit`} numberOfLines={1}  style={{ color: Colors.ABM_MAIN_BLUE, fontSize: Spacing[12], textAlign: 'center'}} />
-                </VStack>
-                 {` di bawah halaman ini.`}
-              </Text>
-
-              <Spacer height={Spacing[12]} />
+                <Spacer height={Spacing[12]} />
+              </ImageBackground>
               {/* {isError !== null ? <Text type={"warning"} style={{textAlign:'center', fontSize: Spacing[12]}}>Ada yang belum diisi nih!</Text> : null} */}
               <Spacer height={Spacing[12]} />
             </VStack>

@@ -15,6 +15,7 @@ import { EmptyList } from "./components/empty-list"
 import { SenyumActive, SenyumInactive, MarahActive, SedihActive, SickActive, SurprisedActive } from "@assets/svgs"
 import { MoodComponent } from "./components/mood-component"
 import ileadBg from "@assets/images/bgLandingPage.png";
+import {images} from "@assets/images";
 
 export type TeamMoodItemType = {
   userId: string
@@ -83,20 +84,22 @@ const MoodTeam: FC<StackScreenProps<NavigatorParamList, "moodTeam">> = observer(
       >
         {/* <ImageBackground source={ileadBg} resizeMode="cover" style={styles.image}> */}
           <SafeAreaView style={Layout.flex}>
-            <BackNavigation goBack={goBack} />
-            <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
-              <Spacer height={Spacing[24]} />
-              <Text
-                type={"header"}
-                style={{ color: Colors.WHITE }}
-                text="How are my team doing today?"
-              />
-              <Spacer height={Spacing[24]} />
-              <Text type={"body"} style={{ textAlign: "center", color: Colors.WHITE }}>
-                {`Lihat mood yang sudah di-update \n anggota team Anda hari ini!`}
-              </Text>
-              <Spacer height={Spacing[32]} />
-            </VStack>
+            <ImageBackground source={images.bgPattern} style={{width: '100%'}} resizeMode={"cover"}>
+              <BackNavigation goBack={goBack} />
+              <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
+                <Spacer height={Spacing[24]} />
+                <Text
+                  type={"header"}
+                  style={{ color: Colors.WHITE }}
+                  text="How are my team doing today?"
+                />
+                <Spacer height={Spacing[24]} />
+                <Text type={"body"} style={{ textAlign: "center", color: Colors.WHITE }}>
+                  {`Lihat mood yang sudah di-update \n anggota team Anda hari ini!`}
+                </Text>
+                <Spacer height={Spacing[32]} />
+              </VStack>
+            </ImageBackground>
             <SafeAreaView style={Layout.flex}>
               <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
             </SafeAreaView>

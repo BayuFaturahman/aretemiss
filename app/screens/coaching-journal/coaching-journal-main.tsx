@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useReducer, useState, useEffect } from "react"
-import { ActivityIndicator, FlatList, RefreshControl, SafeAreaView } from "react-native"
+import {ActivityIndicator, FlatList, ImageBackground, RefreshControl, SafeAreaView} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Text, BackNavigation } from "@components"
@@ -20,6 +20,7 @@ import arrowYellow from "@assets/icons/coachingJournal/empty/arrow-yellow.png"
 import { dimensions } from "@config/platform.config"
 import { EmptyList } from "@screens/coaching-journal/components/empty-list"
 import {debounce} from "lodash";
+import {images} from "@assets/images";
 
 const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJournalMain">> =
   observer(({ navigation }) => {
@@ -207,20 +208,22 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
             keyExtractor={(item) => item.date}
             ListHeaderComponent={
               <VStack style={{ backgroundColor: Colors.ABM_MAIN_BLUE }}>
-                <BackNavigation goBack={goBack} />
-                <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
-                  <Text type={"header"} style={{ color: Colors.WHITE }} text="Coaching Journal" />
-                  <Spacer height={Spacing[24]} />
-                  <Text type={"body"} style={{ textAlign: "center", color: Colors.WHITE }}>
-                    Setiap coaching journal yang dicatat akan memberikan kesempatan bagi coachee-mu
-                    untuk memberikan{" "}
-                    <Text type={"label"} style={{ color: Colors.WHITE }}>
-                      feedback
+                <ImageBackground source={images.bgPattern} style={{width: '100%'}} resizeMode={"cover"}>
+                  <BackNavigation goBack={goBack} />
+                  <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
+                    <Text type={"header"} style={{ color: Colors.WHITE }} text="Coaching Journal" />
+                    <Spacer height={Spacing[24]} />
+                    <Text type={"body"} style={{ textAlign: "center", color: Colors.WHITE }}>
+                      Setiap coaching journal yang dicatat akan memberikan kesempatan bagi coachee-mu
+                      untuk memberikan{" "}
+                      <Text type={"label"} style={{ color: Colors.WHITE }}>
+                        feedback
+                      </Text>
+                      , sehingga kamu dapat terus melakukan improvement.
                     </Text>
-                    , sehingga kamu dapat terus melakukan improvement.
-                  </Text>
-                  <Spacer height={Spacing[32]} />
-                </VStack>
+                    <Spacer height={Spacing[32]} />
+                  </VStack>
+                </ImageBackground>
                 <VStack
                   style={{
                     backgroundColor: Colors.WHITE,

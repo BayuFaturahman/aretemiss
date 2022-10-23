@@ -1,5 +1,14 @@
 import React, {FC, useState, useEffect, useCallback} from 'react';
-import {View, StyleSheet, FlatList, TouchableOpacity, RefreshControl, ActivityIndicator, SafeAreaView} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  RefreshControl,
+  ActivityIndicator,
+  SafeAreaView,
+  ImageBackground
+} from 'react-native';
 import { HStack, VStack } from "@components/view-stack";
 import { GroupIconComponent } from './components/group-icon-component';
 import Spacer from "@components/spacer";
@@ -11,6 +20,7 @@ import { observer } from "mobx-react-lite";
 import { useStores } from '../../bootstrap/context.boostrap';
 import moment from 'moment';
 import { BrainstormGroup } from '@services/api/brainstorm/brainstorm-api.types';
+import {images} from "@assets/images";
 
 const BrainstormGroupList: FC<StackScreenProps<NavigatorParamList, "newBrainstormsGroup">> =
   observer(({navigation}) => {
@@ -67,20 +77,22 @@ const BrainstormGroupList: FC<StackScreenProps<NavigatorParamList, "newBrainstor
     // header component (title and subtitle)
     const renderHeader = useCallback(() => {
       return (
-        <VStack top={Spacing[8]} horizontal={Spacing[12]} bottom={Spacing[12]}>
-          <Text
-            type={"header"}
-            style={styles.titleTxt}
-            text="Idea Pools"
-          />
-          <Spacer height={Spacing[20]} />
-          <Text
-            type={"body"}
-            style={styles.subtitleTxt}
-            text="Di sinilah tempat kamu bertukar pikiran bersama dengan rekan kerjamu! Sebagai initiator, kamu bisa menambahkan “brainstorming group” dan mengundang rekan kerjamu untuk saling bertukar ide!"
-          />
-          <Spacer height={Spacing[48]} />
-        </VStack>
+        <ImageBackground source={images.bgPattern} style={{width: '100%'}} resizeMode={"cover"}>
+          <VStack top={Spacing[8]} horizontal={Spacing[12]} bottom={Spacing[12]}>
+            <Text
+              type={"header"}
+              style={styles.titleTxt}
+              text="Idea Pools"
+            />
+            <Spacer height={Spacing[20]} />
+            <Text
+              type={"body"}
+              style={styles.subtitleTxt}
+              text="Di sinilah tempat kamu bertukar pikiran bersama dengan rekan kerjamu! Sebagai initiator, kamu bisa menambahkan “brainstorming group” dan mengundang rekan kerjamu untuk saling bertukar ide!"
+            />
+            <Spacer height={Spacing[48]} />
+          </VStack>
+        </ImageBackground>
       );
     }, []);
 
@@ -234,10 +246,10 @@ const styles = StyleSheet.create({
     width: 200,
   },
   innerContainer: {
-    backgroundColor: Colors.UNDERTONE_BLUE,
+    backgroundColor: Colors.ABM_MAIN_BLUE,
   },
   outerContainer: {
-    backgroundColor: Colors.UNDERTONE_BLUE,
+    backgroundColor: Colors.ABM_MAIN_BLUE,
     flex: 1,
     justifyContent: "center",
   },
