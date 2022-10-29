@@ -1,5 +1,5 @@
 import React, {FC, useCallback, useEffect, useReducer, useState} from "react"
-import {FlatList, SafeAreaView, ScrollView, TouchableOpacity, View} from "react-native"
+import {FlatList, ImageBackground, SafeAreaView, ScrollView, TouchableOpacity, View} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {
@@ -15,6 +15,7 @@ import {EmptyList} from "@screens/coaching-journal/components/empty-list";
 import { useStores } from "../../bootstrap/context.boostrap"
 
 import Spinner from 'react-native-loading-spinner-overlay';
+import {images} from "@assets/images";
 
 export type ChoiceItemType = {
   id: string
@@ -197,9 +198,9 @@ const FillFeedbackCoachee: FC<StackScreenProps<NavigatorParamList, "fillFeedback
                     <View style={{
                       height: Spacing[24],
                       width: Spacing[24],
-                      backgroundColor: item.choice === i + 1 ? Colors.MAIN_RED : Colors.CLOUD_GRAY,
+                      backgroundColor: item.choice === i + 1 ? Colors.ABM_LIGHT_BLUE : Colors.ABM_BG_BLUE,
                       borderRadius: Spacing[128], borderWidth: Spacing[2],
-                      borderColor: item.choice === i + 1 ? Colors.MAIN_RED : Colors.MAIN_RED
+                      borderColor: item.choice === i + 1 ? Colors.ABM_LIGHT_BLUE : Colors.ABM_LIGHT_BLUE
                     }} />
                     <Text type={'body'} style={{textAlign: 'center'}}>
                       {i + 1}
@@ -214,16 +215,18 @@ const FillFeedbackCoachee: FC<StackScreenProps<NavigatorParamList, "fillFeedback
     }
 
     return (
-      <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: 'center'}}>
+      <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.ABM_MAIN_BLUE, flex: 1, justifyContent: 'center'}}>
         <SafeAreaView style={Layout.flex}>
-          <BackNavigation goBack={goBack} />
           <ScrollView>
-            <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
-              <Text type={'left-header'} style={{color: Colors.WHITE}} text="Feedback untuk coach" />
-              <Spacer height={Spacing[24]} />
-              <Text type={"header"} style={{color: Colors.WHITE, textAlign:'center', fontSize: Spacing[12]}}>Terima kasih sudah memberikan feedback untuk coach-mu! Inilah penilaian yang sudah kamu berikan untuk sesi coaching kali ini.</Text>
-              <Spacer height={Spacing[32]} />
-            </VStack>
+            <ImageBackground source={images.bgPattern} style={{width: '100%'}} resizeMode={"cover"}>
+              <BackNavigation goBack={goBack} />
+              <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
+                <Text type={'left-header'} style={{color: Colors.WHITE}} text="Feedback untuk coach" />
+                <Spacer height={Spacing[24]} />
+                <Text type={"header"} style={{color: Colors.WHITE, textAlign:'center', fontSize: Spacing[12]}}>Terima kasih sudah memberikan feedback untuk coach-mu! Inilah penilaian yang sudah kamu berikan untuk sesi coaching kali ini.</Text>
+                <Spacer height={Spacing[32]} />
+              </VStack>
+            </ImageBackground>
             <VStack top={Spacing[32]} horizontal={Spacing[24]} style={[Layout.heightFull, {backgroundColor: Colors.WHITE, borderTopStartRadius: Spacing[48], borderTopEndRadius: Spacing[48]}]}>
               <FlatList
                 ItemSeparatorComponent={()=><Spacer height={Spacing[24]} />}

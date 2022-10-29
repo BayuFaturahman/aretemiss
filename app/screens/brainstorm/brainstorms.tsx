@@ -223,12 +223,12 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
     return (
       <VStack
         testID="CoachingJournalMain"
-        style={{ backgroundColor: Colors.UNDERTONE_BLUE, flex: 1, justifyContent: "center" }}
+        style={{ backgroundColor: Colors.ABM_MAIN_BLUE, flex: 1, justifyContent: "center" }}
       >
         <VStack top={Spacing[48]} style={Layout.flex}>
           <BackNavigation goBack={goBack} />
           <ScrollView
-            style={{ backgroundColor: Colors.UNDERTONE_BLUE }}
+            style={{ backgroundColor: Colors.ABM_MAIN_BLUE }}
             refreshControl={<RefreshControl refreshing={isLoading} onRefresh={onRefresh} />}
           >
             <VStack top={Spacing[8]} horizontal={Spacing[12]} bottom={Spacing[12]}>
@@ -266,7 +266,7 @@ const Brainstorms: FC<StackScreenProps<NavigatorParamList, "brainstorms">> = obs
                       style={{
                         height: Spacing[64],
                         width: Spacing[64],
-                        backgroundColor: Colors.BRIGHT_BLUE,
+                        backgroundColor: Colors.ABM_LIGHT_BLUE,
                         borderRadius: Spacing[64],
                         flex: 1,
                         justifyContent: "center",

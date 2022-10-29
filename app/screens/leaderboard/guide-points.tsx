@@ -61,7 +61,7 @@ const GuidePoints: FC<StackScreenProps<NavigatorParamList, "guidePoints">> = obs
           <Text style={{width: '60%'}}>{data.desc}</Text>
           <Spacer />
           <VStack
-            style={{ backgroundColor: Colors.BRIGHT_BLUE, borderRadius: Spacing[24] }}
+            style={{ backgroundColor: Colors.ABM_LIGHT_BLUE, borderRadius: Spacing[24] }}
             horizontal={Spacing[12]}
             vertical={Spacing[4]}
           >
@@ -106,7 +106,7 @@ const GuidePoints: FC<StackScreenProps<NavigatorParamList, "guidePoints">> = obs
                       <HStack
                         horizontal={Spacing[12]}
                         vertical={Spacing[4]}
-                        style={{ backgroundColor: Colors.MAIN_BLUE, borderRadius: Spacing[20] }}
+                        style={{ backgroundColor: Colors.ABM_MAIN_BLUE, borderRadius: Spacing[20] }}
                       >
                         <Text type={"body"} style={{ color: Colors.WHITE }}>
                           {item.title}
