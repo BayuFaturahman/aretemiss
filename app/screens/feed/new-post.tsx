@@ -96,6 +96,7 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
   const [isCategoryError, setIsCategoryError] = useState<boolean>(false)
   const [feedCategory, setFeedCategory] = useState(feedStore.listFeedCategory)
 
+  const [isPhoto, setIsPhoto] = useState<boolean | null>(null)
 
   // const feedCategory = feedStore.listFeedCategory
 
@@ -134,21 +135,24 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
     
   }
  
-  const cameraHandler = useCallback(async (response: ImagePickerResponse) => {
+  const cameraHandler = useCallback(async (response: ImagePickerResponse, isPhoto: boolean) => {
+    console.log(response)
     if (!response.didCancel) {
       const formData = new FormData()
       // formData.append('files', response.assets[0].base64 )
       response.assets.forEach((asset, id) => {
+
+        const format = isPhoto ? "jpeg" : "mp4"
+
         formData.append("files", {
           ...response.assets[id],
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           uri:
             Platform.OS === "android"
               ? response.assets[id].uri
               : response.assets[id].uri.replace("file://", ""),
-          name: `feed-image-${
-            response.assets[id].fileName.toLowerCase().split(" ")[0]
-          }-${new Date().getTime()}.jpeg`,
+          name: `feed-image-${response.assets[id].fileName.toLowerCase().split(" ")[0]}-${new Date().getTime()}.${format}`,
           type: response.assets[id].type ?? "image/jpeg",
           size: response.assets[id].fileSize,
         })
@@ -173,32 +177,36 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
     }
   }, [selectedPicture, setSelectedPicture, uploadedPicture, setUploadedPicture])
   
-  const openGallery = useCallback(() => {
+  const openGallery = useCallback((isPhoto: boolean) => {
     actionSheetRef.current?.setModalVisible(false)
     launchImageLibrary(
       {
-        mediaType: "photo",
+        mediaType: isPhoto ? "photo" : "video",
         quality: qualityImage,
         maxWidth: maxWidthImage,
         maxHeight: maxHeightImage,
         includeBase64: false,
         selectionLimit: selectionPictLimit,
       },
-      cameraHandler,
+      async (response)=>{
+        await cameraHandler(response, isPhoto)
+      },
     )
   }, [])
 
-  const openCamera = useCallback(() => {
+  const openCamera = useCallback((isPhoto: boolean) => {
     actionSheetRef.current?.setModalVisible(false)
     launchCamera(
       {
-        mediaType: "photo",
+        mediaType: isPhoto ? "photo" : "video",
         quality: qualityImage,
         maxWidth: maxWidthImage,
         maxHeight: maxHeightImage,
         includeBase64: false,
       },
-      cameraHandler,
+      async (response)=>{
+        await cameraHandler(response, isPhoto)
+      },
     )
   }, [])
 
@@ -388,27 +396,65 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
       </SafeAreaView>
       <Spinner visible={feedStore.isLoading} textContent={"Memuat..."} />
       <ActionSheet ref={actionSheetRef}>
-        <VStack
-          style={{ justifyContent: "center" }}
-          vertical={Spacing[24]}
-          horizontal={Spacing[24]}
-        >
-          <Button
-            onPress={() => {
-              openGallery()
-            }}
-            type={"primary"}
-            text={"Galeri Foto 🖼️"}
-          />
-          <Spacer height={Spacing[12]} />
-          <Button
-            onPress={() => {
-              openCamera()
-            }}
-            type={"primary"}
-            text={"Kamera 📸"}
-          />
-        </VStack>
+        {
+          isPhoto === null ?
+            <VStack
+                style={{ justifyContent: "center" }}
+                vertical={Spacing[24]}
+                horizontal={Spacing[24]}
+            >
+                <Button
+                    onPress={() => {
+                      setIsPhoto(true)
+                    }}
+                    type={"primary"}
+                    text={"Foto 🖼️"}
+                />
+                <Spacer height={Spacing[12]} />
+                <Button
+                    onPress={() => {
+                      setIsPhoto(false)
+                    }}
+                    type={"primary"}
+                    text={"Video 🎥"}
+                />
+            </VStack> :
+            <>
+              <VStack
+                style={{ justifyContent: "center" }}
+                vertical={Spacing[24]}
+                horizontal={Spacing[24]}
+              >
+                <VStack style={[Layout.widthFull, Layout.flexCenter]} bottom={Spacing[12]}>
+                  <Text type={"body-bold"} style={{}} text={`Mengupload ${isPhoto === true ? "Foto 🖼" : "Video 🎥"}`} />
+                </VStack>
+                <Button
+                  onPress={() => {
+                    openGallery(isPhoto)
+                  }}
+                  type={"primary"}
+                  text={"Galeri Foto 🖼️"}
+                />
+                <Spacer height={Spacing[12]} />
+                <Button
+                  onPress={() => {
+                    openCamera(isPhoto)
+                  }}
+                  type={"primary"}
+                  text={"Kamera 📸"}
+                />
+                <VStack style={[Layout.widthFull, Layout.flexCenter]} top={Spacing[12]}>
+                  <Button
+                    onPress={() => {
+                      setIsPhoto(null)
+                    }}
+                    type={"secondary"}
+                    text={"Kembali"}
+                  />
+                </VStack>
+              </VStack>
+            </>
+        }
       </ActionSheet>
     </VStack>
   )

@@ -83,7 +83,7 @@ export default class FeedStore {
     data.forEach(post => {
       const postCreated = new Date(post.feed_created_at)
       // console.log('is lasSeen < created ', lastSeen.getTime() < postCreated.getTime())
-      const tempPost = {
+      const tempPost:FeedItemType = {
         id: post.feed_id,
         description: post.feed_description,
         imageUrl: post.feed_images_url,
@@ -100,7 +100,8 @@ export default class FeedStore {
         createdAt: post.feed_created_at,
         updatedAt: post.feed_updated_at,
         isDeleted: (post.feed_is_deleted === 1),
-        deletedAt: post.feed_deleted_at
+        deletedAt: post.feed_deleted_at,
+        thumbnail: post.feed_thumbnail ?? null
       }
       tempListFeeds.push(tempPost)
     })

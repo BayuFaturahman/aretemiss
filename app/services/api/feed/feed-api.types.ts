@@ -17,6 +17,7 @@ export type FeedApiModel = {
   "feed_author_team_2": string
   "feed_author_team_3": string
   "feed_type_name": string
+  "feed_thumbnail": string
 }
 
 export type CommentApiModel = {

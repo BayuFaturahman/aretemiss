@@ -16,6 +16,7 @@ export type FeedItemType = {
   deletedAt: string
   commentCount: number
   isNew: boolean
+  thumbnail: string | null
 }
 
 export type FeedPostCommentType = {

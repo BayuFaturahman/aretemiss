@@ -95,6 +95,31 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
   }
 
   const coverImage = () => {
+
+    if(data.thumbnail !== null){
+      return(
+        <TouchableOpacity
+          activeOpacity={0.8}
+          disabled={isFromHomePage}
+          style={{
+            height: Spacing[128],
+            borderRadius: Spacing[12],
+          }}
+          onPress={()=>{
+            // imageBeingTap(0)
+          }}>
+          <FastImage
+            style={{
+              height: Spacing[128],
+              borderRadius: Spacing[12],
+            }}
+            source={{uri: data.thumbnail}}
+            resizeMode={"cover"}
+          />
+        </TouchableOpacity>
+      )
+    }
+
     // console.log('list image: ', listImage, ' total: ', listImage.length)
     if (listImage.length === 0) {
       return null

@@ -3,6 +3,7 @@ import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
 import { GetListFeedsResult, PostUploadFeedImagesResult, CreatePostResult, DeletePostResult, GetListCommentResult, CreateCommentResult, CreateCommentToResult, DeleteCommentResult, GetListCommentNotification, GetPostDetailResult, GetListFeedCategoryResult } from "@services/api/feed/feed-api.types"
 import { CreateCommentToType, CreateCommentType, CreatePostType } from "@screens/feed/feed.type"
+import {DEFAULT_API_CONFIG} from "@services/api/api-config";
 
 export class FeedApi {
   private api: Api
@@ -14,11 +15,11 @@ export class FeedApi {
   async getListFeeds(page: number, limit: number): Promise<GetListFeedsResult> {
     console.log("getListFeeds()")
     try {
-      // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.get(`/feed`, {
         limit: limit,
         page: page
-      })
+      }, {baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/`})
+
       if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
@@ -122,6 +123,7 @@ export class FeedApi {
       const response: ApiResponse<any> = await this.api.apisauce.post(
         `/upload`,
         formData,
+        { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` }
       )
 
       if(response.status === 400){
