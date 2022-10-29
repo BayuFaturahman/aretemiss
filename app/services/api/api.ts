@@ -47,14 +47,6 @@ export class Api {
         Accept: "application/json",
       },
     })
-
-    this.apisauce.addAsyncResponseTransform(async response => {
-      console.log("+++response interceptor+++")
-      console.log(response.data.errorCode === 8)
-      if(response.data.errorCode === 8){
-        this.removeToken()
-      }
-    })
   }
 
   setToken(token){
