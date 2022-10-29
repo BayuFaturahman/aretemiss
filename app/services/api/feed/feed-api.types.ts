@@ -164,6 +164,21 @@ export type GetListFeedCategoryResponse = {
   data: FeedCategoryApiModel[]
 }
 
+export type PostFeedReactResponse = {
+  message: string
+  token: string
+  data: {
+    "feedReact": {
+      "id": string
+      "reaction": string
+      "feedId": string
+      "authorId": string
+      "feed_react_updated_at": string
+      "feed_react_created_at": string
+    }
+  }
+}
+
 
 export type GetListFeedsResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListFeedsResponse }  | GeneralApiProblem
 export type GetPostDetailResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetPostDetailResponse }  | GeneralApiProblem
@@ -176,3 +191,4 @@ export type CreateCommentToResult = { kind: "form-error"; response: ErrorFormRes
 export type DeleteCommentResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: DeleteCommentResponse }  | GeneralApiProblem
 export type GetListCommentNotification = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListCommentNotificationResponse }  | GeneralApiProblem
 export type GetListFeedCategoryResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListFeedCategoryResponse }  | GeneralApiProblem
+export type PostFeedReact = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: PostFeedReactResponse }  | GeneralApiProblem

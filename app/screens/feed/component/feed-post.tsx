@@ -7,11 +7,13 @@ import {Text, TextYellowLine} from "@components"
 import Spacer from "@components/spacer"
 import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png"
 import { FeedItemType } from "../feed.type"
+import VideoPlayer from "react-native-video-player"
 
 import trash from "@assets/icons/trash.png";
 import moment from "moment"
 import {Hyperlink} from "react-native-hyperlink";
 import {AngryColor, HappyColor, HeartColor, HeartGrey, IconLike, IconSadColor} from "@assets/svgs";
+import {useStores} from "../../../bootstrap/context.boostrap";
 
 type FeedPostProps = {
   data: FeedItemType;
@@ -31,6 +33,8 @@ const LIKE_ICON_LIST = [
 ]
 
 export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDetail = () => null, isFromHomePage }:FeedPostProps) => {
+
+  const { feedApi } = useStores();
 
   const [isLikeModal, setIsLikeModal] = useState(false)
 
@@ -98,25 +102,12 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
 
     if(data.thumbnail !== null){
       return(
-        <TouchableOpacity
-          activeOpacity={0.8}
-          disabled={isFromHomePage}
-          style={{
-            height: Spacing[128],
-            borderRadius: Spacing[12],
-          }}
-          onPress={()=>{
-            // imageBeingTap(0)
-          }}>
-          <FastImage
-            style={{
-              height: Spacing[128],
-              borderRadius: Spacing[12],
-            }}
-            source={{uri: data.thumbnail}}
-            resizeMode={"cover"}
-          />
-        </TouchableOpacity>
+        <VideoPlayer
+          video={{ uri: data.imageUrl }}
+          videoWidth={1600}
+          videoHeight={900}
+          thumbnail={{ uri: data.thumbnail }}
+        />
       )
     }
 
@@ -288,7 +279,9 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
           <Hyperlink
             linkDefault={ true }
             linkText={ url => `${url.substring(0,25)}...` }>
-            <Text type={"body"} text={data.description} />
+            <Text type={"body"} >
+              {data.description}
+            </Text>
           </Hyperlink>
         </HStack>
       </TouchableOpacity>
@@ -371,7 +364,11 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
               elevation: 2}}>
             {LIKE_ICON_LIST.map((iconItem)=>
               <TouchableOpacity
-                onPress={()=>{setIsLikeModal(false)}}
+                onPress={async ()=>{
+                  feedApi.reactToFeed(data.id, "happy").then(r => {
+                    setIsLikeModal(false)
+                  })
+                }}
               >
                 <HStack horizontal={Spacing[2]}>
                   {

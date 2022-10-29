@@ -14,6 +14,7 @@ import NotificationStore from "../store/store.notification";
 import LeaderboardStore from "../store/store.leaderboard";
 
 import {Api} from "@services/api";
+import {FeedApi} from "@services/api/feed/feed-api";
 
 export default class RootStore {
   authStore: AuthStore;
@@ -25,6 +26,8 @@ export default class RootStore {
   feedStore: FeedStore;
   notificationStore: NotificationStore;
   leaderboardStore: LeaderboardStore;
+
+  feedApi: FeedApi
 
   constructor(api: Api) {
 
@@ -38,5 +41,7 @@ export default class RootStore {
     this.notificationStore = new NotificationStore(this.api);
     this.leaderboardStore = new LeaderboardStore(this.api);
     this.brainstormStore = new BrainstormStore(this.api);
+
+    this.feedApi = new FeedApi(api)
   }
 }

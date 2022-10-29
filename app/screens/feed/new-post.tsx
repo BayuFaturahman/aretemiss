@@ -27,6 +27,8 @@ import Spinner from "react-native-loading-spinner-overlay"
 import { Formik } from "formik"
 import {debounce} from "lodash";
 
+import { createThumbnail } from "react-native-create-thumbnail";
+
 const NEW_ITEM_CONTAINER: StyleProp<any> = {
   zIndex: 10,
   height: Spacing[18],
@@ -97,6 +99,13 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
   const [feedCategory, setFeedCategory] = useState(feedStore.listFeedCategory)
 
   const [isPhoto, setIsPhoto] = useState<boolean | null>(null)
+  const [videoThumbnail, setVideoThumnail] = useState<string[]>([])
+
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+
+  useEffect(()=>{
+    actionSheetRef.current?.setModalVisible(false)
+  }, [isLoading])
 
   // const feedCategory = feedStore.listFeedCategory
 
@@ -136,13 +145,24 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
   }
  
   const cameraHandler = useCallback(async (response: ImagePickerResponse, isPhoto: boolean) => {
+    setIsLoading(true)
     console.log(response)
     if (!response.didCancel) {
       const formData = new FormData()
       // formData.append('files', response.assets[0].base64 )
-      response.assets.forEach((asset, id) => {
+      for (const asset of response.assets) {
+        const id = response.assets.indexOf(asset);
 
         const format = isPhoto ? "jpeg" : "mp4"
+
+        if(format === "mp4"){
+          console.log(asset.uri)
+          const thumbnail = await createThumbnail({
+            url: asset.uri,
+            timeStamp: 1,
+          })
+          setVideoThumnail((item) => [...item, `file://${thumbnail.path}`])
+        }
 
         formData.append("files", {
           ...response.assets[id],
@@ -156,7 +176,7 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
           type: response.assets[id].type ?? "image/jpeg",
           size: response.assets[id].fileSize,
         })
-      })
+      }
       // console.log("RESPONSE ASET: ", response.assets)
       // console.log(formData['_parts'])
 
@@ -175,10 +195,10 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
     } else {
       console.log("cancel")
     }
+    setIsLoading(false)
   }, [selectedPicture, setSelectedPicture, uploadedPicture, setUploadedPicture])
   
   const openGallery = useCallback((isPhoto: boolean) => {
-    actionSheetRef.current?.setModalVisible(false)
     launchImageLibrary(
       {
         mediaType: isPhoto ? "photo" : "video",
@@ -186,13 +206,16 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
         maxWidth: maxWidthImage,
         maxHeight: maxHeightImage,
         includeBase64: false,
-        selectionLimit: selectionPictLimit,
+        selectionLimit: isPhoto ? selectionPictLimit : 1,
       },
-      async (response)=>{
+      async (response) => {
         await cameraHandler(response, isPhoto)
       },
-    )
-  }, [])
+    ).then(r  =>{
+      // actionSheetRef.current?.setModalVisible(false)
+      // setIsLoading(false)
+    })
+  }, [actionSheetRef])
 
   const openCamera = useCallback((isPhoto: boolean) => {
     actionSheetRef.current?.setModalVisible(false)
@@ -207,7 +230,9 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
       async (response)=>{
         await cameraHandler(response, isPhoto)
       },
-    )
+    ).then(r  =>{
+      actionSheetRef.current?.setModalVisible(false)
+    })
   }, [])
 
   useEffect(() => {
@@ -281,7 +306,7 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
         <ScrollView
           refreshControl={
             <RefreshControl
-              //   refreshing={coachingStore.isLoading}
+              refreshing={isLoading}
               //   onRefresh={onRefresh}
               tintColor={Colors.MAIN_RED}
             />
@@ -323,6 +348,7 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
                   <TouchableOpacity
                     disabled={isAddPictDisabled}
                     onPress={() => {
+                      setIsPhoto(null)
                       actionSheetRef.current?.setModalVisible(true)
                     }}
                   >
@@ -344,6 +370,21 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
 
                   <ScrollView style={{ maxWidth: "85%" }} horizontal={true}>
                     {selectedPicture.map((pic, id) => {
+                      if(pic.type === "video/mp4"){
+
+                        return(
+                          <VStack key={id}>
+                            <NotificationCounter id={id} />
+                            <FastImage
+                              key={id}
+                              style={feedImageStyle}
+                              source={{uri: videoThumbnail[id]}}
+                              resizeMode={"cover"}
+                            />
+                          </VStack>
+                        )
+                      }
+
                       return (
                         <VStack key={id}>
                           <NotificationCounter id={id} />
@@ -413,6 +454,8 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
                 <Spacer height={Spacing[12]} />
                 <Button
                     onPress={() => {
+                      setSelectedPicture([])
+                      setUploadedPicture([])
                       setIsPhoto(false)
                     }}
                     type={"primary"}
