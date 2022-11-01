@@ -100,7 +100,8 @@ export class FeedApi {
     console.log("getPostDetail()")
     try {
       // make the api call
-      const response: ApiResponse<any> = await this.api.apisauce.get(`/feed/${postId}`, { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` })
+      const response: ApiResponse<any> = await this.api.apisauce.get(`/feed/${postId}`, {},
+        { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` })
       if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }

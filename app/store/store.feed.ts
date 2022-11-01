@@ -254,7 +254,7 @@ export default class FeedStore {
     this.postDetail = {
       id: data.feed_id,
       description: data.feed_description,
-      imageUrl: data.feed_images_url,
+      imageUrl: data.feed_images_url ?? "",
       author: {
         id: data.feed_author_id,
         nickname: data.feed_author_nickname,
@@ -268,7 +268,9 @@ export default class FeedStore {
       createdAt: data.feed_created_at,
       updatedAt: data.feed_updated_at,
       isDeleted: (data.feed_is_deleted === 1),
-      deletedAt: data.feed_deleted_at
+      deletedAt: data.feed_deleted_at,
+      thumbnail: data.feed_thumbnail ?? null,
+      feedReactions: data.feed_reactions ?? []
     }
     
     

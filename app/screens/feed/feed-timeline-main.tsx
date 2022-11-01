@@ -159,11 +159,12 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
     const goToDetails = useCallback(async (data: FeedItemType) => {
       setLastSeenFeed()
       resetNavigationParam()
+      await feedStore.getPostDetail(data.id)
       navigation.navigate("postDetails", {
-        data,
+        data: feedStore.postDetail,
         isFromMainFeed: true
       })
-    }, [])
+    }, [feedStore.postDetail, feedStore.getPostDetailSuccess])
 
     const resetNavigationParam = () => {
       feedStore.refreshData = false
@@ -201,25 +202,26 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
     }, []);
 
     useEffect(() => {
-      firstLoadFeed()
-      setCurrentPage(1)
+      if(currentPage === 1){
+        firstLoadFeed()
+      }
     }, [])
 
-    useEffect(() => {
-      if(isFocused === false){
-        setCurrentPage(1)
-        feedStore.clearListFeed()
-        setListFeeds([])
-      }
-    }, [isFocused])
+    // useEffect(() => {
+    //   if(isFocused === false){
+    //     setCurrentPage(1)
+    //     feedStore.clearListFeed()
+    //     setListFeeds([])
+    //   }
+    // }, [isFocused])
 
-    useEffect(()=>{
-      if(feedStore.refreshData || route.params?.newPost){
-        setTimeout(()=>{
-          firstLoadFeed()
-        }, 100)
-      }
-    },[route.params?.newPost,feedStore.refreshData])
+    // useEffect(()=>{
+    //   if(feedStore.refreshData || route.params?.newPost){
+    //     setTimeout(()=>{
+    //       firstLoadFeed()
+    //     }, 100)
+    //   }
+    // },[route.params?.newPost,feedStore.refreshData])
 
     useEffect(() => {
       // setListFeeds([])
