@@ -361,7 +361,9 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
           ) : null}
           <Hyperlink
             linkDefault={ true }
-            linkText={ url => `${url.substring(0,25)}...` }>
+            linkText={ url => `${url.substring(0,25)}...` }
+            linkStyle={{color: Colors.ABM_LIGHT_BLUE}}
+          >
             <Text type={"body"} >
               {data.description}
             </Text>
