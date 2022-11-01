@@ -163,16 +163,12 @@ android {
             keyPassword 'android'
         }
         release {
-//             if (project.hasProperty('ILEAD_UPLOAD_STORE_FILE')) {
-//                 storeFile file(ILEAD_UPLOAD_STORE_FILE)
-//                 storePassword ILEAD_UPLOAD_STORE_PASSWORD
-//                 keyAlias ILEAD_UPLOAD_KEY_ALIAS
-//                 keyPassword ILEAD_UPLOAD_KEY_PASSWORD
-//             }
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
+             if (project.hasProperty('ILEAD_UPLOAD_STORE_FILE')) {
+                 storeFile file(ILEAD_UPLOAD_STORE_FILE)
+                 storePassword ILEAD_UPLOAD_STORE_PASSWORD
+                 keyAlias ILEAD_UPLOAD_KEY_ALIAS
+                 keyPassword ILEAD_UPLOAD_KEY_PASSWORD
+             }
         }
     }
     buildTypes {
