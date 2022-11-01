@@ -1,3 +1,10 @@
+export type ReactionType = "love" | "thumbsUp" | "happy" | "sad" | "angry"
+
+export type FeedReactionItemType = {
+  feed_react_author_id: string,
+  feed_react_reaction: ReactionType
+}
+
 export type FeedItemType = {
   id: string
   description: string
@@ -17,6 +24,7 @@ export type FeedItemType = {
   commentCount: number
   isNew: boolean
   thumbnail: string | null
+  feedReactions: FeedReactionItemType[]
 }
 
 export type FeedPostCommentType = {

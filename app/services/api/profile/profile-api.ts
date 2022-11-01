@@ -222,6 +222,7 @@ export class ProfileApi {
       const response: ApiResponse<any> = await this.api.apisauce.post(
         `/upload`,
         formData,
+        {baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/`}
       )
 
       if(response.status === 400){

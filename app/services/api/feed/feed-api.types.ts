@@ -1,4 +1,5 @@
 import { GeneralApiProblem } from "../api-problem"
+import {FeedReactionItemType} from "@screens/feed/feed.type";
 
 export type FeedApiModel = {
   "feed_id": string
@@ -18,6 +19,7 @@ export type FeedApiModel = {
   "feed_author_team_3": string
   "feed_type_name": string
   "feed_thumbnail": string
+  "feed_reactions": FeedReactionItemType[]
 }
 
 export type CommentApiModel = {

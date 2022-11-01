@@ -1,12 +1,12 @@
-import React, { Fragment, useEffect, useState } from "react"
+import React, {Fragment, ReactElement, useEffect, useState} from "react"
 import { HStack, VStack } from "@components/view-stack"
 import { Colors, Spacing } from "@styles"
-import {TouchableOpacity, View} from "react-native"
+import {ActivityIndicator, RefreshControl, TouchableOpacity, View} from "react-native"
 import FastImage, { Source } from "react-native-fast-image"
 import {Text, TextYellowLine} from "@components"
 import Spacer from "@components/spacer"
 import nullProfileIcon from "@assets/icons/settings/null-profile-picture.png"
-import { FeedItemType } from "../feed.type"
+import {FeedItemType, ReactionType} from "../feed.type"
 import VideoPlayer from "react-native-video-player"
 
 import trash from "@assets/icons/trash.png";
@@ -14,6 +14,7 @@ import moment from "moment"
 import {Hyperlink} from "react-native-hyperlink";
 import {AngryColor, HappyColor, HeartColor, HeartGrey, IconLike, IconSadColor} from "@assets/svgs";
 import {useStores} from "../../../bootstrap/context.boostrap";
+import RNAnimated from "react-native-animated-component"
 
 type FeedPostProps = {
   data: FeedItemType;
@@ -24,21 +25,72 @@ type FeedPostProps = {
   isFromHomePage?: boolean;
 }
 
-const LIKE_ICON_LIST = [
-  HeartColor,
-  IconLike,
-  HappyColor,
-  IconSadColor,
-  AngryColor
+type LikeIconListItemType = {element: React.FC<any>, reaction: ReactionType}
+
+const LIKE_ICON_LIST:LikeIconListItemType[] = [
+  {
+    element: HeartColor,
+    reaction: "love"
+  },
+  {
+    element: IconLike,
+    reaction: "thumbsUp"
+  },
+  {
+    element: HappyColor,
+    reaction: "happy"
+  },
+  {
+    element: IconSadColor,
+    reaction: "sad"
+  },
+  {
+    element: AngryColor,
+    reaction: "angry"
+  }
 ]
+
+type FeedReactionIcon = ReactionType | "heartGrey"
+
+const LikeIconComponent:React.FC<{type: FeedReactionIcon, size: number}> = ({type = "heartGrey", size = 24}) => {
+  if(type === "heartGrey") {
+    return <HeartGrey width={Spacing[size]} height={Spacing[size]} />
+  }
+  else if(type === "love") {
+    return <HeartColor width={Spacing[size]} height={Spacing[size]} />
+  }
+  else if(type === "thumbsUp") {
+    return <IconLike width={Spacing[size]} height={Spacing[size]} />
+  }
+  else if(type === "happy") {
+    return <HappyColor width={Spacing[size]} height={Spacing[size]} />
+  }
+  else if(type === "sad") {
+    return <IconSadColor width={Spacing[size]} height={Spacing[size]} />
+  }
+  else if(type === "angry") {
+    return <AngryColor width={Spacing[size]} height={Spacing[size]} />
+  }
+  return <></>
+}
 
 export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDetail = () => null, isFromHomePage }:FeedPostProps) => {
 
-  const { feedApi } = useStores();
+  const { feedApi, mainStore } = useStores();
 
   const [isLikeModal, setIsLikeModal] = useState(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [currentLike, setCurrentLike] = useState<FeedReactionIcon>("heartGrey")
 
   const listImage = data.imageUrl ? data.imageUrl.split(";") : []
+
+  useEffect(()=>{
+    if(mainStore.userProfile.user_id !== null && mainStore.userProfile.user_id !== "" && data.feedReactions.length > 0){
+      const ownCurrentLike:FeedReactionIcon =
+        data.feedReactions.find((value) => value.feed_react_author_id === mainStore.userProfile.user_id).feed_react_reaction ?? "heartGrey"
+      setCurrentLike(ownCurrentLike)
+    }
+  }, [data.feedReactions, mainStore.userProfile.user_id])
 
   const imageListViewer = listImage.map((item)=>{
     return(
@@ -100,7 +152,7 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
 
   const coverImage = () => {
 
-    if(data.thumbnail !== null){
+    if(data.thumbnail !== null && data.thumbnail !== ""){
       return(
         <VideoPlayer
           video={{ uri: data.imageUrl }}
@@ -221,7 +273,7 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
       return 'baru saja'
     }
 
-    // return dayDiff
+    return ""
   }
 
 
@@ -255,7 +307,38 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
 
       <Spacer height={Spacing[2]} />
       {coverImage()}
-      <Spacer height={Spacing[8]} />
+      <Spacer height={Spacing[14]} />
+
+      {data.feedReactions.length > 0 &&
+        <VStack style={{zIndex: 100}}>
+          <HStack style={{position: 'absolute', width: '100%'}}>
+            <Spacer />
+            <HStack
+                vertical={Spacing[4]}
+                horizontal={Spacing[4]}
+                style={{
+                  backgroundColor: Colors.WHITE,
+                  top: -Spacing[12],
+                  borderRadius: Spacing[12], shadowColor: "#000",
+                  shadowOffset: {
+                    width: 0,
+                    height: 1,
+                  },
+                  shadowOpacity: 0.20,
+                  shadowRadius: 1.41,
+
+                  elevation: 2}}
+            >
+              {data.feedReactions.slice(0,5).map((value) =>
+                <HStack horizontal={Spacing[2]}>
+                  <LikeIconComponent type={value.feed_react_reaction} size={12} />
+                </HStack>
+              )}
+            </HStack>
+          </HStack>
+        </VStack>
+      }
+
       <TouchableOpacity onPress={()=>{goToDetail(data)}} disabled={isFromHomePage}>
         <HStack
           style={{ backgroundColor: Colors.ABM_BG_BLUE, borderRadius: Spacing[8] }}
@@ -348,44 +431,61 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
         <VStack left={Spacing[8]}>
           {
             isLikeModal &&
-              <HStack
-                  vertical={Spacing[8]}
-                  horizontal={Spacing[8]}
-                  style={{
-                    position: 'absolute', backgroundColor: Colors.WHITE,
-                    zIndex: 100, top: -Spacing[32], left: -Spacing[128],
-                    borderRadius: Spacing[12], shadowColor: "#000",
-                    shadowOffset: {
-                      width: 0,
-                      height: 1,
-                    },
-                    shadowOpacity: 0.20,
-                    shadowRadius: 1.41,
+              <RNAnimated appearFrom={"bottom"} animationDuration={100} style={{zIndex: 100}}>
+                  <HStack
+                      vertical={Spacing[8]}
+                      horizontal={Spacing[8]}
+                      style={{
+                        position: 'absolute', backgroundColor: Colors.WHITE,
+                        zIndex: 100, top: -Spacing[32], left: -Spacing[128],
+                        borderRadius: Spacing[12], shadowColor: "#000",
+                        shadowOffset: {
+                          width: 0,
+                          height: 1,
+                        },
+                        shadowOpacity: 0.20,
+                        shadowRadius: 1.41,
 
-                    elevation: 2}}
-              >
-                {LIKE_ICON_LIST.map((iconItem)=>
-                  <TouchableOpacity
-                    onPress={async ()=>{
-                      feedApi.reactToFeed(data.id, "happy").then(r => {
-                        setIsLikeModal(false)
-                      })
-                    }}
+                        elevation: 2}}
                   >
-                    <HStack horizontal={Spacing[2]}>
-                      {
-                        React.createElement(iconItem, {
-                          height: Spacing[24],
-                          width: Spacing[24]
-                        })
-                      }
-                    </HStack>
-                  </TouchableOpacity>
-                )}
-              </HStack>
+                    {isLoading ?
+                      <>
+                        <ActivityIndicator size="large" color={Colors.ABM_LIGHT_BLUE} />
+                      </> :
+                      <>
+                        {LIKE_ICON_LIST.map((iconItem, index) =>
+                          <RNAnimated appearFrom={"bottom"} animationDuration={(index + 1) * 100} style={{zIndex: 100}}>
+                            <TouchableOpacity
+                              onPress={async () => {
+                                setIsLoading(true)
+                                feedApi.reactToFeed(data.id, iconItem.reaction).then(r => {
+                                  setTimeout(resolve => resolve, 1500)
+                                  setIsLikeModal(false)
+                                  setCurrentLike(iconItem.reaction)
+                                  setIsLoading(false)
+                                }).finally(()=>{
+                                  setIsLoading(false)
+                                })
+                              }}
+                            >
+                              <HStack horizontal={Spacing[2]}>
+                                {
+                                  React.createElement(iconItem.element, {
+                                    height: Spacing[24],
+                                    width: Spacing[24]
+                                  })
+                                }
+                              </HStack>
+                            </TouchableOpacity>
+                          </RNAnimated>
+                        )}
+                      </>
+                    }
+                  </HStack>
+              </RNAnimated>
           }
           <TouchableOpacity onPress={()=>{setIsLikeModal(!isLikeModal)}} disabled={isFromHomePage}>
-            <HeartGrey width={Spacing[24]} height={Spacing[24]} />
+            <LikeIconComponent type={currentLike} size={24} />
           </TouchableOpacity>
         </VStack>
       </HStack>

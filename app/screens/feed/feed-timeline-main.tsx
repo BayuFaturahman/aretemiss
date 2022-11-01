@@ -8,6 +8,7 @@ import {
   StyleSheet,
 } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
+import { useIsFocused } from '@react-navigation/native'
 import { observer } from "mobx-react-lite"
 import {Text, BackNavigation, TextYellowLine} from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
@@ -119,9 +120,11 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
     const [listImageViewer, setListImageViewer] = useState(images);
     const [activeViewerIndex, setActiveViewerIndex] = useState<number>(0);
 
-    const [currentPage, setCurrentPage] = useState<number>(2);
+    const [currentPage, setCurrentPage] = useState<number>(1);
 
     const currentDateTime = new Date().toString();
+
+    const isFocused = useIsFocused();
 
     const goBack = () => {
       setLastSeenFeed()
@@ -178,6 +181,7 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
     const firstLoadFeed = debounce( async () => {
       await feedStore.clearListFeed()
       await loadFeed(1)
+      setCurrentPage(currentPage + 1)
     }, 500)
 
     const loadFeed = useCallback(async (page: number) => {
@@ -186,8 +190,10 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
     }, [])
 
     const onLoadMore = React.useCallback(async () => {
-      await loadFeed(currentPage)
-      setCurrentPage(currentPage + 1)
+      if(currentPage > 1){
+        await loadFeed(currentPage)
+        setCurrentPage(currentPage + 1)
+      }
     }, [currentPage]);
 
     const onRefresh = React.useCallback(async() => {
@@ -195,11 +201,20 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
     }, []);
 
     useEffect(() => {
-      firstLoadFeed()      
+      firstLoadFeed()
+      setCurrentPage(1)
     }, [])
 
+    useEffect(() => {
+      if(isFocused === false){
+        setCurrentPage(1)
+        feedStore.clearListFeed()
+        setListFeeds([])
+      }
+    }, [isFocused])
+
     useEffect(()=>{
-      if(feedStore.refreshData || route.params?.newPost){        
+      if(feedStore.refreshData || route.params?.newPost){
         setTimeout(()=>{
           firstLoadFeed()
         }, 100)
@@ -207,12 +222,12 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
     },[route.params?.newPost,feedStore.refreshData])
 
     useEffect(() => {
-      setListFeeds([])
-      setListFeeds(feedStore.listFeeds)
+      // setListFeeds([])
+      // setListFeeds(feedStore.listFeeds)
       setNewNotif(feedStore.newNotif)
       console.log('feedStore.newNotif ', feedStore.newNotif)
       console.log('newNotif ', newNotif)
-      
+
     }, [listFeeds, feedStore.getListFeedsSuccess, feedStore.newNotif, newNotif])
 
     const onImageFeedTap = useCallback( (index, imageList) => {
