@@ -1,5 +1,5 @@
-import React, {FC, useState} from "react"
-import {SafeAreaView, ScrollView, StyleSheet} from "react-native"
+import React, {FC, useEffect, useState} from "react"
+import {RefreshControl, SafeAreaView, ScrollView, StyleSheet} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { NavigatorParamList } from "@navigators/main-navigator"
@@ -12,6 +12,7 @@ import Spacer from "@components/spacer"
 import RNAnimated from "react-native-animated-component";
 import {dimensions} from "@config/platform.config";
 import {IconQuiz1, IconQuiz2, IconQuiz3} from "@assets/svgs";
+import {useStores} from "../../bootstrap/context.boostrap";
 
 export type JuaraQuizIconComponentType = {
   iconType: string
@@ -70,18 +71,42 @@ export type JuaraQuizItemType = {
 const JuaraQuizMain: FC<StackScreenProps<NavigatorParamList, "juaraQuizMain">> = observer(
   ({ navigation }) => {
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars,@typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    const { quizApi } = useStores()
+
     const [quizList, setQuizList] = useState<JuaraQuizListItem[]>(MOCK_QUIZ_ITEMS)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+
+    const loadQuiz = async () => {
+      setIsLoading(true)
+      quizApi.getQuizList(1, 99).then((r)=>{
+        if(r.kind==="ok"){
+          console.log(r.response)
+
+          const quizArr:JuaraQuizListItem[] = []
+
+          r.response.map(item => quizArr.push({
+            date: item.qtaker_updated_at,
+            icon: Math.floor(Math.random() * 3) + 1,
+            isDone: item.quiz_status === "active",
+            id: item.quiz_id,
+            score: item.total_question,
+            title: item.quiz_title
+          }))
+
+          setQuizList(quizArr)
+        }
+      })
+      setIsLoading(false)
+    }
+
+    useEffect(()=>{
+      loadQuiz()
+    }, [])
 
     const goBack = () => navigation.goBack()
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars,@typescript-eslint/ban-ts-comment
-    // @ts-ignore
     const startQuiz = () => navigation.navigate("juaraAssesmentQuiz")
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars,@typescript-eslint/ban-ts-comment
-    // @ts-ignore
     const quizDone = (score = 9, totalQuestions = 10) => navigation.navigate("juaraQuizResult",{
       score,
       totalQuestions
@@ -134,7 +159,15 @@ const JuaraQuizMain: FC<StackScreenProps<NavigatorParamList, "juaraQuizMain">> =
         style={styles.bg}
       >
         <SafeAreaView style={Layout.flex}>
-          <ScrollView>
+          <ScrollView
+            refreshControl={
+              <RefreshControl
+                refreshing={isLoading}
+                onRefresh={loadQuiz}
+                tintColor={Colors.MAIN_RED}
+              />
+            }
+          >
             <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
             <VStack horizontal={Spacing[24]}>
               <HStack style={Layout.widthFull}>

@@ -15,6 +15,7 @@ import LeaderboardStore from "../store/store.leaderboard";
 
 import {Api} from "@services/api";
 import {FeedApi} from "@services/api/feed/feed-api";
+import {QuizApi} from "@services/api/quiz/quiz-api";
 
 export default class RootStore {
   authStore: AuthStore;
@@ -28,6 +29,7 @@ export default class RootStore {
   leaderboardStore: LeaderboardStore;
 
   feedApi: FeedApi
+  quizApi: QuizApi
 
   constructor(api: Api) {
 
@@ -43,5 +45,6 @@ export default class RootStore {
     this.brainstormStore = new BrainstormStore(this.api);
 
     this.feedApi = new FeedApi(api)
+    this.quizApi = new QuizApi(api)
   }
 }
