@@ -13,6 +13,7 @@ import {
   RequestChangeDivisionResult
 } from "./profile-api.types";
 import {ProfileUpdateForm} from "@screens/auth/create-profile";
+import {DEFAULT_API_CONFIG} from "@services/api/api-config";
 
 export class ProfileApi {
   private api: Api
@@ -85,7 +86,8 @@ export class ProfileApi {
     console.log('getProfile() GetProfileResult',)
     try {
       // make the api call
-      const response: ApiResponse<any> = await this.api.apisauce.get(`/user/profile`)
+      const response: ApiResponse<any> = await this.api.apisauce.get(`/user/profile`,
+        {}, {baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/`})
       if(response.status === 400){
         const res = response.data
         return { kind: "form-error", response: res }

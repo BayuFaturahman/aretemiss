@@ -136,7 +136,7 @@ export class FeedApi {
       const response: ApiResponse<any> = await this.api.apisauce.post(
         `/upload`,
         formData,
-        { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` }
+        { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/`}
       )
 
       if(response.status === 400){
@@ -165,7 +165,8 @@ export class FeedApi {
     try {
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.post(
-        `/feed`, data
+        `/feed`, data,
+        { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` }
       )
 
       // console.log('createPost response', response)
