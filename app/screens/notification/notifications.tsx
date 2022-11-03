@@ -260,6 +260,24 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
                           />
                         </VStack>
                       </VStack> : null }
+                    {item.type === 'reaction_feed' ?
+                      <VStack>
+                        <Text type={'body'}>
+                          <Text type={'body-bold'} text={`${item.content} `} />
+                        </Text>
+                        <Spacer height={Spacing[4]} />
+                        <VStack right={Spacing[48]}>
+                          <Button
+                            type={"primary"}
+                            text={"Lihat postingan terkait."}
+                            style={{height:Spacing[32]}}
+                            textStyle={{fontSize: Spacing[14], lineHeight: Spacing[18]}}
+                            onPress={()=>{
+                              goToPostDetail(item.data.feedId)}
+                            }
+                          />
+                        </VStack>
+                      </VStack> : null }
                     {/* {item.type === 'liked' ? */}
                     {/*  <VStack> */}
                     {/*    <Text type={'body-bold'}> */}

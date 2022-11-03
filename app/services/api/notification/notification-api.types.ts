@@ -1,6 +1,6 @@
 import { GeneralApiProblem } from "../api-problem"
 
-export type NotificationType = "request_feedback" | "submitted_feedback" | "submitted_comment"
+export type NotificationType = "request_feedback" | "submitted_feedback" | "submitted_comment" | "reaction_feed"
 
 export type NotificationItemModel = {
   "notification_id": string;
