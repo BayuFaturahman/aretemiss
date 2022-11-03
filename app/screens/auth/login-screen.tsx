@@ -114,7 +114,7 @@ const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
           <FastImage style={{
             height: Spacing[256],
             width: '100%'
-          }} source={images.abmWoman} resizeMode={"contain"}/>
+          }} source={images.loginMan} resizeMode={"contain"}/>
           <Spacer />
           <VStack top={Spacing[24]} horizontal={Spacing[24]}>
             <Text type={'header'} text="Selamat datang di iLEAD." />
