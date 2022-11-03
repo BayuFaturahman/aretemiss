@@ -38,6 +38,7 @@ import Spinner from "react-native-loading-spinner-overlay"
 
 import {debounce} from "lodash";
 import Modal from "react-native-modalbox"
+import {Hyperlink} from "react-native-hyperlink";
 
 const FEED_EXAMPLE_DATA_ITEM: FeedTimelineItem = {
   id: "0",
@@ -439,6 +440,8 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
             }
             renderItem={({item, index})=> {
 
+              console.log(item)
+
               const profileComponent = (isAuthor = false) => {
                 if (isAuthor) {
                   return(
@@ -527,7 +530,7 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                 <VStack left={Spacing[24]}>
                   <HStack style={{width: '100%'}}>
                     <HStack
-                      style={{ backgroundColor: item.isOwnComment ? Colors.UNDERTONE_BLUE: Colors.LIGHT_GRAY,
+                      style={{ backgroundColor: item.isOwnComment ? Colors.ABM_BG_BLUE: Colors.ABM_BG_BLUE,
                         borderRadius: Spacing[8],
                         width:  item.isOwnComment ? '93%': '100%' }}
                       horizontal={Spacing[12]}
@@ -535,19 +538,27 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                     >
                       <Text
                         type={"body"}
-                        style={{color: item.isOwnComment ? Colors.WHITE : Colors.UNDERTONE_BLUE}}
+                        style={{color: item.isOwnComment ? Colors.ABM_MAIN_BLUE : Colors.ABM_MAIN_BLUE}}
                       >
                         {item.replyToNickname !== "" ?
                           // <VStack right={Spacing[4]}>
                             <Text
-                              style={{fontSize: Spacing[14], color: item.isOwnComment ? Colors.WHITE : Colors.MAIN_BLUE}}
+                              style={{fontSize: Spacing[14], color: item.isOwnComment ? Colors.ABM_MAIN_BLUE : Colors.ABM_MAIN_BLUE}}
                               type={"body-bold"}
                               text={`@${item.replyToNickname} `}
                             />
                           // <View style={{height: Spacing[2], backgroundColor: Colors.MAIN_RED, width: '100%', position: 'absolute', bottom: 0}}></View>
                         // </VStack> 
                         : <></>}
-                        {item.comment}
+                        <Hyperlink
+                          linkDefault={ true }
+                          linkText={ url => `${url.substring(0,25)}...` }
+                          linkStyle={{color: Colors.ABM_LIGHT_BLUE}}
+                        >
+                          <Text type={"body"} >
+                            {item.comment}
+                          </Text>
+                        </Hyperlink>
                       </Text>
                     </HStack>
                     {item.isOwnComment ? 
