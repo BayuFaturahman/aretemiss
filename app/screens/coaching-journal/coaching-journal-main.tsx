@@ -239,7 +239,7 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
                   }}
                 >
                   <NewButton onPress={newEntry} />
-                  {coachingData.length === 0 ? (
+                  {coachingData.length === 0 && !initialLoading && !coachingStore.isLoading ? (
                     <FastImage
                       style={{
                         height: Spacing[96],
@@ -262,7 +262,7 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
               </VStack>
             }
             ListFooterComponent={
-              coachingData.length === 0 ? null : (
+              coachingData.length === 0 && !initialLoading && !coachingStore.isLoading ? null : (
                 <VStack vertical={Spacing[24]} style={{ backgroundColor: Colors.WHITE }}>
                   <ActivitiesTypeLegends />
                 </VStack>
