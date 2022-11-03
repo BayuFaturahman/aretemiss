@@ -31,18 +31,21 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
 
     const [currentPage, setCurrentPage] = useState<number>(2)
 
+    const [initialLoading, setInitialLoading] = useState<boolean>(true)
+
     const onLoadMore = React.useCallback(async () => {
-      console.log("load more journal")
-      await loadJournal(currentPage)
-      setCurrentPage(currentPage + 1)
-    }, [currentPage])
+      if(!coachingStore.isLoading){
+        console.log("load more journal")
+        await loadJournal(currentPage).then(r =>
+          setCurrentPage(currentPage + 1))
+      }
+    }, [currentPage, coachingStore.isLoading])
 
     const loadJournal = async (page: number) => {
       await coachingStore.getJournal(page)
     }
 
     const onRefresh = React.useCallback(async () => {
-      setCoachingData([])
       setCurrentPage(2)
       firstLoadJournal()
     }, [])
@@ -109,6 +112,9 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
     const firstLoadJournal = debounce( async () => {
       await coachingStore.clearJournal()
       await loadJournal(1)
+      setTimeout(()=>{
+        setInitialLoading(false)
+      }, 2000)
     }, 500)
 
     useEffect(() => {
@@ -190,9 +196,9 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
                 <Spacer height={Spacing[24]} />
               </VStack>
             )}
-            data={coachingData}
+            data={initialLoading ? [] : coachingData}
             // data={[]}
-            ListEmptyComponent={() => <EmptyList />}
+            ListEmptyComponent={() => coachingStore.isLoading || initialLoading ? <ActivityIndicator animating={true} /> : <EmptyList />}
             renderItem={({ item, index }) => (
               <VStack horizontal={Spacing[24]} style={{ backgroundColor: Colors.WHITE }}>
                 <CoachingJournalItemRender

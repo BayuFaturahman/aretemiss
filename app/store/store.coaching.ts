@@ -194,7 +194,7 @@ export default class CoachingStore {
     makeAutoObservable(this);
   }
 
-  async getJournal(page = 1, limit = 5){
+  async getJournal(page = 1, limit = 3){
     this.isLoading = true
     try {
       const result = await this.coachingApi.getJournalList(page, limit)
