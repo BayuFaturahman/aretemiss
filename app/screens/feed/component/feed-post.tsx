@@ -14,7 +14,7 @@ import moment from "moment"
 import {Hyperlink} from "react-native-hyperlink";
 import {AngryColor, HappyColor, HeartColor, HeartGrey, IconLike, IconSadColor} from "@assets/svgs";
 import {useStores} from "../../../bootstrap/context.boostrap";
-import RNAnimated from "react-native-animated-component"
+// import RNAnimated from "react-native-animated-component"
 
 type FeedPostProps = {
   data: FeedItemType;
@@ -44,10 +44,10 @@ const LIKE_ICON_LIST:LikeIconListItemType[] = [
     element: IconSadColor,
     reaction: "sad"
   },
-  {
-    element: AngryColor,
-    reaction: "angry"
-  }
+  // {
+  //   element: AngryColor,
+  //   reaction: "angry"
+  // }
 ]
 
 type FeedReactionIcon = ReactionType | "heartGrey"
@@ -87,7 +87,7 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
   useEffect(()=>{
     if(mainStore.userProfile.user_id !== null && mainStore.userProfile.user_id !== "" && data.feedReactions.length > 0){
       const ownCurrentLike:FeedReactionIcon =
-        data.feedReactions.find((value) => value.feed_react_author_id === mainStore.userProfile.user_id).feed_react_reaction ?? "heartGrey"
+        data.feedReactions.find((value) => value.feed_react_author_id === mainStore.userProfile.user_id)?.feed_react_reaction ?? "heartGrey"
       setCurrentLike(ownCurrentLike)
     }
   }, [data.feedReactions, mainStore.userProfile.user_id])
@@ -151,7 +151,6 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
   }
 
   const coverImage = () => {
-
     if(data.thumbnail !== null && data.thumbnail !== ""){
       return(
         <VideoPlayer
@@ -161,6 +160,8 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
           thumbnail={{ uri: data.thumbnail }}
         />
       )
+    } else if (data.thumbnail === null) {
+      return null
     }
 
     // console.log('list image: ', listImage, ' total: ', listImage.length)
