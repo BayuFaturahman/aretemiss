@@ -1,4 +1,4 @@
-export type ReactionType = "love" | "thumbsUp" | "happy" | "sad" | "angry"
+export type ReactionType = "love" | "thumbsUp" | "happy" | "sad"
 
 export type FeedReactionItemType = {
   feed_react_author_id: string,

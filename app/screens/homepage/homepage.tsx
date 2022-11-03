@@ -564,13 +564,13 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
               />
               <Spacer height={Spacing[42]} />
               <HStack bottom={Spacing[12]}>
-                {getMood("Senang")}
                 <Spacer />
+                {getMood("Senang")}
                 <Spacer />
                 {getMood("Sedih")}
                 <Spacer />
-                <Spacer />
-                {getMood("Marah")}
+                {/*<Spacer />*/}
+                {/*{getMood("Marah")}*/}
               </HStack>
               <HStack bottom={Spacing[12]}>
                 <Spacer />
