@@ -84,10 +84,10 @@ export default class AuthStore {
     makeAutoObservable(this);
 
     this.api.apisauce.addAsyncResponseTransform(async response => {
+      console.log(`Raw Response: ${JSON.stringify(response)}`)
       console.log("+++response interceptor+++")
       console.log(`Error Code: ${response.data.errorCode}`)
       console.log(`Status: ${response.status}`)
-      console.log(`Raw Response: ${JSON.stringify(response)}`)
       if(response.data.errorCode === 8 || response.data.errorCode === 9 || response.data.errorCode === 41){
         this.resetAuthStore().then(()=>{
           // RNRestart.Restart();

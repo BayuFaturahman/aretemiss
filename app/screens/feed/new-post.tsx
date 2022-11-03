@@ -348,6 +348,10 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
                   <TouchableOpacity
                     disabled={isAddPictDisabled}
                     onPress={() => {
+                      if (!isPhoto){
+                        setSelectedPicture([])
+                        setUploadedPicture([])
+                      }
                       setIsPhoto(null)
                       actionSheetRef.current?.setModalVisible(true)
                     }}
