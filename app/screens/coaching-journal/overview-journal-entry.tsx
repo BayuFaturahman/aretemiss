@@ -867,7 +867,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                           onPress={() => verifyData(values)}
                         />
                       ) : (
-                        <Button type={"warning"} text={"Simpan"} onPress={() => verifyData(values)} />
+                        <Button type={"light-blue"} text={"Simpan"} onPress={() => verifyData(values)} />
                       )}
                     </VStack>
                     <VStack horizontal={Spacing[24]} bottom={Spacing[24]}>
