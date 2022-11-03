@@ -16,13 +16,9 @@ const JuaraQuizResult: FC<StackScreenProps<NavigatorParamList, "juaraQuizResult"
   ({ navigation, route }) => {
 
     const { score, totalQuestions } = route.params
-
-
     const goBack = () => navigation.goBack()
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars,@typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const startQuiz = () => navigation.navigate("juaraAssesmentQuiz")
+    const backToMain = () => navigation.navigate("juaraQuizMain")
 
     return (
       <VStack
@@ -31,7 +27,6 @@ const JuaraQuizResult: FC<StackScreenProps<NavigatorParamList, "juaraQuizResult"
       >
         <SafeAreaView style={Layout.flex}>
           <ScrollView>
-            <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
             <Spacer height={Spacing[12]} />
             <VStack horizontal={Spacing[24]}>
               <HStack style={Layout.widthFull}>
@@ -57,10 +52,10 @@ const JuaraQuizResult: FC<StackScreenProps<NavigatorParamList, "juaraQuizResult"
                 <Button type={'primary'} text={'Selamat!'} style={{backgroundColor: Colors.ABM_YELLOW}} textStyle={{color: Colors.ABM_MAIN_BLUE}} disabled />
                 <VStack vertical={Spacing[16]} horizontal={Spacing["64"]}>
                   <Text style={{textAlign: 'center'}} type={"body-bold"}>Inilah perolehan nilai quiz JUARA ini!</Text>
-                  <Text style={{textAlign: 'center',fontSize: Spacing[72], color: Colors.ABM_GREEN}} type={"body-bold"}>9</Text>
-                  <Text style={{textAlign: 'center'}} type={"body-bold"}>dari 10 pertanyaan.</Text>
+                  <Text style={{textAlign: 'center',fontSize: Spacing[72], color: Colors.ABM_GREEN}} type={"body-bold"}>{score}</Text>
+                  <Text style={{textAlign: 'center'}} type={"body-bold"}>{`dari ${totalQuestions} pertanyaan.`}</Text>
                 </VStack>
-                <Button type={'light-blue'} text={'Oke'} onPress={navigation.goBack}/>
+                <Button type={'light-blue'} text={'Oke'} onPress={backToMain}/>
               </VStack>
             </RNAnimated>
           </ScrollView>

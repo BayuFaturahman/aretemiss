@@ -18,8 +18,9 @@ export type QuizItemResponse = {
   "total_question": number
 }
 
-export type QuizQuestionItem = {
-
+export type QuizQuestionOptionsPair = {
+  "id": string
+  "name": string
 }
 
 export type QuizDetailResponse = {
@@ -30,28 +31,9 @@ export type QuizDetailResponse = {
   "quiz_created_at": string
   "quiz_updated_at": string
   "quiz_deleted_at": null | string
-  "questions": [
-    {
-      "id": "afbe7163-8238-4b4d-b7c3-040d13284995",
-      "name": "jawaban 1",
-      "options": []
-    },
-    {
-      "id": "bab32f66-f483-436f-9a8d-093a7cbcc41d",
-      "name": "jawaban 4",
-      "options": []
-    },
-    {
-      "id": "d4026519-6bef-4e72-8955-b0d6f0004265",
-      "name": "jawaban 3",
-      "options": []
-    },
-    {
-      "id": "e75db5f4-bb2c-4f72-bb23-88854d08dee5",
-      "name": "jawaban 2",
-      "options": []
-    }
-  ]
+  "questions": Array<QuizQuestionOptionsPair & {options: QuizQuestionOptionsPair[]}>
 }
 
 export type QuizListResult = { kind: "ok"; response: QuizItemResponse[] }  | GeneralApiProblem
+export type QuizDetailResult = { kind: "ok"; response: QuizDetailResponse }  | GeneralApiProblem
+export type PostAnswerResult = { kind: "ok"; response: {point: number} }  | GeneralApiProblem

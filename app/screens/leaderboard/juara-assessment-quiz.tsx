@@ -1,5 +1,5 @@
-import React, {FC, useCallback, useEffect, useRef, useState} from "react"
-import {Animated, FlatList, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View} from "react-native"
+import React, {FC, useCallback, useEffect, useReducer, useRef, useState} from "react"
+import {Alert, Animated, FlatList, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { NavigatorParamList } from "@navigators/main-navigator"
@@ -11,80 +11,152 @@ import Spacer from "@components/spacer"
 
 import { EmptyList } from "@screens/coaching-journal/components/empty-list"
 import {dimensions} from "@config/platform.config";
+import moment from "moment";
+import {JuaraQuizListItem} from "@screens/leaderboard/juara-quiz-main";
+import {useStores} from "../../bootstrap/context.boostrap";
+import {QuizQuestionOptionsPair} from "@services/api/quiz/quiz-api.types";
 
 export type QuizQuestionItem = {
   id: string
   question: string
-  answers: string[]
-  choice: 0 | 1 | 2 | 3 | 4
+  answers: QuizQuestionOptionsPair[]
 }
 
 const EXAMPLE_DATA: Array<QuizQuestionItem> = [
   {
     id: "0",
     question: "Sebagai seorang leader, jika ada anggota tim yang mengalami kesulitan untuk menyelesaikan tugasnya, apa yang sebaiknya dilakukan?",
-    choice: 0,
-    answers: ['a', 'b', 'c', 'd']
+    answers: [{id: '1', name: "Iya"}, {id: '1', name: "Iya"}]
   },
   {
     id: "1",
     question: "Sebagai seorang leader, jika ada anggota tim yang mengalami kesulitan untuk menyelesaikan tugasnya, apa yang sebaiknya dilakukan?",
-    choice: 0,
-    answers: ['a', 'b', 'c', 'd']
+    answers: [{id: '1', name: "Iya"}, {id: '1', name: "Iya"}]
   },
   {
     id: "2",
     question: "Sebagai seorang leader, jika ada anggota tim yang mengalami kesulitan untuk menyelesaikan tugasnya, apa yang sebaiknya dilakukan?",
-    choice: 0,
-    answers: ['a', 'b', 'c', 'd']
+    answers: [{id: '1', name: "Iya"}, {id: '1', name: "Iya"}]
   },
   {
     id: "3",
     question: "Sebagai seorang leader, jika ada anggota tim yang mengalami kesulitan untuk menyelesaikan tugasnya, apa yang sebaiknya dilakukan?",
-    choice: 0,
-    answers: ['a', 'b', 'c', 'd']
+    answers: [{id: '1', name: "Iya"}, {id: '1', name: "Iya"}]
   },
 ]
 
 const JuaraAssesmentQuiz: FC<StackScreenProps<NavigatorParamList, "juaraAssesmentQuiz">> = observer(
-  ({ navigation }) => {
+  ({ navigation, route }) => {
     const goBack = () => navigation.goBack()
 
-    // const scrollRef:React.MutableRefObject<ScrollView> = useRef(null)
-    const [scrollRef, setScrollRef] = useState(null)
-    const currentScrollPos:number = useRef(0)
+    const { id } = route.params
 
     const [questions, setQuestions] = useState<Array<QuizQuestionItem>>(EXAMPLE_DATA)
     const [activeQuestion, setActiveQuestion] = useState<string>("1")
     const [currentScroll, setCurrentScroll] = useState<number>(0)
 
-    const scrollNext = useCallback(()=>{
-      scrollRef.current.scrollTo({
-        y: currentScroll + 1,
-        animated: true
-      })
-      console.log(currentScroll)
-    },[currentScroll, scrollRef])
+    const [activeQs, setActiveQs] = useState<number>(0)
 
-    // const selectFeedbackItem = useCallback(
-    //   (id, choice) => {
-    //     const updated = feedbackData.map((item) => {
-    //       if (item.id === id) {
-    //         return { ...item, choice: choice }
-    //       }
-    //       return item
-    //     })
-    //
-    //     setFeedbackData(updated)
-    //   },
-    //   [feedbackData],
-    // )
+    const { quizApi } = useStores()
+
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [answerList, setAnswerList] = useState<string[]>([])
+
+    const [, forceUpdate] = useReducer(x => x + 1, 0);
+
+    const goNext = () => {
+      if(activeQs < questions.length - 1){
+        setActiveQs(activeQs + 1)
+      }
+    }
+
+    const goPrev = () => {
+      if(activeQs > 0){
+        setActiveQs(activeQs - 1)
+      }
+    }
+
+    const loadQuizDetail = async () => {
+      setIsLoading(true)
+      await quizApi.getQuizDetail(id).then((r)=>{
+        if(r.kind==="ok"){
+          console.log(r.response)
+
+          const questionsList:QuizQuestionItem[] = []
+
+          r.response.questions.map((value)=>
+            questionsList.push({
+              id: value.id,
+              answers: value.options,
+              question: value.name
+            })
+          )
+
+          const answerTemp = new Array(questionsList.length)
+
+          setAnswerList(answerTemp)
+
+          setQuestions(questionsList)
+        }
+      })
+      setIsLoading(false)
+    }
+
+    useEffect(()=> {
+      console.log("answerlist", answerList)
+    },[answerList])
+
+    const answerQs = (answer: string, index: number) => {
+      setAnswerList(prevState => {
+        const temp = prevState
+        temp[index] = answer
+        
+        return(
+          temp
+        )
+      })
+      goNext()
+      forceUpdate()
+    }
+
+    const quizDone = (score = 9, totalQuestions = 10) => navigation.navigate("juaraQuizResult",{
+      score,
+      totalQuestions
+    })
+
+    const createTwoButtonAlert = () =>
+      Alert.alert(
+        "Perhatian",
+        "Anda belum mengisi semua jawaban quiz!",
+        [
+          { text: "OK", onPress: () => console.log("OK Pressed") }
+        ]
+      );
+
+    const postAnswer = async () => {
+      setIsLoading(true)
+
+      const isValid = answerList.findIndex((i)=> {
+        return i === undefined
+      })
+
+      if(isValid === -1){
+        await quizApi.postQuizAnswer(id, answerList).then(r => {
+          if(r.kind === "ok"){
+            quizDone(r.response.point, questions.length)
+          }
+        })
+      }else{
+        createTwoButtonAlert()
+      }
+      setIsLoading(false)
+    }
 
     useEffect(()=>{
-      console.log(currentScroll)
-    },[currentScroll])
+      loadQuizDetail()
+    },[])
     
-    const AnswerItemComponent = ({answer, index, selectedIndex}: {answer: string, index: number, selectedIndex: number}) => {
+    const AnswerItemComponent = ({ answer, index, selectedIndex, answerQs, qIndex}: { answer: QuizQuestionOptionsPair, index: number, selectedIndex: number, answerQs(answer: string, index: number): void, qIndex: number}) => {
       const isSelected:boolean = selectedIndex === index
 
       const styles = StyleSheet.create({
@@ -94,7 +166,7 @@ const JuaraAssesmentQuiz: FC<StackScreenProps<NavigatorParamList, "juaraAssesmen
       });
       
       return(
-        <TouchableOpacity>
+        <TouchableOpacity onPress={()=> answerQs(answer.id, qIndex)}>
           <HStack vertical={Spacing[4]} horizontal={Spacing[12]} style={styles.container}>
             <View style={styles.bullet} />
             <Spacer width={Spacing[4]} />
@@ -102,11 +174,38 @@ const JuaraAssesmentQuiz: FC<StackScreenProps<NavigatorParamList, "juaraAssesmen
               type={"body-bold"}
               style={styles.text}
             >
-              {answer}
+              {answer.name}
             </Text>
           </HStack>
           <Spacer height={Spacing[8]} />
         </TouchableOpacity>
+      )
+    }
+
+    const QuestionComponent = ({q}:{q: QuizQuestionItem}) => {
+      return(
+        <VStack key={`q-${q.id}`} style={{ width: dimensions.screenWidth}}>
+          <VStack top={Spacing[8]} horizontal={Spacing[32]} bottom={Spacing[12]}>
+            <Text
+              type={"body-bold"}
+              style={{ color: Colors.ABM_MAIN_BLUE, textAlign: "center", fontSize: Spacing[12] }}
+            >
+              {q.question}
+            </Text>
+            <Spacer height={Spacing[32]} />
+          </VStack>
+          <VStack
+            top={Spacing[32]}
+            horizontal={Spacing[24]}
+          >
+            {q.answers.map((answer, answerIndex)=> {
+              return(
+                <AnswerItemComponent key={`${q.id}-${answer}`} qIndex={activeQs} answer={answer} index={answerIndex} selectedIndex={q.answers.findIndex(value => value.id === answerList[activeQs])}  answerQs={answerQs}/>
+              )
+            })}
+            <Spacer height={Spacing[32]} />
+          </VStack>
+        </VStack>
       )
     }
 
@@ -128,57 +227,31 @@ const JuaraAssesmentQuiz: FC<StackScreenProps<NavigatorParamList, "juaraAssesmen
             />
           </HStack>
           <Spacer height={Spacing[24]} />
-          <ScrollView
-            onScroll={Animated.event(
-              [],
-              {useNativeDriver: false, listener: (event) => setCurrentScroll(event.nativeEvent.contentOffset.x)})}
-            ref={setScrollRef}
-                      horizontal
-                      snapToInterval={dimensions.screenWidth}
-                      decelerationRate={"fast"}
-                      showsHorizontalScrollIndicator={false}
-                      // onScrollEndDrag={(event)=>{
-                      //   currentScrollPos = event.nativeEvent.contentOffset.y
-                      //   setCurrentScroll(event.nativeEvent.contentOffset.y)
-                      // }}
-          >
-            {questions.map((value)=>
-              <VStack key={`q-${value.id}`} style={{ width: dimensions.screenWidth}}>
-              <VStack top={Spacing[8]} horizontal={Spacing[32]} bottom={Spacing[12]}>
-                <Text
-                  type={"body-bold"}
-                  style={{ color: Colors.ABM_MAIN_BLUE, textAlign: "center", fontSize: Spacing[12] }}
-                >
-                  {value.question}
-                </Text>
-                <Spacer height={Spacing[32]} />
-              </VStack>
-              <VStack
-                top={Spacing[32]}
-                horizontal={Spacing[24]}
-              >
-                {value.answers.map((answer, answerIndex)=> {
-                  return(
-                    <AnswerItemComponent key={`${value.id}-${answer}`} answer={answer} index={answerIndex} selectedIndex={1} />
-                  )
-                })}
-                <Spacer height={Spacing[32]} />
-              </VStack>
-            </VStack>)}
-          </ScrollView>
-          {/* <Button */}
-          {/*  key={`n-${currentScroll}`} */}
-          {/*  type={'primary'} */}
-          {/*  text={'Next'} */}
-          {/*  onPress={()=>{ */}
-          {/*    scrollRef.scrollTo({ */}
-          {/*      y: currentScroll + 1, */}
-          {/*      animated: true */}
-          {/*    }) */}
-          {/*    console.log(currentScroll) */}
-          {/*  }} */}
-          {/*  style={{paddingHorizontal: Spacing[24]}} */}
-          {/* /> */}
+          <QuestionComponent q={questions[activeQs]} />
+          <HStack top={Spacing[12]} horizontal={Spacing[32]}>
+            { !(activeQs === 0) &&
+              <Button
+                type={'primary'}
+                text={'Previous'}
+                onPress={goPrev}
+                style={{paddingHorizontal: Spacing[24]}}
+            />}
+            <Spacer />
+            { !(activeQs === questions.length - 1) ?
+              <Button
+                type={'primary'}
+                text={'Next'}
+                onPress={goNext}
+                style={{paddingHorizontal: Spacing[24]}}
+              /> :
+                <Button
+                  type={'primary-dark'}
+                  text={'Submit'}
+                  onPress={postAnswer}
+                  style={{paddingHorizontal: Spacing[24]}}
+                />
+            }
+          </HStack>
         </SafeAreaView>
       </VStack>
     )

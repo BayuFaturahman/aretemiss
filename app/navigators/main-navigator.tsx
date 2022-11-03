@@ -263,7 +263,9 @@ export type NavigatorParamList = {
   guidePoints: undefined
   assessment: undefined
   juaraAssesment: undefined
-  juaraAssesmentQuiz: undefined
+  juaraAssesmentQuiz: {
+    id: string
+  }
   brainstorms: {
     groupId: string
     isMember: boolean

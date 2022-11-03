@@ -13,6 +13,11 @@ import RNAnimated from "react-native-animated-component";
 import {dimensions} from "@config/platform.config";
 import {IconQuiz1, IconQuiz2, IconQuiz3} from "@assets/svgs";
 import {useStores} from "../../bootstrap/context.boostrap";
+import moment from "moment/moment";
+
+import { useFocusEffect } from '@react-navigation/native';
+
+moment.locale('id')
 
 export type JuaraQuizIconComponentType = {
   iconType: string
@@ -35,6 +40,7 @@ export type JuaraQuizListItem = {
   icon: string
   isDone: boolean
   score: number
+  totalQuestion: number
 }
 
 const MOCK_QUIZ_ITEMS:JuaraQuizListItem[] = [
@@ -44,7 +50,8 @@ const MOCK_QUIZ_ITEMS:JuaraQuizListItem[] = [
     date: '20 September 2022',
     icon: '1',
     isDone: false,
-    score: 0
+    score: 0,
+    totalQuestion: 10
   },
   {
     id: '2',
@@ -52,7 +59,8 @@ const MOCK_QUIZ_ITEMS:JuaraQuizListItem[] = [
     date: '20 September 2022',
     icon: '2',
     isDone: true,
-    score: 9
+    score: 0,
+    totalQuestion: 4
   },
   {
     id: '3',
@@ -60,7 +68,8 @@ const MOCK_QUIZ_ITEMS:JuaraQuizListItem[] = [
     date: '20 September 2022',
     icon: '3',
     isDone: true,
-    score: 9
+    score: 9,
+    totalQuestion: 4
   }
 ]
 
@@ -84,28 +93,38 @@ const JuaraQuizMain: FC<StackScreenProps<NavigatorParamList, "juaraQuizMain">> =
 
           const quizArr:JuaraQuizListItem[] = []
 
-          r.response.map(item => quizArr.push({
-            date: item.qtaker_updated_at,
-            icon: Math.floor(Math.random() * 3) + 1,
-            isDone: item.quiz_status === "active",
-            id: item.quiz_id,
-            score: item.total_question,
-            title: item.quiz_title
-          }))
-
+          r.response.map(item => {
+              if(item.total_question > 0){
+                quizArr.push({
+                  date: moment(item.quiz_created_at).format('LL'),
+                  icon: Math.floor(Math.random() * 3).toString(),
+                  isDone: !!item.qtaker_point,
+                  id: item.quiz_id,
+                  score: item.qtaker_point,
+                  title: item.quiz_title,
+                  totalQuestion: item.total_question
+                })
+              }
+              return null
+            }
+          )
           setQuizList(quizArr)
         }
       })
       setIsLoading(false)
     }
 
-    useEffect(()=>{
-      loadQuiz()
-    }, [])
+    useFocusEffect(
+      React.useCallback(() => {
+        loadQuiz()
+      }, [])
+    );
 
     const goBack = () => navigation.goBack()
 
-    const startQuiz = () => navigation.navigate("juaraAssesmentQuiz")
+    const startQuiz = (id) => navigation.navigate("juaraAssesmentQuiz", {
+      id
+    })
 
     const quizDone = (score = 9, totalQuestions = 10) => navigation.navigate("juaraQuizResult",{
       score,
@@ -140,11 +159,11 @@ const JuaraQuizMain: FC<StackScreenProps<NavigatorParamList, "juaraQuizMain">> =
             </Text>
              <Button
               type={"primary"}
-              text={item.isDone ? `Skor: ${item.score}/10!`: 'Isi quiz'}
+              text={item.isDone ? `Skor: ${item.score}/${item.totalQuestion}!`: 'Isi quiz'}
               style={{backgroundColor: item.isDone ? Colors.ABM_YELLOW : Colors.ABM_GREEN, width: Spacing[96], paddingVertical: Spacing[2] }}
               textStyle={{color: item.isDone ? Colors.ABM_DARK_BLUE : Colors.WHITE}}
               onPress={ ()=> {
-                item.isDone ? quizDone(item.score, 10) : startQuiz()
+                item.isDone ? quizDone(item.score, item.totalQuestion) : startQuiz(item.id)
               } }
               // onPress={goToMyAccount}
              />
@@ -191,7 +210,7 @@ const JuaraQuizMain: FC<StackScreenProps<NavigatorParamList, "juaraQuizMain">> =
                 {quizList.map((item, index)=>
                   <RNAnimated
                     appearFrom={'top'}
-                    animationDuration={index * 1000}
+                    animationDuration={index * 200}
                     key={`quiz-item-${item.id}`}
                   >
                     <VStack bottom={Spacing[12]}>
