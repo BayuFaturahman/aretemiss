@@ -211,7 +211,7 @@ const JuaraQuizMain: FC<StackScreenProps<NavigatorParamList, "juaraQuizMain">> =
                   <RNAnimated
                     appearFrom={'top'}
                     animationDuration={index * 200}
-                    key={`quiz-item-${item.id}`}
+                    key={`quiz-item-${item.id}-${Math.random()*1000}`}
                   >
                     <VStack bottom={Spacing[12]}>
                       <JuaraQuizItem item={item}/>
