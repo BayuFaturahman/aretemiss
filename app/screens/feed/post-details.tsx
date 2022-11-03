@@ -536,30 +536,30 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
                       horizontal={Spacing[12]}
                       vertical={Spacing[12]}
                     >
-                      <Text
-                        type={"body"}
-                        style={{color: item.isOwnComment ? Colors.ABM_MAIN_BLUE : Colors.ABM_MAIN_BLUE}}
+                      <Hyperlink
+                        linkDefault={ true }
+                        linkText={ url => `${url.substring(0,25)}...` }
+                        linkStyle={{color: Colors.ABM_LIGHT_BLUE}}
                       >
-                        {item.replyToNickname !== "" ?
-                          // <VStack right={Spacing[4]}>
-                            <Text
-                              style={{fontSize: Spacing[14], color: item.isOwnComment ? Colors.ABM_MAIN_BLUE : Colors.ABM_MAIN_BLUE}}
-                              type={"body-bold"}
-                              text={`@${item.replyToNickname} `}
-                            />
-                          // <View style={{height: Spacing[2], backgroundColor: Colors.MAIN_RED, width: '100%', position: 'absolute', bottom: 0}}></View>
-                        // </VStack> 
-                        : <></>}
-                        <Hyperlink
-                          linkDefault={ true }
-                          linkText={ url => `${url.substring(0,25)}...` }
-                          linkStyle={{color: Colors.ABM_LIGHT_BLUE}}
+                        <Text
+                          type={"body"}
+                          style={{color: item.isOwnComment ? Colors.ABM_MAIN_BLUE : Colors.ABM_MAIN_BLUE}}
                         >
-                          <Text type={"body"} >
-                            {item.comment}
-                          </Text>
-                        </Hyperlink>
-                      </Text>
+                          {item.replyToNickname !== "" ?
+                            // <VStack right={Spacing[4]}>
+                              <Text
+                                style={{ color: item.isOwnComment ? Colors.ABM_MAIN_BLUE : Colors.ABM_MAIN_BLUE}}
+                                type={"body-bold"}
+                                text={`@${item.replyToNickname} `}
+                              />
+                            // <View style={{height: Spacing[2], backgroundColor: Colors.MAIN_RED, width: '100%', position: 'absolute', bottom: 0}}></View>
+                          // </VStack>
+                          : <></>}
+                            <Text type={"body"} >
+                              {item.comment}
+                            </Text>
+                        </Text>
+                      </Hyperlink>
                     </HStack>
                     {item.isOwnComment ? 
                     <>
