@@ -88,7 +88,7 @@ export default class AuthStore {
       console.log(`Error Code: ${response.data.errorCode}`)
       console.log(`Status: ${response.status}`)
       console.log(`Raw Response: ${JSON.stringify(response)}`)
-      if(response.data.errorCode === 8 || response.data.errorCode === 9){
+      if(response.data.errorCode === 8 || response.data.errorCode === 9 || response.data.errorCode === 41){
         this.resetAuthStore().then(()=>{
           // RNRestart.Restart();
         });
@@ -416,6 +416,8 @@ export default class AuthStore {
 
     this.otp = null
     this.isCreateProfile = false
+
+    this.api.removeToken()
 
     await this.serviceStore.clearTokens()
   }
