@@ -194,27 +194,27 @@ const FillFeedbackDetail: FC<StackScreenProps<NavigatorParamList, "fillFeedbackD
                       position: 'absolute',
                       height: Spacing[24],
                       width: Spacing[24],
-                      backgroundColor: item.choice === i + 1 ? Colors.BRIGHT_BLUE : Colors.CLOUD_GRAY,
+                      backgroundColor: item.choice === i + 1 ? Colors.ABM_LIGHT_BLUE : Colors.ABM_BG_BLUE,
                       borderRadius: Spacing[128], borderWidth: Spacing[2],
-                      borderColor: item.choice === i + 1 ? Colors.BRIGHT_BLUE : Colors.MAIN_RED
+                      borderColor: item.choice === i + 1 ? Colors.ABM_LIGHT_BLUE : Colors.ABM_LIGHT_BLUE
                     }} />
 
                     { feedbackType === 'same_answer' && item.sameChoice === (i + 1) ? <View style={{
                       position: 'absolute',
                       height: Spacing[24],
                       width: Spacing[24],
-                      backgroundColor: Colors.BRIGHT_BLUE,
+                      backgroundColor: Colors.ABM_LIGHT_BLUE,
                       borderRadius: Spacing[128], borderWidth: Spacing[2],
-                      borderColor: Colors.BRIGHT_BLUE
+                      borderColor: Colors.ABM_LIGHT_BLUE
                     }} /> : null }
 
                     { (feedbackType === 'my_answer' || feedbackType === 'coachee_answer') && item.yourChoice === (i + 1) ? <View style={{
                       position: 'absolute',
                       height: Spacing[24],
                       width: Spacing[24],
-                      backgroundColor: Colors.WHITE,
+                      backgroundColor: Colors.ABM_GREEN,
                       borderRadius: Spacing[128], borderWidth: Spacing[4],
-                      borderColor: Colors.MAIN_BLUE,
+                      borderColor: Colors.ABM_GREEN,
                     }} /> : null }
 
                     { feedbackType === 'coachee_answer' && item.coacheChoice === (i + 1) ? <View style={{
