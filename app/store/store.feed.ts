@@ -101,7 +101,7 @@ export default class FeedStore {
         updatedAt: post.feed_updated_at,
         isDeleted: (post.feed_is_deleted === 1),
         deletedAt: post.feed_deleted_at,
-        thumbnail: post.feed_thumbnail ?? null,
+        thumbnail: post.feed_thumbnail ? (post.feed_thumbnail === "undefined" ? null : post.feed_thumbnail) : null,
         feedReactions: post.feed_reactions
       }
       tempListFeeds.push(tempPost)
@@ -206,7 +206,7 @@ export default class FeedStore {
         updatedAt: post.feed_updated_at,
         isDeleted: (post.feed_is_deleted === 1),
         deletedAt: post.feed_deleted_at,
-        thumbnail: post.feed_thumbnail ?? null,
+        thumbnail: post.feed_thumbnail ? (post.feed_thumbnail === "undefined" ? null : post.feed_thumbnail) : null,
         feedReactions: post.feed_reactions
       })
     })
@@ -269,7 +269,7 @@ export default class FeedStore {
       updatedAt: data.feed_updated_at,
       isDeleted: (data.feed_is_deleted === 1),
       deletedAt: data.feed_deleted_at,
-      thumbnail: data.feed_thumbnail ?? null,
+      thumbnail: data.feed_thumbnail ? (data.feed_thumbnail === "undefined" ? null : data.feed_thumbnail) : null,
       feedReactions: data.feed_reactions ?? []
     }
     
