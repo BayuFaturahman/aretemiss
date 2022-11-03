@@ -433,13 +433,12 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
         <VStack left={Spacing[8]}>
           {
             isLikeModal &&
-              <RNAnimated appearFrom={"bottom"} animationDuration={100} style={{zIndex: 100}}>
                   <HStack
                       vertical={Spacing[8]}
                       horizontal={Spacing[8]}
                       style={{
                         position: 'absolute', backgroundColor: Colors.WHITE,
-                        zIndex: 100, top: -Spacing[32], left: -Spacing[128],
+                        zIndex: 2, top: -Spacing[32], left: -Spacing[128],
                         borderRadius: Spacing[12], shadowColor: "#000",
                         shadowOffset: {
                           width: 0,
@@ -456,8 +455,9 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
                       </> :
                       <>
                         {LIKE_ICON_LIST.map((iconItem, index) =>
-                          <RNAnimated appearFrom={"bottom"} animationDuration={(index + 1) * 100} style={{zIndex: 100}}>
+                          // <RNAnimated appearFrom={"bottom"} animationDuration={(index + 1) * 100} style={{zIndex: 3}}>
                             <TouchableOpacity
+                              style={{zIndex: 4}}
                               onPress={async () => {
                                 setIsLoading(true)
                                 feedApi.reactToFeed(data.id, iconItem.reaction).then(r => {
@@ -479,12 +479,11 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
                                 }
                               </HStack>
                             </TouchableOpacity>
-                          </RNAnimated>
+                          // </RNAnimated>
                         )}
                       </>
                     }
                   </HStack>
-              </RNAnimated>
           }
           <TouchableOpacity onPress={()=>{setIsLikeModal(!isLikeModal)}} disabled={isFromHomePage}>
             <LikeIconComponent type={currentLike} size={24} />
