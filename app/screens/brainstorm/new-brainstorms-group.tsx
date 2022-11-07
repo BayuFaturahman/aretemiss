@@ -174,7 +174,7 @@ const NewBrainstormsGroup: FC<StackScreenProps<NavigatorParamList, "newBrainstor
           toggleModal(true)
         }
       },
-      [selectedIcon, isModalVisible, brainstormStore.errorCode],
+      [selectedIcon, isModalVisible, brainstormStore.errorCode, mainStore.userProfile],
     )
     const setModalContent = (title: string, desc: string, icon: string) => {
       setModalTitle(title)

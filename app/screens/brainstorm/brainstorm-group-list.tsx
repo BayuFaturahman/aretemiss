@@ -21,6 +21,7 @@ import { useStores } from '../../bootstrap/context.boostrap';
 import moment from 'moment';
 import { BrainstormGroup } from '@services/api/brainstorm/brainstorm-api.types';
 import {images} from "@assets/images";
+import {useFocusEffect} from "@react-navigation/native";
 
 const BrainstormGroupList: FC<StackScreenProps<NavigatorParamList, "newBrainstormsGroup">> =
   observer(({navigation}) => {
@@ -49,10 +50,12 @@ const BrainstormGroupList: FC<StackScreenProps<NavigatorParamList, "newBrainstor
       setRefreshing(true);
     }, []);
 
-    useEffect(() => {
-      console.log('_getBrainstormGroupList')
-      _getBrainstormGroupList();
-    }, []);
+    useFocusEffect(
+      React.useCallback(() => {
+        console.log('_getBrainstormGroupList')
+        _getBrainstormGroupList();
+      }, [])
+    );
 
     useEffect(() => {
       if (refreshing) {

@@ -337,7 +337,7 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
                     ) : (
                       <VStack>
                         <VStack top={Spacing[20]}>
-                          <Text type={"body-bold"} style={{ color: Colors.BRIGHT_BLUE }}>
+                          <Text type={"body-bold"} style={{ color: Colors.ABM_LIGHT_BLUE }}>
                             Judul
                             <Text type={"body-bold"} style={[]}>
                               {" idenya apa nih?"}
@@ -361,7 +361,7 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
 
                           <Text type={"body-bold"} style={[]}>
                             Tulislah
-                            <Text type={"body-bold"} style={{ color: Colors.BRIGHT_BLUE }}>
+                            <Text type={"body-bold"} style={{ color: Colors.ABM_LIGHT_BLUE }}>
                               {" deskripsi "}
                             </Text>
                             idemu.
@@ -452,7 +452,7 @@ const AddIdea: FC<StackScreenProps<NavigatorParamList, "addIdea">> = observer(
                                     width: Spacing[84],
                                     backgroundColor: isEditMode
                                       ? Colors.CLOUD_GRAY
-                                      : Colors.BRIGHT_BLUE,
+                                      : Colors.ABM_LIGHT_BLUE,
                                   }}
                                   textStyle={{ color: isEditMode ? "#BDBDBD" : Colors.WHITE }}
                                 />
