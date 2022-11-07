@@ -519,7 +519,13 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       console.log("user profile: ", userProfile)
       console.log("selected mood ", userProfile.mood)
 
-      await mainStore.updateProfile(mainStore.userProfile.user_id, userProfile)
+      const userMood = {
+        mood: selectedMood
+      } as ProfileUpdateForm
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      await mainStore.updateProfile(mainStore.userProfile.user_id, userMood)
       if (mainStore.errorCode === null) {
         setIsMoodUpdated(true)
         // setIsDisableEditBtn(true);
@@ -536,6 +542,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       userProfile,
       selectedMood,
       mainStore.errorCode,
+      mainStore.userProfile,
       mainStore.updateProfileSuccess,
       mainStore.updateProfileFailed,
     ])
