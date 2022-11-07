@@ -6,7 +6,7 @@
  */
 import React, {FunctionComponent, useCallback, useEffect, useState} from "react"
 import {Platform, StatusBar, useColorScheme} from "react-native"
-import {NavigationContainer, DefaultTheme, DarkTheme, useNavigation} from "@react-navigation/native"
+import {NavigationContainer, DefaultTheme, DarkTheme} from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { navigationRef } from "./navigation-utilities"
 
@@ -88,7 +88,7 @@ export const AppNavigator = observer( (props: NavigationProps) => {
 
   const [isLogin, setIsLogin] = useState(false)
 
-  const { serviceStore, mainStore, authStore } = useStores()
+  const { serviceStore, mainStore } = useStores()
 
   const loadData = useCallback(debounce(async () => await mainStore.getProfile(), 500), []);
 
@@ -168,7 +168,7 @@ export const AppNavigator = observer( (props: NavigationProps) => {
       <StatusBar
         barStyle={Platform.OS === 'ios' ? "dark-content" : "light-content"}
         // translucent
-        backgroundColor={Colors.UNDERTONE_BLUE}
+        backgroundColor={Colors.ABM_MAIN_BLUE}
       />
       {isLogin === true ? <MainNavigator /> : <AuthNavigator />}
     </NavigationContainer>
