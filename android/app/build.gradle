@@ -141,11 +141,11 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.ilead"
+        applicationId "com.abminvestama.ilead"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 27
-        versionName "1.0"
+        versionCode 1
+        versionName "2.0"
     }
     splits {
         abi {

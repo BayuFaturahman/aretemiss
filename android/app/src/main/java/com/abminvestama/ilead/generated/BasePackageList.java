@@ -1,4 +1,4 @@
-package com.ilead.generated;
+package com.abminvestama.ilead.generated;
 
 import java.util.Arrays;
 import java.util.List;
