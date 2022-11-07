@@ -2,7 +2,7 @@ apply plugin: "com.android.application"
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 apply plugin: 'com.google.gms.google-services'
 // Unimodules: https://docs.expo.io/bare/installing-unimodules/#configuration-for-android
-apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
+// apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
 // apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 
 import com.android.build.OutputFile
@@ -210,7 +210,7 @@ dependencies {
 
     implementation project(':react-native-push-notification')
 
-    addUnimodulesDependencies()
+//     addUnimodulesDependencies()
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'

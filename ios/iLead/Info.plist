@@ -2,10 +2,29 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>UIAppFonts</key>
-  <array>
-  	<string>MaterialIcons.ttf</string>
-  </array>
+	<key>UIAppFonts</key>
+	<array>
+		<string>BrandonGrotesque-Regular.otf</string>
+		<string>AntDesign.ttf</string>
+		<string>Entypo.ttf</string>
+		<string>EvilIcons.ttf</string>
+		<string>Feather.ttf</string>
+		<string>FontAwesome.ttf</string>
+		<string>FontAwesome5_Brands.ttf</string>
+		<string>FontAwesome5_Regular.ttf</string>
+		<string>FontAwesome5_Solid.ttf</string>
+		<string>Fontisto.ttf</string>
+		<string>Foundation.ttf</string>
+		<string>Ionicons.ttf</string>
+		<string>MaterialCommunityIcons.ttf</string>
+		<string>MaterialIcons.ttf</string>
+		<string>Octicons.ttf</string>
+		<string>SimpleLineIcons.ttf</string>
+		<string>Zocial.ttf</string>
+		<string>BrandonGrotesque-Bold.otf</string>
+		<string>BrandonGrotesque-Medium.otf</string>
+		<string>BrandonGrotesque-RegularItalic.otf</string>
+	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -42,32 +61,9 @@
 	<key>NSCameraUsageDescription</key>
 	<string>iLEAD ingin mengakses kamera Anda. Aplikasi ini perlu mengakses kamera-kamera di perangkat Anda untuk mengambil foto yang dapat Anda unggah sebagai foto profil Anda.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>iLEAD ingin mengakses galeri foto Anda. Aplikasi ini perlu mengakses galeri foto di perangkat Anda untuk mendapatkan foto yang dapat Anda unggah sebagai foto profil Anda.</string>
-	<key>UIAppFonts</key>
-	<array>
-		<string>BrandonGrotesque-Regular.otf</string>
-		<string>AntDesign.ttf</string>
-		<string>Entypo.ttf</string>
-		<string>EvilIcons.ttf</string>
-		<string>Feather.ttf</string>
-		<string>FontAwesome.ttf</string>
-		<string>FontAwesome5_Brands.ttf</string>
-		<string>FontAwesome5_Regular.ttf</string>
-		<string>FontAwesome5_Solid.ttf</string>
-		<string>Fontisto.ttf</string>
-		<string>Foundation.ttf</string>
-		<string>Ionicons.ttf</string>
-		<string>MaterialCommunityIcons.ttf</string>
-		<string>MaterialIcons.ttf</string>
-		<string>Octicons.ttf</string>
-		<string>SimpleLineIcons.ttf</string>
-		<string>Zocial.ttf</string>
-		<string>BrandonGrotesque-Bold.otf</string>
-		<string>BrandonGrotesque-Medium.otf</string>
-		<string>BrandonGrotesque-RegularItalic.otf</string>
-	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
