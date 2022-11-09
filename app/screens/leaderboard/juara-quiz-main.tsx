@@ -233,5 +233,5 @@ const styles = StyleSheet.create({
   bg: {
     backgroundColor: Colors.ABM_BG_BLUE, flex: 1, justifyContent: "center"
   },
-  bgBottom: {backgroundColor: Colors.WHITE, borderTopEndRadius: Spacing[48], borderTopStartRadius: Spacing[48], minHeight: dimensions.screenHeight}
+  bgBottom: {backgroundColor: Colors.WHITE, borderTopEndRadius: Spacing[48], borderTopStartRadius: Spacing[48], minHeight: dimensions.screenHeight * 1.5}
 });
