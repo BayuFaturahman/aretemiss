@@ -151,7 +151,7 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
   }
 
   const coverImage = () => {
-    if(data.thumbnail !== null && data.thumbnail !== ""){
+    if(data.thumbnail !== null){
       return(
         <VideoPlayer
           video={{ uri: data.imageUrl }}
@@ -160,8 +160,6 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
           thumbnail={{ uri: data.thumbnail }}
         />
       )
-    } else if (data.thumbnail === null) {
-      return null
     }
 
     // console.log('list image: ', listImage, ' total: ', listImage.length)

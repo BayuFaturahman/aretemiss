@@ -86,7 +86,7 @@ export default class FeedStore {
       const tempPost:FeedItemType = {
         id: post.feed_id,
         description: post.feed_description,
-        imageUrl: post.feed_images_url,
+        imageUrl: post.feed_images_url.match("\\b\\w*undefined\\w*\\b") ? null : post.feed_images_url,
         author: {
           id: post.feed_author_id,
           nickname: post.feed_author_nickname,
@@ -101,7 +101,7 @@ export default class FeedStore {
         updatedAt: post.feed_updated_at,
         isDeleted: (post.feed_is_deleted === 1),
         deletedAt: post.feed_deleted_at,
-        thumbnail: post.feed_thumbnail ? (post.feed_thumbnail === "undefined" ? null : post.feed_thumbnail) : null,
+        thumbnail: post.feed_thumbnail ? (post.feed_thumbnail === "undefined" || post.feed_thumbnail === "" || post.feed_thumbnail.match("\\b\\w*undefined\\w*\\b") ? null : post.feed_thumbnail) : null,
         feedReactions: post.feed_reactions
       }
       tempListFeeds.push(tempPost)
@@ -191,7 +191,7 @@ export default class FeedStore {
       tempListMyFeeds.push({
         id: post.feed_id,
         description: post.feed_description,
-        imageUrl: post.feed_images_url,
+        imageUrl: post.feed_images_url.match("\\b\\w*undefined\\w*\\b") ? null : post.feed_images_url,
         author: {
           id: post.feed_author_id,
           nickname: post.feed_author_nickname,
@@ -206,7 +206,7 @@ export default class FeedStore {
         updatedAt: post.feed_updated_at,
         isDeleted: (post.feed_is_deleted === 1),
         deletedAt: post.feed_deleted_at,
-        thumbnail: post.feed_thumbnail ? (post.feed_thumbnail === "undefined" ? null : post.feed_thumbnail) : null,
+        thumbnail: post.feed_thumbnail ? (post.feed_thumbnail === "undefined" || post.feed_thumbnail === "" || post.feed_thumbnail.match("\\b\\w*undefined\\w*\\b") ? null : post.feed_thumbnail) : null,
         feedReactions: post.feed_reactions
       })
     })
@@ -245,32 +245,32 @@ export default class FeedStore {
     }
   }
 
-  getPostDetailSuccess(data: FeedApiModel) {
+  getPostDetailSuccess(post: FeedApiModel) {
     console.log("getPostDetailSuccess ")
     
     const lastSeen = new Date(this.serviceStore.lastSeenFeed)
-    const postCreated = new Date(data.feed_created_at)
+    const postCreated = new Date(post.feed_created_at)
     
     this.postDetail = {
-      id: data.feed_id,
-      description: data.feed_description,
-      imageUrl: data.feed_images_url ?? "",
+      id: post.feed_id,
+      description: post.feed_description,
+      imageUrl: post.feed_images_url.match("\\b\\w*undefined\\w*\\b") ? null : post.feed_images_url,
       author: {
-        id: data.feed_author_id,
-        nickname: data.feed_author_nickname,
-        title: (data.feed_author_team_1 && data.feed_author_team_1 !== null? data.feed_author_team_1 : '') + (data.feed_author_team_2 && data.feed_author_team_2 !== null ? ', ' + data.feed_author_team_2 : '') + (data.feed_author_team_3 && data.feed_author_team_3 !== null ? ', ' + data.feed_author_team_3 : ''),
-        photo: data.feed_author_photo,
-        mood: data.feed_author_mood
+        id: post.feed_author_id,
+        nickname: post.feed_author_nickname,
+        title: (post.feed_author_team_1 && post.feed_author_team_1 !== null? post.feed_author_team_1 : '') + (post.feed_author_team_2 && post.feed_author_team_2 !== null ? ', ' + post.feed_author_team_2 : '') + (post.feed_author_team_3 && post.feed_author_team_3 !== null ? ', ' + post.feed_author_team_3 : ''),
+        photo: post.feed_author_photo,
+        mood: post.feed_author_mood
       },
-      type: data.feed_type_name,
-      commentCount: data.feed_comment_count,
+      type: post.feed_type_name,
+      commentCount: post.feed_comment_count,
       isNew: lastSeen.getTime() < postCreated.getTime(),
-      createdAt: data.feed_created_at,
-      updatedAt: data.feed_updated_at,
-      isDeleted: (data.feed_is_deleted === 1),
-      deletedAt: data.feed_deleted_at,
-      thumbnail: data.feed_thumbnail ? (data.feed_thumbnail === "undefined" ? null : data.feed_thumbnail) : null,
-      feedReactions: data.feed_reactions ?? []
+      createdAt: post.feed_created_at,
+      updatedAt: post.feed_updated_at,
+      isDeleted: (post.feed_is_deleted === 1),
+      deletedAt: post.feed_deleted_at,
+      thumbnail: post.feed_thumbnail ? (post.feed_thumbnail === "undefined" || post.feed_thumbnail === "" || post.feed_thumbnail.match("\\b\\w*undefined\\w*\\b") ? null : post.feed_thumbnail) : null,
+      feedReactions: post.feed_reactions ?? []
     }
     
     

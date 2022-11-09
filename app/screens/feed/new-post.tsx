@@ -176,11 +176,13 @@ const NewPost: FC<StackScreenProps<NavigatorParamList, "newPost">> = observer(({
           type: response.assets[id].type ?? "image/jpeg",
           size: response.assets[id].fileSize,
         })
+        console.log('imgName ',`feed-image-${response.assets[id].fileName.toLowerCase().split(" ")[0]}-${new Date().getTime()}.${format}`)
       }
       // console.log("RESPONSE ASET: ", response.assets)
       // console.log(formData['_parts'])
 
       feedStore.formReset()
+      console.log('formData ',formData)
       const responseUpload = await feedStore.uploadImage(formData)
       console.log('responseUpload ',responseUpload)
       const listResponseUpload = responseUpload.data.urls.split(';')

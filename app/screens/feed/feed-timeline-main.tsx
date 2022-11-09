@@ -8,7 +8,7 @@ import {
   StyleSheet,
 } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
-import { useIsFocused } from '@react-navigation/native'
+import {useFocusEffect, useIsFocused} from '@react-navigation/native'
 import { observer } from "mobx-react-lite"
 import {Text, BackNavigation, TextYellowLine} from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
@@ -206,6 +206,12 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
         firstLoadFeed()
       }
     }, [])
+    //
+    // useFocusEffect(
+    //   React.useCallback(() => {
+    //     onRefresh()
+    //   }, [])
+    // );
 
     // useEffect(() => {
     //   if(isFocused === false){

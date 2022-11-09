@@ -135,7 +135,7 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
     const [modal, setModal] = useState<boolean>(false);
     const [isModalDeleteCommentVisible, setModalDeleteCommentVisible] = useState<boolean>(false);
     const [selectedComment, setSelecteComment] = useState<string>('')
-    const [listComment, setListComment] = useState<Array<FeedPostCommentType>>(feedStore.listComment);
+    const [listComment, setListComment] = useState<Array<FeedPostCommentType>>([]);
     const [currentPage, setCurrentPage] = useState<number>(2);
 
     const [postDetails, setPostDetails] = useState<FeedTimelineItem>(FEED_EXAMPLE_DATA_ITEM);
@@ -187,8 +187,14 @@ const PostDetails: FC<StackScreenProps<NavigatorParamList, "postDetails">> = obs
     }, []);
 
     useEffect(() => {
+      const clearComment = async () => {
+        await feedStore.clearListComment()
+      }
+
       console.log('Use effect list feed tanpa []')
-      firstLoadComment()      
+      clearComment().then(r => {
+        firstLoadComment()
+      })
     }, [])
 
     useEffect(()=>{
