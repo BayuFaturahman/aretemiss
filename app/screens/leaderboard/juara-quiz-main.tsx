@@ -24,9 +24,9 @@ export type JuaraQuizIconComponentType = {
 }
 
 export const JuaraQuizIconComponent:React.FC<JuaraQuizIconComponentType> = ({iconType = '1'}) => {
-  if(iconType === '1'){
+  if(iconType === '0'){
     return <IconQuiz1 height={Spacing["48"]} width={Spacing["48"]} />
-  } else if (iconType === '2'){
+  } else if (iconType === '1'){
     return <IconQuiz2 height={Spacing["48"]} width={Spacing["48"]} />
   } else {
     return <IconQuiz3 height={Spacing["48"]} width={Spacing["48"]} />
@@ -97,7 +97,7 @@ const JuaraQuizMain: FC<StackScreenProps<NavigatorParamList, "juaraQuizMain">> =
               if(item.total_question > 0){
                 quizArr.push({
                   date: moment(item.quiz_created_at).format('LL'),
-                  icon: Math.floor(Math.random() * 3).toString(),
+                  icon: (moment(item.quiz_created_at).unix() % 3).toString(),
                   isDone: !!item.qtaker_point,
                   id: item.quiz_id,
                   score: item.qtaker_point,
