@@ -4,11 +4,12 @@
  * Generally speaking, it will contain an auth flow (registration, login, forgot password)
  * and a "main" flow which the user will use once logged in.
  */
-import React, {FunctionComponent, useCallback, useEffect, useState} from "react"
+import React, {FunctionComponent, useCallback, useEffect, useState, useRef} from "react"
 import {Platform, StatusBar, useColorScheme} from "react-native"
 import {NavigationContainer, DefaultTheme, DarkTheme} from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { navigationRef } from "./navigation-utilities"
+import analytics from '@react-native-firebase/analytics';
 
 import { debounce } from 'lodash';
 
@@ -160,10 +161,31 @@ export const AppNavigator = observer( (props: NavigationProps) => {
     });
   }
 
+  const routeNameRef = useRef();
+
   return (
     <NavigationContainer
       ref={navigationRef}
       theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+      onReady={() => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        routeNameRef.current = navigationRef.current.getCurrentRoute().name;
+      }}
+      onStateChange={async () => {
+        const previousRouteName = routeNameRef.current;
+        const currentRouteName = navigationRef.current.getCurrentRoute().name;
+
+        if (previousRouteName !== currentRouteName) {
+          await analytics().logScreenView({
+            screen_name: currentRouteName,
+            screen_class: currentRouteName,
+          });
+        }
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        routeNameRef.current = currentRouteName;
+      }}
     >
       <StatusBar
         barStyle={Platform.OS === 'ios' ? "dark-content" : "light-content"}

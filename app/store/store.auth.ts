@@ -15,6 +15,7 @@ import {
   SignupResponse,
   SignupVerifyResponse
 } from "@services/api/auth/auth-api.types";
+import analytics from "@react-native-firebase/analytics";
 
 // #region MAIN CLASS
 
@@ -126,6 +127,7 @@ export default class AuthStore {
       if(response.kind === 'ok'){
         console.log(response.response)
         await this.loginSuccess(response.response, email)
+        await analytics().logLogin({method: 'email'})
       }
 
     } catch (e) {
