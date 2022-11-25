@@ -15,7 +15,7 @@ import {
 import { ProfileUpdateForm } from "@screens/auth/create-profile"
 import AuthStore from "./store.auth"
 import {bool} from "yup";
-import analytics from '@react-native-firebase/analytics';
+import { firebase } from '@react-native-firebase/analytics';
 
 // CONFIGS
 
@@ -330,7 +330,7 @@ export default class MainStore {
       }
 
       if (response.kind === "ok") {
-        this.getProfileSuccess(response.response.data)
+        await this.getProfileSuccess(response.response.data)
       }
     } catch (e) {
       console.log(e)
@@ -377,19 +377,19 @@ export default class MainStore {
       new_notification_flag: data.new_notification_flag,
     }
 
-    await analytics().setUserProperties({
-      userId: data.user_id,
-      fullName: data.user_fullname,
-      nickName: data.user_nickname,
+    await firebase.analytics().setUserProperties({
+      user_id: data.user_id,
+      full_name: data.user_fullname,
+      nick_name: data.user_nickname,
       email: data.user_email,
-      team1Id: data.user_team_1_id,
-      team2Id: data.user_team_2_id,
-      team3Id: data.user_team_3_id,
-      phoneNumber: data.user_phone_number,
+      team_1: data.user_team_1_id,
+      team_2: data.user_team_2_id,
+      team_3: data.user_team_3_id,
+      phone_number: data.user_phone_number,
       user_mood: data.user_mood,
       user_position: data.user_position ? data.user_position : '',
     })
-    await analytics().setUserId(data.user_id)
+    await firebase.analytics().setUserId(data.user_id)
   }
 
   getProfileFailed(e: any) {

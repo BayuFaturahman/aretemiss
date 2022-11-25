@@ -9,7 +9,7 @@ import {Platform, StatusBar, useColorScheme} from "react-native"
 import {NavigationContainer, DefaultTheme, DarkTheme} from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { navigationRef } from "./navigation-utilities"
-import analytics from '@react-native-firebase/analytics';
+import analytics, {firebase} from '@react-native-firebase/analytics';
 
 import { debounce } from 'lodash';
 
@@ -176,10 +176,14 @@ export const AppNavigator = observer( (props: NavigationProps) => {
         const previousRouteName = routeNameRef.current;
         const currentRouteName = navigationRef.current.getCurrentRoute().name;
 
-        if (previousRouteName !== currentRouteName) {
+        if (previousRouteName !== currentRouteName && currentRouteName !== "RNSScreen") {
           await analytics().logScreenView({
             screen_name: currentRouteName,
             screen_class: currentRouteName,
+          });
+          await analytics().setUserProperties({
+            account_type: 'gold',
+            account_name: 'Gold Badge',
           });
         }
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
