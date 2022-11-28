@@ -114,7 +114,7 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
       await loadJournal(1)
       setTimeout(()=>{
         setInitialLoading(false)
-      }, 2000)
+      }, 1500)
     }, 500)
 
     useEffect(() => {
@@ -264,7 +264,7 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
             ListFooterComponent={
               coachingData.length === 0 && !initialLoading && !coachingStore.isLoading ? null : (
                 <VStack vertical={Spacing[24]} style={{ backgroundColor: Colors.WHITE }}>
-                  <ActivitiesTypeLegends />
+                  { initialLoading ? null : <ActivitiesTypeLegends /> }
                 </VStack>
               )
             }

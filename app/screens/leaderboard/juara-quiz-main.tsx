@@ -16,6 +16,7 @@ import {useStores} from "../../bootstrap/context.boostrap";
 import moment from "moment/moment";
 
 import { useFocusEffect } from '@react-navigation/native';
+import {EmptyList} from "@screens/notification/components/empty-list";
 
 moment.locale('id')
 
@@ -82,7 +83,7 @@ const JuaraQuizMain: FC<StackScreenProps<NavigatorParamList, "juaraQuizMain">> =
 
     const { quizApi } = useStores()
 
-    const [quizList, setQuizList] = useState<JuaraQuizListItem[]>(MOCK_QUIZ_ITEMS)
+    const [quizList, setQuizList] = useState<JuaraQuizListItem[]>([])
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const loadQuiz = async () => {
@@ -207,6 +208,7 @@ const JuaraQuizMain: FC<StackScreenProps<NavigatorParamList, "juaraQuizMain">> =
 
             <VStack top={Spacing[32]} horizontal={Spacing[24]} style={[Layout.heightFull, styles.bgBottom, Layout.widthFull]}>
               <VStack top={Spacing[32]}>
+                {quizList.length === 0 ? <EmptyList description={"Belum ada quiz apapun nih! \n Kamu bisa cek lagi di lain waktu."} navigateTo={goBack} /> : null}
                 {quizList.map((item, index)=>
                   <RNAnimated
                     appearFrom={'top'}
