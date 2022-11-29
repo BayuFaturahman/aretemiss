@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>237516324749-ilb24l5sk3eda9jqidift94crkf8e20u.apps.googleusercontent.com</string>
+	<string>857921354383-ki1omt70cp41fuobhupu5issisoqjrhp.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.237516324749-ilb24l5sk3eda9jqidift94crkf8e20u</string>
+	<string>com.googleusercontent.apps.857921354383-ki1omt70cp41fuobhupu5issisoqjrhp</string>
 	<key>API_KEY</key>
-	<string>AIzaSyBuIsuZxqHs_qbuuLaybW3Zdc9AE5q0L24</string>
+	<string>AIzaSyDwYtN8gpFDu-rBEODTQPtMvj3XdNaLJyk</string>
 	<key>GCM_SENDER_ID</key>
-	<string>237516324749</string>
+	<string>857921354383</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.kubik.ilead</string>
+	<string>com.abminvestama.ilead</string>
 	<key>PROJECT_ID</key>
-	<string>ilead-2021</string>
+	<string>ilead-2021-dev</string>
 	<key>STORAGE_BUCKET</key>
-	<string>ilead-2021.appspot.com</string>
+	<string>ilead-2021-dev.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:237516324749:ios:2d3c4b8c6ded2ed592c7c4</string>
+	<string>1:857921354383:ios:c79b5f29de8efecb1d0efa</string>
 </dict>
 </plist>
