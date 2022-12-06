@@ -13,7 +13,7 @@ import {
   GetListCommentNotification,
   GetPostDetailResult,
   GetListFeedCategoryResult,
-  PostFeedReact
+  PostFeedReact, PostReportPost
 } from "@services/api/feed/feed-api.types"
 import { CreateCommentToType, CreateCommentType, CreatePostType } from "@screens/feed/feed.type"
 import {DEFAULT_API_CONFIG} from "@services/api/api-config";
@@ -450,6 +450,36 @@ export class FeedApi {
       const response: ApiResponse<any> = await this.api.apisauce.post(`/feed-react`, {
         "reaction": reaction,
         "feed_id": feedId
+      })
+
+      if (response.status === 400) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      console.log(e)
+      console.log("error")
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data" }
+    }
+  }
+
+  async reportPost(feedId): Promise<PostReportPost> {
+    console.log("reportPost()")
+    try {
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.post(`/feed-hide`, {
+        "feedId": feedId
       })
 
       if (response.status === 400) {

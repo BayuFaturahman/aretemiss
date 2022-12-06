@@ -181,6 +181,12 @@ export type PostFeedReactResponse = {
   }
 }
 
+export type PostReportPostResponse = {
+  message: string
+  token: string
+  data: null
+}
+
 
 export type GetListFeedsResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListFeedsResponse }  | GeneralApiProblem
 export type GetPostDetailResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetPostDetailResponse }  | GeneralApiProblem
@@ -194,3 +200,4 @@ export type DeleteCommentResult = { kind: "form-error"; response: ErrorFormRespo
 export type GetListCommentNotification = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListCommentNotificationResponse }  | GeneralApiProblem
 export type GetListFeedCategoryResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListFeedCategoryResponse }  | GeneralApiProblem
 export type PostFeedReact = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: PostFeedReactResponse }  | GeneralApiProblem
+export type PostReportPost = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: PostReportPostResponse }  | GeneralApiProblem

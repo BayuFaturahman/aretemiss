@@ -12,7 +12,7 @@ import VideoPlayer from "react-native-video-player"
 import trash from "@assets/icons/trash.png";
 import moment from "moment"
 import {Hyperlink} from "react-native-hyperlink";
-import {AngryColor, HappyColor, HeartColor, HeartGrey, IconLike, IconSadColor} from "@assets/svgs";
+import {AngryColor, HappyColor, HeartColor, HeartGrey, IconLike, IconSadColor, MoreHorizontal} from "@assets/svgs";
 import {useStores} from "../../../bootstrap/context.boostrap";
 // import RNAnimated from "react-native-animated-component"
 
@@ -23,6 +23,8 @@ type FeedPostProps = {
   ownPost: boolean;
   deletePost?(id): void;
   isFromHomePage?: boolean;
+  showMoreIcon: boolean;
+  triggerMore?(id): void;
 }
 
 type LikeIconListItemType = {element: React.FC<any>, reaction: ReactionType}
@@ -74,7 +76,7 @@ const LikeIconComponent:React.FC<{type: FeedReactionIcon, size: number}> = ({typ
   return <></>
 }
 
-export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDetail = () => null, isFromHomePage }:FeedPostProps) => {
+export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDetail = () => null, isFromHomePage, showMoreIcon = false, triggerMore = () => null }:FeedPostProps) => {
 
   const { feedApi, mainStore } = useStores();
 
@@ -302,6 +304,12 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
           underlineWidth={Spacing[72]}
           text={`${getCreatedTime()}`}
         />
+        {showMoreIcon && <Spacer width={Spacing[8]} />}
+        {showMoreIcon &&
+          <TouchableOpacity onPress={()=> triggerMore(data.id)}>
+            <MoreHorizontal height={Spacing[24]} width={Spacing[24]} />
+          </TouchableOpacity>
+        }
       </HStack>
 
       <Spacer height={Spacing[2]} />

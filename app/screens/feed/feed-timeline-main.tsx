@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from "react"
+import React, {createRef, FC, useCallback, useEffect, useState} from "react"
 import {
   FlatList,
   RefreshControl,
@@ -10,7 +10,7 @@ import {
 import { StackScreenProps } from "@react-navigation/stack"
 import {useFocusEffect, useIsFocused} from '@react-navigation/native'
 import { observer } from "mobx-react-lite"
-import {Text, BackNavigation, TextYellowLine} from "@components"
+import {Text, BackNavigation, TextYellowLine, Button} from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
 import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
@@ -26,6 +26,8 @@ import { FeedButton } from "./component/feed-button"
 import ImageViewer from "react-native-image-zoom-viewer";
 import {debounce} from "lodash";
 import {FeedItemType} from "@screens/feed/feed.type";
+import ActionSheet from "react-native-actions-sheet";
+import {launchCamera} from "react-native-image-picker";
 
 
 const images = [
@@ -111,7 +113,9 @@ const FEED_EXAMPLE_DATA_ITEM: FeedTimelineItem[] = [
 
 const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMain">> = observer(
   ({ navigation, route }) => {
-    const { feedStore } = useStores()
+    const { feedStore, feedApi } = useStores()
+
+    const actionSheetRef = createRef();
 
     const [modal, setModal] = useState<boolean>(false);
     const [listFeeds, setListFeeds] = useState<Array<FeedItemType>>(feedStore.listFeeds);
@@ -122,9 +126,16 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
 
     const [currentPage, setCurrentPage] = useState<number>(1);
 
+    const [selectedPostId, setSelectedPostId] = useState<string>("");
+
     const currentDateTime = new Date().toString();
 
     const isFocused = useIsFocused();
+
+    const openBottomSheet = (postId: string) => {
+      actionSheetRef.current?.setModalVisible(true)
+      setSelectedPostId(postId)
+    }
 
     const goBack = () => {
       setLastSeenFeed()
@@ -244,7 +255,11 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
       toggleModal(true);
     }, [])
 
-    
+    const reportPost = async () => {
+      await feedApi.reportPost(selectedPostId)
+      firstLoadFeed()
+      actionSheetRef.current?.setModalVisible(false)
+    }
 
     return (
       <VStack
@@ -316,6 +331,8 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
                   onImageTap={onImageFeedTap}
                   goToDetail={goToDetails}
                   ownPost={false}
+                  showMoreIcon={true}
+                  triggerMore={(id) => openBottomSheet(id)}
                 />)
             }}
             style={{paddingHorizontal: Spacing[24]}}
@@ -354,6 +371,29 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
             />
           </VStack>
         </Modal>
+        <ActionSheet ref={actionSheetRef}>
+          <VStack
+            style={{ justifyContent: "center" }}
+            vertical={Spacing[24]}
+            horizontal={Spacing[24]}
+          >
+            <VStack style={[Layout.widthFull, Layout.flexCenter]} bottom={Spacing[12]}>
+              <Text
+                type={"body-bold"}
+                style={{}}
+                text={`Menu lainnya`}
+              />
+            </VStack>
+            <Button
+              onPress={() => {
+                reportPost()
+              }}
+              type={"warning"}
+              text={"Laporkan post ini"}
+            />
+            <Spacer height={Spacing[12]} />
+          </VStack>
+        </ActionSheet>
       </VStack>
     )
   },
