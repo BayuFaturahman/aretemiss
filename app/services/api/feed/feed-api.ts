@@ -474,12 +474,73 @@ export class FeedApi {
     }
   }
 
-  async reportPost(feedId): Promise<PostReportPost> {
+  async reportPost(feedId, authorId): Promise<PostReportPost> {
     console.log("reportPost()")
     try {
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.post(`/feed-hide`, {
-        "feedId": feedId
+        "feedId": feedId,
+        "authorId": authorId
+      })
+
+      if (response.status === 400) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      console.log(e)
+      console.log("error")
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data" }
+    }
+  }
+
+  async reportUser(authorId): Promise<PostReportPost> {
+    console.log("reportUser()")
+    try {
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.post(`/feed-hide`, {
+        "authorId": authorId
+      })
+
+      if (response.status === 400) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      console.log(e)
+      console.log("error")
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data" }
+    }
+  }
+
+  async blockUser(authorId): Promise<PostReportPost> {
+    console.log("blockUser()")
+    try {
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.post(`user/block-user`, {
+        "userId": authorId
       })
 
       if (response.status === 400) {

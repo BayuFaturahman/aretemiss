@@ -16,6 +16,11 @@ import {AngryColor, HappyColor, HeartColor, HeartGrey, IconLike, IconSadColor, M
 import {useStores} from "../../../bootstrap/context.boostrap";
 // import RNAnimated from "react-native-animated-component"
 
+export type PostDetailMore = {
+  feedId: string
+  authorId: string
+}
+
 type FeedPostProps = {
   data: FeedItemType;
   onImageTap(index, imageList): void;
@@ -24,7 +29,7 @@ type FeedPostProps = {
   deletePost?(id): void;
   isFromHomePage?: boolean;
   showMoreIcon: boolean;
-  triggerMore?(id): void;
+  triggerMore?(data: PostDetailMore): void;
 }
 
 type LikeIconListItemType = {element: React.FC<any>, reaction: ReactionType}
@@ -306,7 +311,10 @@ export const FeedPost = ({ data, onImageTap, ownPost = false, deletePost, goToDe
         />
         {showMoreIcon && <Spacer width={Spacing[8]} />}
         {showMoreIcon &&
-          <TouchableOpacity onPress={()=> triggerMore(data.id)}>
+          <TouchableOpacity onPress={()=> triggerMore({
+            feedId: data.id,
+            authorId: data.author.id
+          })}>
             <MoreHorizontal height={Spacing[24]} width={Spacing[24]} />
           </TouchableOpacity>
         }

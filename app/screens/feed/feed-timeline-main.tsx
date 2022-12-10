@@ -1,11 +1,11 @@
-import React, {createRef, FC, useCallback, useEffect, useState} from "react"
+import React, {createRef, FC, useCallback, useEffect, useState, useRef} from "react"
 import {
   FlatList,
   RefreshControl,
   SafeAreaView,
   Modal,
   TouchableOpacity,
-  StyleSheet,
+  StyleSheet, View,
 } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import {useFocusEffect, useIsFocused} from '@react-navigation/native'
@@ -16,18 +16,23 @@ import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors, Layout, Spacing, Roundness } from "@styles"
-import {Close} from "@assets/svgs"
+import {Close, Man1} from "@assets/svgs"
 
 import { useStores } from "../../bootstrap/context.boostrap"
 
 import { EmptyList } from "@screens/coaching-journal/components/empty-list"
-import { FeedPost } from "./component/feed-post"
+import {FeedPost, PostDetailMore} from "./component/feed-post"
 import { FeedButton } from "./component/feed-button"
 import ImageViewer from "react-native-image-zoom-viewer";
 import {debounce} from "lodash";
 import {FeedItemType} from "@screens/feed/feed.type";
 import ActionSheet from "react-native-actions-sheet";
 import {launchCamera} from "react-native-image-picker";
+import {dimensions} from "@config/platform.config";
+import FastImage from "react-native-fast-image";
+import terkejut from "@assets/icons/mood/kaget.png";
+// @ts-ignore
+import {default as ModalBoxModal} from 'react-native-modalbox';
 
 
 const images = [
@@ -111,8 +116,12 @@ const FEED_EXAMPLE_DATA_ITEM: FeedTimelineItem[] = [
   },
 ]
 
+export type UserReportActionType = "reportPost" | "reportUser" | "blockPost" | "blockUser"
+
 const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMain">> = observer(
   ({ navigation, route }) => {
+    const scrollRef = useRef();
+
     const { feedStore, feedApi } = useStores()
 
     const actionSheetRef = createRef();
@@ -126,15 +135,18 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
 
     const [currentPage, setCurrentPage] = useState<number>(1);
 
-    const [selectedPostId, setSelectedPostId] = useState<string>("");
+    const [selectedPostId, setSelectedPostId] = useState<PostDetailMore>(null);
+
+    const [userReportActionType, setUserReportActionType] = useState<UserReportActionType>("reportPost");
+    const [userReportActionModal, setUserReportActionModal] = useState<boolean>(false);
 
     const currentDateTime = new Date().toString();
 
     const isFocused = useIsFocused();
 
-    const openBottomSheet = (postId: string) => {
+    const openBottomSheet = (data: PostDetailMore) => {
       actionSheetRef.current?.setModalVisible(true)
-      setSelectedPostId(postId)
+      setSelectedPostId(data)
     }
 
     const goBack = () => {
@@ -255,10 +267,50 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
       toggleModal(true);
     }, [])
 
-    const reportPost = async () => {
-      await feedApi.reportPost(selectedPostId)
-      firstLoadFeed()
+    const confirmAction = async (actionType:UserReportActionType, data: PostDetailMore) => {
+      switch (actionType) {
+        case "reportPost":
+          await feedApi.reportPost(data.feedId, data.authorId)
+          break;
+        case "reportUser":
+          await feedApi.reportUser(data.authorId)
+          break;
+        case "blockPost":
+          await feedApi.reportPost(data.feedId, data.authorId)
+          break;
+        case "blockUser":
+          await feedApi.blockUser(data.authorId)
+          break;
+        default:
+      }
+      await firstLoadFeed()
+      scrollToTop()
+      setUserReportActionModal(false)
+    }
+
+    const reportAction = async (action: UserReportActionType) => {
+      switch (action) {
+        case "reportPost":
+          setUserReportActionType("reportPost")
+          break;
+        case "reportUser":
+          setUserReportActionType("reportUser")
+          break;
+        case "blockPost":
+          setUserReportActionType("blockPost")
+          break;
+        case "blockUser":
+          setUserReportActionType("blockUser")
+          break;
+        default:
+
+      }
+      setUserReportActionModal(true)
       actionSheetRef.current?.setModalVisible(false)
+    }
+
+    const scrollToTop = () => {
+      scrollRef.current?.scrollToOffset({ animated: true, offset: 0 })
     }
 
     return (
@@ -269,6 +321,7 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
         <SafeAreaView style={Layout.flex}>
           <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
           <FlatList
+            ref={scrollRef}
             refreshControl={
               <RefreshControl
                 refreshing={false}
@@ -371,6 +424,86 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
             />
           </VStack>
         </Modal>
+
+        {/* MODAL Report */}
+        <ModalBoxModal
+          isOpen={userReportActionModal}
+          style={{
+            height: "50%",
+            width: dimensions.screenWidth - Spacing[28],
+            backgroundColor: "rgba(52, 52, 52, 0)",
+          }}
+        >
+          <View style={{ flex: 1, justifyContent: "center" }}>
+            <VStack
+              style={{
+                backgroundColor: Colors.WHITE,
+                borderRadius: Spacing[48],
+                minHeight: Spacing[256],
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              horizontal={Spacing[24]}
+              vertical={Spacing[24]}
+            >
+              <VStack horizontal={Spacing[24]} top={Spacing[54]} style={Layout.widthFull}>
+                <VStack>
+                  <HStack bottom={Spacing[4]}>
+                    <Spacer />
+                    <Man1 height={Spacing[144]} width={Spacing[256]} />
+                    <Spacer />
+                  </HStack>
+                  <Text
+                    type={"body-bold"}
+                    style={{ fontSize: Spacing[18], textAlign: "center", color: Colors.ABM_GREEN }}
+                  >
+                    {userReportActionType === "reportPost" && "Kamu akan melaporkan unggahan Feed ini."}
+                    {userReportActionType === "reportUser" && "Kamu akan melaporkan user ini."}
+                    {userReportActionType === "blockPost" && "Kamu akan blokir unggahan dari user ini."}
+                    {userReportActionType === "blockUser" && "Kamu akan blokir user ini."}
+                  </Text>
+                  <Text
+                    type={"body"}
+                    style={{ textAlign: "center" }}
+                  >
+                    {userReportActionType === "reportPost" && "Unggahan ini akan hilang dari Feed-mu. \n" +
+                      "Apakah kamu yakin ingin melaporkan unggahan ini?"}
+                    {userReportActionType === "reportUser" && "Unggahan ini akan hilang dari Feed-mu, \n" +
+                      "dan user ini akan dilaporkan kepada admin. \n" +
+                      "Apakah kamu yakin ingin melaporkan user ini?"}
+                    {userReportActionType === "blockPost" && "Semua unggahan dari user ini akan hilang dari Feed-mu. \n" +
+                      "Apakah kamu yakin ingin blokir unggahan dari user ini?"}
+                    {userReportActionType === "blockUser" && "Kamu tidak akan bisa berinteraksi dengan user ini di dalam Feed.\n" +
+                      "Apakah kamu yakin ingin blokir user ini?"}
+                  </Text>
+                  <Spacer height={Spacing[20]} />
+                  <HStack bottom={Spacing[24]}>
+                    <Spacer />
+                    <VStack style={{ width: '100%' }}>
+                      <Button
+                        type={"warning"}
+                        text={userReportActionType.includes("report") ? "Laporkan" : "Blokir"}
+                        style={{ height: Spacing[32], paddingHorizontal: Spacing[8], width: '100%' }}
+                        textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
+                        onPress={() => confirmAction(userReportActionType, selectedPostId)}
+                      />
+                      <Spacer height={Spacing[12]} />
+                      <Button
+                        type={"transparent"}
+                        text={"Batalkan"}
+                        style={{ height: Spacing[32], paddingHorizontal: Spacing[8] }}
+                        textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
+                        onPress={() => setUserReportActionModal(false)}
+                      />
+                    </VStack>
+                    <Spacer />
+                  </HStack>
+                </VStack>
+              </VStack>
+            </VStack>
+          </View>
+        </ModalBoxModal>
+
         <ActionSheet ref={actionSheetRef}>
           <VStack
             style={{ justifyContent: "center" }}
@@ -386,10 +519,34 @@ const FeedTimelineMain: FC<StackScreenProps<NavigatorParamList, "feedTimelineMai
             </VStack>
             <Button
               onPress={() => {
-                reportPost()
+                reportAction("reportPost")
               }}
-              type={"warning"}
-              text={"Laporkan post ini"}
+              type={"primary"}
+              text={"🚩Laporkan unggahan feed ini"}
+            />
+            <Spacer height={Spacing[12]} />
+            <Button
+              onPress={() => {
+                reportAction("reportUser")
+              }}
+              type={"primary"}
+              text={"🚩Laporkan user ini"}
+            />
+            <Spacer height={Spacing[12]} />
+            <Button
+              onPress={() => {
+                reportAction("blockPost")
+              }}
+              type={"primary"}
+              text={"🚫Blokir unggahan dari user ini "}
+            />
+            <Spacer height={Spacing[12]} />
+            <Button
+              onPress={() => {
+                reportAction("blockUser")
+              }}
+              type={"primary"}
+              text={"🚫Blokir user ini "}
             />
             <Spacer height={Spacing[12]} />
           </VStack>
