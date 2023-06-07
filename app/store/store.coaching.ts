@@ -112,9 +112,10 @@ export default class CoachingStore {
   content: string
   strength: string
   improvement:string
-  commitment: string
+  recommendationForCoachee: string
   learnerIds: string[]
   type: string
+  documentsUrl: string
   messageCreateJournal: string
   messageUpdatedJournal: string
   messageCreateFeedback: string
@@ -246,11 +247,11 @@ export default class CoachingStore {
       data.content,
       data.strength,
       data.improvement,
-      data.commitment,
+      data.recommendationForCoachee,
       data.learnerIds,
       data.type,
       data.label,
-      data.questions
+      data.documentsUrl
     )
     if (result.kind === "ok") {
       this.refreshData = true
@@ -285,9 +286,10 @@ export default class CoachingStore {
     content: string,
     strength: string,
     improvement: string,
-    commitment: string,
+    recommendationForCoachee: string,
     learnerIds: string[],
-    type: string
+    type: string,
+    documentsUrl: string
     ){
       this.coach_id = coach_id
       this.date = date
@@ -295,16 +297,18 @@ export default class CoachingStore {
       this.content = content
       this.strength = strength
       this.improvement = improvement
-      this.commitment = commitment
+      this.recommendationForCoachee = recommendationForCoachee
       this.learnerIds = learnerIds
       this.type = type
+      this.documentsUrl = documentsUrl
       console.log('coach_id', coach_id)
       console.log('date', date)
       console.log('title', title)
       console.log('content', content)
       console.log('strength', strength)
       console.log('improvement', improvement)
-      console.log('commitment', commitment)
+      console.log('recommendationForCoachee', recommendationForCoachee)
+      console.log('documentsUrl', documentsUrl)
       console.log('learnerIds', learnerIds)
   }
 
@@ -315,9 +319,10 @@ export default class CoachingStore {
     this.content = ''
     this.strength = ''
     this.improvement = ''
-    this.commitment = ''
+    this.recommendationForCoachee = ''
     this.learnerIds = []
     this.type = ''
+    this.documentsUrl = ''
     this.refreshData = true
     this.listJournal = []
     this.messageCreateJournal = message
@@ -492,9 +497,10 @@ export default class CoachingStore {
     this.content = ''
     this.strength = ''
     this.improvement = ''
-    this.commitment = ''
+    this.recommendationForCoachee = ''
     this.learnerIds = []
     this.type = ''
+    this.documentsUrl = ''
     this.messageCreateJournal = ''
     this.messageUpdatedJournal = ''
     this.messageCreateFeedback = ''

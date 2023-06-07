@@ -1,25 +1,23 @@
 PODS:
-  - appcenter-analytics (4.3.0):
+  - appcenter-analytics (4.4.5):
     - AppCenter/Analytics (~> 4.0)
     - AppCenterReactNativeShared (~> 4.0)
     - React-Core
-  - appcenter-core (4.3.0):
+  - appcenter-core (4.4.5):
     - AppCenterReactNativeShared (~> 4.0)
     - React-Core
-  - appcenter-crashes (4.3.0):
+  - appcenter-crashes (4.4.5):
     - AppCenter/Crashes (~> 4.0)
     - AppCenterReactNativeShared (~> 4.0)
     - React-Core
-  - AppCenter/Analytics (4.3.0):
+  - AppCenter/Analytics (4.4.3):
     - AppCenter/Core
-  - AppCenter/Core (4.3.0)
-  - AppCenter/Crashes (4.3.0):
+  - AppCenter/Core (4.4.3)
+  - AppCenter/Crashes (4.4.3):
     - AppCenter/Core
-  - AppCenterReactNativeShared (4.3.0):
-    - AppCenter/Core (= 4.3.0)
+  - AppCenterReactNativeShared (4.4.5):
+    - AppCenter/Core (= 4.4.3)
   - boost-for-react-native (1.63.0)
-  - BVLinearGradient (2.5.6):
-    - React
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.64.4)
   - FBReactNativeSpec (0.64.4):
@@ -336,9 +334,9 @@ PODS:
     - react-native-config/App (= 1.4.5)
   - react-native-config/App (1.4.5):
     - React-Core
-  - react-native-create-thumbnail (1.6.3):
+  - react-native-create-thumbnail (1.6.4):
     - React-Core
-  - react-native-image-picker (4.7.1):
+  - react-native-image-picker (4.10.3):
     - React-Core
   - react-native-netinfo (5.9.10):
     - React-Core
@@ -468,10 +466,9 @@ PODS:
   - Yoga (1.14.0)
 
 DEPENDENCIES:
-  - appcenter-analytics (from `../node_modules/appcenter-analytics/ios`)
-  - appcenter-core (from `../node_modules/appcenter/ios`)
-  - appcenter-crashes (from `../node_modules/appcenter-crashes/ios`)
-  - BVLinearGradient (from `../node_modules/react-native-linear-gradient`)
+  - appcenter-analytics (from `../node_modules/appcenter-analytics`)
+  - appcenter-core (from `../node_modules/appcenter`)
+  - appcenter-crashes (from `../node_modules/appcenter-crashes`)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
@@ -549,13 +546,11 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   appcenter-analytics:
-    :path: "../node_modules/appcenter-analytics/ios"
+    :path: "../node_modules/appcenter-analytics"
   appcenter-core:
-    :path: "../node_modules/appcenter/ios"
+    :path: "../node_modules/appcenter"
   appcenter-crashes:
-    :path: "../node_modules/appcenter-crashes/ios"
-  BVLinearGradient:
-    :path: "../node_modules/react-native-linear-gradient"
+    :path: "../node_modules/appcenter-crashes"
   DoubleConversion:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   FBLazyVector:
@@ -662,16 +657,15 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  AppCenter: 883369ab78427b0561c688158d689dfe1f993ea9
-  appcenter-analytics: 2a8a55d2feba193c3c8a51b9902ef4757386414e
-  appcenter-core: 0293b8aeee457a25b44323a311de49c29d9defa7
-  appcenter-crashes: ad135405e148a9ed1c8bd169a9d2ea7bbaecd34c
-  AppCenterReactNativeShared: a821c7287a296486889ef6339317b701febb0695
+  AppCenter: 3fd04aa1b166e16fdb03ec81dabe488aece83fbd
+  appcenter-analytics: 1aea9ada8922d2e2df3e069a28eda21157c9d30d
+  appcenter-core: c593b2e4ac28d6a21b6a217c4a5e6b3de7b0b00f
+  appcenter-crashes: d9ae1c9296974c1c433600fa2f320e0ba1f12bdf
+  AppCenterReactNativeShared: f395caeabde0dc3a11609dbcb737d0f14cd40e79
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  BVLinearGradient: e3aad03778a456d77928f594a649e96995f1c872
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   FBLazyVector: fa8275d5086566e22a26ddc385ab5772e7f9b1bd
-  FBReactNativeSpec: 35e2f716b80bfcb1f2028054bc00f3901e7a4eaa
+  FBReactNativeSpec: da106bc61fb605299fa0ea1285baebd0a27036cf
   Firebase: 44213362f1dcc52555b935dc925ed35ac55f1b20
   FirebaseAnalytics: 319c9b3b1bdd400d60e2f415dff0c5f6959e6760
   FirebaseCore: 04186597c095da37d90ff9fd3e53bc61a1ff2440
@@ -697,8 +691,8 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 8c077bef1c64430b6034f27df1000d194551e2eb
   React-jsinspector: d4f6973dd474357dbaaf6f52f31ffc713bf3e766
   react-native-config: 6502b1879f97ed5ac570a029961fc35ea606cd14
-  react-native-create-thumbnail: 94e68f6cc050a870f830352d1a924c1e8d38b52f
-  react-native-image-picker: 5fe0a96bef4935bbdfb02f59b910bf40d5526109
+  react-native-create-thumbnail: e022bcdcba8a0b4529a50d3fa1a832ec921be39d
+  react-native-image-picker: 60f4246eb5bb7187fc15638a8c1f13abd3820695
   react-native-netinfo: 30fb89fa913c342be82a887b56e96be6d71201dd
   react-native-safe-area-context: 79fea126c6830c85f65947c223a5e3058a666937
   react-native-video: c26780b224543c62d5e1b2a7244a5cd1b50e8253
@@ -736,6 +730,6 @@ SPEC CHECKSUMS:
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
   Yoga: d1fc3575b8b68891ff5ef3c276daa855e841eb32
 
-PODFILE CHECKSUM: d5638b0fa6c9325c6823afc780bb6cfca7bfe241
+PODFILE CHECKSUM: 8fb8ae9cac6c0919bc9f552b3b75ccdb3c9bad6a
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.12.1

@@ -4,6 +4,7 @@ import {FeedbackDetail, FeedbackJLSixth} from "app/store/store.coaching";
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
 import { CreateJournalResult, FeedbackDetailResult, JournalDetailResult, JournalListResult } from "./coaching-api.types";
+import {DEFAULT_API_CONFIG} from "@services/api/api-config";
 
 export class CoachingApi {
   private api: Api
@@ -22,7 +23,7 @@ export class CoachingApi {
         "/journal", {
           limit: limit,
           page: page
-        })
+        }, { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` })
         console.log('getJournalList response', response.data)
 
       if(response.status === 400){
@@ -100,11 +101,11 @@ export class CoachingApi {
     content: string,
     strength: string,
     improvement: string,
-    commitment: string,
+    recommendationForCoachee: string,
     learnerIds: string[],
     type: string,
     label: string,
-    feedback: FeedbackJLSixth
+    documentsUrl: string
   ): Promise<CreateJournalResult> {
     try {
       // make the api call
@@ -117,19 +118,13 @@ export class CoachingApi {
           content,
           strength,
           improvement,
-          commitment,
+          recommendationForCoachee,
           learnerIds,
           type,
           label,
-          questions: {
-            q1: feedback.q1,
-            q2: feedback.q2,
-            q3: feedback.q3,
-            q4: feedback.q4,
-            q5: feedback.q5,
-            q6: feedback.q6
-          }
+          documentsUrl
         },
+        { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` }
       )
       console.log('createJournal response', response.data)
       if(response.status === 400){

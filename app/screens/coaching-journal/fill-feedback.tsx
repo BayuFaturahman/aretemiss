@@ -108,27 +108,15 @@ const FillFeedback: FC<StackScreenProps<NavigatorParamList, "fillFeedback">> = o
         setError(null)
       }
       // console.log('is error ', isError)
-      if(!isFeedbackError){
-        await coachingStore.createJournal(data)
-      }
+      // if(!isFeedbackError){
+      //   await coachingStore.createJournal(data)
+      // }
     }, [feedbackData, isError, isSubmitClicked])
 
     useEffect(() => {
       coachingStore.resetLoading()
       mainStore.resetLoading()
     },[])
-
-  useEffect(() => {
-      if(coachingStore.messageCreateJournal === "Success" && !coachingStore.isDetail){
-        coachingStore.resetCoachingStore()
-        coachingStore.setRefreshData(true)
-        coachingStore.clearJournal().then(()=>{
-          navigation.reset({
-            routes: [{ name: 'coachingJournalMain' }]
-          })
-        })
-      }
-  },[coachingStore.messageCreateJournal, coachingStore.createJournalSucceed])
 
   useEffect(() => {
       if(coachingStore.messageCreateFeedback === "Success" && coachingStore.isDetail){

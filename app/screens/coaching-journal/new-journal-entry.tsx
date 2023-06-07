@@ -39,11 +39,11 @@ export type JournalEntryType = {
   content: string
   strength: string
   improvement: string
-  commitment: string
+  recommendationForCoachee: string
   type: string
   label: string
   learnerIds: string[]
-  questions: FeedbackJLSixth
+  documentsUrl: string
 }
 
 const JournalEntryInitialValue: JournalEntryType = {
@@ -53,18 +53,11 @@ const JournalEntryInitialValue: JournalEntryType = {
   content: "",
   strength: "",
   improvement: "",
-  commitment: "",
+  recommendationForCoachee: "",
   type: "",
   label: "",
   learnerIds: [],
-  questions: {
-    q1: "",
-    q2: "",
-    q3: "",
-    q4: "",
-    q5: "",
-    q6: "",
-  },
+  documentsUrl: ""
 }
 
 const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry">> = observer(
@@ -115,9 +108,10 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
 
     const [strength, setStrength] = useState<string>("")
     const [improvement, setImprovement] = useState<string>("")
-    const [commitment, setCommitment] = useState<string>("")
+    const [recommendationForCoachee, setRecommendationForCoachee] = useState<string>("")
     const [activity, setActivity] = useState<string>("")
-    const [isError, setError] = useState<string>(null)
+    const [isError, setError] = useState<boolean>(false)
+    const [isErrorFile, setErrorFile] = useState<boolean>(false)
 
     const [isEncouragementModalVisible, setIsEncouragementModalVisible] = useState(false)
 
@@ -169,8 +163,8 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
 
     useEffect(() => {
       setSelectedDate(moment().format("LLLL"))
-      // profileStore.resetLoading()
-      // coachingStore.resetLoading()
+      coachingStore.resetLoading()
+      mainStore.resetLoading()
     }, [])
 
     const getListDetail = useCallback(async () => {
@@ -185,7 +179,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
         setContent(coachingStore.journalDetail.journal_content)
         setStrength(coachingStore.journalDetail.journal_strength)
         setImprovement(coachingStore.journalDetail.journal_improvement)
-        setCommitment(coachingStore.journalDetail.jl_commitment[0].desc)
+        // setRecommendationForCoachee(coachingStore.journalDetail.jl_commitment[0].desc)
         setSelectedDate(coachingStore.journalDetail.journal_date)
         setSelectedActivities(coachingStore.journalDetail.journal_type)
         setLearnerDetail(coachingStore.journalDetail.jl_learner_fullname[0])
@@ -194,7 +188,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
       } else {
         setTitle(coachingStore.journalDetail.journal_title)
         setContent(coachingStore.journalDetail.jl_content)
-        setCommitment(coachingStore.journalDetail.jl_commitment)
+        setRecommendationForCoachee(coachingStore.journalDetail.jl_commitment)
         setLeassons(coachingStore.journalDetail.jl_lesson_learned)
         setSelectedDate(coachingStore.journalDetail.journal_date)
         setSelectedActivities(coachingStore.journalDetail.journal_type)
@@ -237,41 +231,49 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
       })
     }
 
+    useEffect(() => {
+      if(coachingStore.messageCreateJournal === "Success" && !coachingStore.isDetail){
+        coachingStore.resetCoachingStore()
+        coachingStore.setRefreshData(true)
+        coachingStore.clearJournal().then(()=>{
+          navigation.reset({
+            routes: [{ name: 'coachingJournalMain' }]
+          })
+        })
+      }
+    },[coachingStore.messageCreateJournal, coachingStore.createJournalSucceed])
+
     const onSubmit = useCallback(
       async (data: JournalEntryType) => {
-        if (data.title === "") {
-          setError("title")
-        } else if (!data.learnerIds[0]) {
-          setError("learner")
-        } else if (data.content === "") {
-          setError("content")
-        } else if (data.strength === "") {
-          setError("strength")
-        } else if (data.improvement === "") {
-          setError("improvement")
-        } else if (data.commitment === "") {
-          setError("commitment")
-        } else if (!data.type || data.type === "") {
-          setError("type")
-        } else if (data.type === "Others" && data.label === "") {
-          setError("label")
-        }
-        // else if (data.type === '') {
-        //   setError('type')
-        // }
-        else if (data.date === "") {
-          setError("date")
+        if (data.title === "" || !data.learnerIds[0] || data.content === "" || data.strength === "" || data.improvement === ""
+        || data.recommendationForCoachee === "" || !data.type || data.type === "" || data.type === "Others" && data.label === ""
+        || data.date === "") {
+          setError(true)
         } else {
-          setError("")
+          setError(false)
+          setErrorFile(false)
           setJournalEntryForm(data)
           console.log("journal entry to be passed ", data)
-          console.log("journalEntryForm mau ke feedback", journalEntryForm)
-          goToFeedback(data)
-          // toggleEncouragementModal()
+          console.log("journalEntryForm submitted", journalEntryForm)
+          let temp = processLearnerIds(data)
+          if (!isError && !isErrorFile) {
+            await coachingStore.createJournal(temp)
+          }
         }
       },
       [setJournalEntryForm, journalEntryForm],
     )
+
+    const processLearnerIds = (journalEntry) : JournalEntryType => {
+      console.log("journalEntryForm ", journalEntryForm)
+      const tempLearnerIds = [];
+      for (let i = 0; i < journalEntry.learnerIds.length; i++) {
+        tempLearnerIds.push(journalEntry.learnerIds[i].id);
+      }
+      journalEntry.learnerIds = tempLearnerIds;
+
+      return journalEntry;
+    }
 
     const goToFeedback = (journalEntry) => {
       console.log("journalEntryForm ", journalEntryForm)
@@ -292,6 +294,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
       onActivityPress = (item) => setActivity(item),
       selectedActivity = "weekly_coaching",
       isError = false,
+      isErrorFile = false,
     }) => {
       const styles = StyleSheet.create({
         container: {
@@ -350,7 +353,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                   <ScrollView style={[Layout.flex, { flex: 1 }]} nestedScrollEnabled={true}>
                     <VStack top={Spacing[32]} horizontal={Spacing[24]}>
                       <HStack>
-                        <Text type={"left-header"} style={{}} text="Tambah coaching journal" />
+                        <Text type={"left-header"} style={{}} text="Tambah Coaching Journal." />
                         <Spacer />
                         <HStack>
                           <Button type={"light-bg"} text={"Cancel"} onPress={goBack} />
@@ -358,12 +361,30 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                       </HStack>
 
                       <VStack>
+                      { isError && <Text
+                          type={"label"}
+                          style={{
+                            textAlign: 'center',
+                            marginTop: Spacing[4],
+                            color: Colors.MAIN_RED
+                          }}
+                        >Ups! Sepertinya ada kolom yang belum diisi! Silahkan dicek kembali dan isi semua kolom yang tersedia!</Text>
+                      }
+                      { isErrorFile && <Text
+                          type={"label"}
+                          style={{
+                            textAlign: 'center',
+                            marginTop: Spacing[4],
+                            color: Colors.MAIN_RED
+                          }}
+                        >Ups! Sepertinya file dokumen tidak sesuai dengan syarat yang telah disediakan! Silahkan dicek kembali!</Text>
+                      }
                         <TextField
                           value={values.title}
                           onChangeText={handleChange("title")}
                           isRequired={false}
                           editable={!coachingStore.isDetail}
-                          isError={isError === "title"}
+                          isError={isError && !values.title}
                           secureTextEntry={false}
                           placeholder={"Tulis nama judul sesi coaching di sini."}
                         />
@@ -373,7 +394,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                               type={"body-bold"}
                               style={[
                                 { textAlign: "center", top: Spacing[4] },
-                                isError === "learner" ? styles.textError : null,
+                                isError && values.learnerIds.length == 0 ? styles.textError : null,
                               ]}
                               text="dengan"
                             />
@@ -390,9 +411,9 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                                 onValueChange={(value: DropDownItem | DropDownItem[]) => {
                                   setFieldValue("learnerIds", value)
                                 }}
-                                placeholder={"Pilih salah satu"}
+                                placeholder={"Pilih coachee (max. 5 orang)"}
                                 containerStyle={{ marginTop: Spacing[4] }}
-                                isError={isError === "learner"}
+                                isError={isError && values.learnerIds.length == 0}
                                 multiple={true}
                               />
                             ) : (
@@ -402,7 +423,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                                   minWidth: dimensions.screenWidth - Spacing[128],
                                 }}
                                 value={journalEntryForm.learnerIds.toString()}
-                                isError={isError === "learner"}
+                                isError={isError && values.learnerIds.length == 0}
                                 inputStyle={{ minHeight: Spacing[48] }}
                                 isRequired={false}
                                 secureTextEntry={false}
@@ -445,7 +466,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                               type={"body-bold"}
                               style={[
                                 { textAlign: "center", top: Spacing[4] },
-                                isError === "content" ? styles.textError : null,
+                                isError && !values.content ? styles.textError : null,
                               ]}
                             >
                               {`Apa yang `}
@@ -458,7 +479,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                               style={{ paddingTop: 0 }}
                               value={values.content}
                               // editable={!coachingStore.isDetail}
-                              isError={isError === "content"}
+                              isError={isError && !values.content }
                               onChangeText={handleChange("content")}
                               inputStyle={{ minHeight: Spacing[72] }}
                               isRequired={false}
@@ -474,7 +495,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                               type={"body-bold"}
                               style={[
                                 { textAlign: "center", top: Spacing[4] },
-                                isError === "strength" ? styles.textError : null,
+                                isError && !values.strength ? styles.textError : null,
                               ]}
                             >
                               {`Sebagai coach, apa yang sudah saya lakukan dengan `}
@@ -488,7 +509,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                               isRequired={false}
                               value={values.strength}
                               editable={!coachingStore.isDetail}
-                              isError={isError === "strength"}
+                              isError={isError && !values.strength}
                               onChangeText={handleChange("strength")}
                               secureTextEntry={false}
                               isTextArea={true}
@@ -502,7 +523,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                               type={"body-bold"}
                               style={[
                                 { textAlign: "center", top: Spacing[4] },
-                                isError === "improvement" ? styles.textError : null,
+                                isError && !values.improvement ? styles.textError : null,
                               ]}
                             >
                               {`Sebagai coach, kualitas apa yang dapat saya `}
@@ -523,7 +544,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                               secureTextEntry={false}
                               isTextArea={true}
                               editable={!coachingStore.isDetail}
-                              isError={isError === "improvement"}
+                              isError={isError && !values.improvement}
                               value={values.improvement}
                               onChangeText={handleChange("improvement")}
                               charCounter={true}
@@ -536,7 +557,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                               type={"body-bold"}
                               style={[
                                 { textAlign: "center", top: Spacing[4] },
-                                isError == "leassons" ? styles.textError : null,
+                                isError ? styles.textError : null,
                               ]}
                             >
                               {"Tulislah "}
@@ -553,8 +574,8 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                               isTextArea={true}
                               editable={!coachingStore.isDetail}
                               // value={leassons}
-                              isError={isError === "leassons"}
-                              onChangeText={handleChange("lessons")}
+                              isError={isError}
+                              onChangeText={handleChange("recommendationForCoachee")}
                               charCounter={true}
                             />
                           </VStack>
@@ -564,12 +585,12 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                             type={"body-bold"}
                             style={[
                               { textAlign: "center", top: Spacing[4] },
-                              isError === "commitment" ? styles.textError : null,
+                              isError && !values.recommendationForCoachee ? styles.textError : null,
                             ]}
                           >
-                            Apa saja yang akan saya lakukan secara berbeda untuk
+                            Dari sesi coaching, apa
                             <Text type={"body-bold"} style={{ color: Colors.ABM_LIGHT_BLUE }}>
-                              {" sesi selanjutnya?"}
+                              {" rekomendasi saya untuk coachee?"}
                             </Text>
                           </Text>
                           <TextField
@@ -579,9 +600,9 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                             secureTextEntry={false}
                             isTextArea={true}
                             editable={!coachingStore.isDetail}
-                            value={values.commitment}
-                            isError={isError === "commitment"}
-                            onChangeText={handleChange("commitment")}
+                            value={values.recommendationForCoachee}
+                            isError={isError && !values.recommendationForCoachee }
+                            onChangeText={handleChange("recommendationForCoachee")}
                             charCounter={true}
                           />
                         </VStack>
@@ -591,7 +612,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                             type={"body-bold"}
                             style={[
                               { textAlign: "left" },
-                              isError === "commitment" ? styles.textError : null,
+                              isError && !values.type ? styles.textError : null,
                             ]}
                           >Pilih kategori coaching:</Text>
                           <DropDownPicker
@@ -604,7 +625,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                             }}
                             placeholder={"Pilih kategori"}
                             containerStyle={{ marginTop: -Spacing[24] }}
-                            isError={isError === "type"}
+                            isError={isError && !values.type}
                             multiple={false}
                           />
                           {values.type === "other" && (
@@ -617,7 +638,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                               isTextArea={false}
                               editable={!coachingStore.isDetail}
                               // value={leassons}
-                              isError={isError === "label"}
+                              isError={isError && !values.label}
                               onChangeText={handleChange("label")}
                             />
                           )}
@@ -656,26 +677,17 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                           {coachingStore.isDetail ? (
                             <Button
                               type={"primary"}
-                              text={"Hasil Feedback"}
+                              text={"Lihat Catatan Coachee"}
                               onPress={handleSubmit}
                             />
                           ) : (
                             <Button
                               type={"primary"}
-                              text={"Lakukan feedback"}
+                              text={"Simpan Catatan"}
                               onPress={handleSubmit}
                             />
                           )}
                         </VStack>
-                        <Text
-                          type={"label"}
-                          style={{
-                            textAlign: 'center',
-                            marginTop: Spacing[4],
-                            paddingBottom: Spacing[32],
-                            color: Colors.ABM_LIGHT_BLUE
-                          }}
-                        >Penting! Catatan coaching-mu belum tersimpan sampai kamu klik “Submit” setelah melakukan feedback.</Text>
                       </VStack>
                     </VStack>
                   </ScrollView>
