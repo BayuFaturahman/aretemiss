@@ -42,7 +42,7 @@ export class AuthApi {
 
       return { kind: "ok", response: res }
     } catch (e) {
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data" }
     }
   }
@@ -77,7 +77,7 @@ export class AuthApi {
 
       return { kind: "ok", response: res }
     } catch (e) {
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data" }
     }
   }
@@ -108,7 +108,7 @@ export class AuthApi {
 
       return { kind: "ok", response: res }
     } catch (e) {
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data" }
     }
   }
@@ -139,7 +139,7 @@ export class AuthApi {
 
       return { kind: "ok", response: res }
     } catch (e) {
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }
@@ -168,7 +168,7 @@ export class AuthApi {
 
       return { kind: "ok", response: res }
     } catch (e) {
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data" }
     }
   }
@@ -196,7 +196,7 @@ export class AuthApi {
 
       return { kind: "ok", response: res }
     } catch (e) {
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data" }
     }
   }
@@ -223,7 +223,7 @@ export class AuthApi {
 
       return { kind: "ok", response: res }
     } catch (e) {
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data" }
     }
   }

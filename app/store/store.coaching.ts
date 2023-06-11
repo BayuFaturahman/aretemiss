@@ -40,7 +40,7 @@ export type JournalDetail = {
   journal_id: string
   journal_title: string
   journal_coach_id: string
-  journal_commitment: string
+  journal_recommendation_for_coachee: string
   journal_content: string
   journal_improvement: string
   journal_strength: string
@@ -64,6 +64,7 @@ export type JournalLearnerModel = {
   jl_id: string
   jl_learner_id: string
   jl_fullname: string
+  is_filled: boolean
 }
 
 export type JournalModel = {
@@ -76,7 +77,7 @@ export type JournalModel = {
   journal_label: string
   coach_fullname: string
   is_coachee: boolean
-  jourrnal_learner: JournalLearnerModel[]
+  journal_learner: JournalLearnerModel[]
 }
 
 export default class CoachingStore {
@@ -149,7 +150,7 @@ export default class CoachingStore {
       journal_id: '',
       journal_title: '',
       journal_coach_id: '',
-      journal_commitment: '',
+      journal_recommendation_for_coachee: '',
       journal_content: '',
       journal_improvement: '',
       journal_strength: '',
@@ -211,7 +212,7 @@ export default class CoachingStore {
         console.log(result)
         this.coachingFailed(result.response.errorCode)
       } else {
-        __DEV__ && console.tron.log(result.kind)
+        // __DEV__ && console.tron.log(result.kind)
       }
     } catch (e) {
       console.log(e)
@@ -259,7 +260,8 @@ export default class CoachingStore {
     } else if (result.kind === 'form-error'){
       this.coachingFailed(result.response.errorCode)
     } else {
-      __DEV__ && console.tron.log(result.kind)
+      await this.createJournalSucceed('Failed')
+      // __DEV__ && console.tron.log(result.kind)
     }
   }
 
@@ -351,6 +353,10 @@ export default class CoachingStore {
     this.isLoading = false
   }
 
+  createJournalFailed() {
+
+  }
+
   async isDetailJournal (detailCoach: boolean) {
     this.isDetail = detailCoach
   }
@@ -366,7 +372,7 @@ export default class CoachingStore {
     } else if (result.kind === 'form-error'){
       this.coachingFailed(result.response.errorCode)
     } else {
-      __DEV__ && console.tron.log(result.kind)
+      // __DEV__ && console.tron.log(result.kind)
     }
     } catch (e) {
       console.log(e)
@@ -391,7 +397,7 @@ export default class CoachingStore {
       } else if (result.kind === 'form-error'){
         this.coachingFailed(result.response.errorCode)
       } else {
-        __DEV__ && console.tron.log(result.kind)
+        // __DEV__ && console.tron.log(result.kind)
       }
     } catch (e) {
       console.log(e)
@@ -416,7 +422,7 @@ export default class CoachingStore {
     } else if (result.kind === 'form-error'){
       this.coachingFailed(result.response.errorCode)
     } else {
-      __DEV__ && console.tron.log(result.kind)
+      // __DEV__ && console.tron.log(result.kind)
     }
   }
 
@@ -512,7 +518,7 @@ export default class CoachingStore {
 
   async updateJournal(
     content: string,
-    commitment: string,
+    recommendationForCoachee: string,
     strength: string,
     type: string,
     improvement: string,
@@ -523,7 +529,7 @@ export default class CoachingStore {
 
     const result = await this.coachingApi.updateJournalCoach(
       content,
-      commitment,
+      recommendationForCoachee,
       strength,
       improvement,
       type,
@@ -536,7 +542,7 @@ export default class CoachingStore {
     } else if (result.kind === 'form-error'){
       this.coachingFailed(result.response.errorCode)
     } else {
-      __DEV__ && console.tron.log(result.kind)
+      // __DEV__ && console.tron.log(result.kind)
     }
   }
 
@@ -562,7 +568,7 @@ export default class CoachingStore {
     } else if (result.kind === 'form-error'){
       this.coachingFailed(result.response.errorCode)
     } else {
-      __DEV__ && console.tron.log(result.kind)
+      // __DEV__ && console.tron.log(result.kind)
     }
   }
 
@@ -608,7 +614,7 @@ export default class CoachingStore {
     } else if (result.kind === 'form-error'){
       this.coachingFailed(result.response.errorCode)
     } else {
-      __DEV__ && console.tron.log(result.kind)
+      // __DEV__ && console.tron.log(result.kind)
     }
   }
 

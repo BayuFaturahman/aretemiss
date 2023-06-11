@@ -227,6 +227,9 @@ export type NavigatorParamList = {
   newJournalEntry: {
     isDetail: boolean
   }
+  newJournalLearnerEntry: {
+    isDetail: boolean
+  }
   fillFeedback: {
     isDetail: boolean
     data: JournalEntryType
@@ -240,6 +243,7 @@ export type NavigatorParamList = {
   overviewJournalEntry: {
     journalId: string
     isCoachee: boolean
+    isJlFilled: boolean
   }
   overviewJournalEntryByCoachee: {
     title: string

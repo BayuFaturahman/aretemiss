@@ -20,6 +20,7 @@ export type CoachingActivitiesItem = {
   // learner_fullname: string
   // learner_id: string
   journal_learner: JournalLearnerModel[]
+  is_jl_filled: boolean
 }
 
 export type CoachingJournalItem = {

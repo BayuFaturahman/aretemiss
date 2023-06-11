@@ -9,11 +9,6 @@ import Spacer from "@components/spacer"
 import { Colors, Layout, Spacing } from "@styles"
 import { IOption } from "react-native-modal-selector"
 
-import {
-  ACTIVITIES_TYPE,
-  ActivitiesTypeLegends,
-} from "@screens/coaching-journal/components/activities-type-legends"
-
 import { dimensions } from "@config/platform.config"
 
 import CalendarPicker from "react-native-calendar-picker"
@@ -28,15 +23,16 @@ import { Formik } from "formik"
 import FastImage from "react-native-fast-image"
 import smileYellow from "@assets/icons/coachingJournal/empty/smile-yellow.png"
 
-const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalEntry">> = observer(
+const overviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalEntry">> = observer(
   ({ navigation, route }) => {
     const formikRef = useRef();
     const { mainStore, coachingStore } = useStores()
 
-    const { journalId, isCoachee } = route.params
+    const { journalId, isCoachee, isJlFilled } = route.params
 
     console.log("overview journal " + journalId)
     console.log("is coachee " + isCoachee)
+    console.log("is coachee user, isJlFilled", + isJlFilled)
 
     const styles = StyleSheet.create({
       textError: {
@@ -72,7 +68,6 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
 
     const [isModalEditEntryVisible, setIsModalEditEntryVisible] = useState(false)
 
-    const [title, setTitle] = useState<string>("")
     const [jlContent, setJlContent] = useState<string>("")
     const [jlCommitment, setJlCommitment] = useState<string>("")
     const [jlLessonLearned, setJlLessonLearned] = useState<string>("")
@@ -92,9 +87,10 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
       content: "",
       strength: "",
       improvement: "",
-      commitment: "",
+      recommendationForCoachee: "",
       type: "",
       label: "",
+      documentsUrl: [],
       learner: "",
       jlLessonLearned: "",
       jlCommitment: "",
@@ -148,47 +144,49 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
     }, [])
 
     const getListDetail = useCallback(async () => {
-      await coachingStore.getJournalDetail()
-
       if (isCoachee) {
-        console.log("is coachee true")
-        console.log(coachingStore.journalDetail)
-        // journalEntryInitialValue.learner = coachingStore.journalDetail.jl_learner_fullname
-        journalEntryInitialValue.jlContent = coachingStore.journalDetail.jl_content
-        journalEntryInitialValue.jlLessonLearned = coachingStore.journalDetail.jl_lesson_learned
-        journalEntryInitialValue.jlCommitment = coachingStore.journalDetail.jl_commitment
-        journalEntryInitialValue.type = coachingStore.journalDetail.journal_type;
-        journalEntryInitialValue.label = coachingStore.journalDetail.journal_label;
+          console.log("is coachee true")
+          console.log(coachingStore.journalDetail)
 
+          journalEntryInitialValue.type = coachingStore.journalDetail.journal_type;
+          journalEntryInitialValue.label = coachingStore.journalDetail.journal_label;
 
-        setJlLessonLearned(coachingStore.journalDetail.jl_lesson_learned)
-        setJlCommitment(coachingStore.journalDetail.jl_commitment)
-        setJlContent(coachingStore.journalDetail.jl_content)
-        setTitle(`${coachingStore.journalDetail.journal_title}`)
-        setSelectedDate(coachingStore.journalDetail.journal_date)
-        setSelectedActivities(coachingStore.journalDetail.journal_type)
-        setCoach(coachingStore.journalDetail.coach_fullname)
-        if (coachingStore.journalDetail.is_edited) {
-          setIsOnEditMode(false)
-        }
+          setSelectedDate(coachingStore.journalDetail.journal_date)
+          setSelectedActivities(coachingStore.journalDetail.journal_type)
+          setCoach(coachingStore.journalDetail.coach_fullname)
+        
+          if (isJlFilled) {
+            goToOverviewJournalByCoachee()
+          } else {
+            if (coachingStore.journalDetail.is_edited) {
+              setIsOnEditMode(false)
+            }
+          }
       } else {
+        await coachingStore.getJournalDetail()
+
         console.log(JSON.stringify(coachingStore.journalDetail, null, 4), 'line 154')
         journalEntryInitialValue.title = coachingStore.journalDetail.journal_title
         journalEntryInitialValue.content = coachingStore.journalDetail.journal_content
         journalEntryInitialValue.strength = coachingStore.journalDetail.journal_strength
         journalEntryInitialValue.improvement = coachingStore.journalDetail.journal_improvement
-        journalEntryInitialValue.commitment = coachingStore.journalDetail.journal_commitment
-        journalEntryInitialValue.learner = coachingStore.journalDetail.jl_learner_fullname[0]
+        journalEntryInitialValue.recommendationForCoachee = coachingStore.journalDetail.journal_recommendation_for_coachee
+        coachingStore.journalDetail.jl_learner_fullname.forEach((name, i) => {
+          if (i == coachingStore.journalDetail.jl_learner_fullname.length - 1) {
+            // if last element concat without space
+            journalEntryInitialValue.learner = journalEntryInitialValue.learner.concat(name)
+          } else {
+            journalEntryInitialValue.learner = journalEntryInitialValue.learner.concat(name, ', ')
+          }
+        })
         journalEntryInitialValue.type = coachingStore.journalDetail.journal_type;
         journalEntryInitialValue.label = coachingStore.journalDetail.journal_label;
 
         setInitValueJournalType(dataJournalTags.find(data => data.key === coachingStore.journalDetail.journal_type))
-        setJlLessonLearned(coachingStore.journalDetail.jl_lesson_learned[0].desc)
-        setJlCommitment(coachingStore.journalDetail.jl_commitment[0].desc)
-        setJlContent(coachingStore.journalDetail.jl_content[0].desc)
-        setTitle(
-          `${coachingStore.journalDetail.journal_title} with ${coachingStore.journalDetail.jl_learner_fullname[0]}`,
-        )
+        // setJlLessonLearned(coachingStore.journalDetail.jl_lesson_learned[0].desc)
+        // setJlCommitment(coachingStore.journalDetail.jl_commitment[0].desc)
+        // setJlContent(coachingStore.journalDetail.jl_content[0].desc)
+        
         setSelectedDate(coachingStore.journalDetail.journal_date)
         setSelectedActivities(coachingStore.journalDetail.journal_type)
         forceUpdate()
@@ -219,18 +217,11 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
     const goToOverviewJournalByCoachee = () => {
       console.log("journalEntryInitialValue : ", journalEntryInitialValue)
       navigation.navigate("overviewJournalEntryByCoachee", {
-        title: title,
+        title: coachingStore.journalDetail.journal_title,
         lessonsLearned: coachingStore.journalDetail.jl_lesson_learned,
         commitments: coachingStore.journalDetail.jl_commitment,
         contents: coachingStore.journalDetail.jl_content,
         learnersFullname: coachingStore.journalDetail.jl_learner_fullname
-      })
-    }
-
-    const goToFeedback = () => {
-      navigation.navigate("fillFeedbackCoachee", {
-        isFilled: false,
-        journalId: journalId,
       })
     }
 
@@ -289,64 +280,9 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
           )
           // toggleModalEditEntry()
           setIsOnEditMode(false)
-          goToFeedback()
+          // goToFeedback()
         }
       }
-    }
-
-    const holdActivitiesId = useCallback(
-      (selectedId) => {
-        setSelectedActivities(selectedId)
-      },
-      [selectedActivities],
-    )
-
-    const searchDataUser = (id: string) => {
-      dataTeamMember.find((data) => {
-        return data.id == id
-      })
-    }
-
-    const ActivityTypeSelector = ({
-      onActivityPress = (item) => setActivity(item),
-      selectedActivity = "weekly_coaching",
-      isError = false,
-    }) => {
-      const styles = StyleSheet.create({
-        container: {
-          borderColor: "red",
-          borderRadius: Spacing[20],
-          borderStyle: "dashed",
-          borderWidth: isError ? Spacing[2] : 0,
-          justifyContent: "space-around",
-          padding: Spacing[6],
-        },
-      })
-
-      return (
-        <HStack style={styles.container}>
-          {ACTIVITIES_TYPE.map((item, index) => {
-            if (index < 2) {
-              return (
-                <TouchableOpacity
-                  style={{
-                    borderColor: Colors.MAIN_RED,
-                    borderWidth: item.value === selectedActivity ? Spacing[2] : 0,
-                    height: Spacing[32],
-                    width: Spacing[32],
-                    backgroundColor: item.color,
-                    borderRadius: Spacing[128],
-                  }}
-                  disabled={!isOnEditMode}
-                  onPress={() => onActivityPress(item.value)}
-                />
-              )
-            } else {
-              return <></>
-            }
-          })}
-        </HStack>
-      )
     }
 
     const onClickEditEntry = () => {
@@ -397,8 +333,8 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                       setError("strength")
                     } else if (data.improvement === "") {
                       setError("improvement")
-                    } else if (data.commitment === "") {
-                      setError("commitment")
+                    } else if (data.recommendationForCoachee === "") {
+                      setError("recommendationForCoachee")
                     } else if (!data.type || data.type === "") {
                       setError("type")
                     } else if (data.type === "Others" && data.label === "") {
@@ -408,14 +344,14 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                         setError("")
                         await coachingStore.updateJournal(
                           data.content,
-                          data.commitment,
+                          data.recommendationForCoachee,
                           data.strength,
                           data.type,
                           data.improvement,
                           data.label,
                         ).then(_ => {
                           setFieldValue('content', data.content)
-                          setFieldValue('commitment', data.commitment)
+                          setFieldValue('recommendationForCoachee', data.recommendationForCoachee)
                           setFieldValue('strength', data.strength)
                           setFieldValue('type', data.type)
                           setFieldValue('improvement', data.improvement)
@@ -443,7 +379,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
 
                       // toggleModalEditEntry()
                       setIsOnEditMode(false)
-                      goToFeedback()
+                      // goToFeedback()
                     }
                   }
                 }
@@ -452,7 +388,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                   <>
                     <VStack top={Spacing[32]} horizontal={Spacing[24]}>
                       <HStack>
-                        <Text type={"left-header"} style={{}} text="Isi coaching journal" />
+                        <Text type={"left-header"} style={{}} underlineWidth={Spacing[256]} text="Coaching Journal Overview" />
                         <Spacer />
                         <HStack>
                           {isCoachee ? null : isOnEditMode ? (
@@ -460,7 +396,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                           ) : (
                             <Button
                               type={"light-bg"}
-                              text={"Edit Entry"}
+                              text={"Edit"}
                               onPress={onClickEditEntry}
                             />
                           )}
@@ -469,7 +405,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
 
                       <VStack>
                         <Spacer height={Spacing[8]} />
-                        <View
+                        {/* <View
                           style={{
                             maxWidth: "100%",
                             backgroundColor: Colors.ABM_MAIN_BLUE,
@@ -484,24 +420,25 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                               minHeight: 44,
                             }}
                             horizontal={true}
-                          >
+                          > */}
                             <TextField
-                              value={title}
+                              value={values.title}
                               isRequired={false}
                               editable={false}
                               inputStyle={{
-                                backgroundColor: Colors.TRANSPARENT,
+                                backgroundColor: Colors.ABM_DARK_BLUE,
                                 color: Colors.WHITE,
                                 textAlign: "left",
                                 paddingHorizontal: 10,
                                 fontWeight: "bold",
-                                borderWidth: 0
+                                borderWidth: 0,
+                                borderRadius: Spacing[10]
                               }}
                               style={{ paddingVertical: 0 }}
                               secureTextEntry={false}
                             />
-                          </ScrollView>
-                        </View>
+                          {/* </ScrollView> */}
+                        {/* </View> */}
 
                         {isCoachee ? (
                           <HStack top={Spacing[8]}>
@@ -537,7 +474,40 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                             />
                           </HStack>
                         ) : (
-                          <Spacer height={Spacing[12]} />
+                          <HStack top={Spacing[8]}>
+                            <VStack left={Spacing[24]} right={Spacing[8]}>
+                              <Text
+                                type={"body-bold"}
+                                style={[
+                                  { textAlign: "center", top: Spacing[4] },
+                                  isError === "title" ? styles.textError : null,
+                                ]}
+                              >
+                                {`dengan`}
+                              </Text>
+                            </VStack>
+                            <TextField
+                              value={values.learner}
+                              isRequired={false}
+                              editable={false}
+                              inputStyle={{
+                                backgroundColor: Colors.ABM_DARK_BLUE,
+                                color: Colors.WHITE,
+                                textAlign: "left",
+                                paddingHorizontal: 10,
+                                fontWeight: "bold",
+                                borderRadius: Spacing[10]
+                              }}
+                              style={{
+                                paddingVertical: 0,
+                                paddingBottom: Spacing[12],
+                                flex: 1,
+                                width: "100%",
+                              }}
+                              isTextArea={true}
+                              secureTextEntry={false}
+                            />
+                          </HStack>
                         )}
                         <HStack>
                           <TouchableOpacity
@@ -591,8 +561,8 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                               }
                               inputStyle={
                                 isOnEditMode
-                                  ? { minHeight: Spacing[72] }
-                                  : { minHeight: Spacing[72], backgroundColor: Colors.ABM_BG_BLUE }
+                                  ? { minHeight: Spacing[72], borderRadius: Spacing[10]}
+                                  : { minHeight: Spacing[72], backgroundColor: Colors.ABM_BG_BLUE, borderRadius: Spacing[10] }
                               }
                               editable={isOnEditMode}
                               isRequired={false}
@@ -619,8 +589,8 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                               style={{ paddingTop: 0 }}
                               inputStyle={
                                 isOnEditMode
-                                  ? { minHeight: Spacing[48] }
-                                  : { minHeight: Spacing[48], backgroundColor: Colors.ABM_BG_BLUE }
+                                  ? { minHeight: Spacing[48], borderRadius: Spacing[10] }
+                                  : { minHeight: Spacing[48], backgroundColor: Colors.ABM_BG_BLUE, borderRadius: Spacing[10] }
                               }
                               editable={isOnEditMode}
                               isRequired={false}
@@ -656,8 +626,8 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                               style={{ paddingTop: 0 }}
                               inputStyle={
                                 isOnEditMode
-                                  ? { minHeight: Spacing[48] }
-                                  : { minHeight: Spacing[48], backgroundColor: Colors.ABM_BG_BLUE }
+                                  ? { minHeight: Spacing[48] , borderRadius: Spacing[10]}
+                                  : { minHeight: Spacing[48], backgroundColor: Colors.ABM_BG_BLUE, borderRadius: Spacing[10] }
                               }
                               editable={isOnEditMode}
                               isRequired={false}
@@ -677,12 +647,12 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                                 type={"body-bold"}
                                 style={[
                                   { textAlign: "center", top: Spacing[4] },
-                                  isError == "commitment" ? styles.textError : null,
+                                  isError == "recommendationForCoachee" ? styles.textError : null,
                                 ]}
                               >
-                                {`Apa saja yang akan saya lakukan secara\nberbeda untuk`}
+                                Dari sesi coaching, apa
                                 <Text type={"body-bold"} style={{ color: Colors.ABM_LIGHT_BLUE }}>
-                                  {" sesi selanjutnya?"}
+                                  {" rekomendasi saya untuk coachee?"}
                                 </Text>
                               </Text>
                               <TextField
@@ -696,9 +666,9 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                                 secureTextEntry={false}
                                 isTextArea={true}
                                 editable={isOnEditMode}
-                                value={values.commitment}
-                                isError={isError === "commitment"}
-                                onChangeText={handleChange("commitment")}
+                                value={values.recommendationForCoachee}
+                                isError={isError === "recommendationForCoachee"}
+                                onChangeText={handleChange("recommendationForCoachee")}
                               />
                             </VStack>
                           </>
@@ -815,7 +785,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                               {values.type === "other" && (
                                 <TextField
                                   style={{ paddingTop: 0 }}
-                                  inputStyle={{ minHeight: Spacing[48], marginTop: Spacing[8]}}
+                                  inputStyle={{ minHeight: Spacing[48], marginTop: Spacing[8], borderRadius: Spacing[10]}}
                                   placeholder="Tulis kategori coaching di sini."
                                   isRequired={false}
                                   secureTextEntry={false}
@@ -835,8 +805,8 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                               onChangeText={handleChange("jlCommitment")}
                               inputStyle={
                                 isOnEditMode
-                                  ? { minHeight: Spacing[72] }
-                                  : { minHeight: Spacing[48], backgroundColor: Colors.ABM_BG_BLUE }
+                                  ? { minHeight: Spacing[72], borderRadius: Spacing[10] }
+                                  : { minHeight: Spacing[48], backgroundColor: Colors.ABM_BG_BLUE, borderRadius: Spacing[10] }
                               }
                               editable={isOnEditMode}
                               isRequired={false}
@@ -856,30 +826,21 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
                       {/* {coachingStore.isDetail ? */}
                       {!isOnEditMode ? (
                         <Button
-                          type={"primary"}
+                          type={"light-blue-form"}
                           text={isCoachee ? "Lakukan feedback" : "Lihat catatan coachee"}
                           onPress={isCoachee ? goToFeedback : goToOverviewJournalByCoachee}
                         />
-                      ) : isCoachee ? (
-                        <Button
-                          type={"primary"}
-                          text={"Lakukan feedback"}
-                          onPress={() => verifyData(values)}
-                        />
-                      ) : (
-                        <Button type={"light-blue"} text={"Simpan"} onPress={() => verifyData(values)} />
+                      ) :
+                      // : isCoachee ? (
+                      //   <Button
+                      //     type={"primary"}
+                      //     text={"Lakukan feedback"}
+                      //     onPress={() => verifyData(values)}
+                      //   />
+                      // ) :
+                       (
+                        <Button type={"primary-form"} text={"Simpan Edit"} onPress={() => verifyData(values)} />
                       )}
-                    </VStack>
-                    <VStack horizontal={Spacing[24]} bottom={Spacing[24]}>
-                      {isOnEditMode ? (
-                        <Text
-                          type={"warning"}
-                          style={{ fontSize: Spacing[12], textAlign: "center" }}
-                          text={
-                            "Penting! Catatan coaching-mu belum tersimpan sampai kamu klik “Submit” setelah melakukan feedback."
-                          }
-                        />
-                      ) : null}
                     </VStack>
                   </>
                 )
@@ -1009,4 +970,4 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalE
   },
 )
 
-export default NewJournalEntry
+export default overviewJournalEntry

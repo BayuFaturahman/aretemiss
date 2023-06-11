@@ -31,7 +31,7 @@ export class QuizApi {
     } catch (e) {
       console.log(e)
       console.log("error")
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data" }
     }
   }
@@ -51,7 +51,7 @@ export class QuizApi {
     } catch (e) {
       console.log(e)
       console.log("error")
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data" }
     }
   }
@@ -74,7 +74,7 @@ export class QuizApi {
     } catch (e) {
       console.log(e)
       console.log("error")
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data" }
     }
   }

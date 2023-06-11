@@ -41,7 +41,7 @@ export class CoachingApi {
 
       return { kind: "ok", response: res }
     } catch (e) {
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }
@@ -51,7 +51,8 @@ export class CoachingApi {
     try {
           // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.get(
-      `/journal/${id}`)
+      `/journal/${id}`, {}, { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` })
+      
       console.log('response detail', response.data)
       if(response.status === 400){
         const res = response.data
@@ -66,7 +67,7 @@ export class CoachingApi {
       const res = response.data.data
       return { kind: "ok", response: res }
     } catch (e) {
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }
@@ -89,7 +90,7 @@ export class CoachingApi {
       const res = response.data.data
       return { kind: "ok", response: res }
     } catch (e) {
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }
@@ -143,7 +144,7 @@ export class CoachingApi {
       return { kind: "ok", response: res }
     } catch (e) {
       console.log(e, 'line 150');
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }
@@ -182,14 +183,14 @@ export class CoachingApi {
 
       return { kind: "ok", response: res }
     } catch (e) {
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }
 
   async updateJournalCoach(
     content: string,
-    commitment: string,
+    recommendationForCoachee: string,
     strength: string,
     improvement: string,
     type: string,
@@ -197,11 +198,11 @@ export class CoachingApi {
     label: string,
   ): Promise<CreateJournalResult> {
     try {
-      console.log('updateJournalCoach ap', id)
+      console.log('updateJournalCoach api', id)
       // make the api call
       const bodyRequest = {
           content,
-          commitment,
+          recommendationForCoachee,
           strength,
           improvement,
           type,
@@ -211,6 +212,7 @@ export class CoachingApi {
       const response: ApiResponse<any> = await this.api.apisauce.patch(
         `/journal/${id}`,
         bodyRequest,
+        { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` }
       )
       console.log('updateJournalCoach response', response)
       console.log(response)
@@ -229,7 +231,7 @@ export class CoachingApi {
 
       return { kind: "ok", response: res }
     } catch (e) {
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }
@@ -277,7 +279,7 @@ export class CoachingApi {
 
       return { kind: "ok", response: res }
     } catch (e) {
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }

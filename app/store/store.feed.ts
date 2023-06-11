@@ -63,7 +63,7 @@ export default class FeedStore {
         console.log(response)
         this.formError(response.response)
       } else {
-        __DEV__ && console.tron.log(response.kind)
+        // __DEV__ && console.tron.log(response.kind)
       }
     } catch (e) {
       console.log(e)
@@ -135,7 +135,7 @@ export default class FeedStore {
       // } else if () {
 
       } else {
-        __DEV__ && console.tron.log(result.kind)
+        // __DEV__ && console.tron.log(result.kind)
       }
     } catch (e) {
       console.log("createPost error")
@@ -409,7 +409,7 @@ export default class FeedStore {
       // } else if () {
 
       } else {
-        __DEV__ && console.tron.log(result.kind)
+        // __DEV__ && console.tron.log(result.kind)
       }
     } catch (e) {
       console.log("createComment error")
@@ -440,7 +440,7 @@ export default class FeedStore {
       // } else if () {
 
       } else {
-        __DEV__ && console.tron.log(result.kind)
+        // __DEV__ && console.tron.log(result.kind)
       }
     } catch (e) {
       console.log("createComment error")
