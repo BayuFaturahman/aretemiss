@@ -20,6 +20,7 @@ import { ExistingCoacheeComponent } from "./components/existing-coachee-componen
 
 import Modal from "react-native-modalbox"
 import { MoodComponent } from "@screens/homepage/components/mood-component"
+import { FeedbackRequestListComponent } from "./components/feedback-request-list-component"
 
 const MOCK_EXISTING_COACHEE: ExistingCoacheeModel[] = [
   {
@@ -58,7 +59,8 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
 
     const [existingCoacheeData, setExistingCoacheeData] = useState<Array<ExistingCoacheeModel>>([])
     const [coachingData, setCoachingData] = useState<Array<CoachingJournalItem>>([])
-    const [selectedActivities, setSelectedActivities] = useState<string>("")
+    const [selectedFeedbackRequest, setSelectedFeedbackRequest] = useState<string>("")
+    const [selectedExistingCoachee, setSelectedExistingCoachee] = useState<string>("")
     const [, forceUpdate] = useReducer((x) => x + 1, 0)
     const { mainStore, feedbackStore } = useStores()
 
@@ -104,23 +106,36 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       })
     }
 
-    const holdActivitiesId = useCallback(
+    const holdFeedbackRequest = useCallback(
       (selectedId) => {
         console.log(`selectedId: ${selectedId}`)
-        setSelectedActivities(selectedId)
+        setSelectedFeedbackRequest(selectedId)
+        setSelectedExistingCoachee('')
       },
-      [selectedActivities],
+      [selectedFeedbackRequest],
+    )
+
+    const holdExistingCoachee = useCallback(
+      (selectedId) => {
+        console.log(`selectedId: ${selectedId}`)
+        setSelectedExistingCoachee(selectedId)
+        setSelectedFeedbackRequest('')
+      },
+      [selectedExistingCoachee],
     )
 
     const requestFeedback = useCallback(
       (selectedId) => {
+        if (isModalVisible) {
+          // toggleModal(false)
+        }
         console.log(`selectedId for requestFeedback: ${selectedId}`)
 
         setModalContent("Sukses!", "Feedback telah sukses direquest!", "senang")
         toggleModal(true)
         // setSelectedActivities(selectedId)
       },
-      [selectedActivities],
+      [selectedExistingCoachee],
     )
 
     // const newEntry = () => {
@@ -254,7 +269,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
           {/* </HStack> */}
           <Spacer height={Spacing[12]} />
 
-          <VStack horizontal={Spacing[24]} style={{ backgroundColor: Colors.WHITE, width: "100%", borderRadius: Spacing[20], maxHeight: Spacing[160] + Spacing[22], borderWidth: Spacing[1], }}>
+          <VStack horizontal={Spacing[24]} style={{ backgroundColor: Colors.WHITE, width: "100%", borderRadius: Spacing[20], maxHeight: Spacing[160] + Spacing[12], borderWidth: Spacing[1], }}>
             <FlatList
               contentContainerStyle={{ paddingBottom: 50 * 10 }}
               refreshControl={
@@ -274,8 +289,51 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
                     data={item}
                     index={index}
                     onPressRequestFeedback={requestFeedback}
-                    onPressActivity={holdActivitiesId}
-                    selectedActivities={selectedActivities}
+                    onPressActivity={holdExistingCoachee}
+                    selectedActivities={selectedExistingCoachee}
+                    onPressNote={() => { }}
+                    onPressFeedback={() => { }}
+                    onPressNoteFeedback={() => { }}
+                    goToCoaching={() => { }}
+                  />
+                </TouchableOpacity>
+              )}
+            />
+          </VStack >
+
+        </>
+      )
+    }
+
+    const renderFeedbackRequests = () => {
+      return (
+        <>
+          <Text type={"left-header"} text="Feedback Requests." />
+          {/* </HStack> */}
+          <Spacer height={Spacing[12]} />
+
+          <VStack horizontal={Spacing[24]} style={{ backgroundColor: Colors.WHITE, width: "100%", borderRadius: Spacing[20], maxHeight: Spacing[160] + Spacing[10], borderWidth: Spacing[1], }}>
+            <FlatList
+              contentContainerStyle={{ paddingBottom: 50 * 10 }}
+              refreshControl={
+                <RefreshControl refreshing={false} onRefresh={onRefresh} />
+              }
+              scrollEnabled={false}
+              data={MOCK_EXISTING_COACHEE}
+              keyExtractor={item => item.toString()}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item, index }) => (
+                <TouchableOpacity animationDuration={500}>
+                  {/* <VStack style={{ borderTopWidth: index % 4 === 0 ? Spacing[0] : Spacing[1], paddingVertical: Spacing[12] }}>
+                    <Text>{item.user_fullname}</Text>
+                  </VStack> */}
+
+                  <FeedbackRequestListComponent
+                    data={item}
+                    index={index}
+                    onPressRequestFeedback={requestFeedback}
+                    onPressActivity={holdFeedbackRequest}
+                    selectedActivities={selectedFeedbackRequest}
                     onPressNote={() => { }}
                     onPressFeedback={() => { }}
                     onPressNoteFeedback={() => { }}
@@ -313,6 +371,11 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
                 <Spacer height={Spacing[32]} />
                 <VStack top={Spacing[8]} horizontal={Spacing[12]} bottom={Spacing[12]}>
                   {renderExistingCoachee()}
+                  {/* <Spacer height={Spacing[24]} /> */}
+                </VStack>
+                {/* <Spacer height={Spacing[24]} /> */}
+                <VStack top={Spacing[8]} horizontal={Spacing[12]} bottom={Spacing[12]}>
+                  {renderFeedbackRequests()}
                   <Spacer height={Spacing[24]} />
                 </VStack>
 
@@ -326,12 +389,14 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
 
 
         <Modal
+          onClosed={() => toggleModal(false)}
           isOpen={isModalVisible}
           style={{
             height: "50%",
             width: dimensions.screenWidth - Spacing[24],
             backgroundColor: "rgba(52, 52, 52, 0)",
           }}
+          onRequestClose={() => toggleModal(false)}
         >
           <View style={{ flex: 1, justifyContent: "center" }}>
             <VStack
