@@ -59,9 +59,8 @@ export const FeedbackRequestListItemRender = (
     <HStack>
 
       {selectedActivities === item.coachee_id ? renderButtonTagged(item.is_button_disabled === 1, item.has_previous_feedback === 1, item.coachee_id) :
-        <TouchableOpacity key={item.coachee_id} onPress={() => { onPressActivity(item.coachee_id) }} style={{ height: Spacing[42], borderTopWidth: index % 4 === 0 ? Spacing[0] : Spacing[1], width: '100%' }}>
+        <TouchableOpacity key={item.coachee_id} onPress={() => { onPressActivity(item.coachee_id) }} style={{ height: Spacing[42], borderTopWidth: index === 0 ? Spacing[0] : Spacing[1], width: '100%' }}>
           <Text type={"label"} style={{ lineHeight: Spacing[36] + Spacing[4] }}>{item.user_fullname}</Text>
-          {console.log(`selectedActivities: ${selectedActivities}`)}
         </TouchableOpacity>
       }
     </HStack>

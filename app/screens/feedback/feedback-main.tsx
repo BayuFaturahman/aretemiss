@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useReducer, useState, useEffect } from "react"
-import { FlatList, ImageBackground, RefreshControl, SafeAreaView, StyleSheet, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, FlatList, ImageBackground, RefreshControl, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Text, BackNavigation, Button } from "@components"
@@ -61,10 +61,13 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
     const [coachingData, setCoachingData] = useState<Array<CoachingJournalItem>>([])
     const [selectedFeedbackRequest, setSelectedFeedbackRequest] = useState<string>("")
     const [selectedExistingCoachee, setSelectedExistingCoachee] = useState<string>("")
+    const [currentPageExistingCoachee, setCurrentPageExistingCoachee] = useState<number>(2)
+
     const [, forceUpdate] = useReducer((x) => x + 1, 0)
     const { mainStore, feedbackStore } = useStores()
 
     const [currentPage, setCurrentPage] = useState<number>(2)
+
 
     const [initialLoading, setInitialLoading] = useState<boolean>(true)
 
@@ -72,14 +75,6 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
     const [modalTitle, setModalTitle] = useState<string>("")
     const [modalDesc, setModalDesc] = useState<string>("")
     const [modalIcon, setModalIcon] = useState("senang")
-
-    // const onLoadMore = React.useCallback(async () => {
-    //   if (!feedbackStore.isLoading) {
-    //     console.log("load more journal")
-    //     await loadJournal(currentPage).then(r =>
-    //       setCurrentPage(currentPage + 1))
-    //   }
-    // }, [currentPage, feedbackStore.isLoading])
 
     const setModalContent = (title: string, desc: string, icon: string) => {
       setModalTitle(title)
@@ -91,20 +86,38 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       setModalVisible(value)
     }
 
-    const loadJournal = async (page: number) => {
-      await feedbackStore.getJournal(page)
-    }
-
-    const onRefresh = React.useCallback(async () => {
-      setCurrentPage(2)
-      firstLoadJournal()
-    }, [])
-
     const goBack = () => {
       navigation.reset({
         routes: [{ name: "homepage" }],
       })
     }
+
+    const loadExistingCoachee = async (page: number) => {
+      await feedbackStore.getListExistingCoachee(page)
+    }
+
+    const onRefresh = React.useCallback(async () => {
+      setCurrentPage(2)
+      firstLoadExistingCoachee()
+    }, [])
+
+    const onRefreshExistingCoachee = React.useCallback(async () => {
+      setCurrentPageExistingCoachee(2)
+      firstLoadExistingCoachee()
+    }, [])
+
+    const onLoadMoreExistingCoachee = React.useCallback(async () => {
+      console.log('---onLoadMoreExistingCoachee ', currentPageExistingCoachee)
+      if (!feedbackStore.isLoadingExistingCoachee) {
+        console.log("load more existing coachees ", currentPageExistingCoachee)
+        // await loadExistingCoachee(currentPageExistingCoachee).then(r =>
+        //   setCurrentPageExistingCoachee(currentPageExistingCoachee + 1))
+
+        await loadExistingCoachee(currentPageExistingCoachee)
+        setCurrentPageExistingCoachee(currentPageExistingCoachee + 1)
+      }
+    }, [currentPageExistingCoachee])
+
 
     const holdFeedbackRequest = useCallback(
       (selectedId) => {
@@ -193,25 +206,32 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
 
     const firstLoadExistingCoachee = debounce(async () => {
       await feedbackStore.clearFeedback()
+      await loadExistingCoachee(1)
 
-      setTimeout(() => {
-        feedbackStore.listExistingCoachees = MOCK_EXISTING_COACHEE
+      // setTimeout(() => {
+        console.log(`timeout feedbackStore.listExistingCoachees , ${feedbackStore.listExistingCoachees}`)
+        // feedbackStore.listExistingCoachees = MOCK_EXISTING_COACHEE
         setInitialLoading(false)
         feedbackStore.setRefreshData(false)
         forceUpdate()
-      }, 1500)
+      // }, 100)
     }, 500)
 
     useEffect(() => {
       firstLoadExistingCoachee()
-      setExistingCoacheeData(MOCK_EXISTING_COACHEE)
+      console.log('use effect firstLoadExistingCoachee')
+      setExistingCoacheeData(feedbackStore.listExistingCoachees)
     }, [])
 
-    // useEffect(() => {
-    //   if (feedbackStore.listJournal) {
-    //     createList()
-    //   }
-    // }, [feedbackStore.listJournal])
+    useEffect(() => {
+      if (feedbackStore.listExistingCoachees) {
+        // createList()
+        setExistingCoacheeData(feedbackStore.listExistingCoachees)
+      }
+
+      console.log(`existingCoacheeData , ${existingCoacheeData}`)
+      console.log(`feedbackStore.listExistingCoachees , ${feedbackStore.listExistingCoachees}`)
+    }, [feedbackStore.listExistingCoachees, feedbackStore.getExistingCoacheeSucceed])
 
     // useEffect(() => {
     //   console.log("feedbackStore.refreshData", feedbackStore.refreshData)
@@ -269,22 +289,24 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
           {/* </HStack> */}
           <Spacer height={Spacing[12]} />
 
-          <VStack horizontal={Spacing[24]} style={{ backgroundColor: Colors.WHITE, width: "100%", borderRadius: Spacing[20], maxHeight: Spacing[160] + Spacing[12], borderWidth: Spacing[1], }}>
+
+          <VStack horizontal={Spacing[24]} style={{ backgroundColor: Colors.WHITE, width: "100%", borderRadius: Spacing[20], height: Spacing[160] + Spacing[12], borderWidth: Spacing[1] }}>
+            {/* </ScrollView> */}
             <FlatList
-              contentContainerStyle={{ paddingBottom: 50 * 10 }}
-              refreshControl={
-                <RefreshControl refreshing={false} onRefresh={onRefresh} />
-              }
-              scrollEnabled={false}
-              data={MOCK_EXISTING_COACHEE}
-              keyExtractor={item => item.toString()}
+              // contentContainerStyle={{ paddingBottom: 5 }}
+              // refreshControl={
+              //   <RefreshControl refreshing={false}
+              //     onRefresh={onRefreshExistingCoachee} />
+              // }
+              // scrollEnabled={true}
+              data={existingCoacheeData}
+              keyExtractor={item => item.coachee_id}
               showsVerticalScrollIndicator={false}
               renderItem={({ item, index }) => (
                 <TouchableOpacity animationDuration={500}>
                   {/* <VStack style={{ borderTopWidth: index % 4 === 0 ? Spacing[0] : Spacing[1], paddingVertical: Spacing[12] }}>
                     <Text>{item.user_fullname}</Text>
                   </VStack> */}
-
                   <ExistingCoacheeComponent
                     data={item}
                     index={index}
@@ -298,7 +320,11 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
                   />
                 </TouchableOpacity>
               )}
+              onEndReached={onLoadMoreExistingCoachee}
+              onEndReachedThreshold={0.1}
+            style={{ paddingVertical: Spacing[2] }}
             />
+            {/* </ScrollView > */}
           </VStack >
 
         </>
@@ -320,14 +346,14 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
               }
               scrollEnabled={false}
               data={MOCK_EXISTING_COACHEE}
-              keyExtractor={item => item.toString()}
+              keyExtractor={item => item.coachee_id + 'feed'}
               showsVerticalScrollIndicator={false}
               renderItem={({ item, index }) => (
+                
                 <TouchableOpacity animationDuration={500}>
                   {/* <VStack style={{ borderTopWidth: index % 4 === 0 ? Spacing[0] : Spacing[1], paddingVertical: Spacing[12] }}>
                     <Text>{item.user_fullname}</Text>
                   </VStack> */}
-
                   <FeedbackRequestListComponent
                     data={item}
                     index={index}
@@ -342,6 +368,15 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
                 </TouchableOpacity>
               )}
             />
+
+            {feedbackStore.isLoadingExistingCoachee ? (
+              <VStack
+                vertical={Spacing[12]}
+                style={{ position: "absolute", bottom: 0, width: dimensions.screenWidth }}
+              >
+                <ActivityIndicator animating={feedbackStore.isLoadingExistingCoachee} />
+              </VStack>
+            ) : null}
           </VStack >
 
         </>
@@ -449,104 +484,6 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       </VStack>
 
 
-      // <VStack
-      //   testID="feedbackMain"
-      //   style={{ backgroundColor: Colors.ABM_MAIN_BLUE, flex: 1, justifyContent: "center" }}
-      // >
-      //   <SafeAreaView style={Layout.flex}>
-      //     <FlatList
-      //       style={{ backgroundColor: Colors.WHITE }}
-      //       refreshControl={
-      //         <RefreshControl
-      //           refreshing={false}
-      //           onRefresh={onRefresh}
-      //           tintColor={Colors.MAIN_RED}
-      //         />
-      //       }
-      //       ItemSeparatorComponent={() => (
-      //         <VStack style={{ backgroundColor: Colors.WHITE }}>
-      //           <Spacer height={Spacing[24]} />
-      //         </VStack>
-      //       )}
-      //       data={initialLoading ? [] : coachingData}
-      //       // data={[]}
-      //       ListEmptyComponent={() => feedbackStore?.isLoading || initialLoading ? <ActivityIndicator animating={true} /> : <EmptyList />}
-      //       renderItem={({ item, index }) => (
-      //         <VStack horizontal={Spacing[24]} style={{ backgroundColor: Colors.WHITE }}>
-      //           {/* <CoachingJournalItemRender
-      //             {...{ item, index }}
-      //             onPressActivity={holdActivitiesId}
-      //             selectedActivities={selectedActivities}
-      //             onPressNote={goToNote}
-      //             onPressFeedback={goToFeedback}
-      //             onPressNoteFeedback={goToNoteFeedback}
-      //           /> */}
-      //         </VStack>
-      //       )}
-      //       keyExtractor={(item) => item.date}
-      //       ListHeaderComponent={
-      //         <VStack style={{ backgroundColor: Colors.ABM_BG_BLUE }}>
-      //           <ImageBackground source={images.feedbackBgPattern} style={{ width: '100%', height: '100%' }} resizeMode={"cover"}>
-      //             <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
-      //             <VStack top={Spacing[0]} horizontal={Spacing[24]} bottom={Spacing[12]}>
-      //               <Text type={"header"} text="Feedback" />
-      //               <Spacer height={Spacing[24]} />
-      //               <Text type={"body"} style={{ textAlign: "center" }}>
-      //                 Setiap coaching journal yang dicatat akan memberikan kesempatan bagi coachee-mu
-      //                 untuk memberikan{" "}
-      //                 <Text type={"label"} style={{ color: Colors.WHITE }}>
-      //                   feedback
-      //                 </Text>
-      //                 , sehingga kamu dapat terus melakukan improvement.
-      //               </Text>
-      //               <Spacer height={Spacing[32]} />
-      //               <VStack top={Spacing[8]} horizontal={Spacing[12]} bottom={Spacing[12]}>
-      //                 {/* <NewButton onPress={newEntry} /> */}
-      //                 {/* {coachingData.length === 0 && !initialLoading && !feedbackStore.isLoading ? (
-      //                   <FastImage
-      //                     style={{
-      //                       height: Spacing[96],
-      //                       width: Spacing[96],
-      //                       left: dimensions.screenWidth / 2 + Spacing[32],
-      //                       top: Spacing[24],
-      //                       zIndex: 20,
-      //                       position: "absolute",
-      //                     }}
-      //                     source={arrowYellow}
-      //                     resizeMode={"contain"}
-      //                   />
-      //                 ) : null} */}
-      //                 <Text type={"left-header"} text="Existing Coachees." />
-
-      //                 <Spacer height={Spacing[24]} />
-      //               </VStack>
-
-      //             </VStack>
-      //           </ImageBackground>
-      //           <Spacer height={Spacing[24]} />
-
-      //         </VStack>
-      //       }
-      //       ListFooterComponent={
-      //         coachingData.length === 0 && !initialLoading && !feedbackStore.isLoading ? null : (
-      //           <VStack vertical={Spacing[24]} style={{ backgroundColor: Colors.WHITE }}>
-      //             {initialLoading ? null : <ActivitiesTypeLegends />}
-      //           </VStack>
-      //         )
-      //       }
-      //       // onEndReached={onLoadMore}
-      //       onEndReachedThreshold={0.1}
-      //     />
-      //     {/* {feedbackStore?.isLoading ? (
-      //       <VStack
-      //         vertical={Spacing[12]}
-      //         style={{ position: "absolute", bottom: 0, width: dimensions.screenWidth }}
-      //       >
-      //         <ActivityIndicator animating={feedbackStore.isLoading} />
-      //       </VStack>
-      //     ) : null} */}
-      //   </SafeAreaView>
-      // </VStack>
     )
   })
 

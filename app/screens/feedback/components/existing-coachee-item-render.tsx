@@ -50,7 +50,7 @@ export const ExistingCoacheeItemRender = (
           </HStack>
         </TouchableOpacity>
         {/* <View style={{ backgroundColor: Colors.ABM_DARK_BLUE, width: Spacing[1], height: '100%' }} /> */}
-        <TouchableOpacity onPress={() => { }} style={{ flex: 1, backgroundColor: hasPreviousFeedback? Colors.ABM_MAIN_BLUE : Colors.GRAY_DISABLEB, borderTopEndRadius: Spacing[12], borderBottomEndRadius: Spacing[12], alignItems: 'center' }} disabled={!hasPreviousFeedback}>
+        <TouchableOpacity onPress={() => { }} style={{ flex: 1, backgroundColor: hasPreviousFeedback ? Colors.ABM_MAIN_BLUE : Colors.GRAY_DISABLEB, borderTopEndRadius: Spacing[12], borderBottomEndRadius: Spacing[12], alignItems: 'center' }} disabled={!hasPreviousFeedback}>
           <HStack horizontal={Spacing[8]} style={{ height: Spacing[42] }}>
             <Spacer width={Spacing[2]} />
             {hasPreviousFeedback === true ? <IconHeart height={Spacing[28]} width={Spacing[28]} /> : <IconHeartBw height={Spacing[28]} width={Spacing[28]} />}
@@ -66,11 +66,10 @@ export const ExistingCoacheeItemRender = (
 
   return (
     <HStack>
-    
+
       {selectedActivities === item.coachee_id ? renderButtonTagged(item.is_button_disabled === 1, item.has_previous_feedback === 1, item.coachee_id) :
-        <TouchableOpacity key={item.coachee_id} onPress={() => { onPressActivity(item.coachee_id) }} style={{ height: Spacing[42], borderTopWidth: index % 4 === 0 ? Spacing[0] : Spacing[1], width: '100%' }}>
+        <TouchableOpacity key={item.coachee_id} onPress={() => { onPressActivity(item.coachee_id) }} style={{ height: Spacing[42], borderTopWidth: index === 0 ? Spacing[0] : Spacing[1], width: '100%' }}>
           <Text type={"label"} style={{ lineHeight: Spacing[42] }}>{item.user_fullname}</Text>
-          {console.log(`selectedActivities: ${selectedActivities}`)}
         </TouchableOpacity>
       }
     </HStack>

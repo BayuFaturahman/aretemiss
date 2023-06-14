@@ -13,17 +13,17 @@ export class FeedbackApi {
     this.api = api
   }
 
-  async getExistingCoacheeList(): Promise<ExistingCoacheeListResult> {
+  async getExistingCoacheeList(page: number, limit: number): Promise<ExistingCoacheeListResult> {
     try {
-      console.log('request getExistingCoacheeList')
+      console.log('request getExistingCoacheeList', page)
 
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.get(
-        "/v1/existing-coachees", {
-          // limit: limit,
-          // page: page
+        "/existing-coachees", {
+          limit: limit,
+          page: page
         })
-        console.log('getExistingCoacheeList response', response.data)
+        // console.log('getExistingCoacheeList response', response.data)
 
       if(response.status === 400){
         const res = response.data
@@ -35,9 +35,7 @@ export class FeedbackApi {
         const problem = getGeneralApiProblem(response)
         if (problem) return {...problem, response: res}
       }
-      const res = response.data.data
-      console.log('getJournalList res', res)
-
+      const res = response.data
       return { kind: "ok", response: res }
     } catch (e) {
       __DEV__ && console.tron.log(e.message)
