@@ -163,7 +163,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     // const [feedData, setFeedDAta] = useState<FeedItemType>(FEED_EXAMPLE_DATA_ITEM);
     const [feedData, setFeedData] = useState<FeedItemType>(null)
     const [coachingJournalData, setCoachingJournalData] = useState<CoachingJournalItem>(null)
-    const { mainStore, coachingStore, authStore, feedStore, leaderboardStore } = useStores()
+    const { mainStore, coachingStore, authStore, feedStore, feedbackStore, leaderboardStore } = useStores()
 
     const userProfile: ProfileUpdateForm = {
       fullname: mainStore.userProfile.user_fullname,
@@ -196,6 +196,13 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     const goToFeedback = useCallback((id) => {
       coachingStore.isDetailJournal(true)
       coachingStore.setDetailID(id)
+      navigation.navigate("feedbackMain")
+      console.log(id)
+    }, [])
+
+    const goToFeedback1 = useCallback((id) => {
+      coachingStore.isDetailJournal(true)
+      coachingStore.setDetailID(id)
       navigation.navigate("fillFeedbackDetail")
       console.log(id)
     }, [])
@@ -215,6 +222,8 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
         isCoachee: true,
       })
     }, [])
+
+    
 
     const getUserProfile = useCallback(async () => {
       await mainStore.getProfile()
@@ -432,7 +441,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
             <Spacer height={Spacing[12]} />
             <HomepageCardWrapper animationDuration={700}>
               <VStack>
-                <FeeedbackComponent goToFeedback={goToBrainstormsGroup} />
+                <FeeedbackComponent goToFeedback={goToFeedback} />
               </VStack>
             </HomepageCardWrapper>
             <Spacer height={Spacing[12]} />

@@ -48,6 +48,7 @@ import {
   newBrainstormsGroup,
   sendEmail,
 } from "@screens/brainstorm"
+import feedbackMain from "@screens/feedback/feedback-main"
 
 const screens: AppRoute[] = [
   {
@@ -198,6 +199,10 @@ const screens: AppRoute[] = [
     name: "juaraQuizResult",
     component: juaraQuizResult,
   },
+  {
+    name: "feedbackMain",
+    component: feedbackMain,
+  },
 ]
 
 export type NavigatorParamList = {
@@ -285,7 +290,8 @@ export type NavigatorParamList = {
   juaraQuizResult: {
     score: number,
     totalQuestions: number;
-  }
+  },
+  feedbackMain: undefined
 }
 
 export default screens
