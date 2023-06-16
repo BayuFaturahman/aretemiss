@@ -37,7 +37,7 @@ export const ExistingCoacheeItemRender = (
 
 
   const renderButtonTagged = (isButtonDisabled: boolean, hasPreviousFeedback: boolean, coach_id: string) => {
-    console.log(`isButtonDisabled: ${isButtonDisabled}`)
+    // console.log(`isButtonDisabled: ${isButtonDisabled}`)
     return (
       <HStack style={{ width: dimensions.screenWidth - Spacing[128] }}>
         <TouchableOpacity onPress={() => onPressRequestFeedback(item.coachee_id)} style={{ flex: 1, backgroundColor: Colors.ABM_MAIN_BLUE, borderTopStartRadius: Spacing[12], borderBottomStartRadius: Spacing[12], alignItems: 'center' }}>

@@ -194,7 +194,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
 
 
     const [existingCoacheeData, setExistingCoacheeData] = useState<Array<ExistingCoacheeModel>>([])
-    const [listFeedbackDetail, setListFeedbackDetail] = useState<Array<FeedbackUserDetailModel>>([])
+    const [listFeedbackUser, setListFeedbackUser] = useState<Array<FeedbackUserDetailModel>>([])
 
     const [listFeedbackRequest, setListFeedbacRequest] = useState<Array<ExistingCoacheeModel>>([])
 
@@ -202,11 +202,14 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
     const [coachingData, setCoachingData] = useState<Array<CoachingJournalItem>>([])
     const [selectedFeedbackRequest, setSelectedFeedbackRequest] = useState<string>("")
     const [selectedExistingCoachee, setSelectedExistingCoachee] = useState<string>("")
-    const [selectedPreviousFeedbackCoachee, setSelectedPreviousFeedbackCoachee] = useState<string>("")
-    const [selectedPreviousFeedbackUser, setSelectedPreviousFeedbackUser] = useState<string>("")
+
+
+    const [selectedPreviousFeedbackUserByCoachee, setSelectedPreviousFeedbackUserByCoachee] = useState<string>("") // Feedback User ID
+    const [selectedPreviousFeedbackUser, setSelectedPreviousFeedbackUser] = useState<string>("") // Coachee ID
     const [selectedPreviousFeedbackDetail, setSelectedPreviousFeedbackDetail] = useState<FeedbackUserDetailModel>()
 
     const [currentPageExistingCoachee, setCurrentPageExistingCoachee] = useState<number>(2)
+    const [currentPageListFeedbackUserByCoachee, setCurrentPageListFeedbackUserByCoachee] = useState<number>(2)
 
     const [, forceUpdate] = useReducer((x) => x + 1, 0)
     const { mainStore, feedbackStore } = useStores()
@@ -245,6 +248,14 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       await feedbackStore.getListExistingCoachee(page)
     }
 
+
+    const loadFeedbackUserByCoachee = async (coacheeId: string, page: number) => {
+      await feedbackStore.getListFeedbackUserByCoachee(coacheeId, page)
+      setListFeedbackUser(feedbackStore.listFeedbackUserByCoachee)
+      console.log(`selectedPreviousFeedbackCoachee: `, selectedPreviousFeedbackCoachee)
+      console.log(`feedbackStore.listFeedbackUserByCoachee: `, feedbackStore.listFeedbackUserByCoachee)
+    }
+
     const onRefresh = React.useCallback(async () => {
       setCurrentPage(2)
       firstLoadExistingCoachee()
@@ -267,10 +278,22 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       }
     }, [currentPageExistingCoachee])
 
+    const onLoadMoreFeedbackUserByCoachee = React.useCallback(async () => {
+      console.log('onLoadMoreFeedbackUserByCoachee ', currentPageListFeedbackUserByCoachee)
+      if (!feedbackStore.isLoadingExistingCoachee) {
+        console.log("load more feedback user by coachee ", currentPageListFeedbackUserByCoachee)
+        // await loadExistingCoachee(currentPageExistingCoachee).then(r =>
+        //   setCurrentPageExistingCoachee(currentPageExistingCoachee + 1))
+
+        await loadFeedbackUserByCoachee(selectedPreviousFeedbackUserByCoachee, currentPageListFeedbackUserByCoachee)
+        setCurrentPageExistingCoachee(currentPageExistingCoachee + 1)
+      }
+    }, [currentPageExistingCoachee])
+
 
     const holdFeedbackRequest = useCallback(
       (selectedId) => {
-        console.log(`selectedId: ${selectedId}`)
+        console.log(`holdFeedbackRequest selectedId: ${selectedId}`)
         setSelectedFeedbackRequest(selectedId)
         setSelectedExistingCoachee('')
       },
@@ -279,7 +302,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
 
     const holdExistingCoachee = useCallback(
       (selectedId) => {
-        console.log(`selectedId: ${selectedId}`)
+        console.log(`holdExistingCoachee selectedId: ${selectedId}`)
         setSelectedExistingCoachee(selectedId)
         setSelectedFeedbackRequest('')
       },
@@ -288,18 +311,18 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
 
     const holdPreviousFeedbackDate = useCallback(
       (selectedId, index) => {
-        console.log(`selectedId: ${selectedId}`)
-        setSelectedPreviousFeedbackCoachee(selectedId)
+        console.log(`holdPreviousFeedbackDate selectedId: ${selectedId}`)
+        setSelectedPreviousFeedbackUserByCoachee(selectedId)
         setSelectedPreviousFeedbackUser(selectedId)
         setSelectedExistingCoachee('')
-        setSelectedPreviousFeedbackDetail(listFeedbackDetail[index])
+        setSelectedPreviousFeedbackDetail(listFeedbackUser[index])
       },
       [selectedFeedbackRequest],
     )
 
-    const loadListFeedbackUser = async (page: number) => {
-      setListFeedbackDetail(MOCK_PREVIOUS_FEEDBACK)
-    }
+    // const loadListFeedbackUser = async (page: number) => {
+    //   setListFeedbackDetail(MOCK_PREVIOUS_FEEDBACK)
+    // }
 
     const requestFeedback = useCallback(
       (selectedId) => {
@@ -315,23 +338,21 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       [selectedExistingCoachee],
     )
 
-
-    const openPreviousFeedbackDateList = useCallback(
+    const openListPreviousFeedbackDateModal = useCallback(
       (selectedId) => {
-        if (isModalVisible) {
-          // toggleModal(false)
-        }
+        feedbackStore.clearFeedbackUserByCoachee()
+        setSelectedPreviousFeedbackUserByCoachee(selectedId)
         console.log(`selectedId for requestFeedback: ${selectedId}`)
+        loadFeedbackUserByCoachee(selectedId, 1)
         setModalType("previousFeedbackDates")
         setModalContent("Sukses!", "Feedback telah sukses direquest!", "senang")
         toggleModal(true)
-        // setSelectedActivities(selectedId)
       },
       [selectedExistingCoachee],
     )
 
     const resetSelectedIndicator = () => {
-      setSelectedPreviousFeedbackCoachee("")
+      setSelectedPreviousFeedbackUserByCoachee("")
       setSelectedPreviousFeedbackUser("")
       setSelectedExistingCoachee("")
     }
@@ -346,63 +367,11 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       toggleModal(false)
       // resetSelectedIndicator()
       // setTimeout(() => {
-        goToFeedbackDetail()
+      goToFeedbackDetail()
       // }, 1200);
 
     }
 
-    // const newEntry = () => {
-    //   feedbackStore.isDetailJournal(false)
-    //   feedbackStore.setFormCoach(true)
-    //   navigation.navigate("newJournalEntry", {
-    //     isDetail: false,
-    //   })
-    // }
-
-    // const holdActivitiesId = useCallback(
-    //   (selectedId) => {
-    //     setSelectedActivities(selectedId)
-    //     // forceUpdate()
-    //   },
-    //   [selectedActivities],
-    // )
-
-    // const goToNote = useCallback((id, coach_id) => {
-    //   console.log(id)
-    //   feedbackStore.isDetailJournal(true)
-    //   const detailCoaching = coach_id === mainStore.userProfile.user_id
-    //   feedbackStore.setDetailCoaching(detailCoaching)
-    //   feedbackStore.setDetailID(id)
-    //   feedbackStore.setFormCoach(true)
-    //   console.log("goToNote coach_id", coach_id)
-    //   console.log("goToNote user_id", mainStore.userProfile.user_id)
-    //   navigation.navigate("overviewJournalEntry", {
-    //     journalId: id,
-    //     isCoachee: false,
-    //   })
-    // }, [])
-
-    // const goToFeedback = useCallback((id) => {
-    //   feedbackStore.isDetailJournal(true)
-    //   feedbackStore.setDetailID(id)
-    //   navigation.navigate("fillFeedbackDetail")
-    //   console.log(id)
-    // }, [])
-
-    // const goToNoteFeedback = useCallback((id, coach_id) => {
-    //   feedbackStore.isDetailJournal(true)
-    //   const detailCoaching = coach_id === mainStore.userProfile.user_id
-    //   feedbackStore.setDetailCoaching(detailCoaching)
-    //   feedbackStore.setDetailID(id)
-    //   feedbackStore.setFormCoach(false)
-    //   console.log("goToNoteFeedback coach_id", coach_id)
-    //   console.log("goToNoteFeedback user_id", mainStore.userProfile.user_id)
-
-    //   navigation.navigate("overviewJournalEntry", {
-    //     journalId: id,
-    //     isCoachee: true,
-    //   })
-    // }, [])
 
     const firstLoadExistingCoachee = debounce(async () => {
       await feedbackStore.clearFeedback()
@@ -433,54 +402,6 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       console.log(`feedbackStore.listExistingCoachees , ${feedbackStore.listExistingCoachees}`)
     }, [feedbackStore.listExistingCoachees, feedbackStore.getExistingCoacheeSucceed])
 
-    // useEffect(() => {
-    //   console.log("feedbackStore.refreshData", feedbackStore.refreshData)
-
-    //   if (feedbackStore.refreshData) {
-    //     setTimeout(() => {
-    //       // feedbackStore.getJournal(currentPage)
-    //     }, 20)
-    //   }
-    // }, [
-    //   feedbackStore.refreshData,
-
-    // ])
-
-
-    const createList = () => {
-      const id = mainStore.userProfile.user_id
-      let groupArrays = []
-      if (feedbackStore.listJournal) {
-        console.log("create list")
-        console.log(feedbackStore.listJournal)
-        const groups = feedbackStore.listJournal.reduce((groups, journalData) => {
-          const date = journalData.journal_date.split("T")[0]
-          if (!groups[date]) {
-            groups[date] = []
-          }
-          groups[date].push({
-            ...journalData,
-            title: journalData.journal_title,
-            type: journalData.journal_type,
-            id: journalData.journal_id,
-            isTagged: id !== journalData.coach_id,
-            coach_id: journalData.coach_id,
-          })
-          return groups
-        }, {})
-        groupArrays = Object.keys(groups).map((date) => {
-          return {
-            date: moment(date).format("DD MMM"),
-            activities: groups[date],
-          }
-        })
-      }
-      if (groupArrays) {
-        setCoachingData(groupArrays)
-        feedbackStore.setRefreshData(false)
-        forceUpdate()
-      }
-    }
 
     const renderExistingCoachee = () => {
       return (
@@ -506,7 +427,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
                     index={index}
                     onPressRequestFeedback={requestFeedback}
                     onPressExistingCoachee={holdExistingCoachee}
-                    onPressPreviousFeedback={openPreviousFeedbackDateList}
+                    onPressPreviousFeedback={openListPreviousFeedbackDateModal}
                     selectedActivities={selectedExistingCoachee}
                     onPressNote={() => { }}
                     onPressFeedback={() => { }}
@@ -538,7 +459,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
               refreshControl={
                 <RefreshControl refreshing={false} onRefresh={onRefresh} />
               }
-              
+
               scrollEnabled={false}
               data={MOCK_EXISTING_COACHEE}
               keyExtractor={item => item.coachee_id + 'feed'}
@@ -612,7 +533,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       )
     }
 
-    const renderPreviousFeedbackDatesModal = () => {
+    const renderFeedbackDatesModal = () => {
       return (
         <VStack style={{ padding: 0, width: '100%' }}>
           <HStack bottom={Spacing[8]} >
@@ -629,7 +550,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
                 <RefreshControl refreshing={false}
                   onRefresh={onRefreshExistingCoachee} />
               }
-              data={MOCK_PREVIOUS_FEEDBACK}
+              data={listFeedbackUser}
               keyExtractor={item => item.fu_id}
               showsVerticalScrollIndicator={false}
               renderItem={({ item, index }) => (
@@ -638,13 +559,13 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
                   justifyContent: "center",
                 }}>
 
-                  <Text type={"body"} style={{ lineHeight: Spacing[42], backgroundColor: selectedPreviousFeedbackCoachee === item.fu_id ? Colors.ABM_DARK_BLUE : Colors.WHITE, color: selectedPreviousFeedbackCoachee === item.fu_id ? Colors.WHITE : Colors.ABM_DARK_BLUE, paddingHorizontal: spacing[2], textAlign: "center" }}>{moment(item.fu_created_at).format('DD MMMM YYYY')}</Text>
+                  <Text type={"body"} style={{ lineHeight: Spacing[42], backgroundColor: selectedPreviousFeedbackUserByCoachee === item.fu_id ? Colors.ABM_DARK_BLUE : Colors.WHITE, color: selectedPreviousFeedbackUserByCoachee === item.fu_id ? Colors.WHITE : Colors.ABM_DARK_BLUE, paddingHorizontal: spacing[2], textAlign: "center" }}>{moment(item.fu_created_at).format('DD MMMM YYYY')}</Text>
 
                 </TouchableOpacity>
               )}
               onEndReached={onLoadMoreExistingCoachee}
               onEndReachedThreshold={0.1}
-              style={{ paddingVertical: Spacing[2], paddingHorizontal: 0, width: "70%", backgroundColor: Colors.YELLOW100 }}
+              style={{ paddingVertical: Spacing[2], paddingHorizontal: 0, width: "70%" }}
             />
             <Spacer />
           </HStack>
@@ -738,7 +659,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
               vertical={Spacing[24]}
             >
               <VStack horizontal={Spacing[24]} top={Spacing[12]} style={[Layout.widthFull, { justifyContent: "center" }]}>
-                {modalType === 'notification' ? renderNotificationModal() : renderPreviousFeedbackDatesModal()}
+                {modalType === 'notification' ? renderNotificationModal() : renderFeedbackDatesModal()}
               </VStack>
               {/* {modalType === 'notification' ? null : renderPreviousFeedbackDatesModal()} */}
             </VStack>

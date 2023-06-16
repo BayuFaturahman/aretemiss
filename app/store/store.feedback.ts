@@ -112,7 +112,7 @@ export default class FeedbackStore {
 
   isLoadingExistingCoachee: boolean
   listExistingCoachees: ExistingCoacheeModel[]
-  listExistingCoacheesTotalPages: number
+  listFeedbackUserByCoachee: FeedbackUserDetailModel[]
 
   my_feedback: FeedbackJLSixth
   coachee_feedback: FeedbackJLSixth
@@ -241,7 +241,7 @@ export default class FeedbackStore {
       console.log('in store getListExistingCoachee')
       if (result.kind === "ok") {
         // console.log('result.response.data  ', result.response)
-        await this.getExistingCoacheeSucceed(result.response.data, result.response.meta.total_pages)
+        await this.getExistingCoacheeSucceed(result.response.data)
       } else if (result.kind === 'form-error') {
         console.log('journal failed')
         // console.log(result.response.errorCode)
@@ -260,11 +260,47 @@ export default class FeedbackStore {
     }
   }
 
-  async getExistingCoacheeSucceed (coachees: ExistingCoacheeModel[], totalPages: number) {
+  async getExistingCoacheeSucceed (coachees: ExistingCoacheeModel[]) {
     console.log('getExistingCoacheeSucceed')
     this.listExistingCoachees = [
       ...this.listExistingCoachees,
       ...(coachees ?? [])
+    ]
+    this.formErrorCode = null
+    this.isLoading = false
+  }
+
+  async getListFeedbackUserByCoachee (coacheeId: string, page = 1, limit = 3) {
+    this.isLoadingExistingCoachee = true
+    try {
+      const result = await this.feedbackApi.getListFeedbackUserByCoachee(coacheeId, page, limit)
+      console.log('in store getListFeedbackUserByCoachee')
+      if (result.kind === "ok") {
+        console.log('result.response.data  ', result.response)
+        await this.getListFeedbackUserByCoacheeSucceed(result.response.data)
+      } else if (result.kind === 'form-error') {
+        console.log('journal failed')
+        // console.log(result.response.errorCode)
+        this.feedbackFailed(result.response.errorCode)
+      } else if (result.kind === 'unauthorized') {
+        console.log('token expired list existing coachee')
+        // console.log(result)
+        this.coachingFailed(result.response.errorCode)
+      } else {
+        __DEV__ && console.tron.log(result.kind)
+      }
+    } catch (e) {
+      console.log(e)
+    } finally {
+      this.isLoadingExistingCoachee = false
+    }
+  }
+
+  async getListFeedbackUserByCoacheeSucceed (feedbackList: FeedbackUserDetailModel[]) {
+    console.log('getListFeedbackUserByCoacheeSucceed')
+    this.listFeedbackUserByCoachee = [
+      ...this.listFeedbackUserByCoachee,
+      ...(feedbackList ?? [])
     ]
     this.formErrorCode = null
     this.isLoading = false
@@ -286,6 +322,13 @@ export default class FeedbackStore {
   async clearFeedback() {
     this.listExistingCoachees = []
     this.isLoadingExistingCoachee = false
+    this.errorCode = null
+    this.errorMessage = null
+    this.formErrorCode = null
+  }
+
+  async clearFeedbackUserByCoachee() {
+    this.listFeedbackUserByCoachee = []
     this.errorCode = null
     this.errorMessage = null
     this.formErrorCode = null

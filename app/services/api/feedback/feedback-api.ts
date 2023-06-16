@@ -1,9 +1,9 @@
 import { JournalUser } from "@models/coaching/journal-model";
 import { ApiResponse } from "apisauce"
-import {FeedbackDetail, FeedbackJLSixth} from "app/store/store.coaching";
+import { FeedbackDetail, FeedbackJLSixth } from "app/store/store.coaching";
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
-import { CreateJournalResult, ExistingCoacheeListResult, FeedbackDetailResult, JournalDetailResult, JournalListResult } from "./feedback-api.types";
+import { CreateJournalResult, ExistingCoacheeListResult, FeedbackDetailResult, FeedbackUserDetailListResult, JournalDetailResult, JournalListResult } from "./feedback-api.types";
 
 export class FeedbackApi {
   private api: Api
@@ -20,12 +20,12 @@ export class FeedbackApi {
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.get(
         "/existing-coachees", {
-          limit: limit,
-          page: page
-        })
-        // console.log('getExistingCoacheeList response', response.data)
+        limit: limit,
+        page: page
+      })
+      // console.log('getExistingCoacheeList response', response.data)
 
-      if(response.status === 400){
+      if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
       }
@@ -33,16 +33,48 @@ export class FeedbackApi {
       if (!response.ok) {
         const res = response.data
         const problem = getGeneralApiProblem(response)
-        if (problem) return {...problem, response: res}
+        if (problem) return { ...problem, response: res }
       }
       const res = response.data
       return { kind: "ok", response: res }
     } catch (e) {
       __DEV__ && console.tron.log(e.message)
-      return { kind: "bad-data"}
+      return { kind: "bad-data" }
     }
   }
-  
+
+  async getListFeedbackUserByCoachee(coacheeId: string, page: number, limit: number): Promise<FeedbackUserDetailListResult> {
+    try {
+      console.log('request getListFeedbackUserByCoachee', page)
+
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.get(
+        "/feedback-user", {
+        coachee_id: coacheeId,
+        limit: limit,
+        page: page
+      })
+      // console.log('getExistingCoacheeList response', response.data)
+
+      if (response.status === 400) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const res = response.data
+        const problem = getGeneralApiProblem(response)
+        if (problem) return { ...problem, response: res }
+      }
+      const res = response.data
+      return { kind: "ok", response: res }
+    } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data" }
+    }
+  }
+
+
   async getJournalList(page: number, limit: number): Promise<JournalListResult> {
     try {
       console.log('request getJournalList', page)
@@ -50,12 +82,12 @@ export class FeedbackApi {
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.get(
         "/journal", {
-          limit: limit,
-          page: page
-        })
-        console.log('getJournalList response', response.data)
+        limit: limit,
+        page: page
+      })
+      console.log('getJournalList response', response.data)
 
-      if(response.status === 400){
+      if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
       }
@@ -63,7 +95,7 @@ export class FeedbackApi {
       if (!response.ok) {
         const res = response.data
         const problem = getGeneralApiProblem(response)
-        if (problem) return {...problem, response: res}
+        if (problem) return { ...problem, response: res }
       }
       const res = response.data.data
       console.log('getJournalList res', res)
@@ -71,18 +103,18 @@ export class FeedbackApi {
       return { kind: "ok", response: res }
     } catch (e) {
       __DEV__ && console.tron.log(e.message)
-      return { kind: "bad-data"}
+      return { kind: "bad-data" }
     }
   }
 
   async getJournalDetail(id: string): Promise<JournalDetailResult> {
     console.log('request getJournal Detail', id)
     try {
-          // make the api call
+      // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.get(
-      `/journal/${id}`)
+        `/journal/${id}`)
       console.log('response detail', response.data)
-      if(response.status === 400){
+      if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
       }
@@ -96,7 +128,7 @@ export class FeedbackApi {
       return { kind: "ok", response: res }
     } catch (e) {
       __DEV__ && console.tron.log(e.message)
-      return { kind: "bad-data"}
+      return { kind: "bad-data" }
     }
   }
 
@@ -105,7 +137,7 @@ export class FeedbackApi {
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.get(
         `/journal/${id}/feedback`)
-      if(response.status === 400){
+      if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
       }
@@ -119,7 +151,7 @@ export class FeedbackApi {
       return { kind: "ok", response: res }
     } catch (e) {
       __DEV__ && console.tron.log(e.message)
-      return { kind: "bad-data"}
+      return { kind: "bad-data" }
     }
   }
 
@@ -162,7 +194,7 @@ export class FeedbackApi {
         },
       )
       console.log('createJournal response', response.data)
-      if(response.status === 400){
+      if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
       }
@@ -179,7 +211,7 @@ export class FeedbackApi {
     } catch (e) {
       console.log(e, 'line 150');
       __DEV__ && console.tron.log(e.message)
-      return { kind: "bad-data"}
+      return { kind: "bad-data" }
     }
   }
 
@@ -202,7 +234,7 @@ export class FeedbackApi {
       )
       console.log('updateJournalLearner response', response)
       console.log(response)
-      if(response.status === 400){
+      if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
       }
@@ -218,7 +250,7 @@ export class FeedbackApi {
       return { kind: "ok", response: res }
     } catch (e) {
       __DEV__ && console.tron.log(e.message)
-      return { kind: "bad-data"}
+      return { kind: "bad-data" }
     }
   }
 
@@ -235,12 +267,12 @@ export class FeedbackApi {
       console.log('updateJournalCoach ap', id)
       // make the api call
       const bodyRequest = {
-          content,
-          commitment,
-          strength,
-          improvement,
-          type,
-          label,
+        content,
+        commitment,
+        strength,
+        improvement,
+        type,
+        label,
       }
       console.log("REQUEST ", bodyRequest)
       const response: ApiResponse<any> = await this.api.apisauce.patch(
@@ -249,7 +281,7 @@ export class FeedbackApi {
       )
       console.log('updateJournalCoach response', response)
       console.log(response)
-      if(response.status === 400){
+      if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
       }
@@ -265,18 +297,18 @@ export class FeedbackApi {
       return { kind: "ok", response: res }
     } catch (e) {
       __DEV__ && console.tron.log(e.message)
-      return { kind: "bad-data"}
+      return { kind: "bad-data" }
     }
   }
 
   async createFeedback(
     journalId: string,
-    q1:number,
-    q2:number,
-    q3:number,
-    q4:number,
-    q5:number,
-    q6:number
+    q1: number,
+    q2: number,
+    q3: number,
+    q4: number,
+    q5: number,
+    q6: number
   ): Promise<CreateJournalResult> {
     try {
       console.log('createFeedback ap', journalId)
@@ -297,7 +329,7 @@ export class FeedbackApi {
       )
       console.log('createFeedback response', response)
       console.log(response)
-      if(response.status === 400){
+      if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
       }
@@ -313,7 +345,7 @@ export class FeedbackApi {
       return { kind: "ok", response: res }
     } catch (e) {
       __DEV__ && console.tron.log(e.message)
-      return { kind: "bad-data"}
+      return { kind: "bad-data" }
     }
   }
 

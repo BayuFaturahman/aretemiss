@@ -37,7 +37,7 @@ export const FeedbackRequestListItemRender = (
 
 
   const renderButtonTagged = (isButtonDisabled: boolean, hasPreviousFeedback: boolean, coach_id: string) => {
-    console.log(`isButtonDisabled: ${isButtonDisabled}`)
+    // console.log(`isButtonDisabled: ${isButtonDisabled}`)
     return (
       <HStack style={{ width: dimensions.screenWidth - Spacing[128] }}>
         <TouchableOpacity onPress={() => { }} style={{ flex: 1, backgroundColor: Colors.ABM_MAIN_BLUE, borderTopStartRadius: Spacing[12], borderBottomStartRadius: Spacing[12], borderTopEndRadius: Spacing[12], borderBottomEndRadius: Spacing[12], alignItems: 'center' }}>
