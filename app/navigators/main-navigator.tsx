@@ -49,6 +49,8 @@ import {
   sendEmail,
 } from "@screens/brainstorm"
 import feedbackMain from "@screens/feedback/feedback-main"
+import feedbackDetail from "@screens/feedback/feedback-detail"
+import { FeedbackUserDetailModel } from "app/store/store.feedback"
 
 const screens: AppRoute[] = [
   {
@@ -203,6 +205,10 @@ const screens: AppRoute[] = [
     name: "feedbackMain",
     component: feedbackMain,
   },
+  {
+    name: "feedbackDetail",
+    component: feedbackDetail,
+  },
 ]
 
 export type NavigatorParamList = {
@@ -291,7 +297,10 @@ export type NavigatorParamList = {
     score: number,
     totalQuestions: number;
   },
-  feedbackMain: undefined
+  feedbackMain: undefined,
+  feedbackDetail: {
+    feedbackDetailData: FeedbackUserDetailModel
+  }
 }
 
 export default screens

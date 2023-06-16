@@ -14,7 +14,7 @@ type ExistingCoacheeItemRenderProps = {
   selectedActivities: string
   onPressRequestFeedback(id: string): void
   onPressPreviousFeedback(): void
-  onPressActivity(id: string): void
+  onPressExistingCoachee(id: string): void
   onPressNote(id: string, coach_id: string): void
   onPressFeedback(id: string, coach_id: string): void
   onPressNoteFeedback(id: string, coach_id: string): void
@@ -28,7 +28,7 @@ export const ExistingCoacheeItemRender = (
     selectedActivities,
     onPressRequestFeedback = () => null,
     onPressPreviousFeedback = () => null,
-    onPressActivity = () => null,
+    onPressExistingCoachee = () => null,
     onPressNote = () => null,
     onPressFeedback = () => null,
     onPressNoteFeedback = () => null,
@@ -50,7 +50,7 @@ export const ExistingCoacheeItemRender = (
           </HStack>
         </TouchableOpacity>
         {/* <View style={{ backgroundColor: Colors.ABM_DARK_BLUE, width: Spacing[1], height: '100%' }} /> */}
-        <TouchableOpacity onPress={() => { }} style={{ flex: 1, backgroundColor: hasPreviousFeedback ? Colors.ABM_MAIN_BLUE : Colors.GRAY_DISABLEB, borderTopEndRadius: Spacing[12], borderBottomEndRadius: Spacing[12], alignItems: 'center' }} disabled={!hasPreviousFeedback}>
+        <TouchableOpacity onPress={() => onPressPreviousFeedback(item.coachee_id)} style={{ flex: 1, backgroundColor: hasPreviousFeedback ? Colors.ABM_MAIN_BLUE : Colors.GRAY_DISABLEB, borderTopEndRadius: Spacing[12], borderBottomEndRadius: Spacing[12], alignItems: 'center' }} disabled={!hasPreviousFeedback}>
           <HStack horizontal={Spacing[8]} style={{ height: Spacing[42] }}>
             <Spacer width={Spacing[2]} />
             {hasPreviousFeedback === true ? <IconHeart height={Spacing[28]} width={Spacing[28]} /> : <IconHeartBw height={Spacing[28]} width={Spacing[28]} />}
@@ -68,7 +68,7 @@ export const ExistingCoacheeItemRender = (
     <HStack>
 
       {selectedActivities === item.coachee_id ? renderButtonTagged(item.is_button_disabled === 1, item.has_previous_feedback === 1, item.coachee_id) :
-        <TouchableOpacity key={item.coachee_id} onPress={() => { onPressActivity(item.coachee_id) }} style={{ height: Spacing[42], borderTopWidth: index === 0 ? Spacing[0] : Spacing[1], width: '100%' }}>
+        <TouchableOpacity key={item.coachee_id} onPress={() => { onPressExistingCoachee(item.coachee_id) }} style={{ height: Spacing[42], borderTopWidth: index === 0 ? Spacing[0] : Spacing[1], width: '100%' }}>
           <Text type={"label"} style={{ lineHeight: Spacing[42] }}>{item.user_fullname}</Text>
         </TouchableOpacity>
       }

@@ -18,7 +18,8 @@ export type ExistingCoacheeComponentProps = {
   data: ExistingCoacheeModel;
   index: number;
   onPressRequestFeedback(): void
-  onPressActivity(): void;
+  onPressExistingCoachee(): void;
+  onPressPreviousFeedback(): void;
   selectedActivities(): void;
   onPressNote(): void;
   onPressFeedback(): void;
@@ -31,7 +32,8 @@ export const ExistingCoacheeComponent = ({
    data,
    index,
    onPressRequestFeedback,
-   onPressActivity,
+   onPressExistingCoachee,
+   onPressPreviousFeedback,
    selectedActivities,
    onPressNote,
    onPressFeedback,
@@ -56,7 +58,8 @@ export const ExistingCoacheeComponent = ({
         item={data}
         index={index}
         onPressRequestFeedback={onPressRequestFeedback}
-        onPressActivity={onPressActivity}
+        onPressExistingCoachee={onPressExistingCoachee}
+        onPressPreviousFeedback={onPressPreviousFeedback}
         selectedActivities={selectedActivities}
         onPressNote={onPressNote}
         onPressFeedback={onPressFeedback}

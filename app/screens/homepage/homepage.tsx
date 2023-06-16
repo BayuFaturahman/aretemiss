@@ -433,7 +433,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
                 onPressActivity={holdActivitiesId}
                 selectedActivities={selectedActivities}
                 onPressNote={goToNote}
-                onPressFeedback={goToFeedback}
+                onPressFeedback={goToFeedback1}
                 onPressNoteFeedback={goToNoteFeedback}
                 goToCoaching={goToJournalCoaching}
               />

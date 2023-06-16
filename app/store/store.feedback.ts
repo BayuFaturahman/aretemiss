@@ -74,6 +74,19 @@ export type ExistingCoacheeModel = {
   has_previous_feedback: number
 }
 
+export type FeedbackUserDetailModel = {
+  fu_id: string
+  fu_q1: number
+  fu_q2: number
+  fu_q3: number
+  fu_q4: number
+  from: string
+  fu_coach_id: string
+  fu_coachee_id: string
+  fu_created_at: string
+  fu_updated_at: string
+  fu_deleted_at: string
+}
 export default class FeedbackStore {
   // #region PROPERTIES
 

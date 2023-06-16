@@ -15,12 +15,15 @@ import { useStores } from "../../bootstrap/context.boostrap"
 import { dimensions } from "@config/platform.config"
 import { debounce } from "lodash";
 import { images } from "@assets/images";
-import { ExistingCoacheeModel } from "app/store/store.feedback"
+import { ExistingCoacheeModel, FeedbackUserDetailModel } from "app/store/store.feedback"
 import { ExistingCoacheeComponent } from "./components/existing-coachee-component"
 
 import Modal from "react-native-modalbox"
 import { MoodComponent } from "@screens/homepage/components/mood-component"
 import { FeedbackRequestListComponent } from "./components/feedback-request-list-component"
+import { IconClose } from "@assets/svgs"
+import { RED100 } from "@styles/Color"
+import { spacing } from "@theme/spacing"
 
 const MOCK_EXISTING_COACHEE: ExistingCoacheeModel[] = [
   {
@@ -53,14 +56,156 @@ const MOCK_EXISTING_COACHEE: ExistingCoacheeModel[] = [
   },
 ]
 
+const MOCK_PREVIOUS_FEEDBACK: FeedbackUserDetailModel[] = [
+  {
+    "fu_id": "a45c9dd6-e2f6-4b85-92f4-6b067331ff22",
+    "fu_q1": 5,
+    "fu_q2": 5,
+    "fu_q3": 4,
+    "fu_q4": 5,
+    "from": "coachee",
+    "fu_coach_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
+    "fu_coachee_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
+    "fu_created_at": "2023-06-13T09:23:24.000Z",
+    "fu_updated_at": "2023-06-13T09:23:24.000Z",
+    "fu_deleted_at": null
+  },
+  {
+    "fu_id": "6002192f-b931-464d-b893-bac97874f2a6",
+    "fu_q1": 5,
+    "fu_q2": 5,
+    "fu_q3": 4,
+    "fu_q4": 5,
+    "from": "coachee",
+    "fu_coach_id": "9d5d69df-7902-4e61-be48-a52bf01aa854",
+    "fu_coachee_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
+    "fu_created_at": "2023-06-13T09:19:21.000Z",
+    "fu_updated_at": "2023-06-13T09:19:21.000Z",
+    "fu_deleted_at": null
+  },
+  {
+    "fu_id": "fdd21e99-d297-4e59-a2ec-7441cc8092df",
+    "fu_q1": 3,
+    "fu_q2": 3,
+    "fu_q3": 3,
+    "fu_q4": 5,
+    "from": "coachee",
+    "fu_coach_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
+    "fu_coachee_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
+    "fu_created_at": "2023-06-12T13:24:28.000Z",
+    "fu_updated_at": "2023-06-12T13:24:28.000Z",
+    "fu_deleted_at": null
+  },
+  // {
+  //   "fu_id": "1dd27874-2fff-4972-ada8-5b7528c419ac",
+  //   "fu_q1": 3,
+  //   "fu_q2": 3,
+  //   "fu_q3": 2,
+  //   "fu_q4": 4,
+  //   "from": "coachee",
+  //   "fu_coach_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
+  //   "fu_coachee_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
+  //   "fu_created_at": "2023-06-11T17:31:14.000Z",
+  //   "fu_updated_at": "2023-06-11T17:31:14.000Z",
+  //   "fu_deleted_at": null
+  // },
+  // {
+  //   "fu_id": "9f201037-5095-4d9d-956a-9a9229d1b375",
+  //   "fu_q1": 1,
+  //   "fu_q2": 3,
+  //   "fu_q3": 3,
+  //   "fu_q4": 3,
+  //   "from": "coachee",
+  //   "fu_coach_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
+  //   "fu_coachee_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
+  //   "fu_created_at": "2023-06-11T14:54:08.000Z",
+  //   "fu_updated_at": "2023-06-11T14:54:08.000Z",
+  //   "fu_deleted_at": null
+  // },
+  // {
+  //   "fu_id": "e808f925-2572-42b0-8edd-02c5c1922e06",
+  //   "fu_q1": 3,
+  //   "fu_q2": 3,
+  //   "fu_q3": 3,
+  //   "fu_q4": 3,
+  //   "from": "coachee",
+  //   "fu_coach_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
+  //   "fu_coachee_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
+  //   "fu_created_at": "2023-06-09T17:33:37.000Z",
+  //   "fu_updated_at": "2023-06-09T17:33:37.000Z",
+  //   "fu_deleted_at": null
+  // },
+  // {
+  //   "fu_id": "eb258cca-0ac3-401e-80e9-18851535da02",
+  //   "fu_q1": 3,
+  //   "fu_q2": 3,
+  //   "fu_q3": 3,
+  //   "fu_q4": 3,
+  //   "from": "coachee",
+  //   "fu_coach_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
+  //   "fu_coachee_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
+  //   "fu_created_at": "2023-06-09T17:33:29.000Z",
+  //   "fu_updated_at": "2023-06-09T17:33:29.000Z",
+  //   "fu_deleted_at": null
+  // },
+  // {
+  //   "fu_id": "b5b80008-fd12-4598-9ffa-955d42f46c86",
+  //   "fu_q1": 4,
+  //   "fu_q2": 4,
+  //   "fu_q3": 4,
+  //   "fu_q4": 4,
+  //   "from": "coachee",
+  //   "fu_coach_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
+  //   "fu_coachee_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
+  //   "fu_created_at": "2023-06-09T17:33:22.000Z",
+  //   "fu_updated_at": "2023-06-09T17:33:22.000Z",
+  //   "fu_deleted_at": null
+  // },
+  // {
+  //   "fu_id": "475e8de8-dd3a-421b-b068-74cf57c20e3f",
+  //   "fu_q1": 2,
+  //   "fu_q2": 2,
+  //   "fu_q3": 4,
+  //   "fu_q4": 4,
+  //   "from": "coachee",
+  //   "fu_coach_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
+  //   "fu_coachee_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
+  //   "fu_created_at": "2023-06-09T17:32:53.000Z",
+  //   "fu_updated_at": "2023-06-09T17:32:53.000Z",
+  //   "fu_deleted_at": null
+  // },
+  // {
+  //   "fu_id": "224e8a6b-f559-45bb-b79b-2060dad74f01",
+  //   "fu_q1": 5,
+  //   "fu_q2": 4,
+  //   "fu_q3": 2,
+  //   "fu_q4": 1,
+  //   "from": "coachee",
+  //   "fu_coach_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
+  //   "fu_coachee_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
+  //   "fu_created_at": "2023-06-09T17:32:17.000Z",
+  //   "fu_updated_at": "2023-06-09T17:32:17.000Z",
+  //   "fu_deleted_at": null
+  // }
+]
+
 const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
   observer(({ navigation }) => {
 
 
     const [existingCoacheeData, setExistingCoacheeData] = useState<Array<ExistingCoacheeModel>>([])
+    const [listFeedbackDetail, setListFeedbackDetail] = useState<Array<FeedbackUserDetailModel>>([])
+
+    const [listFeedbackRequest, setListFeedbacRequest] = useState<Array<ExistingCoacheeModel>>([])
+
+
     const [coachingData, setCoachingData] = useState<Array<CoachingJournalItem>>([])
     const [selectedFeedbackRequest, setSelectedFeedbackRequest] = useState<string>("")
     const [selectedExistingCoachee, setSelectedExistingCoachee] = useState<string>("")
+    const [selectedPreviousFeedbackCoachee, setSelectedPreviousFeedbackCoachee] = useState<string>("")
+    const [selectedPreviousFeedbackUser, setSelectedPreviousFeedbackUser] = useState<string>("")
+    const [selectedPreviousFeedbackDetail, setSelectedPreviousFeedbackDetail] = useState<FeedbackUserDetailModel>()
+
     const [currentPageExistingCoachee, setCurrentPageExistingCoachee] = useState<number>(2)
 
     const [, forceUpdate] = useReducer((x) => x + 1, 0)
@@ -75,6 +220,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
     const [modalTitle, setModalTitle] = useState<string>("")
     const [modalDesc, setModalDesc] = useState<string>("")
     const [modalIcon, setModalIcon] = useState("senang")
+    const [modalType, setModalType] = useState<string>("")
 
     const setModalContent = (title: string, desc: string, icon: string) => {
       setModalTitle(title)
@@ -84,6 +230,9 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
 
     const toggleModal = (value: boolean) => {
       setModalVisible(value)
+      if (!value) {
+        resetSelectedIndicator()
+      }
     }
 
     const goBack = () => {
@@ -137,19 +286,70 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       [selectedExistingCoachee],
     )
 
+    const holdPreviousFeedbackDate = useCallback(
+      (selectedId, index) => {
+        console.log(`selectedId: ${selectedId}`)
+        setSelectedPreviousFeedbackCoachee(selectedId)
+        setSelectedPreviousFeedbackUser(selectedId)
+        setSelectedExistingCoachee('')
+        setSelectedPreviousFeedbackDetail(listFeedbackDetail[index])
+      },
+      [selectedFeedbackRequest],
+    )
+
+    const loadListFeedbackUser = async (page: number) => {
+      setListFeedbackDetail(MOCK_PREVIOUS_FEEDBACK)
+    }
+
     const requestFeedback = useCallback(
       (selectedId) => {
         if (isModalVisible) {
           // toggleModal(false)
         }
         console.log(`selectedId for requestFeedback: ${selectedId}`)
-
+        setModalType("notification")
         setModalContent("Sukses!", "Feedback telah sukses direquest!", "senang")
         toggleModal(true)
         // setSelectedActivities(selectedId)
       },
       [selectedExistingCoachee],
     )
+
+
+    const openPreviousFeedbackDateList = useCallback(
+      (selectedId) => {
+        if (isModalVisible) {
+          // toggleModal(false)
+        }
+        console.log(`selectedId for requestFeedback: ${selectedId}`)
+        setModalType("previousFeedbackDates")
+        setModalContent("Sukses!", "Feedback telah sukses direquest!", "senang")
+        toggleModal(true)
+        // setSelectedActivities(selectedId)
+      },
+      [selectedExistingCoachee],
+    )
+
+    const resetSelectedIndicator = () => {
+      setSelectedPreviousFeedbackCoachee("")
+      setSelectedPreviousFeedbackUser("")
+      setSelectedExistingCoachee("")
+    }
+
+    const goToFeedbackDetail = () => {
+      navigation.navigate("feedbackDetail", {
+        feedbackDetailData: selectedPreviousFeedbackDetail
+      })
+    }
+
+    const openFeedbackDetail = () => {
+      toggleModal(false)
+      // resetSelectedIndicator()
+      // setTimeout(() => {
+        goToFeedbackDetail()
+      // }, 1200);
+
+    }
 
     // const newEntry = () => {
     //   feedbackStore.isDetailJournal(false)
@@ -209,11 +409,11 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       await loadExistingCoachee(1)
 
       // setTimeout(() => {
-        console.log(`timeout feedbackStore.listExistingCoachees , ${feedbackStore.listExistingCoachees}`)
-        // feedbackStore.listExistingCoachees = MOCK_EXISTING_COACHEE
-        setInitialLoading(false)
-        feedbackStore.setRefreshData(false)
-        forceUpdate()
+      console.log(`timeout feedbackStore.listExistingCoachees , ${feedbackStore.listExistingCoachees}`)
+      // feedbackStore.listExistingCoachees = MOCK_EXISTING_COACHEE
+      setInitialLoading(false)
+      feedbackStore.setRefreshData(false)
+      forceUpdate()
       // }, 100)
     }, 500)
 
@@ -286,22 +486,16 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       return (
         <>
           <Text type={"left-header"} text="Existing Coachees." />
-          {/* </HStack> */}
           <Spacer height={Spacing[12]} />
-
-
           <VStack horizontal={Spacing[24]} style={{ backgroundColor: Colors.WHITE, width: "100%", borderRadius: Spacing[20], height: Spacing[160] + Spacing[12], borderWidth: Spacing[1] }}>
-            {/* </ScrollView> */}
             <FlatList
-              // contentContainerStyle={{ paddingBottom: 5 }}
-              // refreshControl={
-              //   <RefreshControl refreshing={false}
-              //     onRefresh={onRefreshExistingCoachee} />
-              // }
-              // scrollEnabled={true}
+              refreshControl={
+                <RefreshControl refreshing={false}
+                  onRefresh={onRefreshExistingCoachee} />
+              }
               data={existingCoacheeData}
               keyExtractor={item => item.coachee_id}
-              showsVerticalScrollIndicator={false}
+              showsVerticalScrollIndicator={true}
               renderItem={({ item, index }) => (
                 <TouchableOpacity animationDuration={500}>
                   {/* <VStack style={{ borderTopWidth: index % 4 === 0 ? Spacing[0] : Spacing[1], paddingVertical: Spacing[12] }}>
@@ -311,7 +505,8 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
                     data={item}
                     index={index}
                     onPressRequestFeedback={requestFeedback}
-                    onPressActivity={holdExistingCoachee}
+                    onPressExistingCoachee={holdExistingCoachee}
+                    onPressPreviousFeedback={openPreviousFeedbackDateList}
                     selectedActivities={selectedExistingCoachee}
                     onPressNote={() => { }}
                     onPressFeedback={() => { }}
@@ -322,9 +517,8 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
               )}
               onEndReached={onLoadMoreExistingCoachee}
               onEndReachedThreshold={0.1}
-            style={{ paddingVertical: Spacing[2] }}
+              style={{ paddingVertical: Spacing[2] }}
             />
-            {/* </ScrollView > */}
           </VStack >
 
         </>
@@ -344,12 +538,13 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
               refreshControl={
                 <RefreshControl refreshing={false} onRefresh={onRefresh} />
               }
+              
               scrollEnabled={false}
               data={MOCK_EXISTING_COACHEE}
               keyExtractor={item => item.coachee_id + 'feed'}
               showsVerticalScrollIndicator={false}
               renderItem={({ item, index }) => (
-                
+
                 <TouchableOpacity animationDuration={500}>
                   {/* <VStack style={{ borderTopWidth: index % 4 === 0 ? Spacing[0] : Spacing[1], paddingVertical: Spacing[12] }}>
                     <Text>{item.user_fullname}</Text>
@@ -380,6 +575,101 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
           </VStack >
 
         </>
+      )
+    }
+
+    const renderNotificationModal = () => {
+      return (
+        <VStack>
+          <HStack bottom={Spacing[18]}>
+            <Spacer />
+            <MoodComponent data={modalIcon} width={Spacing[64]} height={Spacing[64]} />
+            <Spacer />
+          </HStack>
+          <Text
+            type={"body-bold"}
+            style={{ fontSize: Spacing[24], textAlign: "center", color: Colors.ABM_GREEN }}
+            text={modalTitle}
+          />
+          {/* <Spacer height={Spacing[12]} /> */}
+          <Text type={"body"} style={{ textAlign: "center" }} text={modalDesc} />
+          <Spacer height={Spacing[12]} />
+
+          <HStack bottom={Spacing[24]}>
+            <Spacer />
+            <VStack style={{ maxWidth: Spacing[256], minWidth: Spacing[128] }}>
+              <Button
+                type={"primary"}
+                text={"Kembali ke Menu Utama\nFeedback"}
+                style={{ height: Spacing[54], paddingHorizontal: Spacing[8] }}
+                textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
+                onPress={toggleModal.bind(this, false)}
+              />
+            </VStack>
+            <Spacer />
+          </HStack>
+        </VStack>
+      )
+    }
+
+    const renderPreviousFeedbackDatesModal = () => {
+      return (
+        <VStack style={{ padding: 0, width: '100%' }}>
+          <HStack bottom={Spacing[8]} >
+            <Text type={"header"} text="Pilih tanggal feedback" style={{ fontSize: Spacing[18] }} />
+            <TouchableOpacity onPress={() => toggleModal(false)}>
+              <IconClose height={Spacing[32]} width={Spacing[32]} />
+            </TouchableOpacity>
+          </HStack>
+          <Spacer height={Spacing[12]} />
+          <HStack style={{}}>
+            <Spacer />
+            <FlatList
+              refreshControl={
+                <RefreshControl refreshing={false}
+                  onRefresh={onRefreshExistingCoachee} />
+              }
+              data={MOCK_PREVIOUS_FEEDBACK}
+              keyExtractor={item => item.fu_id}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item, index }) => (
+                <TouchableOpacity key={item.fu_id} onPress={() => { holdPreviousFeedbackDate(item.fu_id, index) }} style={{
+                  height: Spacing[42], borderTopWidth: index === 0 ? Spacing[0] : Spacing[1], flex: 1,
+                  justifyContent: "center",
+                }}>
+
+                  <Text type={"body"} style={{ lineHeight: Spacing[42], backgroundColor: selectedPreviousFeedbackCoachee === item.fu_id ? Colors.ABM_DARK_BLUE : Colors.WHITE, color: selectedPreviousFeedbackCoachee === item.fu_id ? Colors.WHITE : Colors.ABM_DARK_BLUE, paddingHorizontal: spacing[2], textAlign: "center" }}>{moment(item.fu_created_at).format('DD MMMM YYYY')}</Text>
+
+                </TouchableOpacity>
+              )}
+              onEndReached={onLoadMoreExistingCoachee}
+              onEndReachedThreshold={0.1}
+              style={{ paddingVertical: Spacing[2], paddingHorizontal: 0, width: "70%", backgroundColor: Colors.YELLOW100 }}
+            />
+            <Spacer />
+          </HStack>
+          <Spacer height={Spacing[12]} />
+
+          <HStack bottom={Spacing[24]}>
+            <Spacer />
+            <VStack style={{ maxWidth: Spacing[256], minWidth: Spacing[96] + Spacing[12] }}>
+              <Button
+                type={selectedPreviousFeedbackUser === "" ? "negative-white" : "primary"}
+                text={"Pilih Tanggal"}
+                style={{
+                  height: Spacing[42], paddingHorizontal: Spacing[8], alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: Spacing[10]
+
+                }}
+                textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
+                onPress={openFeedbackDetail}
+                disabled={selectedPreviousFeedbackUser === ""}
+              />
+            </VStack>
+            <Spacer />
+          </HStack>
+        </VStack>
       )
     }
 
@@ -431,6 +721,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
             width: dimensions.screenWidth - Spacing[24],
             backgroundColor: "rgba(52, 52, 52, 0)",
           }}
+
           onRequestClose={() => toggleModal(false)}
         >
           <View style={{ flex: 1, justifyContent: "center" }}>
@@ -441,42 +732,15 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
                 minHeight: Spacing[256],
                 alignItems: "center",
                 justifyContent: "center",
+
               }}
               horizontal={Spacing[24]}
               vertical={Spacing[24]}
             >
-              <VStack horizontal={Spacing[24]} top={Spacing[24]} style={Layout.widthFull}>
-                <VStack>
-
-                  <HStack bottom={Spacing[18]}>
-                    <Spacer />
-                    <MoodComponent data={modalIcon} width={Spacing[64]} height={Spacing[64]} />
-                    <Spacer />
-                  </HStack>
-                  <Text
-                    type={"body-bold"}
-                    style={{ fontSize: Spacing[24], textAlign: "center", color: Colors.ABM_GREEN }}
-                    text={modalTitle}
-                  />
-                  {/* <Spacer height={Spacing[12]} /> */}
-                  <Text type={"body"} style={{ textAlign: "center" }} text={modalDesc} />
-                  <Spacer height={Spacing[12]} />
-
-                  <HStack bottom={Spacing[24]}>
-                    <Spacer />
-                    <VStack style={{ maxWidth: Spacing[256], minWidth: Spacing[128] }}>
-                      <Button
-                        type={"primary"}
-                        text={"Kembali ke Menu Utama\nFeedback"}
-                        style={{ height: Spacing[54], paddingHorizontal: Spacing[8] }}
-                        textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
-                        onPress={toggleModal.bind(this, false)}
-                      />
-                    </VStack>
-                    <Spacer />
-                  </HStack>
-                </VStack>
+              <VStack horizontal={Spacing[24]} top={Spacing[12]} style={[Layout.widthFull, { justifyContent: "center" }]}>
+                {modalType === 'notification' ? renderNotificationModal() : renderPreviousFeedbackDatesModal()}
               </VStack>
+              {/* {modalType === 'notification' ? null : renderPreviousFeedbackDatesModal()} */}
             </VStack>
           </View>
         </Modal>
