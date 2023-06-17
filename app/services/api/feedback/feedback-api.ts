@@ -3,7 +3,7 @@ import { ApiResponse } from "apisauce"
 import { FeedbackDetail, FeedbackJLSixth } from "app/store/store.coaching";
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
-import { CreateJournalResult, ExistingCoacheeListResult, FeedbackDetailResult, FeedbackUserDetailListResult, JournalDetailResult, JournalListResult } from "./feedback-api.types";
+import { CreateJournalResult, ExistingCoacheeListResult, FeedbackDetailResult, FeedbackUserDetailListResult, JournalDetailResult, JournalListResult, ListFeedbackUserByCoacheeResult } from "./feedback-api.types";
 
 export class FeedbackApi {
   private api: Api
@@ -43,7 +43,7 @@ export class FeedbackApi {
     }
   }
 
-  async getListFeedbackUserByCoachee(coacheeId: string, page: number, limit: number): Promise<FeedbackUserDetailListResult> {
+  async getListFeedbackUserByCoachee(coacheeId: string, page: number, limit: number): Promise<ListFeedbackUserByCoacheeResult> {
     try {
       console.log('request getListFeedbackUserByCoachee', page)
 
@@ -74,6 +74,32 @@ export class FeedbackApi {
     }
   }
 
+  async getFeedbackUserDetail(feedbackUserId: string): Promise<FeedbackUserDetailListResult> {
+    try {
+      console.log('request getFeedbackUserDetail', feedbackUserId)
+
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.get(
+        `/feedback-user-detail/${feedbackUserId}`)
+      console.log('getFeedbackUserDetail response', response.data)
+
+      if (response.status === 400) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const res = response.data
+        const problem = getGeneralApiProblem(response)
+        if (problem) return { ...problem, response: res }
+      }
+      const res = response.data
+      return { kind: "ok", response: res }
+    } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data" }
+    }
+  }
 
   async getJournalList(page: number, limit: number): Promise<JournalListResult> {
     try {

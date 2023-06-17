@@ -299,7 +299,7 @@ export type NavigatorParamList = {
   },
   feedbackMain: undefined,
   feedbackDetail: {
-    feedbackDetailData: FeedbackUserDetailModel
+    feedbackUserId: string
   }
 }
 

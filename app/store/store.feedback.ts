@@ -9,6 +9,7 @@ import { AuthApi } from "@services/api/auth/auth-api";
 import { Api } from "@services/api";
 import { JournalEntryType } from "@screens/coaching-journal/new-journal-entry";
 import { FeedbackApi } from '@services/api/feedback/feedback-api';
+import { FeedbackUserDetail } from '@screens/feedback/feedback.type';
 
 // #region MAIN CLASS
 export type FeedbackJLSixth = {
@@ -87,6 +88,24 @@ export type FeedbackUserDetailModel = {
   fu_updated_at: string
   fu_deleted_at: string
 }
+
+const EMPTY_FEEDBACK_USER_DETAIL = {
+  id: '',
+  q1: 0,
+  q2: 0,
+  q3: 0,
+  q4: 0,
+  q5: 0,
+  from: '',
+  coachId: '',
+  coacheeId: '',
+  fu_created_at: '',
+  fu_updated_at: '',
+  fu_deleted_at: '',
+  has_commitment: 0
+}
+
+
 export default class FeedbackStore {
   // #region PROPERTIES
 
@@ -111,8 +130,12 @@ export default class FeedbackStore {
   journalDetail: JournalDetail
 
   isLoadingExistingCoachee: boolean
+  isLoadingListFeedbackUserByCoachee: boolean
+  isLoadingFeedbackUserDetail: boolean
   listExistingCoachees: ExistingCoacheeModel[]
   listFeedbackUserByCoachee: FeedbackUserDetailModel[]
+
+  feedbackUserDetail: FeedbackUserDetail
 
   my_feedback: FeedbackJLSixth
   coachee_feedback: FeedbackJLSixth
@@ -157,54 +180,11 @@ export default class FeedbackStore {
     this.feedbackApi = new FeedbackApi(this.api)
 
     this.isLoadingExistingCoachee = false
+    this.isLoadingListFeedbackUserByCoachee = false
+    this.isLoadingFeedbackUserDetail = false
     this.isLoading = false
-    this.journalDetail = {
-      journal_id: '',
-      journal_title: '',
-      journal_coach_id: '',
-      journal_commitment: '',
-      journal_content: '',
-      journal_improvement: '',
-      journal_strength: '',
-      journal_type: '',
-      journal_date: '',
-      jl_lesson_learned: {
-        desc: ''
-      },
-      jl_commitment: {
-        desc: ''
-      },
-      jl_content: {
-        desc: ''
-      },
-      jl_learner_fullname: '',
-      coach_fullname: ''
-    }
-    this.my_feedback = {
-      q1: 0,
-      q2: 0,
-      q3: 0,
-      q4: 0,
-      q5: 0,
-      q6: 0,
-    }
-    this.coachee_feedback = {
-      q1: 0,
-      q2: 0,
-      q3: 0,
-      q4: 0,
-      q5: 0,
-      q6: 0,
-    }
-    this.same_feedback = {
-      q1: 0,
-      q2: 0,
-      q3: 0,
-      q4: 0,
-      q5: 0,
-    }
 
-    this.listJournal = []
+    this.feedbackUserDetail = EMPTY_FEEDBACK_USER_DETAIL
     makeAutoObservable(this);
   }
 
@@ -232,7 +212,7 @@ export default class FeedbackStore {
       this.isLoading = false
     }
   }
-  
+
 
   async getListExistingCoachee(page = 1, limit = 4) {
     this.isLoadingExistingCoachee = true
@@ -243,7 +223,7 @@ export default class FeedbackStore {
         // console.log('result.response.data  ', result.response)
         await this.getExistingCoacheeSucceed(result.response.data)
       } else if (result.kind === 'form-error') {
-        console.log('journal failed')
+        console.log('getListExistingCoachee failed')
         // console.log(result.response.errorCode)
         this.feedbackFailed(result.response.errorCode)
       } else if (result.kind === 'unauthorized') {
@@ -260,7 +240,7 @@ export default class FeedbackStore {
     }
   }
 
-  async getExistingCoacheeSucceed (coachees: ExistingCoacheeModel[]) {
+  async getExistingCoacheeSucceed(coachees: ExistingCoacheeModel[]) {
     console.log('getExistingCoacheeSucceed')
     this.listExistingCoachees = [
       ...this.listExistingCoachees,
@@ -270,8 +250,8 @@ export default class FeedbackStore {
     this.isLoading = false
   }
 
-  async getListFeedbackUserByCoachee (coacheeId: string, page = 1, limit = 3) {
-    this.isLoadingExistingCoachee = true
+  async getListFeedbackUserByCoachee(coacheeId: string, page = 1, limit = 3) {
+    this.isLoadingListFeedbackUserByCoachee = true
     try {
       const result = await this.feedbackApi.getListFeedbackUserByCoachee(coacheeId, page, limit)
       console.log('in store getListFeedbackUserByCoachee')
@@ -279,7 +259,7 @@ export default class FeedbackStore {
         console.log('result.response.data  ', result.response)
         await this.getListFeedbackUserByCoacheeSucceed(result.response.data)
       } else if (result.kind === 'form-error') {
-        console.log('journal failed')
+        console.log('getListFeedbackUserByCoachee failed')
         // console.log(result.response.errorCode)
         this.feedbackFailed(result.response.errorCode)
       } else if (result.kind === 'unauthorized') {
@@ -292,11 +272,11 @@ export default class FeedbackStore {
     } catch (e) {
       console.log(e)
     } finally {
-      this.isLoadingExistingCoachee = false
+      this.isLoadingListFeedbackUserByCoachee = false
     }
   }
 
-  async getListFeedbackUserByCoacheeSucceed (feedbackList: FeedbackUserDetailModel[]) {
+  async getListFeedbackUserByCoacheeSucceed(feedbackList: FeedbackUserDetailModel[]) {
     console.log('getListFeedbackUserByCoacheeSucceed')
     this.listFeedbackUserByCoachee = [
       ...this.listFeedbackUserByCoachee,
@@ -306,7 +286,40 @@ export default class FeedbackStore {
     this.isLoading = false
   }
 
-  feedbackFailed (errorId: number) {
+  async getFeedbackUserDetail(feedbackUserId: string) {
+    this.isLoadingFeedbackUserDetail = true
+    try {
+      const result = await this.feedbackApi.getFeedbackUserDetail(feedbackUserId)
+      console.log('in store getFeedbackUserDetail')
+      if (result.kind === "ok") {
+        console.log('result.response.data  ', result.response)
+        await this.getFeedbackUserDetailSucceedd(result.response.data)
+      } else if (result.kind === 'form-error') {
+        console.log('getFeedbackUserDetail failed')
+        // console.log(result.response.errorCode)
+        this.feedbackFailed(result.response.errorCode)
+      } else if (result.kind === 'unauthorized') {
+        console.log('token expired list existing coachee')
+        // console.log(result)
+        this.coachingFailed(result.response.errorCode)
+      } else {
+        __DEV__ && console.tron.log(result.kind)
+      }
+    } catch (e) {
+      console.log(e)
+    } finally {
+      this.isLoadingFeedbackUserDetail = false
+    }
+  }
+
+  async getFeedbackUserDetailSucceedd(feedbackUserDetail: FeedbackUserDetail) {
+    console.log('getFeedbackUserDetailSucceedd, ', feedbackUserDetail)
+    this.feedbackUserDetail = feedbackUserDetail
+    this.formErrorCode = null
+    this.isLoading = false
+  }
+
+  feedbackFailed(errorId: number) {
     this.formErrorCode = errorId
     this.isLoading = false
   }
@@ -329,6 +342,15 @@ export default class FeedbackStore {
 
   async clearFeedbackUserByCoachee() {
     this.listFeedbackUserByCoachee = []
+    this.isLoadingListFeedbackUserByCoachee = false
+    this.errorCode = null
+    this.errorMessage = null
+    this.formErrorCode = null
+  }
+
+  async clearFeedbackUserDetail() {
+    this.feedbackUserDetail = EMPTY_FEEDBACK_USER_DETAIL
+    this.isLoadingFeedbackUserDetail = false
     this.errorCode = null
     this.errorMessage = null
     this.formErrorCode = null

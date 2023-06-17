@@ -24,6 +24,7 @@ import { FeedbackRequestListComponent } from "./components/feedback-request-list
 import { IconClose } from "@assets/svgs"
 import { RED100 } from "@styles/Color"
 import { spacing } from "@theme/spacing"
+import Spinner from 'react-native-loading-spinner-overlay';
 
 const MOCK_EXISTING_COACHEE: ExistingCoacheeModel[] = [
   {
@@ -252,7 +253,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
     const loadFeedbackUserByCoachee = async (coacheeId: string, page: number) => {
       await feedbackStore.getListFeedbackUserByCoachee(coacheeId, page)
       setListFeedbackUser(feedbackStore.listFeedbackUserByCoachee)
-      console.log(`selectedPreviousFeedbackCoachee: `, selectedPreviousFeedbackCoachee)
+      console.log(`selectedPreviousFeedbackUserByCoachee: `, selectedPreviousFeedbackUserByCoachee)
       console.log(`feedbackStore.listFeedbackUserByCoachee: `, feedbackStore.listFeedbackUserByCoachee)
     }
 
@@ -264,6 +265,11 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
     const onRefreshExistingCoachee = React.useCallback(async () => {
       setCurrentPageExistingCoachee(2)
       firstLoadExistingCoachee()
+    }, [])
+
+    const onRefreshFeedbackUserByCoachee = React.useCallback(async () => {
+      setCurrentPageListFeedbackUserByCoachee(2)
+      firstLoadFeedbackUserByCoachee()
     }, [])
 
     const onLoadMoreExistingCoachee = React.useCallback(async () => {
@@ -280,16 +286,19 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
 
     const onLoadMoreFeedbackUserByCoachee = React.useCallback(async () => {
       console.log('onLoadMoreFeedbackUserByCoachee ', currentPageListFeedbackUserByCoachee)
-      if (!feedbackStore.isLoadingExistingCoachee) {
+      if (!feedbackStore.isLoadingListFeedbackUserByCoachee) {
         console.log("load more feedback user by coachee ", currentPageListFeedbackUserByCoachee)
         // await loadExistingCoachee(currentPageExistingCoachee).then(r =>
         //   setCurrentPageExistingCoachee(currentPageExistingCoachee + 1))
 
         await loadFeedbackUserByCoachee(selectedPreviousFeedbackUserByCoachee, currentPageListFeedbackUserByCoachee)
-        setCurrentPageExistingCoachee(currentPageExistingCoachee + 1)
+        setCurrentPageListFeedbackUserByCoachee(currentPageListFeedbackUserByCoachee + 1)
       }
-    }, [currentPageExistingCoachee])
+    }, [currentPageListFeedbackUserByCoachee])
 
+    useEffect(() => {
+      console.log('currentPageListFeedbackUserByCoachee: ', currentPageListFeedbackUserByCoachee)
+    }, [currentPageListFeedbackUserByCoachee])
 
     const holdFeedbackRequest = useCallback(
       (selectedId) => {
@@ -342,10 +351,9 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       (selectedId) => {
         feedbackStore.clearFeedbackUserByCoachee()
         setSelectedPreviousFeedbackUserByCoachee(selectedId)
-        console.log(`selectedId for requestFeedback: ${selectedId}`)
+        // console.log(`selectedId for requestFeedback: ${selectedId}`)
         loadFeedbackUserByCoachee(selectedId, 1)
         setModalType("previousFeedbackDates")
-        setModalContent("Sukses!", "Feedback telah sukses direquest!", "senang")
         toggleModal(true)
       },
       [selectedExistingCoachee],
@@ -359,17 +367,13 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
 
     const goToFeedbackDetail = () => {
       navigation.navigate("feedbackDetail", {
-        feedbackDetailData: selectedPreviousFeedbackDetail
+        feedbackUserId: selectedPreviousFeedbackUserByCoachee
       })
     }
 
     const openFeedbackDetail = () => {
       toggleModal(false)
-      // resetSelectedIndicator()
-      // setTimeout(() => {
       goToFeedbackDetail()
-      // }, 1200);
-
     }
 
 
@@ -377,13 +381,26 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       await feedbackStore.clearFeedback()
       await loadExistingCoachee(1)
 
-      // setTimeout(() => {
       console.log(`timeout feedbackStore.listExistingCoachees , ${feedbackStore.listExistingCoachees}`)
       // feedbackStore.listExistingCoachees = MOCK_EXISTING_COACHEE
       setInitialLoading(false)
       feedbackStore.setRefreshData(false)
       forceUpdate()
-      // }, 100)
+    }, 500)
+
+    const firstLoadFeedbackUserByCoachee = debounce(async () => {
+      await feedbackStore.clearFeedbackUserByCoachee()
+
+      setTimeout(() => {
+        loadFeedbackUserByCoachee(selectedPreviousFeedbackUser, 1)
+
+        console.log(`timeout feedbackStore.listExistingCoachees , ${feedbackStore.listExistingCoachees}`)
+        // feedbackStore.listExistingCoachees = MOCK_EXISTING_COACHEE
+        setInitialLoading(false)
+        feedbackStore.setRefreshData(false)
+        forceUpdate()
+      }, 1500);
+
     }, 500)
 
     useEffect(() => {
@@ -394,7 +411,6 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
 
     useEffect(() => {
       if (feedbackStore.listExistingCoachees) {
-        // createList()
         setExistingCoacheeData(feedbackStore.listExistingCoachees)
       }
 
@@ -436,6 +452,16 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
                   />
                 </TouchableOpacity>
               )}
+              ListFooterComponent={
+                // existingCoacheeData.length === 0 && !initialLoading && !feedbackStore.isLoadingExistingCoachee ? null : (
+                <Spinner
+                  visible={feedbackStore.isLoadingExistingCoachee}
+                  
+                // textContent={'Memuat...'}
+                // textStyle={styles.spinnerTextStyle}
+                />
+                // )
+              }
               onEndReached={onLoadMoreExistingCoachee}
               onEndReachedThreshold={0.1}
               style={{ paddingVertical: Spacing[2] }}
@@ -543,28 +569,26 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
             </TouchableOpacity>
           </HStack>
           <Spacer height={Spacing[12]} />
-          <HStack style={{}}>
+          <HStack style={{ minHeight: Spacing[96], maxHeight: Spacing[128] }}>
             <Spacer />
             <FlatList
               refreshControl={
                 <RefreshControl refreshing={false}
-                  onRefresh={onRefreshExistingCoachee} />
+                  onRefresh={onRefreshFeedbackUserByCoachee} />
               }
               data={listFeedbackUser}
               keyExtractor={item => item.fu_id}
-              showsVerticalScrollIndicator={false}
+              showsVerticalScrollIndicator={true}
               renderItem={({ item, index }) => (
                 <TouchableOpacity key={item.fu_id} onPress={() => { holdPreviousFeedbackDate(item.fu_id, index) }} style={{
                   height: Spacing[42], borderTopWidth: index === 0 ? Spacing[0] : Spacing[1], flex: 1,
                   justifyContent: "center",
                 }}>
-
                   <Text type={"body"} style={{ lineHeight: Spacing[42], backgroundColor: selectedPreviousFeedbackUserByCoachee === item.fu_id ? Colors.ABM_DARK_BLUE : Colors.WHITE, color: selectedPreviousFeedbackUserByCoachee === item.fu_id ? Colors.WHITE : Colors.ABM_DARK_BLUE, paddingHorizontal: spacing[2], textAlign: "center" }}>{moment(item.fu_created_at).format('DD MMMM YYYY')}</Text>
-
                 </TouchableOpacity>
               )}
-              onEndReached={onLoadMoreExistingCoachee}
-              onEndReachedThreshold={0.1}
+              onEndReached={onLoadMoreFeedbackUserByCoachee}
+              onEndReachedThreshold={5}
               style={{ paddingVertical: Spacing[2], paddingHorizontal: 0, width: "70%" }}
             />
             <Spacer />

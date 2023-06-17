@@ -29,6 +29,16 @@ export interface ListFeedbackUserByCoacheeResponse {
   }
 }
 
+export interface FeedbackUserDetailResponse {
+  token: string
+  message: string
+  data: FeedbackUserDetailModel
+  meta: {
+    total_pages: number
+    total_items: number
+  }
+}
+
 export interface CreateJournalResponse {
   errorCode: number
   message: string
@@ -41,6 +51,8 @@ export interface UpdateJournalResponse {
 export type ExistingCoacheeListResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: ExistingCoacheeListResponse } | GeneralApiProblem
 
 export type ListFeedbackUserByCoacheeResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: ListFeedbackUserByCoacheeResponse } | GeneralApiProblem
+
+export type FeedbackUserDetailResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: FeedbackUserDetailResponse } | GeneralApiProblem
 
 export type CreateJournalResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreateJournalResponse } | GeneralApiProblem
 
