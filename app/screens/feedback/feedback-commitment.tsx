@@ -1,5 +1,5 @@
-import React, { FC, useCallback, useReducer, useState, useEffect } from "react"
-import { ActivityIndicator, FlatList, ImageBackground, RefreshControl, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native"
+import React, { FC, useReducer, useState, useEffect, useCallback } from "react"
+import { SafeAreaView, StyleSheet, View } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Text, BackNavigation, Button, TextField } from "@components"
@@ -7,26 +7,17 @@ import { NavigatorParamList } from "@navigators/main-navigator"
 import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
 import { Colors, Layout, Spacing } from "@styles"
-import moment from "moment"
 
-import { CoachingJournalItem } from "@screens/coaching-journal/coaching-journal.type"
 import { useStores } from "../../bootstrap/context.boostrap"
 
 import { dimensions } from "@config/platform.config"
 import { debounce } from "lodash";
-import { images } from "@assets/images";
-import { ExistingCoacheeModel, FeedbackCommitmentModel, FeedbackUserDetailModel } from "app/store/store.feedback"
-import { ExistingCoacheeComponent } from "./components/existing-coachee-component"
+import { FeedbackCommitmentModel } from "app/store/store.feedback"
 
 import Modal from "react-native-modalbox"
 import { MoodComponent } from "@screens/homepage/components/mood-component"
-import { FeedbackRequestListComponent } from "./components/feedback-request-list-component"
-import { IconClose } from "@assets/svgs"
-import { RED100 } from "@styles/Color"
-import { spacing } from "@theme/spacing"
-import Spinner from 'react-native-loading-spinner-overlay';
-import { EmptyList } from "./components/empty-list"
 import { Formik } from "formik"
+import Spinner from "react-native-loading-spinner-overlay"
 
 type ChoiceItemType = {
     id: string
@@ -38,30 +29,6 @@ export type feedbackCommitmentForm = {
     commitment: string
 }
 
-
-const EXAMPLE_DATA: Array<ChoiceItemType> = [
-    {
-        id: '0',
-        title: 'Dalam skala 1 - 5, seberapa baik saya sudah membangun  return <Text type={\'body\'} style={{ textAlign: \'center\' }}> rapport </Text>atau kedekatan di awal sesi?',
-        choice: 0,
-    },
-    {
-        id: '1',
-        title: '“Dalam skala 1 - 5, seberapa baik saya sudah membantu coachee menentukan outcome?”',
-        choice: 0,
-    },
-    {
-        id: '2',
-        title: '“Dalam skala 1 - 5, seberapa baik saya sudah mempraktekan active listening atau mendengar aktif saat sesi berlangsung?”',
-        choice: 0,
-    },
-    {
-        id: '3',
-        title: '“Dalam skala 1 - 5, seberapa baik saya sudah mengajukan powerful questions atau pertanyaan yang menggugah pada saat sesi berlangsung?”',
-        choice: 0
-    }
-]
-
 const MOCK_FEEDBACK_COMMITMENT = {
     "id": "41ed5bb2-8656-4e3d-95df-8e3a04e41090",
     "feedbackUserId": "6002192f-b931-464d-b893-bac97874f2a6",
@@ -72,18 +39,19 @@ const MOCK_FEEDBACK_COMMITMENT = {
     "fuc_feedback_user_id": "6002192f-b931-464d-b893-bac97874f2a6"
 }
 
-
 const FeedbackCommitment: FC<StackScreenProps<NavigatorParamList, "feedbackCommitment">> =
     observer(({ navigation, route }) => {
 
         const { feedbackUserId } = route.params
         const [feedbackUserCommitment, setFeedbackUserCommitment] = useState<FeedbackCommitmentModel>()
+        const [isCommitmentEmpty, setIsCommitmentEmpty] = useState<boolean>(false)
 
         const feedbackCommitmentInitialForm: feedbackCommitmentForm = {
             commitment: '',
         }
 
         const [errorMessage, setErrorMessage] = useState<string>('')
+        const [isCommitmentError, setIsCommitmentError] = useState<boolean>(false)
 
         const [, forceUpdate] = useReducer((x) => x + 1, 0)
         const { mainStore, feedbackStore } = useStores()
@@ -95,7 +63,6 @@ const FeedbackCommitment: FC<StackScreenProps<NavigatorParamList, "feedbackCommi
         const [modalTitle, setModalTitle] = useState<string>("")
         const [modalDesc, setModalDesc] = useState<string>("")
         const [modalIcon, setModalIcon] = useState("senang")
-        const [modalType, setModalType] = useState<string>("")
 
 
         const setModalContent = (title: string, desc: string, icon: string) => {
@@ -106,10 +73,6 @@ const FeedbackCommitment: FC<StackScreenProps<NavigatorParamList, "feedbackCommi
 
         const toggleModal = (value: boolean) => {
             setModalVisible(value)
-            if (!value) {
-                resetSelectedIndicator()
-                setModalType("")
-            }
         }
 
         const goBack = () => {
@@ -120,29 +83,33 @@ const FeedbackCommitment: FC<StackScreenProps<NavigatorParamList, "feedbackCommi
             await feedbackStore.clearFeedbackCommitment()
             await feedbackStore.getFeedbackCommitment(feedbackUserId)
 
-            console.log(`timeout loadFeedbackCommitment , ${feedbackStore.feedbackCommitment}`)
+            console.log(`+-+-+-+timeout loadFeedbackCommitment , ${feedbackStore.feedbackCommitment}`)
             setInitialLoading(false)
             feedbackStore.setRefreshData(false)
             forceUpdate()
+
+            if (feedbackStore.feedbackCommitment !== null) {
+                feedbackCommitmentInitialForm.commitment = feedbackStore.feedbackCommitment.commitment
+                setFeedbackUserCommitment(feedbackStore.feedbackCommitment)
+                setIsCommitmentEmpty(false)
+            } else {
+                setIsCommitmentEmpty(true)
+            }
         }, 500)
 
         useEffect(() => {
             loadFeedbackCommitment()
         }, [feedbackUserId])
 
-
-        const resetSelectedIndicator = () => {
-            setSelectedPreviousFeedbackUserByCoachee("")
-            setSelectedPreviousFeedbackUser("")
-            setSelectedExistingCoachee("")
-        }
-
         useEffect(() => {
-            if (feedbackStore.feedbackCommitment !== null) {
-                feedbackCommitmentInitialForm.commitment = feedbackStore.feedbackCommitment.commitment
-                setFeedbackUserCommitment(feedbackStore.feedbackCommitment)
-            }
+
         }, [feedbackStore.getFeedbackCommitmentSucceed, feedbackUserCommitment])
+
+        // useEffect(() => {
+        //     console.log('feedbackStore.messageCreateFeedbackCommitment ---- ', feedbackStore.messageCreateFeedbackCommitment)
+        //     console.log('feedbackStore.createFeedbackCommitmentSucceed ', feedbackStore.createFeedbackCommitmentSucceed)
+
+        // }, [])
 
         const renderNotificationModal = () => {
             return (
@@ -180,9 +147,50 @@ const FeedbackCommitment: FC<StackScreenProps<NavigatorParamList, "feedbackCommi
 
 
         const closeNotificationModal = () => {
-            feedbackStore.clearRequestFeedback()
+            // feedbackStore.clearRequestFeedback()
             toggleModal(false)
         }
+
+        const submitFeedbackCommitment = useCallback(async (data: feedbackCommitmentForm) => {
+
+            if (!data.commitment) {
+                setIsCommitmentError(true)
+                return
+            } else {
+                setIsCommitmentError(false)
+            }
+
+            feedbackStore.formReset()
+            console.log('data ', {
+                fu_id: feedbackUserId,
+                commitment: data.commitment
+
+            })
+            await feedbackStore.createFeedbackCommitment({
+                fu_id: feedbackUserId,
+                commitment: data.commitment
+            });
+
+            // if (feedbackStore.errorCode === null) {
+            //     // feedStore.formReset()
+            //     // await feedStore.getListFeeds()
+
+            // } else {
+            //     setErrorMessage(feedbackStore.errorMessage)
+            //     console.log(feedbackStore.errorCode, ' : ', feedbackStore.errorMessage)
+            // }
+
+            if (feedbackStore.messageCreateFeedbackCommitment == "Success" || feedbackStore.errorCode === null) {
+                // resetSelectedIndicator()
+                feedbackStore.setRefreshData(true)
+                setModalContent("Sukses!", "Komitmen telah sukses disimpan!", "senang")
+                toggleModal(true)
+                loadFeedbackCommitment()
+            } else {
+                setModalContent("Ada Kesalahan!", "Ups! Sepertinya ada kesalahan!\nSilahkan coba lagi!", "sedih")
+                toggleModal(true)
+            }
+        }, [feedbackStore.errorCode])
 
         return (
             <VStack
@@ -199,7 +207,7 @@ const FeedbackCommitment: FC<StackScreenProps<NavigatorParamList, "feedbackCommi
                             {/* <Spacer height={Spacing[32]} /> */}
                             <VStack top={Spacing[8]} horizontal={Spacing[0]} bottom={Spacing[12]}>
 
-                                <Formik initialValues={feedbackCommitmentInitialForm} onSubmit={() => { }}>
+                                <Formik initialValues={feedbackCommitmentInitialForm} onSubmit={submitFeedbackCommitment}>
                                     {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => (
                                         <VStack top={Spacing[8]} horizontal={Spacing[0]} bottom={Spacing[12]} style={[Layout.heightFull, { justifyContent: 'space-between' }]}>
                                             <VStack top={Spacing[12]}>
@@ -209,12 +217,14 @@ const FeedbackCommitment: FC<StackScreenProps<NavigatorParamList, "feedbackCommi
                                                         agar kamu akan terus berkembang kedepannya.</Text>
                                                 </Text>
 
-                                                {/* { && */}
-                                                <Spacer height={Spacing[12]} />
-                                                <Text type={"warning"} style={{ textAlign: "center" }}>
-                                                    Ups! Sepertinya ada kolom yang belum diisi! Silahkan dicek kembali dan isi semua kolom yang tersedia!
-                                                </Text>
-                                                {/* } */}
+                                                {isCommitmentError &&
+                                                    <>
+                                                        <Spacer height={Spacing[12]} />
+                                                        <Text type={"warning"} style={{ textAlign: "center" }}>
+                                                            Ups! Sepertinya ada kolom yang belum diisi! Silahkan dicek kembali dan isi semua kolom yang tersedia!
+                                                        </Text>
+                                                    </>
+                                                }
 
                                                 <Spacer height={Spacing[12]} />
                                                 <Text type={"body"} style={{ textAlign: "center" }}>
@@ -225,34 +235,36 @@ const FeedbackCommitment: FC<StackScreenProps<NavigatorParamList, "feedbackCommi
                                                 <TextField
                                                     value={values.commitment}
                                                     style={{ paddingTop: 0, textAlign: "left" }}
-                                                    inputStyle={{ minHeight: Spacing[144], textAlign: 'left', paddingLeft: Spacing[12], borderColor: Colors.ABM_DARK_BLUE }}
+                                                    inputStyle={isCommitmentEmpty ?
+                                                        (isCommitmentError ? { minHeight: Spacing[144], textAlign: 'left', paddingLeft: Spacing[12], borderColor: Colors.MAIN_RED } :
+                                                            { minHeight: Spacing[144], textAlign: 'left', paddingLeft: Spacing[12], borderColor: Colors.ABM_DARK_BLUE }) :
+                                                        { minHeight: Spacing[144], textAlign: 'left', paddingLeft: Spacing[12], borderColor: Colors.ABM_DARK_BLUE, backgroundColor: Colors.ABM_BG_BLUE }}
                                                     isRequired={true}
                                                     secureTextEntry={false}
                                                     isTextArea={true}
                                                     onChangeText={handleChange("commitment")}
-                                                    // onChangeText={(value) => setDescription(value)}
+                                                    isError={isCommitmentError}
                                                     charCounter={true}
                                                     maxChar={2500}
+                                                    editable={isCommitmentEmpty}
                                                 />
                                             </VStack>
-                                            {/* <Text type={"warning"} style={{ textAlign: "center" }}>
-                                                {errorMessage}
-                                            </Text> */}
-                                            <HStack>
-                                                <Spacer />
-                                                <Button
-                                                    type={"primary-dark"}
-                                                    text={"Simpan Komitmen"}
-                                                    style={{ borderRadius: Spacing[10], paddingHorizontal: Spacing[12], paddingVertical: Spacing[14] }}
-                                                    textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
-                                                    onPress={handleSubmit}
-                                                />
-                                                <Spacer />
-                                            </HStack>
+                                            {isCommitmentEmpty &&
+                                                <HStack>
+                                                    <Spacer />
+                                                    <Button
+                                                        type={"primary-dark"}
+                                                        text={"Simpan Komitmen"}
+                                                        style={{ borderRadius: Spacing[10], paddingHorizontal: Spacing[12], paddingVertical: Spacing[14] }}
+                                                        textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
+                                                        onPress={handleSubmit}
+                                                    />
+                                                    <Spacer />
+                                                </HStack>
+                                            }
                                             <Spacer height={Spacing[32]} />
                                         </VStack>
                                     )}
-
                                 </Formik>
                             </VStack>
 
@@ -264,7 +276,7 @@ const FeedbackCommitment: FC<StackScreenProps<NavigatorParamList, "feedbackCommi
                     </VStack>
 
                 </SafeAreaView>
-
+                <Spinner visible={initialLoading || feedbackStore.isLoading} textContent={"Memuat..."} />
 
                 <Modal
                     onClosed={() => toggleModal(false)}
@@ -291,9 +303,8 @@ const FeedbackCommitment: FC<StackScreenProps<NavigatorParamList, "feedbackCommi
                             vertical={Spacing[24]}
                         >
                             <VStack horizontal={Spacing[24]} top={Spacing[12]} style={[Layout.widthFull, { justifyContent: "center" }]}>
-                                {modalType === 'notification' ? renderNotificationModal() : null}
+                                {renderNotificationModal()}
                             </VStack>
-                            {/* {modalType === 'notification' ? null : renderPreviousFeedbackDatesModal()} */}
                         </VStack>
                     </View>
                 </Modal>

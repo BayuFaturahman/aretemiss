@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useReducer, useState, useEffect } from "react"
-import { ActivityIndicator, FlatList, ImageBackground, RefreshControl, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, FlatList, ImageBackground, RefreshControl, SafeAreaView, StyleSheet, TouchableOpacity, View } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Text, BackNavigation, Button } from "@components"
@@ -9,7 +9,6 @@ import Spacer from "@components/spacer"
 import { Colors, Layout, Spacing } from "@styles"
 import moment from "moment"
 
-import { CoachingJournalItem } from "@screens/coaching-journal/coaching-journal.type"
 import { useStores } from "../../bootstrap/context.boostrap"
 
 import { dimensions } from "@config/platform.config"
@@ -22,7 +21,6 @@ import Modal from "react-native-modalbox"
 import { MoodComponent } from "@screens/homepage/components/mood-component"
 import { FeedbackRequestListComponent } from "./components/feedback-request-list-component"
 import { IconClose } from "@assets/svgs"
-import { RED100 } from "@styles/Color"
 import { spacing } from "@theme/spacing"
 import Spinner from 'react-native-loading-spinner-overlay';
 import { EmptyList } from "./components/empty-list"
@@ -98,97 +96,7 @@ const MOCK_PREVIOUS_FEEDBACK: FeedbackUserDetailModel[] = [
     "fu_updated_at": "2023-06-12T13:24:28.000Z",
     "fu_deleted_at": null
   },
-  // {
-  //   "fu_id": "1dd27874-2fff-4972-ada8-5b7528c419ac",
-  //   "fu_q1": 3,
-  //   "fu_q2": 3,
-  //   "fu_q3": 2,
-  //   "fu_q4": 4,
-  //   "from": "coachee",
-  //   "fu_coach_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
-  //   "fu_coachee_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
-  //   "fu_created_at": "2023-06-11T17:31:14.000Z",
-  //   "fu_updated_at": "2023-06-11T17:31:14.000Z",
-  //   "fu_deleted_at": null
-  // },
-  // {
-  //   "fu_id": "9f201037-5095-4d9d-956a-9a9229d1b375",
-  //   "fu_q1": 1,
-  //   "fu_q2": 3,
-  //   "fu_q3": 3,
-  //   "fu_q4": 3,
-  //   "from": "coachee",
-  //   "fu_coach_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
-  //   "fu_coachee_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
-  //   "fu_created_at": "2023-06-11T14:54:08.000Z",
-  //   "fu_updated_at": "2023-06-11T14:54:08.000Z",
-  //   "fu_deleted_at": null
-  // },
-  // {
-  //   "fu_id": "e808f925-2572-42b0-8edd-02c5c1922e06",
-  //   "fu_q1": 3,
-  //   "fu_q2": 3,
-  //   "fu_q3": 3,
-  //   "fu_q4": 3,
-  //   "from": "coachee",
-  //   "fu_coach_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
-  //   "fu_coachee_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
-  //   "fu_created_at": "2023-06-09T17:33:37.000Z",
-  //   "fu_updated_at": "2023-06-09T17:33:37.000Z",
-  //   "fu_deleted_at": null
-  // },
-  // {
-  //   "fu_id": "eb258cca-0ac3-401e-80e9-18851535da02",
-  //   "fu_q1": 3,
-  //   "fu_q2": 3,
-  //   "fu_q3": 3,
-  //   "fu_q4": 3,
-  //   "from": "coachee",
-  //   "fu_coach_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
-  //   "fu_coachee_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
-  //   "fu_created_at": "2023-06-09T17:33:29.000Z",
-  //   "fu_updated_at": "2023-06-09T17:33:29.000Z",
-  //   "fu_deleted_at": null
-  // },
-  // {
-  //   "fu_id": "b5b80008-fd12-4598-9ffa-955d42f46c86",
-  //   "fu_q1": 4,
-  //   "fu_q2": 4,
-  //   "fu_q3": 4,
-  //   "fu_q4": 4,
-  //   "from": "coachee",
-  //   "fu_coach_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
-  //   "fu_coachee_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
-  //   "fu_created_at": "2023-06-09T17:33:22.000Z",
-  //   "fu_updated_at": "2023-06-09T17:33:22.000Z",
-  //   "fu_deleted_at": null
-  // },
-  // {
-  //   "fu_id": "475e8de8-dd3a-421b-b068-74cf57c20e3f",
-  //   "fu_q1": 2,
-  //   "fu_q2": 2,
-  //   "fu_q3": 4,
-  //   "fu_q4": 4,
-  //   "from": "coachee",
-  //   "fu_coach_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
-  //   "fu_coachee_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
-  //   "fu_created_at": "2023-06-09T17:32:53.000Z",
-  //   "fu_updated_at": "2023-06-09T17:32:53.000Z",
-  //   "fu_deleted_at": null
-  // },
-  // {
-  //   "fu_id": "224e8a6b-f559-45bb-b79b-2060dad74f01",
-  //   "fu_q1": 5,
-  //   "fu_q2": 4,
-  //   "fu_q3": 2,
-  //   "fu_q4": 1,
-  //   "from": "coachee",
-  //   "fu_coach_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
-  //   "fu_coachee_id": "61d8bf7f-777c-4227-9050-82ef768611d7",
-  //   "fu_created_at": "2023-06-09T17:32:17.000Z",
-  //   "fu_updated_at": "2023-06-09T17:32:17.000Z",
-  //   "fu_deleted_at": null
-  // }
+
 ]
 
 const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
@@ -248,13 +156,17 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
 
     const loadExistingCoachee = async (page: number) => {
       await feedbackStore.getListExistingCoachee(page)
+      setExistingCoacheeData(feedbackStore.listExistingCoachees)
     }
 
     const loadFeedbackUserByCoachee = async (coacheeId: string, page: number) => {
-      await feedbackStore.getListFeedbackUserByCoachee(coacheeId, page)
-      setListFeedbackUser(feedbackStore.listFeedbackUserByCoachee)
-      console.log(`selectedPreviousFeedbackUserByCoachee: `, selectedPreviousFeedbackUserByCoachee)
-      console.log(`feedbackStore.listFeedbackUserByCoachee: `, feedbackStore.listFeedbackUserByCoachee)
+      console.log('coacheeId: ', coacheeId)
+      if (coacheeId !== '') {
+        await feedbackStore.getListFeedbackUserByCoachee(coacheeId, page)
+        setListFeedbackUser(feedbackStore.listFeedbackUserByCoachee)
+        console.log(`selectedPreviousFeedbackUserByCoachee: `, selectedPreviousFeedbackUserByCoachee)
+        console.log(`feedbackStore.listFeedbackUserByCoachee: `, feedbackStore.listFeedbackUserByCoachee)
+      }
     }
 
     const requestFeedbackToCoachee = async () => {
@@ -293,9 +205,6 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       console.log('onLoadMoreFeedbackUserByCoachee ', currentPageListFeedbackUserByCoachee)
       if (!feedbackStore.isLoadingListFeedbackUserByCoachee) {
         console.log("load more feedback user by coachee ", currentPageListFeedbackUserByCoachee)
-        // await loadExistingCoachee(currentPageExistingCoachee).then(r =>
-        //   setCurrentPageExistingCoachee(currentPageExistingCoachee + 1))
-
         await loadFeedbackUserByCoachee(selectedPreviousFeedbackUserByCoachee, currentPageListFeedbackUserByCoachee)
         setCurrentPageListFeedbackUserByCoachee(currentPageListFeedbackUserByCoachee + 1)
       }
@@ -338,18 +247,29 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       (selectedId) => {
         console.log(`selectedId for requestFeedback: ${selectedId}`)
         requestFeedbackToCoachee()
+
+        setModalType("notification")
+        if (feedbackStore.messageRequestFeedback == "Success" || feedbackStore.errorCode === null) {
+          resetSelectedIndicator()
+          feedbackStore.setRefreshData(true)
+          setModalContent("Sukses!", "Feedback telah sukses direquest!", "senang")
+        } else {
+          setModalContent("Ada Kesalahan!", "Ups! Sepertinya ada kesalahan!\nSilahkan coba lagi!", "sedih")
+        }
+        toggleModal(true)
+
       },
       [selectedExistingCoachee],
     )
 
     const openListPreviousFeedbackDateModal = useCallback(
-      (selectedId) => {
-        feedbackStore.clearFeedbackUserByCoachee()
-        setSelectedPreviousFeedbackUserByCoachee(selectedId)
-        // console.log(`selectedId for requestFeedback: ${selectedId}`)
-        loadFeedbackUserByCoachee(selectedId, 1)
-        setModalType("previousFeedbackDates")
-        toggleModal(true)
+      async (selectedId) => {
+        if (selectedId !== '' && selectedId !== null) {
+          feedbackStore.clearFeedbackUserByCoachee()
+          await loadFeedbackUserByCoachee(selectedId, 1)
+          setModalType("previousFeedbackDates")
+          toggleModal(true)
+        }
       },
       [selectedExistingCoachee],
     )
@@ -372,60 +292,36 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
     }
 
     const firstLoadExistingCoachee = debounce(async () => {
+      console.log(`firstLoadExistingCoachee`)
       await feedbackStore.clearFeedback()
-      await loadExistingCoachee(1)
 
-      console.log(`timeout feedbackStore.listExistingCoachees , ${feedbackStore.listExistingCoachees}`)
+      await loadExistingCoachee(1)
       // feedbackStore.listExistingCoachees = MOCK_EXISTING_COACHEE
       setInitialLoading(false)
       feedbackStore.setRefreshData(false)
       forceUpdate()
+
     }, 500)
 
     const firstLoadFeedbackUserByCoachee = debounce(async () => {
+      console.log(`firstLoadFeedbackUserByCoachee`)
       await feedbackStore.clearFeedbackUserByCoachee()
 
-      setTimeout(() => {
-        loadFeedbackUserByCoachee(selectedPreviousFeedbackUser, 1)
-
-        console.log(`timeout feedbackStore.listExistingCoachees , ${feedbackStore.listExistingCoachees}`)
+      setTimeout(async () => {
+        await loadFeedbackUserByCoachee(selectedPreviousFeedbackUser, 1)
         // feedbackStore.listExistingCoachees = MOCK_EXISTING_COACHEE
         setInitialLoading(false)
         feedbackStore.setRefreshData(false)
         forceUpdate()
-      }, 1500);
+      }, 500);
 
     }, 500)
 
     useEffect(() => {
       firstLoadExistingCoachee()
       console.log('use effect firstLoadExistingCoachee')
-      setExistingCoacheeData(feedbackStore.listExistingCoachees)
+      // setExistingCoacheeData(feedbackStore.listExistingCoachees)
     }, [])
-
-    useEffect(() => {
-      if (feedbackStore.listExistingCoachees) {
-        setExistingCoacheeData(feedbackStore.listExistingCoachees)
-      }
-
-      console.log(`existingCoacheeData , ${existingCoacheeData}`)
-      console.log(`feedbackStore.listExistingCoachees , ${feedbackStore.listExistingCoachees}`)
-    }, [feedbackStore.listExistingCoachees, feedbackStore.getExistingCoacheeSucceed])
-
-    useEffect(() => {
-      console.log('USE EFFECT feedbackStore.messageRequestFeedback', feedbackStore.messageRequestFeedback)
-      if (feedbackStore.messageRequestFeedback == "Success") {
-        resetSelectedIndicator()
-        feedbackStore.resetCoachingStore()
-        feedbackStore.setRefreshData(true)
-
-
-        setModalType("notification")
-        setModalContent("Sukses!", "Feedback telah sukses direquest!", "senang")
-        toggleModal(true)
-      }
-    }, [feedbackStore.messageRequestFeedback, feedbackStore.requestFeedbackUserSucceed])
-
 
     const renderExistingCoachee = () => {
       return (
@@ -441,7 +337,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
               data={existingCoacheeData}
               keyExtractor={item => item.coachee_id}
               showsVerticalScrollIndicator={true}
-              ListEmptyComponent={() => initialLoading ? <Spinner visible={feedbackStore.isLoadingExistingCoachee}/> : <EmptyList navigateTo={goBack} />}
+              ListEmptyComponent={() => initialLoading ? <Spinner visible={feedbackStore.isLoadingExistingCoachee} /> : <EmptyList navigateTo={goBack} />}
               // ListEmptyComponent={() => 
               //   {!initialLoading &&
 
@@ -602,7 +498,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
                 </TouchableOpacity>
               )}
               onEndReached={onLoadMoreFeedbackUserByCoachee}
-              onEndReachedThreshold={5}
+              onEndReachedThreshold={0.2}
               style={{ paddingVertical: Spacing[2], paddingHorizontal: 0, width: "70%" }}
             />
             <Spacer />

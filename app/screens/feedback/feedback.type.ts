@@ -22,3 +22,7 @@ export type FeedbackUserDetail = {
   has_commitment: number
 }
 
+export type CreateCommitmentType = {
+  fu_id: string
+  commitment: string
+}

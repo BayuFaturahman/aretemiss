@@ -55,6 +55,12 @@ export interface FeedbackCommitmentResponse {
   }
 }
 
+export interface CreateFeedbackCommitmentesponse {
+  token: string
+  message: string
+  data: {}
+}
+
 export interface CreateJournalResponse {
   errorCode: number
   message: string
@@ -73,6 +79,8 @@ export type FeedbackUserDetailResult = { kind: "form-error"; response: ErrorForm
 export type RequestFeedbackUserResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: RequestFeedbackUserResponse } | GeneralApiProblem
 
 export type FeedbackCommitmentResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: FeedbackCommitmentResponse } | GeneralApiProblem
+
+export type CreateFeedbackCommitmentResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreateFeedbackCommitmentesponse } | GeneralApiProblem
 
 export type CreateJournalResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreateJournalResponse } | GeneralApiProblem
 

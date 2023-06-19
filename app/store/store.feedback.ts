@@ -9,7 +9,7 @@ import { AuthApi } from "@services/api/auth/auth-api";
 import { Api } from "@services/api";
 import { JournalEntryType } from "@screens/coaching-journal/new-journal-entry";
 import { FeedbackApi } from '@services/api/feedback/feedback-api';
-import { FeedbackUserDetail } from '@screens/feedback/feedback.type';
+import { CreateCommitmentType, FeedbackUserDetail } from '@screens/feedback/feedback.type';
 
 // #region MAIN CLASS
 export type FeedbackJLSixth = {
@@ -99,6 +99,10 @@ export type FeedbackCommitmentModel = {
   fuc_feedback_user_id: string
 }
 
+export interface ErrorFormResponse {
+  errorCode: number
+  message: string
+}
 
 
 const EMPTY_FEEDBACK_USER_DETAIL = {
@@ -159,6 +163,9 @@ export default class FeedbackStore {
   feedbackUserDetail: FeedbackUserDetail
   feedbackCommitment: FeedbackCommitmentModel
 
+  messageRequestFeedback: string
+  messageCreateFeedbackCommitment: string
+
   my_feedback: FeedbackJLSixth
   coachee_feedback: FeedbackJLSixth
   same_feedback: FeedbackJLFive
@@ -175,7 +182,8 @@ export default class FeedbackStore {
   messageCreateJournal: string
   messageUpdatedJournal: string
   messageCreateFeedback: string
-  messageRequestFeedback: string
+
+
 
   detailId: string
 
@@ -198,7 +206,9 @@ export default class FeedbackStore {
     this.messageUpdatedJournal = ''
     this.messageCreateFeedback = ''
 
+
     this.messageRequestFeedback = ''
+    this.messageCreateFeedbackCommitment = ''
 
     this.isFormCoach = false
     this.refreshData = false
@@ -250,7 +260,7 @@ export default class FeedbackStore {
     this.isLoading = false
   }
 
-  async getListFeedbackUserByCoachee(coacheeId: string, page = 1, limit = 3) {
+  async getListFeedbackUserByCoachee(coacheeId: string, page = 1, limit = 10) {
     this.isLoadingListFeedbackUserByCoachee = true
     try {
       const result = await this.feedbackApi.getListFeedbackUserByCoachee(coacheeId, page, limit)
@@ -376,6 +386,36 @@ export default class FeedbackStore {
     this.isLoading = false
   }
 
+  async createFeedbackCommitment(data: CreateCommitmentType) {
+    this.isLoading = true
+    console.log('createFeedbackCommitment ', data)
+
+    const result = await this.feedbackApi.createFeedbackCommitment(data)
+    // console.log('requestFeedbackUser result', result)
+    if (result.kind === "ok") {
+      this.createFeedbackCommitmentSucceed(result.response.message)
+    } else if (result.kind === 'form-error') {
+      // console.log('requestFeedbackUser failed')
+      this.formError(result.response.response)
+      // console.log(result.response.errorCode)
+      this.feedbackFailed(result.response.errorCode)
+    } else if (result.kind === 'unauthorized') {
+      console.log('token expired requestFeedbackUser')
+      // console.log(result)
+      this.feedbackFailed(result.response.errorCode)
+    } else {
+      __DEV__ && console.tron.log(result.kind)
+    }
+
+  }
+
+  createFeedbackCommitmentSucceed(message: string) {
+    console.log('requestFeedbackUserSucceed ')
+    this.messageCreateFeedbackCommitment = message
+    this.formErrorCode = null
+    this.isLoading = false
+  }
+
   feedbackFailed(errorId: number) {
     this.formErrorCode = errorId
     this.isLoading = false
@@ -424,6 +464,17 @@ export default class FeedbackStore {
 
   setRefreshData(data: boolean) {
     this.refreshData = data
+  }
+
+  formError(data: ErrorFormResponse) {
+    this.errorCode = data.errorCode
+    this.errorMessage = data.message
+  }
+
+  formReset() {
+    this.errorCode = null
+    this.errorMessage = null
+    this.refreshData = false
   }
 
   async createJournal(
