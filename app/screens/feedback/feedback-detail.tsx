@@ -267,7 +267,7 @@ const FeedbackDetail: FC<StackScreenProps<NavigatorParamList, "feedbackDetail">>
                                     <Spacer />
                                     <VStack style={{ maxWidth: Spacing[256], minWidth: Spacing[96] + Spacing[12] }}>
                                         <Button
-                                            type={feedbackUserDetail.has_commitment === 0 ? "negative-white" : "primary"}
+                                            type={"primary"}
                                             text={"Komitmen Saya"}
                                             style={{
                                                 height: Spacing[42], paddingHorizontal: Spacing[8], alignItems: "center",
@@ -277,7 +277,6 @@ const FeedbackDetail: FC<StackScreenProps<NavigatorParamList, "feedbackDetail">>
                                             }}
                                             textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
                                             onPress={() => { }}
-                                            disabled={feedbackUserDetail.has_commitment === 0}
                                         />
                                     </VStack>
                                     <Spacer />

@@ -3,7 +3,7 @@ import { ApiResponse } from "apisauce"
 import { FeedbackDetail, FeedbackJLSixth } from "app/store/store.coaching";
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
-import { CreateJournalResult, ExistingCoacheeListResult, FeedbackDetailResult, FeedbackUserDetailListResult, JournalDetailResult, JournalListResult, ListFeedbackUserByCoacheeResult } from "./feedback-api.types";
+import { CreateJournalResult, ExistingCoacheeListResult, FeedbackDetailResult, FeedbackUserDetailListResult, JournalDetailResult, JournalListResult, ListFeedbackUserByCoacheeResult, RequestFeedbackUserResult } from "./feedback-api.types";
 
 export class FeedbackApi {
   private api: Api
@@ -176,6 +176,38 @@ export class FeedbackApi {
       const res = response.data.data
       return { kind: "ok", response: res }
     } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data" }
+    }
+  }
+
+
+  async requestFeedbackUser(coacheeId: string): Promise<RequestFeedbackUserResult> {
+    try {
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.post(
+        `/request-feedback`,
+        {
+          coachee_id: coacheeId
+        }
+      )
+      console.log('requestFeedbackUser response', response.data)
+      if (response.status === 400) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      console.log(e, 'line 150');
       __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data" }
     }

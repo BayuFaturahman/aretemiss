@@ -39,6 +39,12 @@ export interface FeedbackUserDetailResponse {
   }
 }
 
+export interface RequestFeedbackUserResponse {
+  token: string
+  message: string
+  data: {}
+}
+
 export interface CreateJournalResponse {
   errorCode: number
   message: string
@@ -53,6 +59,8 @@ export type ExistingCoacheeListResult = { kind: "form-error"; response: ErrorFor
 export type ListFeedbackUserByCoacheeResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: ListFeedbackUserByCoacheeResponse } | GeneralApiProblem
 
 export type FeedbackUserDetailResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: FeedbackUserDetailResponse } | GeneralApiProblem
+
+export type RequestFeedbackUserResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: RequestFeedbackUserResponse } | GeneralApiProblem
 
 export type CreateJournalResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreateJournalResponse } | GeneralApiProblem
 

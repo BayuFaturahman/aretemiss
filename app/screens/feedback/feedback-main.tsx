@@ -25,6 +25,7 @@ import { IconClose } from "@assets/svgs"
 import { RED100 } from "@styles/Color"
 import { spacing } from "@theme/spacing"
 import Spinner from 'react-native-loading-spinner-overlay';
+import { EmptyList } from "./components/empty-list"
 
 const MOCK_EXISTING_COACHEE: ExistingCoacheeModel[] = [
   {
@@ -236,6 +237,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       setModalVisible(value)
       if (!value) {
         resetSelectedIndicator()
+        setModalType("")
       }
     }
 
@@ -249,12 +251,16 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       await feedbackStore.getListExistingCoachee(page)
     }
 
-
     const loadFeedbackUserByCoachee = async (coacheeId: string, page: number) => {
       await feedbackStore.getListFeedbackUserByCoachee(coacheeId, page)
       setListFeedbackUser(feedbackStore.listFeedbackUserByCoachee)
       console.log(`selectedPreviousFeedbackUserByCoachee: `, selectedPreviousFeedbackUserByCoachee)
       console.log(`feedbackStore.listFeedbackUserByCoachee: `, feedbackStore.listFeedbackUserByCoachee)
+    }
+
+    const requestFeedbackToCoachee = async () => {
+      console.log('selectedPreviousFeedbackUser ', selectedExistingCoachee)
+      await feedbackStore.requestFeedbackUser(selectedExistingCoachee)
     }
 
     const onRefresh = React.useCallback(async () => {
@@ -329,20 +335,10 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       [selectedFeedbackRequest],
     )
 
-    // const loadListFeedbackUser = async (page: number) => {
-    //   setListFeedbackDetail(MOCK_PREVIOUS_FEEDBACK)
-    // }
-
     const requestFeedback = useCallback(
       (selectedId) => {
-        if (isModalVisible) {
-          // toggleModal(false)
-        }
         console.log(`selectedId for requestFeedback: ${selectedId}`)
-        setModalType("notification")
-        setModalContent("Sukses!", "Feedback telah sukses direquest!", "senang")
-        toggleModal(true)
-        // setSelectedActivities(selectedId)
+        requestFeedbackToCoachee()
       },
       [selectedExistingCoachee],
     )
@@ -375,7 +371,6 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       toggleModal(false)
       goToFeedbackDetail()
     }
-
 
     const firstLoadExistingCoachee = debounce(async () => {
       await feedbackStore.clearFeedback()
@@ -418,6 +413,20 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       console.log(`feedbackStore.listExistingCoachees , ${feedbackStore.listExistingCoachees}`)
     }, [feedbackStore.listExistingCoachees, feedbackStore.getExistingCoacheeSucceed])
 
+    useEffect(() => {
+      console.log('USE EFFECT feedbackStore.messageRequestFeedback', feedbackStore.messageRequestFeedback)
+      if (feedbackStore.messageRequestFeedback == "Success") {
+        resetSelectedIndicator()
+        feedbackStore.resetCoachingStore()
+        feedbackStore.setRefreshData(true)
+
+
+        setModalType("notification")
+        setModalContent("Sukses!", "Feedback telah sukses direquest!", "senang")
+        toggleModal(true)
+      }
+    }, [feedbackStore.messageRequestFeedback, feedbackStore.requestFeedbackUserSucced])
+
 
     const renderExistingCoachee = () => {
       return (
@@ -433,11 +442,11 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
               data={existingCoacheeData}
               keyExtractor={item => item.coachee_id}
               showsVerticalScrollIndicator={true}
+              ListEmptyComponent={() =>
+                <EmptyList navigateTo={goBack} />
+              }
               renderItem={({ item, index }) => (
                 <TouchableOpacity animationDuration={500}>
-                  {/* <VStack style={{ borderTopWidth: index % 4 === 0 ? Spacing[0] : Spacing[1], paddingVertical: Spacing[12] }}>
-                    <Text>{item.user_fullname}</Text>
-                  </VStack> */}
                   <ExistingCoacheeComponent
                     data={item}
                     index={index}
@@ -456,7 +465,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
                 // existingCoacheeData.length === 0 && !initialLoading && !feedbackStore.isLoadingExistingCoachee ? null : (
                 <Spinner
                   visible={feedbackStore.isLoadingExistingCoachee}
-                  
+
                 // textContent={'Memuat...'}
                 // textStyle={styles.spinnerTextStyle}
                 />
@@ -490,6 +499,9 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
               data={MOCK_EXISTING_COACHEE}
               keyExtractor={item => item.coachee_id + 'feed'}
               showsVerticalScrollIndicator={false}
+              ListEmptyComponent={() =>
+                <EmptyList navigateTo={goBack} />
+              }
               renderItem={({ item, index }) => (
 
                 <TouchableOpacity animationDuration={500}>
@@ -550,7 +562,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
                 text={"Kembali ke Menu Utama\nFeedback"}
                 style={{ height: Spacing[54], paddingHorizontal: Spacing[8] }}
                 textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
-                onPress={toggleModal.bind(this, false)}
+                onPress={closeNotificationModal}
               />
             </VStack>
             <Spacer />
@@ -616,6 +628,11 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
           </HStack>
         </VStack>
       )
+    }
+
+    const closeNotificationModal = () => {
+      feedbackStore.clearRequestFeedback()
+      toggleModal(false)
     }
 
     return (
@@ -691,8 +708,6 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
         </Modal>
 
       </VStack>
-
-
     )
   })
 

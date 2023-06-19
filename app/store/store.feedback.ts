@@ -153,6 +153,7 @@ export default class FeedbackStore {
   messageCreateJournal: string
   messageUpdatedJournal: string
   messageCreateFeedback: string
+  messageRequestFeedback: string
 
   detailId: string
 
@@ -174,6 +175,8 @@ export default class FeedbackStore {
     this.messageCreateJournal = ''
     this.messageUpdatedJournal = ''
     this.messageCreateFeedback = ''
+
+    this.messageRequestFeedback = ''
 
     this.isFormCoach = false
     this.refreshData = false
@@ -319,6 +322,28 @@ export default class FeedbackStore {
     this.isLoading = false
   }
 
+  async requestFeedbackUser(coacheeId: string) {
+    this.isLoading = true
+    console.log('requestFeedbackUser ', coacheeId)
+
+    const result = await this.feedbackApi.requestFeedbackUser(coacheeId)
+    console.log('requestFeedbackUser result', result)
+    if (result.kind === "ok") {
+      this.requestFeedbackUserSucced(result.response.message)
+    } else if (result.kind === 'form-error') {
+      this.coachingFailed(result.response.errorCode)
+    } else {
+      __DEV__ && console.tron.log(result.kind)
+    }
+  }
+
+  requestFeedbackUserSucced(message: string) {
+    console.log('requestFeedbackUserSucced ')
+    this.messageRequestFeedback = message
+    this.formErrorCode = null
+    this.isLoading = false
+  }
+
   feedbackFailed(errorId: number) {
     this.formErrorCode = errorId
     this.isLoading = false
@@ -355,6 +380,15 @@ export default class FeedbackStore {
     this.errorMessage = null
     this.formErrorCode = null
   }
+
+  async clearRequestFeedback() {
+    this.messageRequestFeedback = ''
+    this.isLoadingex = false
+    this.errorCode = null
+    this.errorMessage = null
+    this.formErrorCode = null
+  }
+
 
 
   setRefreshData(data: boolean) {
