@@ -76,6 +76,12 @@ const FeedbackDetail: FC<StackScreenProps<NavigatorParamList, "feedbackDetail">>
             navigation.goBack()
         }
 
+        const goToFeedbacCommitment = () => {
+            navigation.navigate("feedbackCommitment", {
+                feedbackUserId: feedbackUserDetail.id
+            })
+        }
+
         const loadFeedbackUserDetail = async () => {
             await feedbackStore.getFeedbackUserDetail(feedbackUserId)
         }
@@ -276,7 +282,7 @@ const FeedbackDetail: FC<StackScreenProps<NavigatorParamList, "feedbackDetail">>
 
                                             }}
                                             textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
-                                            onPress={() => { }}
+                                            onPress={goToFeedbacCommitment}
                                         />
                                     </VStack>
                                     <Spacer />

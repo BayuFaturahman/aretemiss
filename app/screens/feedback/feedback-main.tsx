@@ -201,7 +201,6 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
     const [listFeedbackRequest, setListFeedbacRequest] = useState<Array<ExistingCoacheeModel>>([])
 
 
-    const [coachingData, setCoachingData] = useState<Array<CoachingJournalItem>>([])
     const [selectedFeedbackRequest, setSelectedFeedbackRequest] = useState<string>("")
     const [selectedExistingCoachee, setSelectedExistingCoachee] = useState<string>("")
 
@@ -425,7 +424,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
         setModalContent("Sukses!", "Feedback telah sukses direquest!", "senang")
         toggleModal(true)
       }
-    }, [feedbackStore.messageRequestFeedback, feedbackStore.requestFeedbackUserSucced])
+    }, [feedbackStore.messageRequestFeedback, feedbackStore.requestFeedbackUserSucceed])
 
 
     const renderExistingCoachee = () => {
@@ -442,9 +441,12 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
               data={existingCoacheeData}
               keyExtractor={item => item.coachee_id}
               showsVerticalScrollIndicator={true}
-              ListEmptyComponent={() =>
-                <EmptyList navigateTo={goBack} />
-              }
+              ListEmptyComponent={() => initialLoading ? <Spinner visible={feedbackStore.isLoadingExistingCoachee}/> : <EmptyList navigateTo={goBack} />}
+              // ListEmptyComponent={() => 
+              //   {!initialLoading &&
+
+              //   }
+              // }
               renderItem={({ item, index }) => (
                 <TouchableOpacity animationDuration={500}>
                   <ExistingCoacheeComponent

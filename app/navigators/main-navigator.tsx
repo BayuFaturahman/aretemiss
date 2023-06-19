@@ -51,6 +51,7 @@ import {
 import feedbackMain from "@screens/feedback/feedback-main"
 import feedbackDetail from "@screens/feedback/feedback-detail"
 import { FeedbackUserDetailModel } from "app/store/store.feedback"
+import FeedbackCommitment from "@screens/feedback/feedback-commitment"
 
 const screens: AppRoute[] = [
   {
@@ -209,6 +210,10 @@ const screens: AppRoute[] = [
     name: "feedbackDetail",
     component: feedbackDetail,
   },
+  {
+    name: "feedbackCommitment",
+    component: FeedbackCommitment,
+  },
 ]
 
 export type NavigatorParamList = {
@@ -290,7 +295,7 @@ export type NavigatorParamList = {
   brainstormGroupList: undefined,
   newBrainstormsGroup: undefined
   sendEmail: {
-    title: string
+    title: string 
   },
   juaraQuizMain: undefined
   juaraQuizResult: {
@@ -299,6 +304,9 @@ export type NavigatorParamList = {
   },
   feedbackMain: undefined,
   feedbackDetail: {
+    feedbackUserId: string
+  }
+  feedbackCommitment: {
     feedbackUserId: string
   }
 }

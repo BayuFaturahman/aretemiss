@@ -1,7 +1,7 @@
 
 import { FeedbackDetail, JournalDetail, JournalModel } from "app/store/store.coaching"
 import { GeneralApiProblem } from "../api-problem"
-import { ExistingCoacheeModel, FeedbackUserDetailModel } from "app/store/store.feedback"
+import { ExistingCoacheeModel, FeedbackCommitmentModel, FeedbackUserDetailModel } from "app/store/store.feedback"
 
 
 export interface ErrorFormResponse {
@@ -45,6 +45,16 @@ export interface RequestFeedbackUserResponse {
   data: {}
 }
 
+export interface FeedbackCommitmentResponse {
+  token: string
+  message: string
+  data: FeedbackCommitmentModel
+  meta: {
+    total_pages: number
+    total_items: number
+  }
+}
+
 export interface CreateJournalResponse {
   errorCode: number
   message: string
@@ -61,6 +71,8 @@ export type ListFeedbackUserByCoacheeResult = { kind: "form-error"; response: Er
 export type FeedbackUserDetailResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: FeedbackUserDetailResponse } | GeneralApiProblem
 
 export type RequestFeedbackUserResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: RequestFeedbackUserResponse } | GeneralApiProblem
+
+export type FeedbackCommitmentResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: FeedbackCommitmentResponse } | GeneralApiProblem
 
 export type CreateJournalResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreateJournalResponse } | GeneralApiProblem
 
