@@ -11,28 +11,20 @@ import { ExistingCoacheeModel } from "app/store/store.feedback";
 type ExistingCoacheeItemRenderProps = {
   item: ExistingCoacheeModel
   index: number
-  selectedActivities: string
+  selectedCoachee: string
   onPressRequestFeedback(id: string): void
   onPressPreviousFeedback(): void
   onPressExistingCoachee(id: string): void
-  onPressNote(id: string, coach_id: string): void
-  onPressFeedback(id: string, coach_id: string): void
-  onPressNoteFeedback(id: string, coach_id: string): void
-  isHomepageComponent?: boolean
 }
 
 export const ExistingCoacheeItemRender = (
   {
     item,
     index,
-    selectedActivities,
+    selectedCoachee,
     onPressRequestFeedback = () => null,
     onPressPreviousFeedback = () => null,
     onPressExistingCoachee = () => null,
-    onPressNote = () => null,
-    onPressFeedback = () => null,
-    onPressNoteFeedback = () => null,
-    isHomepageComponent = false
   }: ExistingCoacheeItemRenderProps) => {
 
 
@@ -67,7 +59,7 @@ export const ExistingCoacheeItemRender = (
   return (
     <HStack>
 
-      {selectedActivities === item.coachee_id ? renderButtonTagged(item.is_button_disabled === 1, item.has_previous_feedback === 1, item.coachee_id) :
+      {selectedCoachee === item.coachee_id ? renderButtonTagged(item.is_button_disabled === 1, item.has_previous_feedback === 1, item.coachee_id) :
         <TouchableOpacity key={item.coachee_id} onPress={() => { onPressExistingCoachee(item.coachee_id) }} style={{ height: Spacing[42], borderTopWidth: index === 0 ? Spacing[0] : Spacing[1], width: '100%' }}>
           <Text type={"label"} style={{ lineHeight: Spacing[42] }}>{item.user_fullname}</Text>
         </TouchableOpacity>

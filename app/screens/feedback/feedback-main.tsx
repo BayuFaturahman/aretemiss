@@ -351,11 +351,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
                     onPressRequestFeedback={requestFeedback}
                     onPressExistingCoachee={holdExistingCoachee}
                     onPressPreviousFeedback={openListPreviousFeedbackDateModal}
-                    selectedActivities={selectedExistingCoachee}
-                    onPressNote={() => { }}
-                    onPressFeedback={() => { }}
-                    onPressNoteFeedback={() => { }}
-                    goToCoaching={() => { }}
+                    selectedCoachee={selectedExistingCoachee}
                   />
                 </TouchableOpacity>
               )}
