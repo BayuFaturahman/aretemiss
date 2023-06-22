@@ -99,6 +99,20 @@ export type FeedbackCommitmentModel = {
   fuc_feedback_user_id: string
 }
 
+export type RequestFeedbackUserModel = {
+  rfu_user_from_id: string
+  user_fullname: string
+}
+
+export type CreateFeedbackUserModel = {
+  q1: string
+  q2: string
+  q3: string
+  q4: string
+  coach_id: string
+  rfu_id: string
+}
+
 export interface ErrorFormResponse {
   errorCode: number
   message: string
@@ -111,7 +125,6 @@ const EMPTY_FEEDBACK_USER_DETAIL = {
   q2: 0,
   q3: 0,
   q4: 0,
-  q5: 0,
   from: '',
   coachId: '',
   coacheeId: '',
@@ -155,16 +168,19 @@ export default class FeedbackStore {
   journalDetail: JournalDetail
 
   isLoadingExistingCoachee: boolean
+  isLoadingListRequetsFeedbackUser: boolean
   isLoadingListFeedbackUserByCoachee: boolean
   isLoadingFeedbackUserDetail: boolean
   listExistingCoachees: ExistingCoacheeModel[]
   listFeedbackUserByCoachee: FeedbackUserDetailModel[]
+  listRequestFeedbackUser: RequestFeedbackUserModel[]
 
   feedbackUserDetail: FeedbackUserDetail
   feedbackCommitment: FeedbackCommitmentModel
 
   messageRequestFeedback: string
   messageCreateFeedbackCommitment: string
+  messageCreateFeedbackUser: string
 
   my_feedback: FeedbackJLSixth
   coachee_feedback: FeedbackJLSixth
@@ -205,6 +221,7 @@ export default class FeedbackStore {
     this.messageCreateJournal = ''
     this.messageUpdatedJournal = ''
     this.messageCreateFeedback = ''
+    this.messageCreateFeedbackUser = ''
 
 
     this.messageRequestFeedback = ''
@@ -217,7 +234,12 @@ export default class FeedbackStore {
     this.isLoadingExistingCoachee = false
     this.isLoadingListFeedbackUserByCoachee = false
     this.isLoadingFeedbackUserDetail = false
+    this.isLoadingListRequetsFeedbackUser = false
     this.isLoading = false
+
+    this.listExistingCoachees = []
+    this.listFeedbackUserByCoachee = []
+    this.listRequestFeedbackUser = []
 
     this.feedbackUserDetail = EMPTY_FEEDBACK_USER_DETAIL
     this.feedbackCommitment = EMPTY_FEEDBACK_COMMITMENT
@@ -333,21 +355,29 @@ export default class FeedbackStore {
     this.isLoading = true
     console.log('requestFeedbackUser ', coacheeId)
 
-    const result = await this.feedbackApi.requestFeedbackUser(coacheeId)
-    // console.log('requestFeedbackUser result', result)
-    if (result.kind === "ok") {
-      this.requestFeedbackUserSucceed(result.response.message)
-    } else if (result.kind === 'form-error') {
-      console.log('requestFeedbackUser failed')
-      // console.log(result.response.errorCode)
-      this.feedbackFailed(result.response.errorCode)
-    } else if (result.kind === 'unauthorized') {
-      console.log('token expired requestFeedbackUser')
-      // console.log(result)
-      this.feedbackFailed(result.response.errorCode)
-    } else {
-      __DEV__ && console.tron.log(result.kind)
+    try {
+      const result = await this.feedbackApi.requestFeedbackUser(coacheeId)
+      // console.log('requestFeedbackUser result', result)
+
+      if (result.kind === "ok") {
+        this.requestFeedbackUserSucceed(result.response.message)
+      } else if (result.kind === 'form-error') {
+        console.log('requestFeedbackUser failed')
+        // console.log(result.response.errorCode)
+        this.feedbackFailed(result.response.errorCode)
+      } else if (result.kind === 'unauthorized') {
+        console.log('token expired requestFeedbackUser')
+        // console.log(result)
+        this.feedbackFailed(result.response.errorCode)
+      } else {
+        __DEV__ && console.tron.log(result.kind)
+      }
+    } catch (e) {
+      console.log(e)
+    } finally {
+      this.isLoading = false
     }
+
 
   }
 
@@ -362,21 +392,30 @@ export default class FeedbackStore {
     this.isLoading = true
     console.log('getFeedbackCommitment ', feedbackUserId)
 
-    const result = await this.feedbackApi.getFeedbackCommitment(feedbackUserId)
-    console.log('getFeedbackCommitment result', result)
-    if (result.kind === "ok") {
-      this.getFeedbackCommitmentSucceed(result.response.data)
-    } else if (result.kind === 'form-error') {
-      console.log('getFeedbackCommitment failed')
-      // console.log(result.response.errorCode)
-      this.feedbackFailed(result.response.errorCode)
-    } else if (result.kind === 'unauthorized') {
-      console.log('token expired getFeedbackCommitment')
-      // console.log(result)
-      this.feedbackFailed(result.response.errorCode)
-    } else {
-      __DEV__ && console.tron.log(result.kind)
+    try {
+
+      const result = await this.feedbackApi.getFeedbackCommitment(feedbackUserId)
+      console.log('getFeedbackCommitment result', result)
+      if (result.kind === "ok") {
+        this.getFeedbackCommitmentSucceed(result.response.data)
+      } else if (result.kind === 'form-error') {
+        console.log('getFeedbackCommitment failed')
+        // console.log(result.response.errorCode)
+        this.feedbackFailed(result.response.errorCode)
+      } else if (result.kind === 'unauthorized') {
+        console.log('token expired getFeedbackCommitment')
+        // console.log(result)
+        this.feedbackFailed(result.response.errorCode)
+      } else {
+        __DEV__ && console.tron.log(result.kind)
+      }
+    } catch (e) {
+      console.log(e)
+    } finally {
+      this.isLoading = false
     }
+
+
   }
 
   getFeedbackCommitmentSucceed(data: FeedbackCommitmentModel) {
@@ -390,22 +429,31 @@ export default class FeedbackStore {
     this.isLoading = true
     console.log('createFeedbackCommitment ', data)
 
-    const result = await this.feedbackApi.createFeedbackCommitment(data)
-    // console.log('requestFeedbackUser result', result)
-    if (result.kind === "ok") {
-      this.createFeedbackCommitmentSucceed(result.response.message)
-    } else if (result.kind === 'form-error') {
-      // console.log('requestFeedbackUser failed')
-      this.formError(result.response.response)
-      // console.log(result.response.errorCode)
-      this.feedbackFailed(result.response.errorCode)
-    } else if (result.kind === 'unauthorized') {
-      console.log('token expired requestFeedbackUser')
-      // console.log(result)
-      this.feedbackFailed(result.response.errorCode)
-    } else {
-      __DEV__ && console.tron.log(result.kind)
+    try {
+
+      const result = await this.feedbackApi.createFeedbackCommitment(data)
+      // console.log('requestFeedbackUser result', result)
+      if (result.kind === "ok") {
+        this.createFeedbackCommitmentSucceed(result.response.message)
+      } else if (result.kind === 'form-error') {
+        // console.log('requestFeedbackUser failed')
+        this.formError(result.response.response)
+        // console.log(result.response.errorCode)
+        this.feedbackFailed(result.response.errorCode)
+      } else if (result.kind === 'unauthorized') {
+        console.log('token expired requestFeedbackUser')
+        // console.log(result)
+        this.feedbackFailed(result.response.errorCode)
+      } else {
+        __DEV__ && console.tron.log(result.kind)
+      }
+    } catch (e) {
+      console.log(e)
+    } finally {
+      this.isLoading = false
     }
+
+
 
   }
 
@@ -416,6 +464,72 @@ export default class FeedbackStore {
     this.isLoading = false
   }
 
+  async getListRequestFeedbackUser(page = 1, limit = 4) {
+    this.isLoadingListRequetsFeedbackUser = true
+    console.log(`getListRequestFeedbackUser page ${page}`)
+
+    const result = await this.feedbackApi.getListRequestFeedbackUser(page, limit)
+    console.log('getListRequestFeedbackUser result', result)
+    if (result.kind === "ok") {
+      this.getListRequestFeedbackUserSucceed(result.response.data)
+    } else if (result.kind === 'form-error') {
+      console.log('getFeedbackCommitment failed')
+      // console.log(result.response.errorCode)
+      this.feedbackFailed(result.response.errorCode)
+    } else if (result.kind === 'unauthorized') {
+      console.log('token expired getFeedbackCommitment')
+      // console.log(result)
+      this.feedbackFailed(result.response.errorCode)
+    } else {
+      __DEV__ && console.tron.log(result.kind)
+    }
+  }
+
+  getListRequestFeedbackUserSucceed(data: RequestFeedbackUserModel[]) {
+    console.log('request getListRequestFeedbackUserSucceed ')
+    this.listRequestFeedbackUser = data
+    this.isLoadingListRequetsFeedbackUser = false
+    this.formErrorCode = null
+    this.isLoading = false
+  }
+
+  async createFeedbackUser(data: CreateFeedbackUserModel) {
+    this.isLoading = true
+    console.log('createFeedbackUser ', data)
+
+    try {
+      const result = await this.feedbackApi.createFeedbackUser(data)
+      // console.log('requestFeedbackUser result', result)
+
+      if (result.kind === "ok") {
+        this.createFeedbackUserSucceed(result.response.message)
+      } else if (result.kind === 'form-error') {
+        console.log('requestFeedbackUser failed')
+        // console.log(result.response.errorCode)
+        this.feedbackFailed(result.response.errorCode)
+      } else if (result.kind === 'unauthorized') {
+        console.log('token expired requestFeedbackUser')
+        // console.log(result)
+        this.feedbackFailed(result.response.errorCode)
+      } else {
+        __DEV__ && console.tron.log(result.kind)
+      }
+    } catch (e) {
+      console.log(e)
+    } finally {
+      this.isLoading = false
+    }
+  }
+
+  createFeedbackUserSucceed(message: string) {
+    console.log('createFeedbackUserSucceed ')
+    this.messageCreateFeedbackUser = message
+    this.formErrorCode = null
+    this.isLoading = false
+  }
+
+
+
   feedbackFailed(errorId: number) {
     this.formErrorCode = errorId
     this.isLoading = false
@@ -424,6 +538,14 @@ export default class FeedbackStore {
   async clearFeedback() {
     this.listExistingCoachees = []
     this.isLoadingExistingCoachee = false
+    this.errorCode = null
+    this.errorMessage = null
+    this.formErrorCode = null
+  }
+
+  async clearListRequestFeedback() {
+    this.listRequestFeedbackUser = []
+    this.isloading = false
     this.errorCode = null
     this.errorMessage = null
     this.formErrorCode = null

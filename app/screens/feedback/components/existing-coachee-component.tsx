@@ -35,13 +35,7 @@ export const ExistingCoacheeComponent = ({
 
   if (data === null) {
     return (
-      <VStack>
-        <Text type={'left-header'} style={{ fontSize: Spacing[16] }} underlineWidth={Spacing[72]} text="Coaching Journal." />
-        <Spacer width={Spacing[24]} />
-        <EmptyList buttonLabel={'Tambah sekarang!'}
-          description={'Kamu belum menambahkan catatan coaching journal.'}
-          imageSource={() => <IconSadColor height={Spacing[42]} width={Spacing[42]} />} navigateTo={goToCoaching} />
-      </VStack>
+      null
     )
   }
 

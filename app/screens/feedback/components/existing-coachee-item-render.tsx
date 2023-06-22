@@ -2,7 +2,7 @@ import { HStack } from "@components/view-stack";
 import { Colors, Spacing } from "@styles";
 import { dimensions } from "@config/platform.config";
 import { TouchableOpacity, View } from "react-native";
-import { IconBubble, IconHeart, IconHeartBw } from "@assets/svgs"
+import { IconHeart, IconHeartBw, IconThink } from "@assets/svgs"
 import Spacer from "@components/spacer";
 import { Text } from "@components";
 import React from "react";
@@ -35,7 +35,7 @@ export const ExistingCoacheeItemRender = (
         <TouchableOpacity onPress={() => onPressRequestFeedback(item.coachee_id)} style={{ flex: 1, backgroundColor: Colors.ABM_MAIN_BLUE, borderTopStartRadius: Spacing[12], borderBottomStartRadius: Spacing[12], alignItems: 'center' }}>
           <HStack horizontal={Spacing[8]} style={{ height: Spacing[42] }}>
             <Spacer width={Spacing[2]} />
-            <IconBubble height={Spacing[28]} width={Spacing[28]} />
+            <IconThink height={Spacing[28]} width={Spacing[28]} />
             <Spacer width={Spacing[4]} />
             <Text type={'label'} style={{ lineHeight: Spacing[16], color: Colors.WHITE }} text={'Request\nfeedback.'} numberOfLines={2} />
             <Spacer width={Spacing[2]} />

@@ -85,7 +85,7 @@ export default class AuthStore {
     makeAutoObservable(this);
 
     this.api.apisauce.addAsyncResponseTransform(async response => {
-      console.log(`Raw Response: ${JSON.stringify(response)}`)
+      // console.log(`Raw Response: ${JSON.stringify(response)}`)
       console.log("+++response interceptor+++")
       console.log(`Error Code: ${response.data.errorCode}`)
       console.log(`Status: ${response.status}`)

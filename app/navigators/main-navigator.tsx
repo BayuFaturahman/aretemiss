@@ -304,7 +304,8 @@ export type NavigatorParamList = {
   },
   feedbackMain: undefined,
   feedbackDetail: {
-    feedbackUserId: string
+    id: string,
+    isFeedbackRequest: boolean
   }
   feedbackCommitment: {
     feedbackUserId: string

@@ -194,8 +194,6 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     }, [])
 
     const goToFeedback = useCallback((id) => {
-      coachingStore.isDetailJournal(true)
-      coachingStore.setDetailID(id)
       navigation.navigate("feedbackMain")
       console.log(id)
     }, [])
@@ -223,8 +221,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       })
     }, [])
 
-    
-
+  
     const getUserProfile = useCallback(async () => {
       await mainStore.getProfile()
     }, [])

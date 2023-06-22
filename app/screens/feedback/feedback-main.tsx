@@ -14,7 +14,7 @@ import { useStores } from "../../bootstrap/context.boostrap"
 import { dimensions } from "@config/platform.config"
 import { debounce } from "lodash";
 import { images } from "@assets/images";
-import { ExistingCoacheeModel, FeedbackUserDetailModel } from "app/store/store.feedback"
+import { ExistingCoacheeModel, FeedbackUserDetailModel, RequestFeedbackUserModel } from "app/store/store.feedback"
 import { ExistingCoacheeComponent } from "./components/existing-coachee-component"
 
 import Modal from "react-native-modalbox"
@@ -99,6 +99,33 @@ const MOCK_PREVIOUS_FEEDBACK: FeedbackUserDetailModel[] = [
 
 ]
 
+const MOCK_LIST_REQUEST_FEEDBACK: RequestFeedbackUserModel[] = [
+  {
+    "rfu_user_from_id": "8c61265f-d2ba-469b-8c6e-96cb75e69ee4",
+    "user_fullname": "Pol1"
+  },
+  {
+    "rfu_user_from_id": "8c61265f-d2ba-469b-8c6e-96cb75e69ee1",
+    "user_fullname": "Pol2"
+  },
+  {
+    "rfu_user_from_id": "8c61265f-d2ba-469b-8c6e-96cb75e69ee2",
+    "user_fullname": "Pol3"
+  },
+  {
+    "rfu_user_from_id": "8c61265f-d2ba-469b-8c6e-96cb75e69ee3",
+    "user_fullname": "Pol44"
+  },
+  {
+    "rfu_user_from_id": "8c61265f-d2ba-469b-8c6e-96cb75e69ee4",
+    "user_fullname": "Pol5"
+  },
+  {
+    "rfu_user_from_id": "8c61265f-d2ba-469b-8c6e-96cb75e69ee5",
+    "user_fullname": "Pol6"
+  }
+]
+
 const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
   observer(({ navigation }) => {
 
@@ -106,7 +133,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
     const [existingCoacheeData, setExistingCoacheeData] = useState<Array<ExistingCoacheeModel>>([])
     const [listFeedbackUser, setListFeedbackUser] = useState<Array<FeedbackUserDetailModel>>([])
 
-    const [listFeedbackRequest, setListFeedbacRequest] = useState<Array<ExistingCoacheeModel>>([])
+    const [listRequestFeedbackUser, setListRequestFeedbackUser] = useState<Array<RequestFeedbackUserModel>>([])
 
 
     const [selectedFeedbackRequest, setSelectedFeedbackRequest] = useState<string>("")
@@ -118,6 +145,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
     const [selectedPreviousFeedbackDetail, setSelectedPreviousFeedbackDetail] = useState<FeedbackUserDetailModel>()
 
     const [currentPageExistingCoachee, setCurrentPageExistingCoachee] = useState<number>(2)
+    const [currentPageFeedbackRequest, setCurrentPageFeedbackRequest] = useState<number>(2)
     const [currentPageListFeedbackUserByCoachee, setCurrentPageListFeedbackUserByCoachee] = useState<number>(2)
 
     const [, forceUpdate] = useReducer((x) => x + 1, 0)
@@ -127,6 +155,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
 
 
     const [initialLoading, setInitialLoading] = useState<boolean>(true)
+    const [initialLoadingFeedbackRequest, setInitialLoadingFeedbackRequest] = useState<boolean>(true)
 
     const [isModalVisible, setModalVisible] = useState<boolean>(false)
     const [modalTitle, setModalTitle] = useState<string>("")
@@ -164,9 +193,15 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       if (coacheeId !== '') {
         await feedbackStore.getListFeedbackUserByCoachee(coacheeId, page)
         setListFeedbackUser(feedbackStore.listFeedbackUserByCoachee)
-        console.log(`selectedPreviousFeedbackUserByCoachee: `, selectedPreviousFeedbackUserByCoachee)
-        console.log(`feedbackStore.listFeedbackUserByCoachee: `, feedbackStore.listFeedbackUserByCoachee)
+        // console.log(`selectedPreviousFeedbackUserByCoachee: `, selectedPreviousFeedbackUserByCoachee)
+        // console.log(`feedbackStore.listFeedbackUserByCoachee: `, feedbackStore.listFeedbackUserByCoachee)
       }
+    }
+
+    const loadListRequestFeedbackUser = async (page: number) => {
+      console.log(`loadListRequestFeedbackUser page ${page}`)
+      await feedbackStore.getListRequestFeedbackUser(page)
+      setListRequestFeedbackUser(feedbackStore.listRequestFeedbackUser)
     }
 
     const requestFeedbackToCoachee = async () => {
@@ -189,6 +224,12 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       firstLoadFeedbackUserByCoachee()
     }, [])
 
+    const onRefreshFeedbackRequest = React.useCallback(async () => {
+      setCurrentPageFeedbackRequest(2)
+      firstLoadListRequestFeedbackUser()
+    }, [])
+
+
     const onLoadMoreExistingCoachee = React.useCallback(async () => {
       console.log('---onLoadMoreExistingCoachee ', currentPageExistingCoachee)
       if (!feedbackStore.isLoadingExistingCoachee) {
@@ -210,6 +251,16 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       }
     }, [currentPageListFeedbackUserByCoachee])
 
+    const onLoadMoreFeedbackRequest = React.useCallback(async () => {
+      console.log('---onLoadMoreFeedbackRequest ', currentPageFeedbackRequest)
+      if (!feedbackStore.isLoadingListRequetsFeedbackUser) {
+        console.log("load more existing coachees ", currentPageFeedbackRequest)
+        await loadListRequestFeedbackUser(currentPageFeedbackRequest)
+        setCurrentPageListFeedbackUserByCoachee(currentPageFeedbackRequest + 1)
+      }
+    }, [currentPageFeedbackRequest])
+
+
     useEffect(() => {
       console.log('currentPageListFeedbackUserByCoachee: ', currentPageListFeedbackUserByCoachee)
     }, [currentPageListFeedbackUserByCoachee])
@@ -217,7 +268,9 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
     const holdFeedbackRequest = useCallback(
       (selectedId) => {
         console.log(`holdFeedbackRequest selectedId: ${selectedId}`)
+        // setTimeout(() => {
         setSelectedFeedbackRequest(selectedId)
+        // }, 400);
         setSelectedExistingCoachee('')
       },
       [selectedFeedbackRequest],
@@ -280,15 +333,21 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       setSelectedExistingCoachee("")
     }
 
-    const goToFeedbackDetail = () => {
+    const goToFeedbackDetail = (isFeedbackRequest: boolean = false) => {
       navigation.navigate("feedbackDetail", {
-        feedbackUserId: selectedPreviousFeedbackUserByCoachee
+        id: isFeedbackRequest ? selectedFeedbackRequest : selectedPreviousFeedbackUserByCoachee,
+        isFeedbackRequest: isFeedbackRequest
       })
     }
 
     const openFeedbackDetail = () => {
       toggleModal(false)
       goToFeedbackDetail()
+    }
+
+    const openFillFeedbackPage = () => {
+      goToFeedbackDetail(true)
+      console.log('openFillFeedbackPage')
     }
 
     const firstLoadExistingCoachee = debounce(async () => {
@@ -317,8 +376,21 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
 
     }, 500)
 
+    const firstLoadListRequestFeedbackUser = debounce(async () => {
+      console.log(`firstLoadRequestFeedbackUser`)
+      await feedbackStore.clearListRequestFeedback()
+      await loadListRequestFeedbackUser(1)
+      // feedbackStore.listExistingCoachees = MOCK_EXISTING_COACHEE
+      setInitialLoadingFeedbackRequest(false)
+      feedbackStore.setRefreshData(false)
+      forceUpdate()
+
+    }, 500)
+
+
     useEffect(() => {
       firstLoadExistingCoachee()
+      firstLoadListRequestFeedbackUser()
       console.log('use effect firstLoadExistingCoachee')
       // setExistingCoacheeData(feedbackStore.listExistingCoachees)
     }, [])
@@ -338,11 +410,6 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
               keyExtractor={item => item.coachee_id}
               showsVerticalScrollIndicator={true}
               ListEmptyComponent={() => initialLoading ? <Spinner visible={feedbackStore.isLoadingExistingCoachee} /> : <EmptyList navigateTo={goBack} />}
-              // ListEmptyComponent={() => 
-              //   {!initialLoading &&
-
-              //   }
-              // }
               renderItem={({ item, index }) => (
                 <TouchableOpacity animationDuration={500}>
                   <ExistingCoacheeComponent
@@ -356,14 +423,9 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
                 </TouchableOpacity>
               )}
               ListFooterComponent={
-                // existingCoacheeData.length === 0 && !initialLoading && !feedbackStore.isLoadingExistingCoachee ? null : (
                 <Spinner
                   visible={feedbackStore.isLoadingExistingCoachee}
-
-                // textContent={'Memuat...'}
-                // textStyle={styles.spinnerTextStyle}
                 />
-                // )
               }
               onEndReached={onLoadMoreExistingCoachee}
               onEndReachedThreshold={0.1}
@@ -379,52 +441,37 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       return (
         <>
           <Text type={"left-header"} text="Feedback Requests." />
-          {/* </HStack> */}
           <Spacer height={Spacing[12]} />
 
-          <VStack horizontal={Spacing[24]} style={{ backgroundColor: Colors.WHITE, width: "100%", borderRadius: Spacing[20], maxHeight: Spacing[160] + Spacing[10], borderWidth: Spacing[1], }}>
+          <VStack horizontal={Spacing[24]} style={{ backgroundColor: Colors.WHITE, width: "100%", borderRadius: Spacing[20], height: Spacing[160] + Spacing[12], maxHeight: Spacing[160] + Spacing[12], borderWidth: Spacing[1] }}>
             <FlatList
-              contentContainerStyle={{ paddingBottom: 50 * 10 }}
               refreshControl={
-                <RefreshControl refreshing={false} onRefresh={onRefresh} />
+                <RefreshControl refreshing={false} onRefresh={onRefreshFeedbackRequest} />
               }
-
-              scrollEnabled={false}
-              data={MOCK_EXISTING_COACHEE}
-              keyExtractor={item => item.coachee_id + 'feed'}
-              showsVerticalScrollIndicator={false}
-              ListEmptyComponent={() =>
-                <EmptyList navigateTo={goBack} />
-              }
+              data={listRequestFeedbackUser}
+              keyExtractor={item => item.rfu_user_from_id + 'feedback'}
+              showsVerticalScrollIndicator={true}
+              ListEmptyComponent={() => initialLoading ? <Spinner visible={feedbackStore.isLoadingListRequetsFeedbackUser} /> : <EmptyList navigateTo={goBack} description="Belum ada request feedback!\nKembali lagi saat sudah ada Feedback Request ya!" />}
               renderItem={({ item, index }) => (
-
                 <TouchableOpacity animationDuration={500}>
-                  {/* <VStack style={{ borderTopWidth: index % 4 === 0 ? Spacing[0] : Spacing[1], paddingVertical: Spacing[12] }}>
-                    <Text>{item.user_fullname}</Text>
-                  </VStack> */}
                   <FeedbackRequestListComponent
                     data={item}
                     index={index}
-                    onPressRequestFeedback={requestFeedback}
+                    selectedId={selectedFeedbackRequest}
                     onPressActivity={holdFeedbackRequest}
-                    selectedActivities={selectedFeedbackRequest}
-                    onPressNote={() => { }}
-                    onPressFeedback={() => { }}
-                    onPressNoteFeedback={() => { }}
-                    goToCoaching={() => { }}
+                    onPressFillFeedback={openFillFeedbackPage}
                   />
                 </TouchableOpacity>
               )}
+              ListFooterComponent={
+                <Spinner
+                  visible={feedbackStore.isLoadingExistingCoachee}
+                />
+              }
+              onEndReached={onLoadMoreFeedbackRequest}
+              onEndReachedThreshold={0.1}
+              style={{ paddingVertical: Spacing[2] }}
             />
-
-            {feedbackStore.isLoadingExistingCoachee ? (
-              <VStack
-                vertical={Spacing[12]}
-                style={{ position: "absolute", bottom: 0, width: dimensions.screenWidth }}
-              >
-                <ActivityIndicator animating={feedbackStore.isLoadingExistingCoachee} />
-              </VStack>
-            ) : null}
           </VStack >
 
         </>
@@ -433,75 +480,128 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
 
     const renderNotificationModal = () => {
       return (
-        <VStack>
-          <HStack bottom={Spacing[18]}>
-            <Spacer />
-            <MoodComponent data={modalIcon} width={Spacing[64]} height={Spacing[64]} />
-            <Spacer />
-          </HStack>
-          <Text
-            type={"body-bold"}
-            style={{ fontSize: Spacing[24], textAlign: "center", color: Colors.ABM_GREEN }}
-            text={modalTitle}
-          />
-          {/* <Spacer height={Spacing[12]} /> */}
-          <Text type={"body"} style={{ textAlign: "center" }} text={modalDesc} />
-          <Spacer height={Spacing[12]} />
+        <VStack
+          style={{
+            backgroundColor: Colors.WHITE,
+            borderRadius: Spacing[48],
+            minHeight: Spacing[256],
+            alignItems: "center",
+            justifyContent: "center",
 
-          <HStack bottom={Spacing[24]}>
-            <Spacer />
-            <VStack style={{ maxWidth: Spacing[256], minWidth: Spacing[128] }}>
-              <Button
-                type={"primary"}
-                text={"Kembali ke Menu Utama\nFeedback"}
-                style={{ height: Spacing[54], paddingHorizontal: Spacing[8] }}
-                textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
-                onPress={closeNotificationModal}
+          }}
+          horizontal={Spacing[24]}
+          vertical={Spacing[24]}
+        >
+          <VStack horizontal={Spacing[24]} top={Spacing[12]} style={[Layout.widthFull, { justifyContent: "center" }]}>
+            <VStack>
+              <HStack bottom={Spacing[18]}>
+                <Spacer />
+                <MoodComponent data={modalIcon} width={Spacing[64]} height={Spacing[64]} />
+                <Spacer />
+              </HStack>
+              <Text
+                type={"body-bold"}
+                style={{ fontSize: Spacing[24], textAlign: "center", color: Colors.ABM_GREEN }}
+                text={modalTitle}
               />
+              {/* <Spacer height={Spacing[12]} /> */}
+              <Text type={"body"} style={{ textAlign: "center" }} text={modalDesc} />
+              <Spacer height={Spacing[12]} />
+
+              <HStack bottom={Spacing[24]}>
+                <Spacer />
+                <VStack style={{ maxWidth: Spacing[256], minWidth: Spacing[128] }}>
+                  <Button
+                    type={"primary"}
+                    text={"Kembali ke Menu Utama\nFeedback"}
+                    style={{ height: Spacing[54], paddingHorizontal: Spacing[8] }}
+                    textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
+                    onPress={closeNotificationModal}
+                  />
+                </VStack>
+                <Spacer />
+              </HStack>
             </VStack>
-            <Spacer />
-          </HStack>
+          </VStack>
+          {/* {modalType === 'notification' ? null : renderPreviousFeedbackDatesModal()} */}
         </VStack>
+
       )
     }
 
     const renderFeedbackDatesModal = () => {
       return (
-        <VStack style={{ padding: 0, width: '100%' }}>
-          <HStack bottom={Spacing[8]} >
-            <Text type={"header"} text="Pilih tanggal feedback" style={{ fontSize: Spacing[18] }} />
-            <TouchableOpacity onPress={() => toggleModal(false)}>
-              <IconClose height={Spacing[32]} width={Spacing[32]} />
-            </TouchableOpacity>
-          </HStack>
-          <Spacer height={Spacing[12]} />
-          <HStack style={{ minHeight: Spacing[96], maxHeight: Spacing[128] }}>
-            <Spacer />
-            <FlatList
-              refreshControl={
-                <RefreshControl refreshing={false}
-                  onRefresh={onRefreshFeedbackUserByCoachee} />
-              }
-              data={listFeedbackUser}
-              keyExtractor={item => item.fu_id}
-              showsVerticalScrollIndicator={true}
-              renderItem={({ item, index }) => (
-                <TouchableOpacity key={item.fu_id} onPress={() => { holdPreviousFeedbackDate(item.fu_id, index) }} style={{
-                  height: Spacing[42], borderTopWidth: index === 0 ? Spacing[0] : Spacing[1], flex: 1,
-                  justifyContent: "center",
-                }}>
-                  <Text type={"body"} style={{ lineHeight: Spacing[42], backgroundColor: selectedPreviousFeedbackUserByCoachee === item.fu_id ? Colors.ABM_DARK_BLUE : Colors.WHITE, color: selectedPreviousFeedbackUserByCoachee === item.fu_id ? Colors.WHITE : Colors.ABM_DARK_BLUE, paddingHorizontal: spacing[2], textAlign: "center" }}>{moment(item.fu_created_at).format('DD MMMM YYYY')}</Text>
-                </TouchableOpacity>
-              )}
-              onEndReached={onLoadMoreFeedbackUserByCoachee}
-              onEndReachedThreshold={0.2}
-              style={{ paddingVertical: Spacing[2], paddingHorizontal: 0, width: "70%" }}
-            />
-            <Spacer />
-          </HStack>
-          <Spacer height={Spacing[12]} />
+        <VStack
+          style={{
+            backgroundColor: Colors.WHITE,
+            borderRadius: Spacing[48],
+            minHeight: Spacing[256],
+            alignItems: "center",
+            justifyContent: "center",
 
-          <HStack bottom={Spacing[24]}>
+          }}
+          // horizontal={Spacing[24]}
+          vertical={Spacing[24]}
+        >
+          <VStack horizontal={Spacing[24]} top={Spacing[12]} bottom={Spacing[12]} style={[Layout.widthFull, { justifyContent: "center" }]}>
+            {/* <VStack style={{
+              padding: 0, width: '100%', backgroundColor: Colors.RED100
+            }}> */}
+            <HStack bottom={Spacing[8]} horizontal={Spacing[24]} >
+              <Text type={"header"} text="Pilih tanggal feedback" style={{ fontSize: Spacing[18] }} />
+              <TouchableOpacity onPress={() => toggleModal(false)}>
+                <IconClose height={Spacing[32]} width={Spacing[32]} />
+              </TouchableOpacity>
+              <Spacer />
+            </HStack>
+
+            {/* </VStack> */}
+          </VStack>
+
+          <VStack style={{
+            shadowColor: "#000",
+            shadowOffset: {
+              width: 0,
+              height: 2,
+            },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+            width: '100%',
+            backgroundColor: Colors.WHITE,
+          }}>
+            <Spacer height={Spacing[12]} />
+            <HStack style={{
+              minHeight: Spacing[96], maxHeight: Spacing[128],
+            }}>
+              <Spacer />
+              <FlatList
+                refreshControl={
+                  <RefreshControl refreshing={false}
+                    onRefresh={onRefreshFeedbackUserByCoachee} />
+                }
+                data={listFeedbackUser}
+                keyExtractor={item => item.fu_id}
+                showsVerticalScrollIndicator={true}
+                renderItem={({ item, index }) => (
+                  <TouchableOpacity key={item.fu_id} onPress={() => { holdPreviousFeedbackDate(item.fu_id, index) }} style={{
+                    height: Spacing[42], borderTopWidth: index === 0 ? Spacing[0] : Spacing[1], flex: 1,
+                    justifyContent: "center",
+                  }}>
+                    <Text type={"body"} style={{ lineHeight: Spacing[42], backgroundColor: selectedPreviousFeedbackUserByCoachee === item.fu_id ? Colors.ABM_DARK_BLUE : Colors.WHITE, color: selectedPreviousFeedbackUserByCoachee === item.fu_id ? Colors.WHITE : Colors.ABM_DARK_BLUE, paddingHorizontal: spacing[2], textAlign: "center" }}>{moment(item.fu_created_at).format('DD MMMM YYYY')}</Text>
+                  </TouchableOpacity>
+                )}
+                onEndReached={onLoadMoreFeedbackUserByCoachee}
+                onEndReachedThreshold={0.2}
+                style={{
+                  paddingVertical: Spacing[2], paddingHorizontal: 0, width: "70%"
+                }}
+              />
+              <Spacer />
+            </HStack>
+            <Spacer height={Spacing[12]} />
+          </VStack>
+
+          <HStack bottom={Spacing[24]} top={Spacing[16]}>
             <Spacer />
             <VStack style={{ maxWidth: Spacing[256], minWidth: Spacing[96] + Spacing[12] }}>
               <Button
@@ -520,7 +620,9 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
             </VStack>
             <Spacer />
           </HStack>
+          {/* {modalType === 'notification' ? null : renderPreviousFeedbackDatesModal()} */}
         </VStack>
+
       )
     }
 
@@ -552,20 +654,15 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
                 <Spacer height={Spacing[32]} />
                 <VStack top={Spacing[8]} horizontal={Spacing[12]} bottom={Spacing[12]}>
                   {renderExistingCoachee()}
-                  {/* <Spacer height={Spacing[24]} /> */}
                 </VStack>
-                {/* <Spacer height={Spacing[24]} /> */}
                 <VStack top={Spacing[8]} horizontal={Spacing[12]} bottom={Spacing[12]}>
                   {renderFeedbackRequests()}
                   <Spacer height={Spacing[24]} />
                 </VStack>
-
               </VStack>
             </ImageBackground>
             <Spacer height={Spacing[24]} />
-
           </VStack>
-
         </SafeAreaView>
 
 
@@ -581,9 +678,9 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
           onRequestClose={() => toggleModal(false)}
         >
           <View style={{ flex: 1, justifyContent: "center" }}>
-            <VStack
+            {/* <VStack
               style={{
-                backgroundColor: Colors.WHITE,
+                backgroundColor: Colors.ORANGE100,
                 borderRadius: Spacing[48],
                 minHeight: Spacing[256],
                 alignItems: "center",
@@ -593,11 +690,12 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
               horizontal={Spacing[24]}
               vertical={Spacing[24]}
             >
-              <VStack horizontal={Spacing[24]} top={Spacing[12]} style={[Layout.widthFull, { justifyContent: "center" }]}>
-                {modalType === 'notification' ? renderNotificationModal() : renderFeedbackDatesModal()}
+              <VStack horizontal={Spacing[24]} top={Spacing[12]} style={[Layout.widthFull, { justifyContent: "center", backgroundColor: Colors.ABM_GREEN }]}>
+                
               </VStack>
-              {/* {modalType === 'notification' ? null : renderPreviousFeedbackDatesModal()} */}
-            </VStack>
+              {modalType === 'notification' ? null : renderPreviousFeedbackDatesModal()}
+            </VStack> */}
+            {modalType === 'notification' ? renderNotificationModal() : renderFeedbackDatesModal()}
           </View>
         </Modal>
 
