@@ -386,7 +386,7 @@ export default class FeedbackStore {
     this.isLoading = false
   }
 
-  async getListRequestFeedbackUser(page = 1, limit = 3) {
+  async getListRequestFeedbackUser(page = 1, limit = 4) {
     this.isLoadingListRequetsFeedbackUser = true
 
     try {

@@ -341,9 +341,10 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       setSelectedExistingCoachee("")
     }
 
-    const goToFeedbackDetail = (isFeedbackRequest: boolean = false) => {
+    const goToFeedbackDetail = (seledtecFR: string = '', isFeedbackRequest: boolean = false) => {
+      setSelectedFeedbackRequest('')
       navigation.navigate("feedbackDetail", {
-        id: isFeedbackRequest ? selectedFeedbackRequest : selectedPreviousFeedbackUserByCoachee,
+        id: isFeedbackRequest ? seledtecFR : selectedPreviousFeedbackUserByCoachee,
         isFeedbackRequest: isFeedbackRequest
       })
     }
@@ -355,7 +356,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
     }
 
     const openFillFeedbackPage = () => {
-      goToFeedbackDetail(true)
+      goToFeedbackDetail(selectedFeedbackRequest, true)
       // console.log('openFillFeedbackPage')
     }
 

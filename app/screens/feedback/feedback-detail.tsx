@@ -137,10 +137,10 @@ const FeedbackDetail: FC<StackScreenProps<NavigatorParamList, "feedbackDetail">>
             }
 
             forceUpdate()
-            console.log(errorList)
-            console.log(`feedbackUserDetail: ${JSON.stringify(feedbackUserDetail)}`)
-            console.log('use effect loadFeedbackUserDetail')
-        }, [])
+            // console.log(errorList)
+            // console.log(`feedbackUserDetail: ${JSON.stringify(feedbackUserDetail)}`)
+            // console.log('use effect loadFeedbackUserDetail')
+        }, [isFeedbackRequest])
 
         useEffect(() => {
             if (feedbackStore.feedbackUserDetail) {
@@ -152,8 +152,7 @@ const FeedbackDetail: FC<StackScreenProps<NavigatorParamList, "feedbackDetail">>
                 tempChoice[3] = feedbackStore.feedbackUserDetail.q4
                 setFeedbackQuestionChoice(tempChoice)
             }
-
-            console.log(`feedbackStore.feedbackUserDetail , ${feedbackStore.feedbackUserDetail}`)
+            // console.log(`feedbackStore.feedbackUserDetail , ${feedbackStore.feedbackUserDetail}`)
         }, [feedbackStore.feedbackUserDetail, feedbackStore.getFeedbackUserDetailSucceedd])
 
         const renderHeader = () => {
@@ -189,13 +188,11 @@ const FeedbackDetail: FC<StackScreenProps<NavigatorParamList, "feedbackDetail">>
 
 
         const submitFeedback = useCallback(async () => {
-            let counter = 0
-            let isFeedbackError = false
             setIsSubmitClicked(true)
             setIsError(false)
 
             // setErrorList()
-            console.log('submit feedback ', feedbackQuestionChoice)
+            console.log('submit feedback ')
 
             let temptErrorList = new Array(4).fill(0)
             let tempIsError = false
@@ -207,10 +204,8 @@ const FeedbackDetail: FC<StackScreenProps<NavigatorParamList, "feedbackDetail">>
                 }
             })
 
-            console.log(`temptErrorList: ${temptErrorList}`)
+            // console.log(`temptErrorList: ${temptErrorList}`)
             setErrorList(temptErrorList)
-            console.log('rfu id ', id)
-            console.log('user id ', mainStore.userProfile.user_id)
             if (!tempIsError) {
                 let tempParamData = {
                     "q1": feedbackQuestionChoice[0],
