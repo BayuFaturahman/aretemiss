@@ -32,7 +32,7 @@ export const ExistingCoacheeItemRender = (
     // console.log(`isButtonDisabled: ${isButtonDisabled}`)
     return (
       <HStack style={{ width: dimensions.screenWidth - Spacing[128] }}>
-        <TouchableOpacity onPress={() => onPressRequestFeedback(item.coachee_id)} style={{ flex: 1, backgroundColor: Colors.ABM_MAIN_BLUE, borderTopStartRadius: Spacing[12], borderBottomStartRadius: Spacing[12], alignItems: 'center' }}>
+        <TouchableOpacity onPress={() => onPressRequestFeedback(item.coachee_id)} style={{ flex: 1, backgroundColor: !isButtonDisabled ? Colors.ABM_MAIN_BLUE : Colors.GRAY_DISABLEB, borderTopStartRadius: Spacing[12], borderBottomStartRadius: Spacing[12], alignItems: 'center' }} disabled={isButtonDisabled}>
           <HStack horizontal={Spacing[8]} style={{ height: Spacing[42] }}>
             <Spacer width={Spacing[2]} />
             <IconThink height={Spacing[28]} width={Spacing[28]} />

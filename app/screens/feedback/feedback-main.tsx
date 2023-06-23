@@ -129,20 +129,16 @@ const MOCK_LIST_REQUEST_FEEDBACK: RequestFeedbackUserModel[] = [
 const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
   observer(({ navigation }) => {
 
-
     const [existingCoacheeData, setExistingCoacheeData] = useState<Array<ExistingCoacheeModel>>([])
     const [listFeedbackUser, setListFeedbackUser] = useState<Array<FeedbackUserDetailModel>>([])
 
     const [listRequestFeedbackUser, setListRequestFeedbackUser] = useState<Array<RequestFeedbackUserModel>>([])
 
-
     const [selectedFeedbackRequest, setSelectedFeedbackRequest] = useState<string>("")
-    const [selectedExistingCoachee, setSelectedExistingCoachee] = useState<string>("")
-
+    const [selectedExistingCoachee, setSelectedExistingCoachee] = useState<string>("") // Coachee ID for selectec coachee on existing coachee
 
     const [selectedPreviousFeedbackUserByCoachee, setSelectedPreviousFeedbackUserByCoachee] = useState<string>("") // Feedback User ID
-    const [selectedPreviousFeedbackUser, setSelectedPreviousFeedbackUser] = useState<string>("") // Coachee ID
-    const [selectedPreviousFeedbackDetail, setSelectedPreviousFeedbackDetail] = useState<FeedbackUserDetailModel>()
+    const [selectedPreviousFeedbackUser, setSelectedPreviousFeedbackUser] = useState<string>("") // Coachee ID of selected fu
 
     const [currentPageExistingCoachee, setCurrentPageExistingCoachee] = useState<number>(2)
     const [currentPageFeedbackRequest, setCurrentPageFeedbackRequest] = useState<number>(2)
@@ -152,7 +148,6 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
     const { mainStore, feedbackStore } = useStores()
 
     const [currentPage, setCurrentPage] = useState<number>(2)
-
 
     const [initialLoading, setInitialLoading] = useState<boolean>(true)
     const [initialLoadingFeedbackRequest, setInitialLoadingFeedbackRequest] = useState<boolean>(true)
@@ -183,36 +178,65 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       })
     }
 
-    const loadExistingCoachee = async (page: number) => {
-      await feedbackStore.getListExistingCoachee(page)
-      setExistingCoacheeData(feedbackStore.listExistingCoachees)
-    }
-
-    const loadFeedbackUserByCoachee = async (coacheeId: string, page: number) => {
-      console.log('coacheeId: ', coacheeId)
-      if (coacheeId !== '') {
-        await feedbackStore.getListFeedbackUserByCoachee(coacheeId, page)
-        setListFeedbackUser(feedbackStore.listFeedbackUserByCoachee)
-        // console.log(`selectedPreviousFeedbackUserByCoachee: `, selectedPreviousFeedbackUserByCoachee)
-        // console.log(`feedbackStore.listFeedbackUserByCoachee: `, feedbackStore.listFeedbackUserByCoachee)
-      }
-    }
-
-    const loadListRequestFeedbackUser = async (page: number) => {
-      console.log(`loadListRequestFeedbackUser page ${page}`)
-      await feedbackStore.getListRequestFeedbackUser(page)
-      setListRequestFeedbackUser(feedbackStore.listRequestFeedbackUser)
-    }
-
     const requestFeedbackToCoachee = async () => {
       console.log('selectedPreviousFeedbackUser ', selectedExistingCoachee)
       await feedbackStore.requestFeedbackUser(selectedExistingCoachee)
+      firstLoadExistingCoachee()
     }
 
-    const onRefresh = React.useCallback(async () => {
-      setCurrentPage(2)
-      firstLoadExistingCoachee()
+    const loadExistingCoachee = useCallback(async (page: number) => {
+      await feedbackStore.getListExistingCoachee(page)
+      setExistingCoacheeData(feedbackStore.listExistingCoachees)
     }, [])
+
+    const loadFeedbackUserByCoachee = useCallback(async (coacheeId: string, page: number) => {
+      console.log('loadFeedbackUserByCoachee ')
+      // console.log('coacheeId: ', coacheeId)
+      if (coacheeId !== '') {
+        await feedbackStore.getListFeedbackUserByCoachee(coacheeId, page)
+        setListFeedbackUser(feedbackStore.listFeedbackUserByCoachee)
+      }
+    }, [selectedExistingCoachee])
+
+    const loadListRequestFeedbackUser = useCallback(async (page: number) => {
+      console.log(`loadListRequestFeedbackUser page ${page}`)
+      await feedbackStore.getListRequestFeedbackUser(page)
+      setListRequestFeedbackUser(feedbackStore.listRequestFeedbackUser)
+    }, [])
+
+    const firstLoadExistingCoachee = debounce(async () => {
+      console.log(`firstLoadExistingCoachee`)
+      await feedbackStore.clearFeedback()
+      await loadExistingCoachee(1)
+      // feedbackStore.listExistingCoachees = MOCK_EXISTING_COACHEE
+      setCurrentPageExistingCoachee(2)
+      setInitialLoading(false)
+      feedbackStore.setRefreshData(false)
+      forceUpdate()
+
+    }, 500)
+
+    const firstLoadFeedbackUserByCoachee = debounce(async () => {
+      console.log(`firstLoadFeedbackUserByCoachee`)
+      await feedbackStore.clearListFeedbackUserByCoachee()
+      await loadFeedbackUserByCoachee(selectedExistingCoachee, 1)
+      setCurrentPageListFeedbackUserByCoachee(2)
+      // feedbackStore.listExistingCoachees = MOCK_EXISTING_COACHEE
+      setInitialLoading(false)
+      feedbackStore.setRefreshData(false)
+      forceUpdate()
+    }, 500)
+
+    const firstLoadListRequestFeedbackUser = debounce(async () => {
+      console.log(`firstLoadRequestFeedbackUser`)
+      await feedbackStore.clearListRequestFeedback()
+      await loadListRequestFeedbackUser(1)
+      // feedbackStore.listExistingCoachees = MOCK_EXISTING_COACHEE
+      setCurrentPageFeedbackRequest(2)
+      setInitialLoadingFeedbackRequest(false)
+      feedbackStore.setRefreshData(false)
+      forceUpdate()
+    }, 500)
 
     const onRefreshExistingCoachee = React.useCallback(async () => {
       setCurrentPageExistingCoachee(2)
@@ -229,76 +253,60 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       firstLoadListRequestFeedbackUser()
     }, [])
 
-
     const onLoadMoreExistingCoachee = React.useCallback(async () => {
       console.log('---onLoadMoreExistingCoachee ', currentPageExistingCoachee)
       if (!feedbackStore.isLoadingExistingCoachee) {
         console.log("load more existing coachees ", currentPageExistingCoachee)
-        // await loadExistingCoachee(currentPageExistingCoachee).then(r =>
-        //   setCurrentPageExistingCoachee(currentPageExistingCoachee + 1))
-
         await loadExistingCoachee(currentPageExistingCoachee)
         setCurrentPageExistingCoachee(currentPageExistingCoachee + 1)
       }
     }, [currentPageExistingCoachee])
 
-    const onLoadMoreFeedbackUserByCoachee = React.useCallback(async () => {
-      console.log('onLoadMoreFeedbackUserByCoachee ', currentPageListFeedbackUserByCoachee)
-      if (!feedbackStore.isLoadingListFeedbackUserByCoachee) {
-        console.log("load more feedback user by coachee ", currentPageListFeedbackUserByCoachee)
-        await loadFeedbackUserByCoachee(selectedPreviousFeedbackUserByCoachee, currentPageListFeedbackUserByCoachee)
-        setCurrentPageListFeedbackUserByCoachee(currentPageListFeedbackUserByCoachee + 1)
-      }
-    }, [currentPageListFeedbackUserByCoachee])
-
     const onLoadMoreFeedbackRequest = React.useCallback(async () => {
       console.log('---onLoadMoreFeedbackRequest ', currentPageFeedbackRequest)
       if (!feedbackStore.isLoadingListRequetsFeedbackUser) {
-        console.log("load more existing coachees ", currentPageFeedbackRequest)
         await loadListRequestFeedbackUser(currentPageFeedbackRequest)
-        setCurrentPageListFeedbackUserByCoachee(currentPageFeedbackRequest + 1)
+        setCurrentPageFeedbackRequest(currentPageFeedbackRequest + 1)
       }
     }, [currentPageFeedbackRequest])
 
-
-    useEffect(() => {
-      console.log('currentPageListFeedbackUserByCoachee: ', currentPageListFeedbackUserByCoachee)
-    }, [currentPageListFeedbackUserByCoachee])
+    const onLoadMoreFeedbackUserByCoachee = React.useCallback(async () => {
+      console.log('---onLoadMoreFeedbackUserByCoachee ', currentPageListFeedbackUserByCoachee)
+      if (!feedbackStore.isLoadingListFeedbackUserByCoachee) {
+        await loadFeedbackUserByCoachee(selectedExistingCoachee, currentPageListFeedbackUserByCoachee)
+        setCurrentPageListFeedbackUserByCoachee(currentPageListFeedbackUserByCoachee + 1)
+      }
+    }, [currentPageListFeedbackUserByCoachee, selectedExistingCoachee])
 
     const holdFeedbackRequest = useCallback(
       (selectedId) => {
-        console.log(`holdFeedbackRequest selectedId: ${selectedId}`)
-        // setTimeout(() => {
+        console.log(`holdFeedbackRequest`)
         setSelectedFeedbackRequest(selectedId)
-        // }, 400);
-        setSelectedExistingCoachee('')
       },
       [selectedFeedbackRequest],
     )
 
     const holdExistingCoachee = useCallback(
       (selectedId) => {
-        console.log(`holdExistingCoachee selectedId: ${selectedId}`)
+        console.log(`holdExistingCoachee`)
         setSelectedExistingCoachee(selectedId)
         setSelectedFeedbackRequest('')
       },
       [selectedExistingCoachee],
     )
 
+    //when date is selected
     const holdPreviousFeedbackDate = useCallback(
       (selectedId, index) => {
-        console.log(`holdPreviousFeedbackDate selectedId: ${selectedId}`)
+        console.log(`holdPreviousFeedbackDate`)
         setSelectedPreviousFeedbackUserByCoachee(selectedId)
         setSelectedPreviousFeedbackUser(selectedId)
-        setSelectedExistingCoachee('')
-        setSelectedPreviousFeedbackDetail(listFeedbackUser[index])
       },
-      [selectedFeedbackRequest],
+      [selectedFeedbackRequest, selectedPreviousFeedbackUserByCoachee],
     )
 
     const requestFeedback = useCallback(
       (selectedId) => {
-        console.log(`selectedId for requestFeedback: ${selectedId}`)
         requestFeedbackToCoachee()
 
         setModalType("notification")
@@ -310,7 +318,6 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
           setModalContent("Ada Kesalahan!", "Ups! Sepertinya ada kesalahan!\nSilahkan coba lagi!", "sedih")
         }
         toggleModal(true)
-
       },
       [selectedExistingCoachee],
     )
@@ -318,7 +325,8 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
     const openListPreviousFeedbackDateModal = useCallback(
       async (selectedId) => {
         if (selectedId !== '' && selectedId !== null) {
-          feedbackStore.clearFeedbackUserByCoachee()
+          feedbackStore.clearListFeedbackUserByCoachee()
+          // firstLoadFeedbackUserByCoachee()
           await loadFeedbackUserByCoachee(selectedId, 1)
           setModalType("previousFeedbackDates")
           toggleModal(true)
@@ -342,57 +350,18 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
 
     const openFeedbackDetail = () => {
       toggleModal(false)
+      setSelectedExistingCoachee('')
       goToFeedbackDetail()
     }
 
     const openFillFeedbackPage = () => {
       goToFeedbackDetail(true)
-      console.log('openFillFeedbackPage')
+      // console.log('openFillFeedbackPage')
     }
-
-    const firstLoadExistingCoachee = debounce(async () => {
-      console.log(`firstLoadExistingCoachee`)
-      await feedbackStore.clearFeedback()
-
-      await loadExistingCoachee(1)
-      // feedbackStore.listExistingCoachees = MOCK_EXISTING_COACHEE
-      setInitialLoading(false)
-      feedbackStore.setRefreshData(false)
-      forceUpdate()
-
-    }, 500)
-
-    const firstLoadFeedbackUserByCoachee = debounce(async () => {
-      console.log(`firstLoadFeedbackUserByCoachee`)
-      await feedbackStore.clearFeedbackUserByCoachee()
-
-      setTimeout(async () => {
-        await loadFeedbackUserByCoachee(selectedPreviousFeedbackUser, 1)
-        // feedbackStore.listExistingCoachees = MOCK_EXISTING_COACHEE
-        setInitialLoading(false)
-        feedbackStore.setRefreshData(false)
-        forceUpdate()
-      }, 500);
-
-    }, 500)
-
-    const firstLoadListRequestFeedbackUser = debounce(async () => {
-      console.log(`firstLoadRequestFeedbackUser`)
-      await feedbackStore.clearListRequestFeedback()
-      await loadListRequestFeedbackUser(1)
-      // feedbackStore.listExistingCoachees = MOCK_EXISTING_COACHEE
-      setInitialLoadingFeedbackRequest(false)
-      feedbackStore.setRefreshData(false)
-      forceUpdate()
-
-    }, 500)
-
 
     useEffect(() => {
       firstLoadExistingCoachee()
       firstLoadListRequestFeedbackUser()
-      console.log('use effect firstLoadExistingCoachee')
-      // setExistingCoacheeData(feedbackStore.listExistingCoachees)
     }, [])
 
     const renderExistingCoachee = () => {
@@ -407,9 +376,11 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
                   onRefresh={onRefreshExistingCoachee} />
               }
               data={existingCoacheeData}
-              keyExtractor={item => item.coachee_id}
+              keyExtractor={(item, index) => item.coachee_id + index}
               showsVerticalScrollIndicator={true}
-              ListEmptyComponent={() => initialLoading ? <Spinner visible={feedbackStore.isLoadingExistingCoachee} /> : <EmptyList navigateTo={goBack} />}
+              ListEmptyComponent={() => initialLoading ?
+                <Spinner visible={feedbackStore.isLoadingExistingCoachee} /> :
+                <EmptyList navigateTo={goBack} />}
               renderItem={({ item, index }) => (
                 <TouchableOpacity animationDuration={500}>
                   <ExistingCoacheeComponent
@@ -442,16 +413,16 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
         <>
           <Text type={"left-header"} text="Feedback Requests." />
           <Spacer height={Spacing[12]} />
-
-          <VStack horizontal={Spacing[24]} style={{ backgroundColor: Colors.WHITE, width: "100%", borderRadius: Spacing[20], height: Spacing[160] + Spacing[12], maxHeight: Spacing[160] + Spacing[12], borderWidth: Spacing[1] }}>
+          <VStack horizontal={Spacing[24]} style={{ backgroundColor: Colors.WHITE, width: "100%", borderRadius: Spacing[20], height: Spacing[160] + Spacing[12], borderWidth: Spacing[1] }}>
             <FlatList
               refreshControl={
-                <RefreshControl refreshing={false} onRefresh={onRefreshFeedbackRequest} />
+                <RefreshControl refreshing={false}
+                  onRefresh={onRefreshFeedbackRequest} />
               }
               data={listRequestFeedbackUser}
-              keyExtractor={item => item.rfu_user_from_id + 'feedback'}
+              keyExtractor={(item, index) => item.rfu_user_from_id + index}
               showsVerticalScrollIndicator={true}
-              ListEmptyComponent={() => initialLoading ? <Spinner visible={feedbackStore.isLoadingListRequetsFeedbackUser} /> : <EmptyList navigateTo={goBack} description="Belum ada request feedback!\nKembali lagi saat sudah ada Feedback Request ya!" />}
+              ListEmptyComponent={() => initialLoadingFeedbackRequest ? <Spinner visible={feedbackStore.isLoadingListRequetsFeedbackUser} /> : <EmptyList navigateTo={goBack} isExistingCoache={false} />}
               renderItem={({ item, index }) => (
                 <TouchableOpacity animationDuration={500}>
                   <FeedbackRequestListComponent
@@ -465,11 +436,11 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
               )}
               ListFooterComponent={
                 <Spinner
-                  visible={feedbackStore.isLoadingExistingCoachee}
+                  visible={feedbackStore.isLoadingListRequetsFeedbackUser}
                 />
               }
               onEndReached={onLoadMoreFeedbackRequest}
-              onEndReachedThreshold={0.1}
+              onEndReachedThreshold={0.2}
               style={{ paddingVertical: Spacing[2] }}
             />
           </VStack >
@@ -579,9 +550,11 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
                   <RefreshControl refreshing={false}
                     onRefresh={onRefreshFeedbackUserByCoachee} />
                 }
+                scrollEnabled={true}
                 data={listFeedbackUser}
-                keyExtractor={item => item.fu_id}
+                keyExtractor={(item, index) => item.fu_id + index}
                 showsVerticalScrollIndicator={true}
+                ListEmptyComponent={() => <EmptyList navigateTo={goBack} />}
                 renderItem={({ item, index }) => (
                   <TouchableOpacity key={item.fu_id} onPress={() => { holdPreviousFeedbackDate(item.fu_id, index) }} style={{
                     height: Spacing[42], borderTopWidth: index === 0 ? Spacing[0] : Spacing[1], flex: 1,
@@ -590,10 +563,15 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
                     <Text type={"body"} style={{ lineHeight: Spacing[42], backgroundColor: selectedPreviousFeedbackUserByCoachee === item.fu_id ? Colors.ABM_DARK_BLUE : Colors.WHITE, color: selectedPreviousFeedbackUserByCoachee === item.fu_id ? Colors.WHITE : Colors.ABM_DARK_BLUE, paddingHorizontal: spacing[2], textAlign: "center" }}>{moment(item.fu_created_at).format('DD MMMM YYYY')}</Text>
                   </TouchableOpacity>
                 )}
+                ListFooterComponent={
+                  <Spinner
+                    visible={feedbackStore.isLoadingListFeedbackUserByCoachee}
+                  />
+                }
                 onEndReached={onLoadMoreFeedbackUserByCoachee}
-                onEndReachedThreshold={0.2}
+                onEndReachedThreshold={0.1}
                 style={{
-                  paddingVertical: Spacing[2], paddingHorizontal: 0, width: "70%"
+                  paddingVertical: Spacing[2], paddingHorizontal: 0, width: "60%"
                 }}
               />
               <Spacer />
@@ -620,9 +598,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
             </VStack>
             <Spacer />
           </HStack>
-          {/* {modalType === 'notification' ? null : renderPreviousFeedbackDatesModal()} */}
         </VStack>
-
       )
     }
 

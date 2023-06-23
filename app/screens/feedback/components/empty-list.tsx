@@ -11,7 +11,8 @@ import { backgroundColor } from "react-native-calendars/src/style";
 export const EmptyList = ({
   navigateTo = () => null,
   imageSource = () => <IconSurprisedColor height={Spacing[60]} width={Spacing[60]} />,
-  description = 'Belum ada Coachees sebelumnya!\nKembali lagi saat sudah ada Existing Coachees ya!',
+  isExistingCoache = true,
+  description = isExistingCoache ? 'Belum ada Coachees sebelumnya!\nKembali lagi saat sudah ada Existing Coachees ya!' : 'Belum ada request feedback!\nKembali lagi saat sudah ada Feedback Request ya!',
   buttonLabel = 'Kembali'
 }) => {
   return (
