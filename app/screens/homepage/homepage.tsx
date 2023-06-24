@@ -43,6 +43,7 @@ import { ProfileUpdateForm } from "@screens/settings/my-account"
 
 import { MoodComponent } from "./components/mood-component"
 import { BrainstormsComponent } from "@screens/homepage/components/brainstorms-component"
+import { CultureMeasurementComponent } from "./components/culture-measurement-component"
 
 const FEED_EXAMPLE_DATA_ITEM: FeedItemType[] = [
   {
@@ -349,7 +350,9 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     const goToAssessment = () => navigation.navigate("assessment")
 
     const goToJuaraAssessment = () => navigation.navigate("juaraQuizMain")
-
+    
+    const goToCultureMeasurement = () => navigation.navigate("juaraQuizMain")
+    
     // const goToBrainstormsGroup = () => navigation.navigate("newBrainstormsGroup")
 
     const goToBrainstormsGroup = () => navigation.navigate("brainstormGroupList")
@@ -425,6 +428,10 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
                 onPressNoteFeedback={goToNoteFeedback}
                 goToCoaching={goToJournalCoaching}
               />
+            </HomepageCardWrapper>
+            <Spacer height={Spacing[12]} />
+            <HomepageCardWrapper animationDuration={700}>
+              <CultureMeasurementComponent data={profileData} goToCultureMeasurement={goToCultureMeasurement} />
             </HomepageCardWrapper>
             <Spacer height={Spacing[12]} />
             <HomepageCardWrapper animationDuration={700}>
