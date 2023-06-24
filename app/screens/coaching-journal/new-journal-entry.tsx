@@ -32,6 +32,10 @@ import Spinner from "react-native-loading-spinner-overlay"
 
 import { Formik } from "formik"
 
+import { IconClose } from "@assets/svgs"
+import { HorizontalAlignment } from "@components/view-stack/Types.ViewStack"
+import { ABM_GREEN } from "@styles/Color"
+
 export type JournalEntryType = {
   coachId: string
   date: string
@@ -179,9 +183,9 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
     useEffect(() => {
       if (coachingStore.messageCreateJournal) {
         if(coachingStore.messageCreateJournal === "Success"){
-          setModalContent("Berhasil!", "Catatan telah sukses disimpan!", "senang")
+          setModalContent("Sukses!", "Catatan telah sukses disimpan!", "senang")
         } else {
-          setModalContent("Oh no! :(", "Catatan gagal diproses :(\nCoba lagi ya!", "sedih")
+          setModalContent("Ada Kesalahan!", "Ups! Sepertinya ada kesalahan!\nSilahkan coba lagi!", "terkejut")
         }
         toggleResponseModal()
       }
@@ -632,26 +636,33 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
               >
                 <VStack horizontal={Spacing[24]} top={Spacing[24]} style={Layout.widthFull}>
                   <VStack>
+                    <VStack style={{
+                      alignItems: "flex-end"
+                    }}>
+                      <TouchableOpacity onPress={toggleResponseModal}>
+                        <IconClose height={Spacing[32]} width={Spacing[32]} />
+                      </TouchableOpacity>
+                    </VStack>
+                    <HStack bottom={Spacing[32]}>
+                      <Spacer />
+                      <MoodComponent data={modalIcon} width={Spacing[96]} height={Spacing[96]} />
+                      <Spacer />
+                    </HStack>
                     <Text
                       type={"body-bold"}
-                      style={{ fontSize: Spacing[18], textAlign: "center" }}
+                      style={{ fontSize: Spacing[32], textAlign: "center", color: ABM_GREEN}}
                       text={modalTitle}
                     />
                     <Spacer height={Spacing[24]} />
                     <Text type={"body"} style={{ textAlign: "center" }} text={modalDesc} />
                     <Spacer height={Spacing[20]} />
-                    <HStack bottom={Spacing[32]}>
-                      <Spacer />
-                      <MoodComponent data={modalIcon} width={Spacing[64]} height={Spacing[64]} />
-                      <Spacer />
-                    </HStack>
                     <HStack bottom={Spacing[24]}>
                       <Spacer />
                       <VStack style={{ maxWidth: Spacing[256], minWidth: Spacing[128] }}>
                         <Button
                           type={"primary-form"}
-                          text={coachingStore.messageCreateJournal === "Success" ? "Kembali ke Menu Coaching Journal" : "Kembali ke catatan"}
-                          style={{ height: Spacing[32], paddingHorizontal: Spacing[8] }}
+                          text={coachingStore.messageCreateJournal === "Success" ? "Kembali ke Menu Utama Coaching Journal" : "Kembali ke catatan"}
+                          style={{ height: Spacing[64], paddingHorizontal: Spacing[8] }}
                           textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
                           onPress={handleModalResponse}
                         />

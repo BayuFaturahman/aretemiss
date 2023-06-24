@@ -84,24 +84,23 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
       navigation.navigate("overviewJournalEntry", {
         journalId: id,
         isCoachee: false,
-        isJlFilled: false
+        jlId: ''
       })
     }, [])
 
-    const goToNoteCoachee = useCallback((id, coach_id, is_jl_filled) => {
-      
+    const goToNoteCoachee = useCallback((id, coach_id, type, label, jl_id) => {      
       coachingStore.isDetailJournal(true)
       const detailCoaching = coach_id === mainStore.userProfile.user_id
       coachingStore.setDetailCoaching(detailCoaching)
       coachingStore.setDetailID(id)
       coachingStore.setFormCoach(false)
-      console.log("goToNoteCoachee coach_id", coach_id)
-      console.log("goToNoteCoachee user_id", mainStore.userProfile.user_id)
+      coachingStore.setJournalType(type)
+      coachingStore.setJournalLabel(label)
 
       navigation.navigate("overviewJournalEntry", {
         journalId: id,
         isCoachee: true,
-        isJlFilled: is_jl_filled
+        jlId: jl_id
       })
     }, [])
 
@@ -144,35 +143,19 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
         console.log("create list")
         console.log(coachingStore.listJournal)
         const groups = coachingStore.listJournal.reduce((groups, journalData) => {
-          const date = journalData.journal_date.split("T")[0]         
-          if (!groups[date]) {
-            groups[date] = []
-          }
-
-          let jlItem = journalData.journal_learner.find(el => el.jl_learner_id === mainStore.userProfile.user_id)
-
-          if (jlItem) {
-            groups[date].push({
-              ...journalData,
-              title: journalData.journal_title,
-              type: journalData.journal_type,
-              id: journalData.journal_id,
-              isTagged: id !== journalData.coach_id,
-              coach_id: journalData.coach_id,
-              is_jl_filled: jlItem.is_filled
-            })
-          } else {
-            groups[date].push({
-              ...journalData,
-              title: journalData.journal_title,
-              type: journalData.journal_type,
-              id: journalData.journal_id,
-              isTagged: id !== journalData.coach_id,
-              coach_id: journalData.coach_id,
-              is_jl_filled: false
-            })
-          }
-          return groups
+        const date = journalData.journal_date.split("T")[0]         
+        if (!groups[date]) {
+          groups[date] = []
+        }
+          groups[date].push({
+            ...journalData,
+            title: journalData.journal_title,
+            type: journalData.journal_type,
+            id: journalData.journal_id,
+            isTagged: id !== journalData.coach_id,
+            coach_id: journalData.coach_id,
+          })
+        return groups
         }, {})
         groupArrays = Object.keys(groups).map((date) => {
           return {
@@ -218,8 +201,8 @@ const CoachingJournalMain: FC<StackScreenProps<NavigatorParamList, "coachingJour
                   onPressActivity={holdActivitiesId}
                   selectedActivities={selectedActivities}
                   onPressNote={goToNote}
-                  // onPressFeedback={goToFeedback}
                   onPressNoteCoachee={goToNoteCoachee}
+                  userId={mainStore.userProfile.user_id}
                 />
               </VStack>
             )}

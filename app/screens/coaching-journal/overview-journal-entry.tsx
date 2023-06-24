@@ -16,23 +16,27 @@ import { typography } from "@theme"
 import { useStores } from "../../bootstrap/context.boostrap"
 
 import Modal from "react-native-modalbox"
+import { MoodComponent } from "@screens/homepage/components/mood-component"
+
 import moment from "moment"
 
 import Spinner from "react-native-loading-spinner-overlay"
 import { Formik } from "formik"
+import { IconClose } from "@assets/svgs"
 import FastImage from "react-native-fast-image"
 import smileYellow from "@assets/icons/coachingJournal/empty/smile-yellow.png"
+import { ABM_GREEN } from "@styles/Color"
 
-const overviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalEntry">> = observer(
+const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalEntry">> = observer(
   ({ navigation, route }) => {
     const formikRef = useRef();
     const { mainStore, coachingStore } = useStores()
 
-    const { journalId, isCoachee, isJlFilled } = route.params
+    const { journalId, isCoachee, jlId } = route.params
 
-    console.log("overview journal " + journalId)
-    console.log("is coachee " + isCoachee)
-    console.log("is coachee user, isJlFilled", + isJlFilled)
+    // console.log("overview journal " + journalId)
+    // console.log("is coachee " + isCoachee)
+    // console.log("journalLearner ID " + jlId)
 
     const styles = StyleSheet.create({
       textError: {
@@ -66,8 +70,7 @@ const overviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
     const [selectedDate, setSelectedDate] = useState(null)
     const [dataTeamMember, setDataTeamMember] = useState<IOption[]>([])
 
-    const [isModalEditEntryVisible, setIsModalEditEntryVisible] = useState(false)
-
+    const [title, setTitle] = useState<string>("")
     const [jlContent, setJlContent] = useState<string>("")
     const [jlCommitment, setJlCommitment] = useState<string>("")
     const [jlLessonLearned, setJlLessonLearned] = useState<string>("")
@@ -79,6 +82,14 @@ const overviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
     const [isOnEditMode, setIsOnEditMode] = useState(true)
 
     const [coach, setCoach] = useState<string>("")
+    const [isJlFilled, setIsJlFilled] = useState<boolean>(false)
+
+    // Success / fail response modal
+    const [isResponseModalVisible, setIsResponseModalVisible] = useState(false)
+    const [modalTitle, setModalTitle] = useState<string>("")
+    const [modalDesc, setModalDesc] = useState<string>("")
+    const [modalIcon, setModalIcon] = useState("senang")
+    const [modalButtonText, setModalButtonText] = useState("Kembali ke catatan")
 
     const journalEntryInitialValue = {
       // coachId: '',
@@ -95,6 +106,7 @@ const overviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
       jlLessonLearned: "",
       jlCommitment: "",
       jlContent: "",
+      jlId: "",
     }
 
     const toggleModal = () => {
@@ -103,9 +115,9 @@ const overviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
       }, 100)
     }
 
-    const toggleModalEditEntry = () => {
+    const toggleResponseModal = () => {
       setTimeout(() => {
-        setIsModalEditEntryVisible(!isModalEditEntryVisible)
+        setIsResponseModalVisible(!isResponseModalVisible)
       }, 100)
     }
 
@@ -145,24 +157,33 @@ const overviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
 
     const getListDetail = useCallback(async () => {
       if (isCoachee) {
+          // if coachee, use JournalLearnerDetailApi
+          await coachingStore.getJournalLearnerDetail(jlId)
+
           console.log("is coachee true")
-          console.log(coachingStore.journalDetail)
+          console.log(coachingStore.learnerJournalDetail)
 
-          journalEntryInitialValue.type = coachingStore.journalDetail.journal_type;
-          journalEntryInitialValue.label = coachingStore.journalDetail.journal_label;
+          journalEntryInitialValue.jlId = jlId
+          journalEntryInitialValue.jlContent = coachingStore.learnerJournalDetail.jl_content
+          journalEntryInitialValue.jlLessonLearned = coachingStore.learnerJournalDetail.jl_lesson_learned
+          journalEntryInitialValue.jlCommitment = coachingStore.learnerJournalDetail.jl_commitment
 
-          setSelectedDate(coachingStore.journalDetail.journal_date)
+          journalEntryInitialValue.type = coachingStore.type
+          journalEntryInitialValue.label = coachingStore.label
+
+          setJlLessonLearned(coachingStore.learnerJournalDetail.jl_lesson_learned)
+          setJlCommitment(coachingStore.learnerJournalDetail.jl_commitment)
+          setJlContent(coachingStore.learnerJournalDetail.jl_content)
+          setTitle(`${coachingStore.learnerJournalDetail.journal.title}`)
+          setSelectedDate(coachingStore.learnerJournalDetail.journal.date)
           setSelectedActivities(coachingStore.journalDetail.journal_type)
-          setCoach(coachingStore.journalDetail.coach_fullname)
-        
-          if (isJlFilled) {
-            goToOverviewJournalByCoachee()
-          } else {
-            if (coachingStore.journalDetail.is_edited) {
-              setIsOnEditMode(false)
-            }
+          setCoach(coachingStore.learnerJournalDetail.coach_fullname)
+          if (coachingStore.learnerJournalDetail.is_filled) {
+            setIsOnEditMode(false)
+            setIsJlFilled(true)
           }
       } else {
+        // if coach, use journalDetail API
         await coachingStore.getJournalDetail()
 
         console.log(JSON.stringify(coachingStore.journalDetail, null, 4), 'line 154')
@@ -183,9 +204,10 @@ const overviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
         journalEntryInitialValue.label = coachingStore.journalDetail.journal_label;
 
         setInitValueJournalType(dataJournalTags.find(data => data.key === coachingStore.journalDetail.journal_type))
-        // setJlLessonLearned(coachingStore.journalDetail.jl_lesson_learned[0].desc)
-        // setJlCommitment(coachingStore.journalDetail.jl_commitment[0].desc)
-        // setJlContent(coachingStore.journalDetail.jl_content[0].desc)
+        setJlLessonLearned(coachingStore.journalDetail.jl_learner.jl_lesson_learned)
+        setJlCommitment(coachingStore.journalDetail.jl_learner.jl_commitment)
+        setJlContent(coachingStore.journalDetail.jl_learner.journal_content)
+        setTitle(`${coachingStore.journalDetail.journal_title}`)
         
         setSelectedDate(coachingStore.journalDetail.journal_date)
         setSelectedActivities(coachingStore.journalDetail.journal_type)
@@ -216,16 +238,23 @@ const overviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
 
     const goToOverviewJournalByCoachee = () => {
       console.log("journalEntryInitialValue : ", journalEntryInitialValue)
-      navigation.navigate("overviewJournalEntryByCoachee", {
-        title: coachingStore.journalDetail.journal_title,
-        lessonsLearned: coachingStore.journalDetail.jl_lesson_learned,
-        commitments: coachingStore.journalDetail.jl_commitment,
-        contents: coachingStore.journalDetail.jl_content,
-        learnersFullname: coachingStore.journalDetail.jl_learner_fullname
+      navigation.navigate("overviewJournalEntryByUser", {
+        title: title,
+        learnerJournals: coachingStore.journalDetail.jl_learner
+      })
+    }
+
+    const goToOverviewJournalByCoach = () => {
+      console.log("journalEntryInitialValue : ", journalEntryInitialValue)
+      navigation.navigate("overviewJournalEntryByUser", {
+        title: title,
+        coachJournal: coachingStore.learnerJournalDetail.journal
       })
     }
 
     const verifyData = async (data) => {
+      console.log('');
+
       console.log(coachingStore.journalDetail.is_coachee)
       console.log(coachingStore.journalDetail.is_edited)
       console.log(coachingStore.isFormCoach)
@@ -276,11 +305,9 @@ const overviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
             data.jlContent,
             data.jlLessonLearned,
             data.jlCommitment,
-            journalId,
+            data.jlId,
           )
-          // toggleModalEditEntry()
           setIsOnEditMode(false)
-          // goToFeedback()
         }
       }
     }
@@ -295,6 +322,49 @@ const overviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
       // @ts-ignore
       formikRef?.current?.resetForm()
     }
+
+    const setModalContent = (title: string, desc: string, icon: string, buttonText: string) => {
+      setModalTitle(title)
+      setModalDesc(desc)
+      setModalIcon(icon)
+      setModalButtonText(buttonText)
+    }
+    
+    // Handle redirect to home or close modal
+    const handleModalResponse = () => {
+      if (coachingStore.messageUpdatedJournal === "Success" && !isJlFilled && isCoachee) {
+        coachingStore.resetCoachingStore()
+        coachingStore.setRefreshData(true)
+        coachingStore.clearJournal().then(()=>{
+          navigation.reset({
+            routes: [{ name: 'coachingJournalMain' }]
+          })
+        })
+      } else {
+        toggleResponseModal()
+      }
+    }
+
+    // Set modal content based on API success / fail
+    useEffect(() => {
+      if (coachingStore.messageUpdatedJournal) {
+        if(coachingStore.messageUpdatedJournal === "Success"){
+          if (isJlFilled && isCoachee) {
+            // case coachee edit
+            setModalContent("Sukses!", "Catatan telah sukses diedit!", "senang", "Kembali ke Catatan")
+          } else if (!isJlFilled && isCoachee){
+            // case coachee initial input
+            setModalContent("Sukses!", "Catatan telah sukses disimpan!", "senang", "Kembali ke Menu utama Coaching Journal")
+          } else {
+            // case coach edit
+            setModalContent("Sukses!", "Catatan telah sukses diedit!", "senang", "Kembali ke Catatan")
+          }
+        } else {
+          setModalContent("Ada Kesalahan!", "Ups! Sepertinya ada kesalahan!\n Silahkan coba lagi", "terkejut", "Kembali ke Catatan")
+        }
+        toggleResponseModal()
+      }
+    },[coachingStore.messageUpdatedJournal])
 
     useEffect(() => {
       if (!isOnEditMode) {
@@ -374,7 +444,7 @@ const overviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                         data.jlContent,
                         data.jlLessonLearned,
                         data.jlCommitment,
-                        journalId,
+                        data.jlId,
                       )
 
                       // toggleModalEditEntry()
@@ -391,8 +461,8 @@ const overviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                         <Text type={"left-header"} style={{}} underlineWidth={Spacing[256]} text="Coaching Journal Overview" />
                         <Spacer />
                         <HStack>
-                          {isCoachee ? null : isOnEditMode ? (
-                            <Button type={"light-bg"} text={"Cancel"} onPress={onClickCancel} />
+                          {isOnEditMode ? (
+                            <Button type={"red-bg"} text={"Cancel"} onPress={onClickCancel} />
                           ) : (
                             <Button
                               type={"light-bg"}
@@ -422,7 +492,7 @@ const overviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                             horizontal={true}
                           > */}
                             <TextField
-                              value={values.title}
+                              value={title}
                               isRequired={false}
                               editable={false}
                               inputStyle={{
@@ -458,11 +528,12 @@ const overviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                               isRequired={false}
                               editable={false}
                               inputStyle={{
-                                backgroundColor: Colors.ABM_MAIN_BLUE,
+                                backgroundColor: Colors.ABM_DARK_BLUE,
                                 color: Colors.WHITE,
                                 textAlign: "left",
                                 paddingHorizontal: 10,
                                 fontWeight: "bold",
+                                borderRadius: Spacing[10]
                               }}
                               style={{
                                 paddingVertical: 0,
@@ -827,18 +898,13 @@ const overviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                       {!isOnEditMode ? (
                         <Button
                           type={"light-blue-form"}
-                          text={isCoachee ? "Lakukan feedback" : "Lihat catatan coachee"}
-                          onPress={isCoachee ? goToFeedback : goToOverviewJournalByCoachee}
+                          text={isCoachee ? "Lihat Catatan Coach" : "Lihat catatan coachee"}
+                          onPress={isCoachee ? goToOverviewJournalByCoach : goToOverviewJournalByCoachee}
                         />
-                      ) :
-                      // : isCoachee ? (
-                      //   <Button
-                      //     type={"primary"}
-                      //     text={"Lakukan feedback"}
-                      //     onPress={() => verifyData(values)}
-                      //   />
-                      // ) :
-                       (
+                      ) : isCoachee ? (
+                        <Button type={"primary-form"} text={"Simpan Catatan"} onPress={() => verifyData(values)}
+                        />
+                      ) : (
                         <Button type={"primary-form"} text={"Simpan Edit"} onPress={() => verifyData(values)} />
                       )}
                     </VStack>
@@ -849,71 +915,6 @@ const overviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
             <Spacer height={Spacing[72]} />
           </ScrollView>
         </SafeAreaView>
-
-        <Modal
-          isOpen={isModalEditEntryVisible}
-          style={{
-            height: "50%",
-            width: dimensions.screenWidth - Spacing[24],
-            backgroundColor: "rgba(52, 52, 52, 0)",
-          }}
-        >
-          <View style={{ flex: 1, justifyContent: "center" }}>
-            <VStack
-              style={{
-                backgroundColor: Colors.WHITE,
-                borderRadius: Spacing[48],
-                minHeight: Spacing[256],
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-              horizontal={Spacing[24]}
-              vertical={Spacing[24]}
-            >
-              <VStack horizontal={Spacing[24]} top={Spacing[24]} style={Layout.widthFull}>
-                <VStack>
-                  <Text
-                    type={"body-bold"}
-                    style={{ fontSize: Spacing[18], textAlign: "center" }}
-                    text={"Hore!"}
-                  />
-                  <Spacer height={Spacing[24]} />
-                  <Text
-                    type={"body"}
-                    style={{ textAlign: "center" }}
-                    text={"Catatan jurnal kamu sudah berhasil diganti."}
-                  />
-                  <Spacer height={Spacing[20]} />
-                  <HStack bottom={Spacing[32]}>
-                    <Spacer />
-                    <FastImage
-                      style={{
-                        height: Spacing[64],
-                        width: Spacing[64],
-                      }}
-                      source={smileYellow}
-                      resizeMode={"contain"}
-                    />
-                    <Spacer />
-                  </HStack>
-                  <HStack bottom={Spacing[24]}>
-                    <Spacer />
-                    <VStack style={{ maxWidth: Spacing[256], minWidth: Spacing[128] }}>
-                      <Button
-                        type={"primary"}
-                        text={"Oke"}
-                        style={{ height: Spacing[32], paddingHorizontal: Spacing[8] }}
-                        textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
-                        onPress={toggleModalEditEntry}
-                      />
-                    </VStack>
-                    <Spacer />
-                  </HStack>
-                </VStack>
-              </VStack>
-            </VStack>
-          </View>
-        </Modal>
 
         <Modal
           isOpen={isModalVisible}
@@ -961,6 +962,67 @@ const overviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
             </VStack>
           </View>
         </Modal>
+
+        <Modal
+            isOpen={isResponseModalVisible}
+            style={{
+              position: "absolute",
+              width: dimensions.screenWidth - Spacing[24],
+              backgroundColor: "rgba(52, 52, 52, 0)",
+            }}
+          >
+            <View style={{ flex: 1, justifyContent: "center" }}>
+              <VStack
+                style={{
+                  backgroundColor: Colors.WHITE,
+                  borderRadius: Spacing[48],
+                  minHeight: Spacing[256],
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+                horizontal={Spacing[24]}
+                vertical={Spacing[24]}
+              >
+                <VStack horizontal={Spacing[24]} top={Spacing[24]} style={Layout.widthFull}>
+                  <VStack>
+                    <VStack style={{
+                        alignItems: "flex-end"
+                      }}>
+                        <TouchableOpacity onPress={toggleResponseModal}>
+                          <IconClose height={Spacing[32]} width={Spacing[32]} />
+                        </TouchableOpacity>
+                    </VStack>
+                    <HStack bottom={Spacing[32]}>
+                      <Spacer />
+                      <MoodComponent data={modalIcon} width={Spacing[96]} height={Spacing[96]} />
+                      <Spacer />
+                    </HStack>
+                    <Text
+                      type={"body-bold"}
+                      style={{ fontSize: Spacing[32], textAlign: "center", color: ABM_GREEN }}
+                      text={modalTitle}
+                    />
+                    <Spacer height={Spacing[24]} />
+                    <Text type={"body"} style={{ textAlign: "center" }} text={modalDesc} />
+                    <Spacer height={Spacing[20]} />
+                    <HStack bottom={Spacing[24]}>
+                      <Spacer />
+                      <VStack style={{ maxWidth: Spacing[256], minWidth: Spacing[128] }}>
+                        <Button
+                          type={"primary-form"}
+                          text={modalButtonText}
+                          style={{ height: Spacing[32], paddingHorizontal: Spacing[8] }}
+                          textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
+                          onPress={handleModalResponse}
+                        />
+                      </VStack>
+                      <Spacer />
+                    </HStack>
+                  </VStack>
+                </VStack>
+              </VStack>
+            </View>
+          </Modal>
         <Spinner
           visible={coachingStore.isLoading || mainStore.isLoading}
           textContent={"Memuat..."}
@@ -970,4 +1032,4 @@ const overviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
   },
 )
 
-export default overviewJournalEntry
+export default OverviewJournalEntry

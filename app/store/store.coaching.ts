@@ -48,16 +48,33 @@ export type JournalDetail = {
   journal_date: string
   journal_label: string
 
-  jl_lesson_learned
-  jl_commitment
-  jl_content
-
+  jl_learner: LearnerJournalInJournalDetail[]
 
   jl_learner_fullname: []
   coach_fullname: string
 
   is_edited: boolean
   is_coachee: boolean
+}
+
+export type LearnerJournalInJournalDetail = {
+  learner_fullname: string
+  journal_content: string
+  jl_lesson_learned: string
+  jl_commitment: string
+  jl_documents_url: string[]
+}
+
+export type LearnerJournalDetail = {
+  journal: JournalInLearnerJournalModel
+  jl_id: string
+  jl_content: string
+  jl_lesson_learned: string
+  jl_commitment: string
+  learner_fullname: string
+  coach_fullname: string
+  is_filled: boolean
+  jl_documents_url: string[]
 }
 
 export type JournalLearnerModel = {
@@ -78,6 +95,16 @@ export type JournalModel = {
   coach_fullname: string
   is_coachee: boolean
   journal_learner: JournalLearnerModel[]
+}
+
+export type JournalInLearnerJournalModel = {
+  id: string
+  title: string
+  content: string
+  date: string,
+  documents_url: string[],
+  recommendation_for_coachee: string
+  coach_fullname?: string
 }
 
 export default class CoachingStore {
@@ -102,6 +129,7 @@ export default class CoachingStore {
 
   listJournal : JournalModel[]
   journalDetail: JournalDetail
+  learnerJournalDetail: LearnerJournalDetail
 
   my_feedback: FeedbackJLSixth
   coachee_feedback: FeedbackJLSixth
@@ -116,6 +144,7 @@ export default class CoachingStore {
   recommendationForCoachee: string
   learnerIds: string[]
   type: string
+  label: string
   documentsUrl: string
   messageCreateJournal: string
   messageUpdatedJournal: string
@@ -168,6 +197,26 @@ export default class CoachingStore {
       jl_learner_fullname: '',
       coach_fullname: ''
     }
+
+    this.learnerJournalDetail = {
+      jl_id: '',
+      jl_content: '',
+      jl_lesson_learned: '',
+      jl_commitment: '',
+      learner_fullname: '',
+      coach_fullname: '',
+      is_filled: false,
+      jl_documents_url: [],
+      journal: {
+        id: '',
+        title: '',
+        content: '',
+        date: '',
+        recommendation_for_coachee: '',
+        documents_url: []
+      }
+    }
+
     this.my_feedback= {
       q1: 0,
       q2: 0,
@@ -227,6 +276,7 @@ export default class CoachingStore {
     this.errorCode = null
     this.errorMessage = null
     this.formErrorCode = null
+    // this.learnerJournalDetail = 
   }
 
   setRefreshData(data: boolean){
@@ -271,6 +321,14 @@ export default class CoachingStore {
 
   setDetailID(id: string){
     this.detailId = id
+  }
+
+  setJournalType(type: string){
+    this.type = type
+  }
+
+  setJournalLabel(label: string){
+    this.label = label
   }
 
   setFormCoach(data: boolean){
@@ -383,6 +441,30 @@ export default class CoachingStore {
 
   journalDetailSucced (response: JournalDetail) {
     this.journalDetail = response
+    this.formErrorCode = null
+  }
+
+  async getJournalLearnerDetail(id: string) {
+    this.isLoading = true
+    try {
+    const result = await this.coachingApi.getJournalLearnerDetail(id)
+    if (result.kind === "ok") {
+      this.learnerJournalDetailSucceed(result.response)
+    } else if (result.kind === 'form-error'){
+      this.coachingFailed(result.response.errorCode)
+    } else {
+      // __DEV__ && console.tron.log(result.kind)
+    }
+    } catch (e) {
+      console.log(e)
+     } finally {
+      this.isLoading = false
+    }
+  }
+
+  learnerJournalDetailSucceed (response: LearnerJournalDetail) {
+    this.learnerJournalDetail = response
+    this.learnerJournalDetail.journal.coach_fullname = response.coach_fullname
     this.formErrorCode = null
   }
 
@@ -511,9 +593,29 @@ export default class CoachingStore {
     this.messageUpdatedJournal = ''
     this.messageCreateFeedback = ''
 
+
     this.isDetail = false
     this.formErrorCode = null
     this.detailId = ''
+
+    this.learnerJournalDetail = {
+      jl_id: '',
+      jl_content: '',
+      jl_lesson_learned: '',
+      jl_commitment: '',
+      learner_fullname: '',
+      coach_fullname: '',
+      is_filled: false,
+      jl_documents_url: [],
+      journal: {
+        id: '',
+        title: '',
+        content: '',
+        date: '',
+        recommendation_for_coachee: '',
+        documents_url: []
+      }
+    }
   }
 
   async updateJournal(
@@ -542,6 +644,7 @@ export default class CoachingStore {
     } else if (result.kind === 'form-error'){
       this.coachingFailed(result.response.errorCode)
     } else {
+      await this.updateJournalSucced('Failed')
       // __DEV__ && console.tron.log(result.kind)
     }
   }
@@ -568,6 +671,7 @@ export default class CoachingStore {
     } else if (result.kind === 'form-error'){
       this.coachingFailed(result.response.errorCode)
     } else {
+      await this.updateJournalSucced('Failed')
       // __DEV__ && console.tron.log(result.kind)
     }
   }
@@ -579,7 +683,7 @@ export default class CoachingStore {
     this.content = ''
     this.strength = ''
     this.improvement = ''
-    this.commitment = ''
+    this.recommendationForCoachee = ''
     this.learnerIds = []
     this.type = ''
     this.messageUpdatedJournal = message

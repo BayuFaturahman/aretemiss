@@ -4,7 +4,7 @@ import fillFeedback from './fill-feedback'
 import fillFeedbackDetail from './fill-feedback-detail'
 import quizForm from './quiz-form'
 import overviewJournalEntry from './overview-journal-entry'
-import overviewJournalEntryByCoachee from './overview-journal-entry-by-coachee'
+import overviewJournalEntryByUser from './overview-journal-entry-by-user'
 import fillFeedbackCoachee from './fill-feedback-coachee'
 
 export {
@@ -14,6 +14,6 @@ export {
   fillFeedbackDetail,
   quizForm,
   overviewJournalEntry,
-  overviewJournalEntryByCoachee,
+  overviewJournalEntryByUser,
   fillFeedbackCoachee
 }

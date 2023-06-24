@@ -3,7 +3,7 @@ import { ApiResponse } from "apisauce"
 import {FeedbackDetail, FeedbackJLSixth} from "app/store/store.coaching";
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
-import { CreateJournalResult, FeedbackDetailResult, JournalDetailResult, JournalListResult } from "./coaching-api.types";
+import { CreateJournalResult, FeedbackDetailResult, JournalDetailResult, JournalListResult, LearnerJournalDetailResult} from "./coaching-api.types";
 import {DEFAULT_API_CONFIG} from "@services/api/api-config";
 
 export class CoachingApi {
@@ -52,6 +52,32 @@ export class CoachingApi {
           // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.get(
       `/journal/${id}`, {}, { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` })
+      
+      console.log('response detail', response.data)
+      if(response.status === 400){
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data.data
+      return { kind: "ok", response: res }
+    } catch (e) {
+      // __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data"}
+    }
+  }
+
+  async getJournalLearnerDetail(id: string): Promise<LearnerJournalDetailResult> {
+    console.log('request getJournal Detail', id)
+    try {
+          // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.get(
+      `/journal-learner/${id}`, {}, { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` })
       
       console.log('response detail', response.data)
       if(response.status === 400){
@@ -159,12 +185,13 @@ export class CoachingApi {
       console.log('updateJournalLearner ', journalId)
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.patch(
-        `/journal/${journalId}`,
+        `/journal-learner/${journalId}`,
         {
           content,
           lessonsLearned,
           commitment,
         },
+        { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` }
       )
       console.log('updateJournalLearner response', response)
       console.log(response)
