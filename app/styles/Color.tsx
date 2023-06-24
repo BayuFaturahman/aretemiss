@@ -13,6 +13,7 @@ export const BLACK = '#000000';
 export const WHITE = '#FFFFFF';
 export const TRANSPARENT = '#00000a0';
 // Gray
+export const GRAY74 = '#BDBDBD';
 export const GRAY100 = '#F7FAFC';
 export const GRAY200 = '#EDF2F7';
 export const GRAY300 = '#E2E8F0';

@@ -351,7 +351,9 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
     const goToJuaraAssessment = () => navigation.navigate("juaraQuizMain")
     
-    const goToCultureMeasurement = () => navigation.navigate("juaraQuizMain")
+    const goToCultureMeasurement = () => {
+      console.log('lala')
+      navigation.navigate("cultureMeasurementMain")}
     
     // const goToBrainstormsGroup = () => navigation.navigate("newBrainstormsGroup")
 
@@ -431,7 +433,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
             </HomepageCardWrapper>
             <Spacer height={Spacing[12]} />
             <HomepageCardWrapper animationDuration={700}>
-              <CultureMeasurementComponent data={profileData} goToCultureMeasurement={goToCultureMeasurement} />
+              <CultureMeasurementComponent goToCultureMeasurement={goToCultureMeasurement} />
             </HomepageCardWrapper>
             <Spacer height={Spacing[12]} />
             <HomepageCardWrapper animationDuration={700}>
