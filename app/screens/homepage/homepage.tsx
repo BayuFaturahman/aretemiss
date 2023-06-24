@@ -193,12 +193,12 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       })
     }, [])
 
-    const goToFeedback = useCallback((id) => {
+    const goToFeedbackUser = useCallback((id) => {
       navigation.navigate("feedbackMain")
       console.log(id)
     }, [])
 
-    const goToFeedback1 = useCallback((id) => {
+    const goToFeedback = useCallback((id) => {
       coachingStore.isDetailJournal(true)
       coachingStore.setDetailID(id)
       navigation.navigate("fillFeedbackDetail")
@@ -430,7 +430,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
                 onPressActivity={holdActivitiesId}
                 selectedActivities={selectedActivities}
                 onPressNote={goToNote}
-                onPressFeedback={goToFeedback1}
+                onPressFeedback={goToFeedback}
                 onPressNoteFeedback={goToNoteFeedback}
                 goToCoaching={goToJournalCoaching}
               />
@@ -438,7 +438,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
             <Spacer height={Spacing[12]} />
             <HomepageCardWrapper animationDuration={700}>
               <VStack>
-                <FeeedbackComponent goToFeedback={goToFeedback} />
+                <FeeedbackComponent goToFeedback={goToFeedbackUser} />
               </VStack>
             </HomepageCardWrapper>
             <Spacer height={Spacing[12]} />
