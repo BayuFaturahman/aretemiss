@@ -162,7 +162,7 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
                                                             }} />
                                                             <Text type="body" style={{ fontSize: Spacing[12] }} >{data.text}</Text>
                                                             <Spacer />
-                                                            <Button type="primary" text="Isi Kuisioner" style={{ paddingHorizontal: Spacing[8] }} textStyle={{ fontSize: Spacing[12] }} />
+                                                            <Button type={data.filled >= data.totalAll ? "negative" : "primary"} text="Isi Kuisioner" style={{ paddingHorizontal: Spacing[8] }} textStyle={{ fontSize: Spacing[12] }} disabled={data.filled >= data.totalAll} />
                                                         </HStack>
                                                         <Text type="body" style={{ fontSize: Spacing[12], fontWeight: '100' }}>{`Terakhir diisi  pada tanggal ${moment(data.lastModified).format('DD MMM YYYY')}`}</Text>
                                                         <Spacer height={Spacing[2]} />
