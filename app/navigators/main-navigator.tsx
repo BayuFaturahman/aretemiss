@@ -48,10 +48,7 @@ import {
   newBrainstormsGroup,
   sendEmail,
 } from "@screens/brainstorm"
-import feedbackMain from "@screens/feedback/feedback-main"
-import feedbackDetail from "@screens/feedback/feedback-detail"
-import { FeedbackUserDetailModel } from "app/store/store.feedback"
-import FeedbackCommitment from "@screens/feedback/feedback-commitment"
+import { feedbackCommitment, feedbackDetail, feedbackMain } from "@screens/feedback"
 
 const screens: AppRoute[] = [
   {
@@ -212,7 +209,7 @@ const screens: AppRoute[] = [
   },
   {
     name: "feedbackCommitment",
-    component: FeedbackCommitment,
+    component: feedbackCommitment,
   },
 ]
 
