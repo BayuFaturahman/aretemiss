@@ -12,10 +12,11 @@ import CoachingStore from "../store/store.coaching"
 import FeedStore from "../store/store.feed";
 import NotificationStore from "../store/store.notification";
 import LeaderboardStore from "../store/store.leaderboard";
+import CultureMeasurementStore from "../store/store.cultureMeasurement";
 
-import {Api} from "@services/api";
-import {FeedApi} from "@services/api/feed/feed-api";
-import {QuizApi} from "@services/api/quiz/quiz-api";
+import { Api } from "@services/api";
+import { FeedApi } from "@services/api/feed/feed-api";
+import { QuizApi } from "@services/api/quiz/quiz-api";
 
 export default class RootStore {
   authStore: AuthStore;
@@ -27,6 +28,7 @@ export default class RootStore {
   feedStore: FeedStore;
   notificationStore: NotificationStore;
   leaderboardStore: LeaderboardStore;
+  cultureMeasurementStore: CultureMeasurementStore;
 
   feedApi: FeedApi
   quizApi: QuizApi
@@ -43,6 +45,7 @@ export default class RootStore {
     this.notificationStore = new NotificationStore(this.api);
     this.leaderboardStore = new LeaderboardStore(this.api);
     this.brainstormStore = new BrainstormStore(this.api);
+    this.cultureMeasurementStore = new CultureMeasurementStore(this.api);
 
     this.feedApi = new FeedApi(api)
     this.quizApi = new QuizApi(api)
