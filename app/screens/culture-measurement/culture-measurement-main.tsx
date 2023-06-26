@@ -45,14 +45,14 @@ const QUESTIONNAIRE_DATA = [
         text: 'Penilaian Infrastruktur\nBudaya Juara',
         color: 'ABM_YELLOW',
         lastModified: '2023-06-11T15:52:18.000Z',
-        filled: 4,
+        filled: 1,
         totalAll: 5
     },
     {
         text: 'Penilaian Pelaksanaan\nProyek Budaya',
         color: 'ABM_GREEN',
         lastModified: '2023-06-12T15:52:18.000Z',
-        filled: 5,
+        filled: 3,
         totalAll: 5
     }
 ]
@@ -70,10 +70,23 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
             })
         }
 
+        const goToQuestionnaire = (type: number) => {
+            // if budaya juara
+            if (type === 1) { }
+            // if penilaian infrastruktur budaya juara
+            else if (type === 1) { }
+            // if penilaian pelaksanaan budaya juara
+            else if (type === 2) {
+                goToCultureMeasurementImplementation()
+            }
+
+        }
+
+        const goToCultureMeasurementImplementation = () => navigation.navigate("cultureMeasurementImplementation")
 
         return (
             <VStack
-                testID="feedback"
+                testID="cultureMeasurementMain"
                 style={styles.bg}
             >
                 <SafeAreaView style={Layout.flex}>
@@ -162,7 +175,8 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
                                                             }} />
                                                             <Text type="body" style={{ fontSize: Spacing[12] }} >{data.text}</Text>
                                                             <Spacer />
-                                                            <Button type={data.filled >= data.totalAll ? "negative" : "primary"} text="Isi Kuisioner" style={{ paddingHorizontal: Spacing[8] }} textStyle={{ fontSize: Spacing[12] }} disabled={data.filled >= data.totalAll} />
+                                                            <Button type={data.filled >= data.totalAll ? "negative" : "primary"} text="Isi Kuisioner" style={{ paddingHorizontal: Spacing[8] }} textStyle={{ fontSize: Spacing[12] }}
+                                                                disabled={data.filled >= data.totalAll} onPress={() => goToQuestionnaire(index)} />
                                                         </HStack>
                                                         <Text type="body" style={{ fontSize: Spacing[12], fontWeight: '100' }}>{`Terakhir diisi  pada tanggal ${moment(data.lastModified).format('DD MMM YYYY')}`}</Text>
                                                         <Spacer height={Spacing[2]} />

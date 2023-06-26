@@ -3,7 +3,7 @@ import { TouchableOpacity } from "react-native"
 import { Text } from "../text/text"
 import { viewPresets, textPresets } from "./button.presets"
 import { ButtonProps } from "./button.props"
-import {Colors, Spacing} from "@styles";
+import { Colors, Spacing } from "@styles";
 
 /**
  * For your text displaying needs.
@@ -152,6 +152,22 @@ export function Button(props: ButtonProps) {
         <Text type={'button'} tx={tx} text={text} style={[{
           textAlign: 'center',
           color: Colors.ABM_MAIN_BLUE,
+          fontSize: Spacing[14]
+        }, textStyleOverride]} />
+      </TouchableOpacity>
+    )
+  }
+
+  if (type === 'dark-yellow') {
+    return (
+      <TouchableOpacity style={[{
+        backgroundColor: Colors.ABM_YELLOW,
+        paddingVertical: Spacing[8],
+        borderRadius: Spacing[20]
+      }, styleOverride]} {...rest}>
+        <Text type={'button'} tx={tx} text={text} style={[{
+          textAlign: 'center',
+          color: Colors.ABM_DARK_BLUE,
           fontSize: Spacing[14]
         }, textStyleOverride]} />
       </TouchableOpacity>
