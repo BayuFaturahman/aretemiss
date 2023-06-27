@@ -93,6 +93,23 @@ export function Button(props: ButtonProps) {
     )
   }
 
+  if (type === 'negative-white') {
+    return (
+      <TouchableOpacity style={[{
+        backgroundColor: Colors.CLOUD_GRAY,
+        paddingVertical: Spacing[8],
+        paddingHorizontal: Spacing[16],
+        borderRadius: Spacing[20]
+      }, styleOverride]} {...rest}>
+        <Text type={'button'} tx={tx} text={text} style={[{
+          textAlign: 'center',
+          color: Colors.WHITE,
+          fontSize: Spacing[14]
+        }, textStyleOverride]} />
+      </TouchableOpacity>
+    )
+  }
+
   if (type === 'warning') {
     return (
       <TouchableOpacity style={[{

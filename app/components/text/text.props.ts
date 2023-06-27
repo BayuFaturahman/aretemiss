@@ -36,7 +36,7 @@ export interface TextProps extends TextProperties {
   preset?: TextPresets
 
   type?: 'header' | 'right-header' | 'left-header' | 'header2' | 'body' | 'body-bold' | 'label'
-    | 'left-label' | 'warning' | 'button' | 'button-small' | 'button-extrasmall' | 'coveredbg' | 'light-blue'
+    | 'left-label' | 'warning' | 'warning-not-bold' | 'button' | 'button-small' | 'button-extrasmall' | 'coveredbg' | 'light-blue'
 
   underlineWidth? : number
 }

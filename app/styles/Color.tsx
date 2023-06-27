@@ -22,6 +22,7 @@ export const GRAY600 = '#718096';
 export const GRAY700 = '#4A5568';
 export const GRAY800 = '#2D3748';
 export const GRAY900 = '#1A202C';
+export const GRAY_DISABLEB = '#BDBDBD';
 
 // Red
 export const RED100 = '#FFF5F5';
