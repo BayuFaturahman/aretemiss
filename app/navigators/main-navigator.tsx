@@ -48,7 +48,7 @@ import {
   newBrainstormsGroup,
   sendEmail,
 } from "@screens/brainstorm"
-import { cultureMeasurementImplementation, cultureMeasurementMain } from "@screens/culture-measurement"
+import { cultureMeasurementImplementation, cultureMeasurementImplementationQuestionnaire, cultureMeasurementMain } from "@screens/culture-measurement"
 
 const screens: AppRoute[] = [
   {
@@ -207,6 +207,10 @@ const screens: AppRoute[] = [
     name: "cultureMeasurementImplementation",
     component: cultureMeasurementImplementation,
   },
+  {
+    name: "cultureMeasurementImplementationQuestionnaire",
+    component: cultureMeasurementImplementationQuestionnaire,
+  },
 ]
 
 export type NavigatorParamList = {
@@ -296,7 +300,8 @@ export type NavigatorParamList = {
     totalQuestions: number;
   }
   cultureMeasurementMain: undefined,
-  cultureMeasurementImplementation: undefined
+  cultureMeasurementImplementation: undefined,
+  cultureMeasurementImplementationQuestionnaire: undefined
 }
 
 export default screens

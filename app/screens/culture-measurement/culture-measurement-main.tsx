@@ -7,6 +7,7 @@ import { NavigatorParamList } from "@navigators/main-navigator"
 import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
 import { Colors, Layout, Spacing } from "@styles"
+import Spinner from "react-native-loading-spinner-overlay"
 
 import { useStores } from "../../bootstrap/context.boostrap"
 
@@ -16,95 +17,8 @@ import { images } from "@assets/images";
 import { ProgressBar } from "react-native-paper"
 import moment from "moment"
 import { CMPublishDataModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
-import { CMObjectiveModel, CMObjectiveType, DaysType } from "./culture-measurement.type"
+import { CMObjectiveModel, CMObjectiveType, CM_PUBLISH_EMPTY, DaysType, QUESTIONNAIRE_TYPE } from "./culture-measurement.type"
 // import { EmptyList } from "./components/empty-list"
-
-const CM_PUBLISH_MOCK_DATA: CMPublishDataModel = {
-    "id": "2aec5d67-b1fd-4fa6-83ab-089d24922a60",
-    "title": "Kuesioner Budaya Juara",
-    "description": "<p>Terima kasih atas kesediaan Anda untuk mengisi kuesioner Budaya Juara ini. Kuesioner ini dirancang untuk mengetahui sejauh mana peran para pemimpin dalam mengimplementasikan Budaya Juara. Kuesioner ini dibagi menjadi tiga bagian dimana Anda perlu mengisi ketiga rangkaian penilaian agar kami dapat memperoleh nilai indeks yang sah. Silakan isi kuesioner sesuai dengan urutan berikut:</p><br>{{objective}}<p>Ketiga rangkaian kuesioner ini dapat disimpan di tengah-tengah pengisian, sehingga Anda dapat meninggalkan kuesioner apabila dibutuhkan dan kembali mengisi kuesioner di saat Anda memiliki kesempatan untuk mengisi kuesionernya kembali.<p><br><p>Kami berharap penilaian ini dilakukan seobyektif mungkin sehingga rekomendasi pengembangan para pemimpin akan menjadi lebih akurat. Silakan mengisi kuesioner Budaya Juara ini satu kali per satu kuarter untuk menghasilkan hasil yang bermakna.</p>",
-    "status": "published",
-    "startDate": "2023-06-21T17:00:00.000Z",
-    "endDate": "2023-06-26T17:00:00.000Z",
-    "cm_created_at": "2023-06-22T08:58:27.000Z",
-    "cm_updated_at": "2023-06-22T09:10:44.000Z",
-    "cm_deleted_at": null,
-    "culture_measurement_objectives": [
-        {
-            "cm_objective_id": "c511ca4e-e6c5-4209-8ba7-4c8b11dcce6a",
-            "cm_objective_title": "Penilaian Infrastruktur Budaya Juara",
-            "cm_objective_max_answerred": 1,
-            "culture_measurement_takers": [],
-            "is_enable": true
-        },
-        {
-            "cm_objective_id": "8502cd7b-6955-4610-b22d-1bdccf38c89e",
-            "cm_objective_title": "Kesiapan Infrastruktur Budaya",
-            "cm_objective_max_answerred": 1,
-            "culture_measurement_takers": [],
-            "is_enable": false
-        },
-        {
-            "cm_objective_id": "17dbcd12-00ce-488a-a188-6e5b1166b190",
-            "cm_objective_title": "Pelaksanaan Project Budaya",
-            "cm_objective_max_answerred": 1,
-            "culture_measurement_takers": [],
-            "is_enable": false
-        }
-    ]
-}
-
-const QUESTIONNAIRE_TYPE = [
-    {
-        text: 'Budaya Juara',
-        color: 'ABM_LIGHT_BLUE'
-    },
-    {
-        text: 'Infrastuktur Juara',
-        color: 'ABM_YELLOW'
-    },
-    {
-        text: 'Pelaksanaan Proyek Budaya',
-        color: 'ABM_GREEN'
-    }
-]
-
-const QUESTIONNAIRE_DATA = [
-    {
-        text: 'Penilaian Budaya Juara\n2/5 Orang',
-        color: 'ABM_LIGHT_BLUE',
-        lastModified: '2023-06-10T15:52:18.000Z',
-        filled: 2,
-        totalAll: 5
-    },
-    {
-        text: 'Penilaian Infrastruktur\nBudaya Juara',
-        color: 'ABM_YELLOW',
-        lastModified: '2023-06-11T15:52:18.000Z',
-        filled: 1,
-        totalAll: 5
-    },
-    {
-        text: 'Penilaian Pelaksanaan\nProyek Budaya',
-        color: 'ABM_GREEN',
-        lastModified: '2023-06-12T15:52:18.000Z',
-        filled: 3,
-        totalAll: 5
-    }
-]
-
-const CM_PUBLISH_EMPTY: CMPublishDataModel = {
-    id: '',
-    title: '',
-    description: '',
-    status: '',
-    startDate: '',
-    endDate: '',
-    cm_created_at: '',
-    cm_updated_at: '',
-    cm_deleted_at: '',
-    culture_measurement_objectives: []
-}
 
 const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMeasurementMain">> =
     observer(({ navigation }) => {
@@ -135,7 +49,6 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
             else if (type === 2) {
                 goToCultureMeasurementImplementation()
             }
-
         }
 
         const goToCultureMeasurementImplementation = () => navigation.navigate("cultureMeasurementImplementation")
@@ -161,7 +74,6 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
             //start extracting period date
             setStartDate(`${DaysType[moment(publishData.startDate).day()]}, ${moment(publishData.startDate).format('DD MMM YYYY')}`)
             setEndDate(`${DaysType[moment(publishData.endDate).day()]}, ${moment(publishData.endDate).format('DD MMM YYYY')}`)
-            // setEndDate(moment(publishData.endDate).format('DD MMM YYYY'))
 
             //start extracting CM objectives
             let tempObjectives = publishData.culture_measurement_objectives.map((data, index) => {
@@ -169,8 +81,6 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
                 let tempTotalSubmittedTakers = data.culture_measurement_takers.filter((item) => { item.cm_taker_status !== 'draft' })
 
                 if (data.cm_objective_title === CMObjectiveType.BUDAYA_JUARA) {
-
-
                     curColor = 'ABM_LIGHT_BLUE'
                     data.cm_objective_title = `${data.cm_objective_title} ${tempTotalSubmittedTakers.length}/${data.cm_objective_max_answerred} orang`
                 } else if (data.cm_objective_title === CMObjectiveType.INFRASTRUKTUR) {
@@ -310,7 +220,8 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
                                                             <Text type="body-bold" style={{ fontSize: Spacing[12], width: Spacing[128] }} >{data.cmoTitle}</Text>
                                                             <Spacer />
                                                             <Button type={data.isEnable ? "primary" : "negative"} text="Isi Kuisioner" style={{ paddingHorizontal: Spacing[8] }} textStyle={{ fontSize: Spacing[12] }}
-                                                                disabled={!data.isEnable} onPress={() => goToQuestionnaire(index)} />
+                                                                // disabled={!data.isEnable} onPress={() => goToQuestionnaire(index)} />
+                                                                disabled={false} onPress={() => goToQuestionnaire(index)} />
                                                         </HStack>
                                                         <Text type="body" style={{ fontSize: Spacing[12], fontWeight: '100' }}>{`Terakhir diisi  pada tanggal ${moment(data.cmoLastModified).format('DD MMM YYYY')}`}</Text>
                                                         <Spacer height={Spacing[2]} />
@@ -331,6 +242,7 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
                         </VStack>
                     </ScrollView >
                 </SafeAreaView >
+                <Spinner visible={cultureMeasurementStore.isLoading} textContent={"Memuat..."} />
             </VStack >
         )
     })
