@@ -8,7 +8,7 @@ import Spacer from "@components/spacer";
 import {Text} from "@components";
 import notIcon from "@assets/icons/coachingJournal/note.png";
 import React from "react";
-import {CoachingJournalItem} from "@screens/coaching-journal/coaching-journal.type";
+import {CoachingJournalItem, CoachingActivitiesItem} from "@screens/coaching-journal/coaching-journal.type";
 
 type CoachingJournalItemRenderProps = {
   item: CoachingJournalItem
@@ -16,9 +16,9 @@ type CoachingJournalItemRenderProps = {
   selectedActivities: string
   onPressActivity(id: string): void
   onPressNote(id: string, coach_id: string): void
-  onPressFeedback(id: string, coach_id: string): void
-  onPressNoteFeedback(id: string, coach_id: string): void
-  isHomepageComponent?: boolean
+  onPressNoteCoachee(id: string, coach_id: string, type: string, label: string, jlId: string): void
+  isHomepageComponent?: boolean,
+  userId: string,
 }
 
 export const CoachingJournalItemRender = (
@@ -28,25 +28,28 @@ export const CoachingJournalItemRender = (
     selectedActivities,
     onPressActivity = ()=> null,
     onPressNote = ()=> null,
-    onPressFeedback = ()=> null,
-    onPressNoteFeedback = ()=> null,
-    isHomepageComponent = false
+    onPressNoteCoachee = ()=> null,
+    isHomepageComponent = false,
+    userId
   }:CoachingJournalItemRenderProps) => {
 
   const dateArr = item.date.split(' ')
 
-  const renderButtonTagged = (isTagged: boolean, id: string, coach_id: string) => {
-    if(isTagged){
+  const renderButtonTagged = (activityItem: CoachingActivitiesItem) => {
+    if(activityItem.isTagged){
+      // find journalLearner item from array of jls.
+      let jlItem = activityItem.journal_learner.find(el => el.jl_learner_id === userId)
+
       return(
         <HStack left={Spacing[8]} style={{maxWidth: dimensions.screenWidth - Spacing[128]}}>
-          <TouchableOpacity onPress={()=>onPressNoteFeedback(id, coach_id)} style={[{backgroundColor: Colors.ABM_BG_BLUE, borderRadius: Spacing[12], alignItems: 'center'}, Layout.widthFull]}>
+          <TouchableOpacity onPress={()=>onPressNoteCoachee(activityItem.id, activityItem.coach_id, activityItem.journal_type, activityItem.journal_label, jlItem.jl_id)} style={[{backgroundColor: Colors.ABM_BG_BLUE, borderRadius: Spacing[12], alignItems: 'center'}, Layout.widthFull]}>
             <HStack horizontal={Spacing[8]} style={{minHeight:Spacing[64]}}>
-              <FastImage style={{
-                height: Spacing[24],
-                width: Spacing[24]
-              }} source={notFeedbackIcon} resizeMode={"contain"}/>
-              <Spacer width={Spacing[8]} />
-              <Text type={'body-bold'} style={{lineHeight:Spacing[16]}} text={'Isi catatan &\n' + 'beri feedback.'} numberOfLines={2} />
+                <FastImage style={{
+                  height: Spacing[24],
+                  width: Spacing[24]
+                }} source={jlItem.is_filled ? notIcon : notFeedbackIcon} resizeMode={"contain"}/>
+                <Spacer width={Spacing[8]} />
+                <Text type={'body-bold'} style={{lineHeight:Spacing[16]}} text={jlItem.is_filled ? 'Lihat \ncatatan.' : 'Isi catatan'} numberOfLines={2} />
             </HStack>
           </TouchableOpacity>
         </HStack>
@@ -54,7 +57,7 @@ export const CoachingJournalItemRender = (
     }else{
       return(
         <HStack left={Spacing[8]} style={{maxWidth: dimensions.screenWidth - Spacing[128]}}>
-          <TouchableOpacity onPress={()=>onPressNote(id, coach_id)} style={{flex:1,backgroundColor: Colors.ABM_BG_BLUE, borderTopStartRadius: Spacing[12], borderBottomStartRadius: Spacing[12], alignItems: 'center'}}>
+          <TouchableOpacity onPress={()=>onPressNote(activityItem.id, activityItem.coach_id)} style={{flex:1,backgroundColor: Colors.ABM_BG_BLUE, borderRadius: Spacing[10], alignItems: 'center'}}>
             <HStack horizontal={Spacing[8]} style={{minHeight:Spacing[64]}}>
               <FastImage style={{
                 height: Spacing[24],
@@ -62,17 +65,6 @@ export const CoachingJournalItemRender = (
               }} source={notIcon} resizeMode={"contain"}/>
               <Spacer width={Spacing[8]} />
               <Text type={'body-bold'} style={{lineHeight:Spacing[16]}} text={'Lihat \ncatatan.'} numberOfLines={2} />
-            </HStack>
-          </TouchableOpacity>
-          <View style={{backgroundColor: Colors.ABM_DARK_BLUE, width: Spacing[1], height: '100%'}} />
-          <TouchableOpacity onPress={()=>onPressFeedback(id, coach_id)} style={{flex:1,backgroundColor: Colors.ABM_BG_BLUE, borderTopEndRadius: Spacing[12], borderBottomEndRadius: Spacing[12], alignItems: 'center'}}>
-            <HStack horizontal={Spacing[8]} style={{minHeight:Spacing[64]}}>
-              <FastImage style={{
-                height: Spacing[24],
-                width: Spacing[24]
-              }} source={notFeedbackIcon} resizeMode={"contain"}/>
-              <Spacer width={Spacing[8]} />
-              <Text type={'body-bold'} style={{lineHeight:Spacing[16]}} text={'Lihat \nfeedback.'} numberOfLines={2} />
             </HStack>
           </TouchableOpacity>
         </HStack>
@@ -113,46 +105,10 @@ export const CoachingJournalItemRender = (
                 break;
             }
           }
-
-          // const renderContent = useMemo(()=>{
-          //   if(selectedActivities === activitiesItem.id){
-          //     return(renderButtonTagged(activitiesItem.isTagged, activitiesItem.id, activitiesItem.coach_id))
-          //   }else{
-          //     return(
-          //       <TouchableOpacity key={activitiesItem.jl_id} onPress={()=>{onPressActivity(activitiesItem.id)}}>
-          //         <HStack horizontal={Spacing[8]} style={{maxWidth: dimensions.screenWidth - Spacing[144], minHeight:Spacing[64]}}>
-          //           <View style={{height: Spacing[16], width: Spacing[16], backgroundColor: statusColor, borderRadius: Spacing[128]}} />
-          //           <Spacer width={Spacing[12]}/>
-          //           <VStack>
-          //             <Text type={'body'} style={{}} numberOfLines={1} >
-          //               {activitiesItem.is_coachee ?
-          //                 <VStack style={{backgroundColor: Colors.SOFT_GREEN, paddingHorizontal: Spacing[8], alignItems: 'center', justifyContent: 'center', borderRadius: Spacing[48], maxWidth: Spacing[64]}}>
-          //                   <Text type={'body'} text={activitiesItem.title} numberOfLines={1} />
-          //                 </VStack>
-          //                 : <Text type={'body'} text={activitiesItem.title} numberOfLines={1} /> }
-          //             </Text>
-          //             {activitiesItem.coach_fullname ?
-          //               <Text type={'body-bold'} style={{color: statusColor, fontSize: Spacing[12]}} numberOfLines={1} >
-          //                 {activitiesItem.is_coachee ? `Coached by ` : 'You Coached '}
-          //                 {activitiesItem.is_coachee ? <Text type={'body'} style={{color: Colors.UNDERTONE_BLUE}}>
-          //                   {`${activitiesItem.coach_fullname}`}
-          //                 </Text> :
-          //                   <Text type={'body'} style={{color: Colors.UNDERTONE_BLUE}}>
-          //                     {`${activitiesItem.learner_fullname}`}
-          //                   </Text>
-          //                 }
-          //               </Text> : null}
-          //           </VStack>
-          //         </HStack>
-          //       </TouchableOpacity>
-          //     )
-          //   }
-          // },[selectedActivities, item, index])
-
           return(
             <VStack style={[Layout.widthFull,{minWidth: dimensions.screenWidth - Spacing[72]}]}>
               {/* {renderContent} */}
-              {selectedActivities === activitiesItem.id ? renderButtonTagged(activitiesItem.isTagged, activitiesItem.id, activitiesItem.coach_id) :
+              {selectedActivities === activitiesItem.id ? renderButtonTagged(activitiesItem) :
                 <TouchableOpacity key={activitiesItem.id} onPress={()=>{onPressActivity(activitiesItem.id)}}>
                   <HStack horizontal={Spacing[8]} style={{maxWidth: dimensions.screenWidth - Spacing[144], minHeight:Spacing[64]}}>
                     <View style={{height: Spacing[16], width: Spacing[16], backgroundColor: statusColor, borderRadius: Spacing[128]}} />

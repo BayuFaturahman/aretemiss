@@ -7,7 +7,7 @@ import {
   fillFeedbackDetail,
   overviewJournalEntry,
   fillFeedbackCoachee,
-  overviewJournalEntryByCoachee,
+  overviewJournalEntryByUser,
 } from "@screens/coaching-journal"
 import {
   commentList,
@@ -38,7 +38,7 @@ import {
   juaraQuizMain,
   juaraQuizResult
 } from "@screens/leaderboard"
-import { JLDetail } from "app/store/store.coaching"
+import { JLDetail, JournalDetail, JournalInLearnerJournalModel, LearnerJournalInJournalDetail} from "app/store/store.coaching"
 import juaraAssessmentQuiz from "@screens/leaderboard/juara-assessment-quiz"
 import { FeedItemType } from "@screens/feed/feed.type"
 import {
@@ -121,8 +121,8 @@ const screens: AppRoute[] = [
     component: overviewJournalEntry,
   },
   {
-    name: "overviewJournalEntryByCoachee",
-    component: overviewJournalEntryByCoachee,
+    name: "overviewJournalEntryByUser",
+    component: overviewJournalEntryByUser,
   },
   {
     name: "fillFeedbackCoachee",
@@ -249,6 +249,9 @@ export type NavigatorParamList = {
   newJournalEntry: {
     isDetail: boolean
   }
+  newJournalLearnerEntry: {
+    isDetail: boolean
+  }
   fillFeedback: {
     isDetail: boolean
     data: JournalEntryType
@@ -262,13 +265,12 @@ export type NavigatorParamList = {
   overviewJournalEntry: {
     journalId: string
     isCoachee: boolean
+    jlId: string
   }
-  overviewJournalEntryByCoachee: {
+  overviewJournalEntryByUser: {
     title: string
-    lessonsLearned: JLDetail[]
-    commitments: JLDetail[]
-    contents: JLDetail[]
-    learnersFullname: []
+    learnerJournals?: LearnerJournalInJournalDetail[]
+    coachJournal?: JournalInLearnerJournalModel
   }
   fillFeedbackCoachee: {
     isFilled: boolean

@@ -3,7 +3,8 @@ import { ApiResponse } from "apisauce"
 import {FeedbackDetail, FeedbackJLSixth} from "app/store/store.coaching";
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
-import { CreateJournalResult, FeedbackDetailResult, JournalDetailResult, JournalListResult } from "./coaching-api.types";
+import { CreateJournalResult, FeedbackDetailResult, JournalDetailResult, JournalListResult, LearnerJournalDetailResult} from "./coaching-api.types";
+import {DEFAULT_API_CONFIG} from "@services/api/api-config";
 
 export class CoachingApi {
   private api: Api
@@ -22,7 +23,7 @@ export class CoachingApi {
         "/journal", {
           limit: limit,
           page: page
-        })
+        }, { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` })
         console.log('getJournalList response', response.data)
 
       if(response.status === 400){
@@ -40,7 +41,7 @@ export class CoachingApi {
 
       return { kind: "ok", response: res }
     } catch (e) {
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }
@@ -50,7 +51,8 @@ export class CoachingApi {
     try {
           // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.get(
-      `/journal/${id}`)
+      `/journal/${id}`, {}, { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` })
+      
       console.log('response detail', response.data)
       if(response.status === 400){
         const res = response.data
@@ -65,7 +67,33 @@ export class CoachingApi {
       const res = response.data.data
       return { kind: "ok", response: res }
     } catch (e) {
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data"}
+    }
+  }
+
+  async getJournalLearnerDetail(id: string): Promise<LearnerJournalDetailResult> {
+    console.log('request getJournal Detail', id)
+    try {
+          // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.get(
+      `/journal-learner/${id}`, {}, { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` })
+      
+      console.log('response detail', response.data)
+      if(response.status === 400){
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data.data
+      return { kind: "ok", response: res }
+    } catch (e) {
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }
@@ -88,7 +116,7 @@ export class CoachingApi {
       const res = response.data.data
       return { kind: "ok", response: res }
     } catch (e) {
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }
@@ -100,11 +128,11 @@ export class CoachingApi {
     content: string,
     strength: string,
     improvement: string,
-    commitment: string,
+    recommendationForCoachee: string,
     learnerIds: string[],
     type: string,
     label: string,
-    feedback: FeedbackJLSixth
+    documentsUrl: string
   ): Promise<CreateJournalResult> {
     try {
       // make the api call
@@ -117,19 +145,13 @@ export class CoachingApi {
           content,
           strength,
           improvement,
-          commitment,
+          recommendationForCoachee,
           learnerIds,
           type,
           label,
-          questions: {
-            q1: feedback.q1,
-            q2: feedback.q2,
-            q3: feedback.q3,
-            q4: feedback.q4,
-            q5: feedback.q5,
-            q6: feedback.q6
-          }
+          documentsUrl
         },
+        { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` }
       )
       console.log('createJournal response', response.data)
       if(response.status === 400){
@@ -148,7 +170,7 @@ export class CoachingApi {
       return { kind: "ok", response: res }
     } catch (e) {
       console.log(e, 'line 150');
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }
@@ -163,12 +185,13 @@ export class CoachingApi {
       console.log('updateJournalLearner ', journalId)
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.patch(
-        `/journal/${journalId}`,
+        `/journal-learner/${journalId}`,
         {
           content,
           lessonsLearned,
           commitment,
         },
+        { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` }
       )
       console.log('updateJournalLearner response', response)
       console.log(response)
@@ -187,14 +210,14 @@ export class CoachingApi {
 
       return { kind: "ok", response: res }
     } catch (e) {
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }
 
   async updateJournalCoach(
     content: string,
-    commitment: string,
+    recommendationForCoachee: string,
     strength: string,
     improvement: string,
     type: string,
@@ -202,11 +225,11 @@ export class CoachingApi {
     label: string,
   ): Promise<CreateJournalResult> {
     try {
-      console.log('updateJournalCoach ap', id)
+      console.log('updateJournalCoach api', id)
       // make the api call
       const bodyRequest = {
           content,
-          commitment,
+          recommendationForCoachee,
           strength,
           improvement,
           type,
@@ -216,6 +239,7 @@ export class CoachingApi {
       const response: ApiResponse<any> = await this.api.apisauce.patch(
         `/journal/${id}`,
         bodyRequest,
+        { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` }
       )
       console.log('updateJournalCoach response', response)
       console.log(response)
@@ -234,7 +258,7 @@ export class CoachingApi {
 
       return { kind: "ok", response: res }
     } catch (e) {
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }
@@ -282,7 +306,7 @@ export class CoachingApi {
 
       return { kind: "ok", response: res }
     } catch (e) {
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }

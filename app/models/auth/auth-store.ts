@@ -89,12 +89,12 @@ export const AuthStoreModel = types
           self.loginFailed(result.response.errorCode)
         } else {
           self.isLoading = false
-          __DEV__ && console.tron.log(result.kind)
+          // __DEV__ && console.tron.log(result.kind)
         }
 
       } catch (e) {
         self.isLoading = false
-        __DEV__ && console.tron.log(e)
+        // __DEV__ && console.tron.log(e)
       }
     },
   })).actions((self)=>(
@@ -127,7 +127,7 @@ export const AuthStoreModel = types
         } else if (result.kind === 'form-error'){
           self.loginFailed(result.response.errorCode)
         } else {
-          __DEV__ && console.tron.log(result.kind)
+          // __DEV__ && console.tron.log(result.kind)
         }
       },
     }

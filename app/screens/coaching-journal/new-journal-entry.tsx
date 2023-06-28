@@ -16,8 +16,6 @@ import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
 import { Colors, Layout, Spacing } from "@styles"
 
-import { ACTIVITIES_TYPE } from "@screens/coaching-journal/components/activities-type-legends"
-
 import { dimensions } from "@config/platform.config"
 
 import CalendarPicker from "react-native-calendar-picker"
@@ -25,12 +23,18 @@ import { typography } from "@theme"
 import { useStores } from "../../bootstrap/context.boostrap"
 
 import Modal from "react-native-modalbox"
+
+import { MoodComponent } from "@screens/homepage/components/mood-component"
+
 import moment from "moment"
 
 import Spinner from "react-native-loading-spinner-overlay"
 
 import { Formik } from "formik"
-import { FeedbackJLSixth } from "../../store/store.coaching"
+
+import { IconClose } from "@assets/svgs"
+import { HorizontalAlignment } from "@components/view-stack/Types.ViewStack"
+import { ABM_GREEN } from "@styles/Color"
 
 export type JournalEntryType = {
   coachId: string
@@ -39,11 +43,11 @@ export type JournalEntryType = {
   content: string
   strength: string
   improvement: string
-  commitment: string
+  recommendationForCoachee: string
   type: string
   label: string
   learnerIds: string[]
-  questions: FeedbackJLSixth
+  documentsUrl: string
 }
 
 const JournalEntryInitialValue: JournalEntryType = {
@@ -53,24 +57,15 @@ const JournalEntryInitialValue: JournalEntryType = {
   content: "",
   strength: "",
   improvement: "",
-  commitment: "",
+  recommendationForCoachee: "",
   type: "",
   label: "",
   learnerIds: [],
-  questions: {
-    q1: "",
-    q2: "",
-    q3: "",
-    q4: "",
-    q5: "",
-    q6: "",
-  },
+  documentsUrl: ""
 }
 
 const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry">> = observer(
   ({ navigation, route }) => {
-    const { isDetail } = route.params
-
     const { mainStore, coachingStore } = useStores()
 
     const styles = StyleSheet.create({
@@ -80,10 +75,6 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
     })
 
     const fieldError = false
-
-    // empty list state
-    const [selectedActivities, setSelectedActivities] = useState<string>("")
-    const [, forceUpdate] = useReducer((x) => x + 1, 0)
 
     const [isModalVisible, setModalVisible] = useState(false)
     const [selectedDate, setSelectedDate] = useState(null)
@@ -105,22 +96,20 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
         item: 'Others',
       }
     ]);
+    const [isError, setError] = useState<boolean>(false)
+    const [isErrorFile, setErrorFile] = useState<boolean>(false)
 
-    const [title, setTitle] = useState<string>("")
-    const [learner, setLearner] = useState({})
-    const [learnerDetail, setLearnerDetail] = useState("")
+    // Success / fail response modal
+    const [isResponseModalVisible, setIsResponseModalVisible] = useState(false)
+    const [modalTitle, setModalTitle] = useState<string>("")
+    const [modalDesc, setModalDesc] = useState<string>("")
+    const [modalIcon, setModalIcon] = useState("senang")
 
-    const [content, setContent] = useState<string>("")
-    const [leassons, setLeassons] = useState<string>("")
-
-    const [strength, setStrength] = useState<string>("")
-    const [improvement, setImprovement] = useState<string>("")
-    const [commitment, setCommitment] = useState<string>("")
-    const [activity, setActivity] = useState<string>("")
-    const [isError, setError] = useState<string>(null)
-
-    const [isEncouragementModalVisible, setIsEncouragementModalVisible] = useState(false)
-
+    // Upload attachment states
+    // const [selectedPicture, setSelectedPicture] = useState([])
+    // const [uploadedPicture, setUploadedPicture] = useState([])
+    // const actionSheetRef = createRef();
+    
     const [journalEntryForm, setJournalEntryForm] =
       useState<JournalEntryType>(JournalEntryInitialValue)
 
@@ -130,15 +119,9 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
       }, 100)
     }
 
-    const toggleEncouragementModal = () => {
+    const toggleResponseModal = () => {
       setTimeout(() => {
-        setIsEncouragementModalVisible(!isEncouragementModalVisible)
-      }, 100)
-    }
-
-    const closeModal = () => {
-      setTimeout(() => {
-        setModalVisible(false)
+        setIsResponseModalVisible(!isResponseModalVisible)
       }, 100)
     }
 
@@ -169,164 +152,81 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
 
     useEffect(() => {
       setSelectedDate(moment().format("LLLL"))
-      // profileStore.resetLoading()
-      // coachingStore.resetLoading()
+      coachingStore.resetLoading()
+      mainStore.resetLoading()
     }, [])
-
-    const getListDetail = useCallback(async () => {
-      await coachingStore.getJournalDetail()
-      console.log("coachingStore.getListDetail", coachingStore.journalDetail)
-      console.log("coachingStore.isDetailCoach", coachingStore.isDetailCoach)
-
-      console.log("coachingStore.getListDetail.is_edited", coachingStore.journalDetail.is_edited)
-
-      if (coachingStore.isDetailCoach) {
-        setTitle(coachingStore.journalDetail.journal_title)
-        setContent(coachingStore.journalDetail.journal_content)
-        setStrength(coachingStore.journalDetail.journal_strength)
-        setImprovement(coachingStore.journalDetail.journal_improvement)
-        setCommitment(coachingStore.journalDetail.jl_commitment[0].desc)
-        setSelectedDate(coachingStore.journalDetail.journal_date)
-        setSelectedActivities(coachingStore.journalDetail.journal_type)
-        setLearnerDetail(coachingStore.journalDetail.jl_learner_fullname[0])
-        setLeassons(coachingStore.journalDetail.jl_lesson_learned[0].desc)
-        forceUpdate()
-      } else {
-        setTitle(coachingStore.journalDetail.journal_title)
-        setContent(coachingStore.journalDetail.jl_content)
-        setCommitment(coachingStore.journalDetail.jl_commitment)
-        setLeassons(coachingStore.journalDetail.jl_lesson_learned)
-        setSelectedDate(coachingStore.journalDetail.journal_date)
-        setSelectedActivities(coachingStore.journalDetail.journal_type)
-        setLearnerDetail(coachingStore.journalDetail.coach_fullname)
-        forceUpdate()
-      }
-    }, [coachingStore.journalDetail, coachingStore.journalDetailSucced])
 
     useEffect(() => {
       getListUser(mainStore.userProfile.team1_id)
     }, [])
-
-    useEffect(() => {
-      if (
-        coachingStore.messageUpdatedJournal == "Success" &&
-        coachingStore.isDetail &&
-        !coachingStore.isDetailCoach
-      ) {
-        navigation.navigate("fillFeedback")
-      }
-    }, [coachingStore.messageUpdatedJournal])
 
     const goBack = () => {
       coachingStore.resetCoachingStore()
       navigation.goBack()
     }
 
-    const holdActivitiesId = useCallback(
-      (selectedId, setFieldValue) => {
-        console.log(selectedId)
-        setSelectedActivities(selectedId)
-        setFieldValue("type", selectedId)
-      },
-      [selectedActivities],
-    )
-
-    const searchDataUser = (id: string) => {
-      dataTeamMember.find((data) => {
-        return data.id == id
-      })
+    // Handle redirect to home or close modal
+    const handleModalResponse = () => {
+      if(coachingStore.messageCreateJournal === "Success") {
+        coachingStore.resetCoachingStore()
+        coachingStore.setRefreshData(true)
+        coachingStore.clearJournal().then(()=>{
+          navigation.reset({
+            routes: [{ name: 'coachingJournalMain' }]
+          })
+        })
+      } else {
+        toggleResponseModal()
+      }
     }
+    // Set modal content based on API success / fail
+    useEffect(() => {
+      if (coachingStore.messageCreateJournal) {
+        if(coachingStore.messageCreateJournal === "Success"){
+          setModalContent("Sukses!", "Catatan telah sukses disimpan!", "senang")
+        } else {
+          setModalContent("Ada Kesalahan!", "Ups! Sepertinya ada kesalahan!\nSilahkan coba lagi!", "terkejut")
+        }
+        toggleResponseModal()
+      }
+    },[coachingStore.messageCreateJournal])
 
     const onSubmit = useCallback(
       async (data: JournalEntryType) => {
-        if (data.title === "") {
-          setError("title")
-        } else if (!data.learnerIds[0]) {
-          setError("learner")
-        } else if (data.content === "") {
-          setError("content")
-        } else if (data.strength === "") {
-          setError("strength")
-        } else if (data.improvement === "") {
-          setError("improvement")
-        } else if (data.commitment === "") {
-          setError("commitment")
-        } else if (!data.type || data.type === "") {
-          setError("type")
-        } else if (data.type === "Others" && data.label === "") {
-          setError("label")
-        }
-        // else if (data.type === '') {
-        //   setError('type')
-        // }
-        else if (data.date === "") {
-          setError("date")
+        if (data.title === "" || !data.learnerIds[0] || data.content === "" || data.strength === "" || data.improvement === ""
+        || data.recommendationForCoachee === "" || !data.type || data.type === "" || data.type === "Others" && data.label === ""
+        || data.date === "") {
+          setError(true)
         } else {
-          setError("")
+          setError(false)
+          setErrorFile(false)
           setJournalEntryForm(data)
           console.log("journal entry to be passed ", data)
-          console.log("journalEntryForm mau ke feedback", journalEntryForm)
-          goToFeedback(data)
-          // toggleEncouragementModal()
+          console.log("journalEntryForm submitted", journalEntryForm)
+          let temp = processLearnerIds(data)
+          if (!isError && !isErrorFile) {
+            await coachingStore.createJournal(temp)
+          }
         }
       },
       [setJournalEntryForm, journalEntryForm],
     )
 
-    const goToFeedback = (journalEntry) => {
+    const processLearnerIds = (journalEntry) : JournalEntryType => {
       console.log("journalEntryForm ", journalEntryForm)
       const tempLearnerIds = [];
       for (let i = 0; i < journalEntry.learnerIds.length; i++) {
         tempLearnerIds.push(journalEntry.learnerIds[i].id);
       }
       journalEntry.learnerIds = tempLearnerIds;
-      // if(!isDetail){
-      navigation.navigate("fillFeedback", {
-        data: journalEntry,
-        isDetail: false,
-      })
-      // }
+
+      return journalEntry;
     }
 
-    const ActivityTypeSelector = ({
-      onActivityPress = (item) => setActivity(item),
-      selectedActivity = "weekly_coaching",
-      isError = false,
-    }) => {
-      const styles = StyleSheet.create({
-        container: {
-          borderColor: "red",
-          borderRadius: Spacing[20],
-          borderStyle: "dashed",
-          borderWidth: isError ? Spacing[2] : 0,
-          justifyContent: "space-around",
-          padding: Spacing[6],
-        },
-      })
-
-      return (
-        <HStack style={styles.container}>
-          {ACTIVITIES_TYPE.map((item, index) => {
-            if (index < 2) {
-              return (
-                <TouchableOpacity
-                  style={{
-                    borderColor: Colors.MAIN_RED,
-                    borderWidth: item.value === selectedActivity ? Spacing[2] : 0,
-                    height: Spacing[32],
-                    width: Spacing[32],
-                    backgroundColor: item.color,
-                    borderRadius: Spacing[128],
-                  }}
-                  onPress={() => onActivityPress(item.value)}
-                />
-              )
-            } else {
-              return <></>
-            }
-          })}
-        </HStack>
-      )
+    const setModalContent = (title: string, desc: string, icon: string) => {
+      setModalTitle(title)
+      setModalDesc(desc)
+      setModalIcon(icon)
     }
 
     return (
@@ -350,22 +250,42 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                   <ScrollView style={[Layout.flex, { flex: 1 }]} nestedScrollEnabled={true}>
                     <VStack top={Spacing[32]} horizontal={Spacing[24]}>
                       <HStack>
-                        <Text type={"left-header"} style={{}} text="Tambah coaching journal" />
+                        <Text type={"left-header"} style={{}} text="Tambah Coaching Journal." />
                         <Spacer />
                         <HStack>
-                          <Button type={"light-bg"} text={"Cancel"} onPress={goBack} />
+                          <Button type={"red-bg"} text={"Cancel"} onPress={goBack} />
                         </HStack>
                       </HStack>
 
                       <VStack>
+                      { isError && <Text
+                          type={"label"}
+                          style={{
+                            textAlign: 'center',
+                            marginTop: Spacing[4],
+                            color: Colors.MAIN_RED
+                          }}
+                        >Ups! Sepertinya ada kolom yang belum diisi! Silahkan dicek kembali dan isi semua kolom yang tersedia!</Text>
+                      }
+                      { isErrorFile && <Text
+                          type={"label"}
+                          style={{
+                            textAlign: 'center',
+                            marginTop: Spacing[4],
+                            color: Colors.MAIN_RED
+                          }}
+                        >Ups! Sepertinya file dokumen tidak sesuai dengan syarat yang telah disediakan! Silahkan dicek kembali!</Text>
+                      }
                         <TextField
                           value={values.title}
                           onChangeText={handleChange("title")}
                           isRequired={false}
-                          editable={!coachingStore.isDetail}
-                          isError={isError === "title"}
+                          editable={true}
+                          isError={isError && !values.title}
                           secureTextEntry={false}
                           placeholder={"Tulis nama judul sesi coaching di sini."}
+                          inputStyle={{borderRadius: Spacing[12]}}
+                          
                         />
                         <HStack style={{ zIndex: 100 }}>
                           <VStack style={{ width: Spacing[64] }}>
@@ -373,7 +293,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                               type={"body-bold"}
                               style={[
                                 { textAlign: "center", top: Spacing[4] },
-                                isError === "learner" ? styles.textError : null,
+                                isError && values.learnerIds.length < 0 ? styles.textError : null,
                               ]}
                               text="dengan"
                             />
@@ -381,41 +301,25 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                           <VStack
                             style={{ maxWidth: dimensions.screenWidth - Spacing[128], flex: 1 }}
                           >
-                            {!coachingStore.isDetail ? (
-                              // TODO Integrate multiple choice with backend
-                              <DropDownPicker
-                                items={dataTeamMember}
-                                isRequired={false}
-                                // value={values.lea}
-                                onValueChange={(value: DropDownItem | DropDownItem[]) => {
-                                  setFieldValue("learnerIds", value)
-                                }}
-                                placeholder={"Pilih salah satu"}
-                                containerStyle={{ marginTop: Spacing[4] }}
-                                isError={isError === "learner"}
-                                multiple={true}
-                              />
-                            ) : (
-                              <TextField
-                                style={{
-                                  paddingTop: 0,
-                                  minWidth: dimensions.screenWidth - Spacing[128],
-                                }}
-                                value={journalEntryForm.learnerIds.toString()}
-                                isError={isError === "learner"}
-                                inputStyle={{ minHeight: Spacing[48] }}
-                                isRequired={false}
-                                secureTextEntry={false}
-                                isTextArea={true}
-                              />
-                            )}
+                            <DropDownPicker
+                              items={dataTeamMember}
+                              isRequired={false}
+                              // value={values.lea}
+                              onValueChange={(value: DropDownItem | DropDownItem[]) => {
+                                setFieldValue("learnerIds", value)
+                              }}
+                              placeholder={"Pilih coachee (max. 5 orang)"}
+                              containerStyle={{ marginTop: Spacing[4] }}
+                              isError={isError && values.learnerIds.length == 0}
+                              multiple={true}
+                            />
                           </VStack>
                         </HStack>
                         <HStack>
                           <TouchableOpacity
                             style={{ height: "100%", width: "20%" }}
                             onPress={toggleModal}
-                            disabled={coachingStore.isDetail}
+                            disabled={false}
                           >
                             <VStack
                               horizontal={Spacing[8]}
@@ -426,7 +330,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                                 borderRadius: Spacing[12],
                                 alignItems: "flex-end",
                                 justifyContent: "flex-end",
-                                backgroundColor: Colors.ABM_MAIN_BLUE,
+                                backgroundColor: Colors.ABM_DARK_BLUE,
                               }}
                             >
                               <Text
@@ -445,7 +349,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                               type={"body-bold"}
                               style={[
                                 { textAlign: "center", top: Spacing[4] },
-                                isError === "content" ? styles.textError : null,
+                                isError && !values.content ? styles.textError : null,
                               ]}
                             >
                               {`Apa yang `}
@@ -457,8 +361,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                             <TextField
                               style={{ paddingTop: 0 }}
                               value={values.content}
-                              // editable={!coachingStore.isDetail}
-                              isError={isError === "content"}
+                              isError={isError && !values.content }
                               onChangeText={handleChange("content")}
                               inputStyle={{ minHeight: Spacing[72] }}
                               isRequired={false}
@@ -468,13 +371,23 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                             />
                           </VStack>
                         </HStack>
+                        {/* TODO: Add file upload */}
+                        {/* <HStack>
+                        <VStack top={Spacing[8]}>
+                          <Button
+                              type={"yellow-bg"}
+                              text={"Lampirkan Dokumen"}
+                              onPress={() => {console.log('kemek')}}
+                            />
+                          </VStack>
+                        </HStack> */}
                         {coachingStore.isFormCoach && (
                           <VStack top={Spacing[12]}>
                             <Text
                               type={"body-bold"}
                               style={[
                                 { textAlign: "center", top: Spacing[4] },
-                                isError === "strength" ? styles.textError : null,
+                                isError && !values.strength ? styles.textError : null,
                               ]}
                             >
                               {`Sebagai coach, apa yang sudah saya lakukan dengan `}
@@ -487,8 +400,8 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                               inputStyle={{ minHeight: Spacing[48] }}
                               isRequired={false}
                               value={values.strength}
-                              editable={!coachingStore.isDetail}
-                              isError={isError === "strength"}
+                              editable={true}
+                              isError={isError && !values.strength}
                               onChangeText={handleChange("strength")}
                               secureTextEntry={false}
                               isTextArea={true}
@@ -502,7 +415,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                               type={"body-bold"}
                               style={[
                                 { textAlign: "center", top: Spacing[4] },
-                                isError === "improvement" ? styles.textError : null,
+                                isError && !values.improvement ? styles.textError : null,
                               ]}
                             >
                               {`Sebagai coach, kualitas apa yang dapat saya `}
@@ -522,39 +435,10 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                               isRequired={false}
                               secureTextEntry={false}
                               isTextArea={true}
-                              editable={!coachingStore.isDetail}
-                              isError={isError === "improvement"}
+                              editable={true}
+                              isError={isError && !values.improvement}
                               value={values.improvement}
                               onChangeText={handleChange("improvement")}
-                              charCounter={true}
-                            />
-                          </VStack>
-                        )}
-                        {coachingStore.isDetail && (
-                          <VStack top={Spacing[12]}>
-                            <Text
-                              type={"body-bold"}
-                              style={[
-                                { textAlign: "center", top: Spacing[4] },
-                                isError == "leassons" ? styles.textError : null,
-                              ]}
-                            >
-                              {"Tulislah "}
-                              <Text type={"body-bold"} style={{ color: Colors.ABM_LIGHT_BLUE }}>
-                                {'"lessons learned"'}
-                              </Text>
-                              {`-mu dicoaching sessions ini.`}
-                            </Text>
-                            <TextField
-                              style={{ paddingTop: 0 }}
-                              inputStyle={{ minHeight: Spacing[128] }}
-                              isRequired={false}
-                              secureTextEntry={false}
-                              isTextArea={true}
-                              editable={!coachingStore.isDetail}
-                              // value={leassons}
-                              isError={isError === "leassons"}
-                              onChangeText={handleChange("lessons")}
                               charCounter={true}
                             />
                           </VStack>
@@ -564,12 +448,12 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                             type={"body-bold"}
                             style={[
                               { textAlign: "center", top: Spacing[4] },
-                              isError === "commitment" ? styles.textError : null,
+                              isError && !values.recommendationForCoachee ? styles.textError : null,
                             ]}
                           >
-                            Apa saja yang akan saya lakukan secara berbeda untuk
+                            Dari sesi coaching, apa
                             <Text type={"body-bold"} style={{ color: Colors.ABM_LIGHT_BLUE }}>
-                              {" sesi selanjutnya?"}
+                              {" rekomendasi saya untuk coachee?"}
                             </Text>
                           </Text>
                           <TextField
@@ -578,10 +462,10 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                             isRequired={false}
                             secureTextEntry={false}
                             isTextArea={true}
-                            editable={!coachingStore.isDetail}
-                            value={values.commitment}
-                            isError={isError === "commitment"}
-                            onChangeText={handleChange("commitment")}
+                            editable={true}
+                            value={values.recommendationForCoachee}
+                            isError={isError && !values.recommendationForCoachee }
+                            onChangeText={handleChange("recommendationForCoachee")}
                             charCounter={true}
                           />
                         </VStack>
@@ -591,7 +475,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                             type={"body-bold"}
                             style={[
                               { textAlign: "left" },
-                              isError === "commitment" ? styles.textError : null,
+                              isError && !values.type ? styles.textError : null,
                             ]}
                           >Pilih kategori coaching:</Text>
                           <DropDownPicker
@@ -604,7 +488,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                             }}
                             placeholder={"Pilih kategori"}
                             containerStyle={{ marginTop: -Spacing[24] }}
-                            isError={isError === "type"}
+                            isError={isError && !values.type}
                             multiple={false}
                           />
                           {values.type === "other" && (
@@ -615,67 +499,20 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                               isRequired={false}
                               secureTextEntry={false}
                               isTextArea={false}
-                              editable={!coachingStore.isDetail}
+                              editable={true}
                               // value={leassons}
-                              isError={isError === "label"}
+                              isError={isError && !values.label}
                               onChangeText={handleChange("label")}
                             />
                           )}
                         </VStack>
-
-                        {/* {coachingStore.isFormCoach && (
-                          <VStack vertical={Spacing[16]}>
-                             <VStack bottom={Spacing[8]} horizontal={Spacing[96]}>
-                              <ActivityTypeSelector
-                                onActivityPress={(item)=>{
-                                  console.log(item)
-                                  holdActivitiesId(item, setFieldValue)
-                                }}
-                                selectedActivity={selectedActivities}
-                                isError={isError === 'type'}
-                              />
-                            </VStack> 
-                             <Text
-                              type={"body-bold"}
-                              style={[
-                                { color: Colors.ABM_LIGHT_BLUE, textAlign: "center" },
-                                fieldError ? styles.textError : null,
-                              ]}
-                            >
-                              {"Pilihlah kategori sesi coaching-mu."}
-                            </Text> 
-                           </VStack>
-                        )} */}
                         <VStack horizontal={Spacing[72]} top={Spacing[24]}>
-                          {/* {coachingStore.isFormCoach ? (
-                            <ActivitiesTypeLegends showedItems={[1]} />
-                          ) : (
-                            <ActivitiesTypeLegends showedItems={[2]} />
-                          )}
-                          <Spacer height={Spacing[24]} /> */}
-                          {coachingStore.isDetail ? (
-                            <Button
-                              type={"primary"}
-                              text={"Hasil Feedback"}
-                              onPress={handleSubmit}
-                            />
-                          ) : (
-                            <Button
-                              type={"primary"}
-                              text={"Lakukan feedback"}
-                              onPress={handleSubmit}
-                            />
-                          )}
+                          <Button
+                            type={"primary-form"}
+                            text={"Simpan Catatan"}
+                            onPress={handleSubmit}
+                          />
                         </VStack>
-                        <Text
-                          type={"label"}
-                          style={{
-                            textAlign: 'center',
-                            marginTop: Spacing[4],
-                            paddingBottom: Spacing[32],
-                            color: Colors.ABM_LIGHT_BLUE
-                          }}
-                        >Penting! Catatan coaching-mu belum tersimpan sampai kamu klik “Submit” setelah melakukan feedback.</Text>
                       </VStack>
                     </VStack>
                   </ScrollView>
@@ -707,10 +544,10 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                             }}
                             textStyle={{
                               fontFamily: typography.primaryBold,
-                              colors: Colors.ABM_MAIN_BLUE,
+                              colors: Colors.ABM_DARK_BLUE,
                             }}
                             selectedDayColor={Colors.ABM_YELLOW}
-                            selectedDayTextColor={Colors.ABM_MAIN_BLUE}
+                            selectedDayTextColor={Colors.ABM_DARK_BLUE}
                             style={{ padding: Spacing[20] }}
                             width={dimensions.screenWidth - Spacing[64]}
                             maxDate={new Date()}
@@ -719,7 +556,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                             <Button type={"light-bg"} text={"Cancel"} onPress={toggleModal} />
                             <Spacer width={Spacing[4]} />
                             <Button
-                              type={"primary"}
+                              type={"primary-form"}
                               text={"Pilih"}
                               onPress={toggleModal}
                               style={{ minWidth: Spacing[72] }}
@@ -740,10 +577,50 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
             // textStyle={styles.spinnerTextStyle}
           />
 
+          {/* <ActionSheet ref={actionSheetRef}>
+                  {
+                    <>
+                      <VStack
+                        style={{ justifyContent: "center" }}
+                        vertical={Spacing[24]}
+                        horizontal={Spacing[24]}
+                      >
+                        <VStack style={[Layout.widthFull, Layout.flexCenter]} bottom={Spacing[12]}>
+                          <Text type={"body-bold"} style={{}} text={`Mengupload ${isPhoto === true ? "Foto 🖼" : "Video 🎥"}`} />
+                        </VStack>
+                        <Button
+                          onPress={() => {
+                            openGallery(isPhoto)
+                          }}
+                          type={"primary-form"}
+                          text={"Galeri Foto 🖼️"}
+                        />
+                        <Spacer height={Spacing[12]} />
+                        <Button
+                          onPress={() => {
+                            openCamera(isPhoto)
+                          }}
+                          type={"primary-form"}
+                          text={"Kamera 📸"}
+                        />
+                        <VStack style={[Layout.widthFull, Layout.flexCenter]} top={Spacing[12]}>
+                          <Button
+                            onPress={() => {
+                              setIsPhoto(null)
+                            }}
+                            type={"secondary"}
+                            text={"Kembali"}
+                          />
+                        </VStack>
+                      </VStack>
+                    </>
+                  }
+                </ActionSheet> */}
+
           <Modal
-            isOpen={isEncouragementModalVisible}
+            isOpen={isResponseModalVisible}
             style={{
-              height: "50%",
+              position: "absolute",
               width: dimensions.screenWidth - Spacing[24],
               backgroundColor: "rgba(52, 52, 52, 0)",
             }}
@@ -761,49 +638,36 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                 vertical={Spacing[24]}
               >
                 <VStack horizontal={Spacing[24]} top={Spacing[24]} style={Layout.widthFull}>
-                  <VStack style={{ alignItems: "flex-end" }}>
-                    <TouchableOpacity style={{backgroundColor: Colors.ABM_LIGHT_BLUE, borderRadius: 999, width: Spacing[32], height: Spacing[32], alignItems:'center'}} onPress={toggleEncouragementModal}>
-                      <Text type={"body-bold"} style={{color: Colors.WHITE, fontSize: Spacing[24], lineHeight: Spacing[32]}} >x</Text>
-                    </TouchableOpacity>
-                  </VStack>
                   <VStack>
+                    <VStack style={{
+                      alignItems: "flex-end"
+                    }}>
+                      <TouchableOpacity onPress={toggleResponseModal}>
+                        <IconClose height={Spacing[32]} width={Spacing[32]} />
+                      </TouchableOpacity>
+                    </VStack>
+                    <HStack bottom={Spacing[32]}>
+                      <Spacer />
+                      <MoodComponent data={modalIcon} width={Spacing[96]} height={Spacing[96]} />
+                      <Spacer />
+                    </HStack>
                     <Text
                       type={"body-bold"}
-                      style={{ fontSize: Spacing[18], textAlign: "center" }}
-                      text={"Nicely done! "}
+                      style={{ fontSize: Spacing[32], textAlign: "center", color: ABM_GREEN}}
+                      text={modalTitle}
                     />
                     <Spacer height={Spacing[24]} />
-                    <Text type={"body"} style={{ textAlign: "center", top: Spacing[4] }}>
-                      {`Sebelum catatan coaching-mu tersimpan \n`}
-                      <Text type={"body-bold"}>{"isi self-reflection feedback "}</Text>
-                      <Text>{`dulu yaa`}</Text>
-                    </Text>
-                    <Spacer height={Spacing[24]} />
-                    <Text
-                      type={"body"}
-                      style={{ textAlign: "center" }}
-                      text={
-                        "Feedback ini akan diisi juga oleh coachee-mu juga sehingga kamu dapat membandingkan penilaian dirimu sendiri dengan penilaian dari coachee-mu."
-                      }
-                    />
-                    <Spacer height={Spacing[24]} />
-                    <Text
-                      type={"body"}
-                      style={{ textAlign: "center", color: Colors.ABM_LIGHT_BLUE }}
-                      text={
-                        "Penting! Coaching journal-mu belum tersimpan sampai kamu klik “Submit” setelah melakukan feedback."
-                      }
-                    />
+                    <Text type={"body"} style={{ textAlign: "center" }} text={modalDesc} />
                     <Spacer height={Spacing[20]} />
-                    <HStack bottom={Spacing[32]}>
+                    <HStack bottom={Spacing[24]}>
                       <Spacer />
                       <VStack style={{ maxWidth: Spacing[256], minWidth: Spacing[128] }}>
                         <Button
-                          type={"primary"}
-                          text={"Isi Feedback"}
-                          style={{ height: Spacing[32], paddingHorizontal: Spacing[8] }}
+                          type={"primary-form"}
+                          text={coachingStore.messageCreateJournal === "Success" ? "Kembali ke Menu Utama Coaching Journal" : "Kembali ke Menu Sebelumnya"}
+                          style={{ height: Spacing[64], paddingHorizontal: Spacing[18] }}
                           textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
-                          onPress={goToFeedback}
+                          onPress={handleModalResponse}
                         />
                       </VStack>
                       <Spacer />

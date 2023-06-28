@@ -16,6 +16,7 @@ export type CoachingActivitiesItem = {
   journal_date: string
   journal_id: string
   journal_title: string
+  journal_label: string
   journal_type: CoachingActivitiesType
   // learner_fullname: string
   // learner_id: string

@@ -18,8 +18,9 @@ export type CoachingJournalComponentProps = {
   selectedActivities(): void;
   onPressNote(): void;
   onPressFeedback(): void;
-  onPressNoteFeedback(): void;
+  onPressNoteCoachee(): void;
   goToCoaching(): void
+  userId: string
 }
 
 
@@ -29,8 +30,10 @@ export const CoachingJournalComponent = ({
    selectedActivities,
    onPressNote,
    onPressFeedback,
-   onPressNoteFeedback,
-   goToCoaching = ()=> null }:CoachingJournalComponentProps) => {
+   onPressNoteCoachee,
+   goToCoaching = ()=> null,
+   userId
+  }:CoachingJournalComponentProps) => {
 
   if(data === null){
     return(
@@ -57,7 +60,8 @@ export const CoachingJournalComponent = ({
         selectedActivities={selectedActivities}
         onPressNote={onPressNote}
         onPressFeedback={onPressFeedback}
-        onPressNoteFeedback={onPressNoteFeedback}
+        onPressNoteCoachee={onPressNoteCoachee}
+        userId={userId}
         isHomepageComponent
       />
       <HStack top={Spacing[4]}>

@@ -53,7 +53,7 @@ export default class LeaderboardStore {
       } else if (response.kind === 'not-found') {
         this.getLeaderboardPositionSuccess('-');
       } else {
-        __DEV__ && console.tron.log(response.kind)
+        // __DEV__ && console.tron.log(response.kind)
       }
     } catch (e) {
       this.setErrorMessage(e);
@@ -81,7 +81,7 @@ export default class LeaderboardStore {
         this.getListLeaderboardsSuccess([]);
         this.getSelfLeaderboardPointSuccess(0);
       } else {
-        __DEV__ && console.tron.log(response.kind)
+        // __DEV__ && console.tron.log(response.kind)
       }
     } catch (e) {
       console.log(e)

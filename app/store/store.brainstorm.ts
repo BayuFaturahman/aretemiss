@@ -71,7 +71,7 @@ export default class BrainstormStore {
       } else if (response.kind === "not-found") {
         this.getListBrainstormGroupsSuccess([])
       } else {
-        __DEV__ && console.tron.log(response.kind)
+        // __DEV__ && console.tron.log(response.kind)
       }
     } catch (e) {
       console.log(e)
@@ -106,7 +106,7 @@ export default class BrainstormStore {
         this.formError(result.response)
         // } else if () {
       } else {
-        __DEV__ && console.tron.log(result.kind)
+        // __DEV__ && console.tron.log(result.kind)
       }
     } catch (e) {
       console.log("createBrainstormGroup error")
@@ -138,7 +138,7 @@ export default class BrainstormStore {
         console.log(response)
         this.formError(response.response)
       } else {
-        __DEV__ && console.tron.log(response.kind)
+        // __DEV__ && console.tron.log(response.kind)
       }
     } catch (e) {
       console.log(e)
@@ -219,7 +219,7 @@ export default class BrainstormStore {
         this.formError(result.response)
         // } else if () {
       } else {
-        __DEV__ && console.tron.log(result.kind)
+        // __DEV__ && console.tron.log(result.kind)
       }
     } catch (e) {
       console.log("createIdea error")
@@ -250,7 +250,7 @@ export default class BrainstormStore {
         this.formError(result.response)
         // } else if () {
       } else {
-        __DEV__ && console.tron.log(result.kind)
+        // __DEV__ && console.tron.log(result.kind)
       }
     } catch (e) {
       console.log("getIdeaDetail error")
@@ -297,7 +297,7 @@ export default class BrainstormStore {
         this.formError(result.response)
         // } else if () {
       } else {
-        __DEV__ && console.tron.log(result.kind)
+        // __DEV__ && console.tron.log(result.kind)
       }
     } catch (e) {
       console.log("updateIdea error")
@@ -328,7 +328,7 @@ export default class BrainstormStore {
         this.formError(result.response)
         // } else if () {
       } else {
-        __DEV__ && console.tron.log(result.kind)
+        // __DEV__ && console.tron.log(result.kind)
       }
     } catch (e) {
       console.log("deleteIdea error")
@@ -361,7 +361,7 @@ export default class BrainstormStore {
         this.formError(result.response)
         // } else if () {
       } else {
-        __DEV__ && console.tron.log(result.kind)
+        // __DEV__ && console.tron.log(result.kind)
       }
     } catch (e) {
       console.log("voteIdea error")
@@ -394,7 +394,7 @@ export default class BrainstormStore {
         this.formError(result.response)
         // } else if () {
       } else {
-        __DEV__ && console.tron.log(result.kind)
+        // __DEV__ && console.tron.log(result.kind)
       }
     } catch (e) {
       console.log("selectIdea error")

@@ -55,7 +55,7 @@ export class FeedApi {
     } catch (e) {
       console.log(e)
       console.log("error")
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data" }
     }
   }
@@ -91,7 +91,7 @@ export class FeedApi {
     } catch (e) {
       console.log(e)
       console.log("error")
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data" }
     }
   }
@@ -124,7 +124,7 @@ export class FeedApi {
     } catch (e) {
       console.log(e)
       console.log("error")
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data" }
     }
   }
@@ -157,7 +157,7 @@ export class FeedApi {
       return { kind: "ok", response: res }
     } catch (e) {
       console.log('error', e)
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }
@@ -192,7 +192,7 @@ export class FeedApi {
 
       return { kind: "ok", response: res }
     } catch (e) {
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }
@@ -229,7 +229,7 @@ export class FeedApi {
 
       return { kind: "ok", response: res }
     } catch (e) {
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }
@@ -264,7 +264,7 @@ export class FeedApi {
     } catch (e) {
       console.log(e)
       console.log("error")
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data" }
     }
   }
@@ -298,7 +298,7 @@ export class FeedApi {
 
       return { kind: "ok", response: res }
     } catch (e) {
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }
@@ -332,7 +332,7 @@ export class FeedApi {
 
       return { kind: "ok", response: res }
     } catch (e) {
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }
@@ -367,7 +367,7 @@ export class FeedApi {
 
       return { kind: "ok", response: res }
     } catch (e) {
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }
@@ -402,7 +402,7 @@ export class FeedApi {
     } catch (e) {
       console.log(e)
       console.log("error")
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data" }
     }
   }
@@ -438,7 +438,7 @@ export class FeedApi {
     } catch (e) {
       console.log(e)
       console.log("error")
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data" }
     }
   }
@@ -469,7 +469,7 @@ export class FeedApi {
     } catch (e) {
       console.log(e)
       console.log("error")
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data" }
     }
   }
@@ -500,7 +500,7 @@ export class FeedApi {
     } catch (e) {
       console.log(e)
       console.log("error")
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data" }
     }
   }
@@ -530,7 +530,7 @@ export class FeedApi {
     } catch (e) {
       console.log(e)
       console.log("error")
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data" }
     }
   }
@@ -560,7 +560,7 @@ export class FeedApi {
     } catch (e) {
       console.log(e)
       console.log("error")
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data" }
     }
   }
