@@ -99,7 +99,7 @@ export function TextField(props: TextFieldProps) {
     onPressChangeButton = () => null,
     isTextArea = false,
     charCounter = false,
-    maxChar = 500,
+    maxChar = 2500,
     ...rest
   } = props
 
@@ -112,7 +112,7 @@ export function TextField(props: TextFieldProps) {
     backgroundColor: color.palette.white,
     textAlign: 'center',
     borderRadius: Spacing[20],
-    borderColor: isError ? Colors.MAIN_RED : Colors.ABM_LIGHT_BLUE,
+    borderColor: isError ? Colors.MAIN_RED : Colors.ABM_DARK_BLUE,
     borderWidth: Spacing[2]
   }
 

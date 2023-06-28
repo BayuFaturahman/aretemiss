@@ -191,6 +191,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       navigation.navigate("overviewJournalEntry", {
         journalId: id,
         isCoachee: false,
+        jlId: ''
       })
     }, [])
 
@@ -206,19 +207,19 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       console.log(id)
     }, [])
 
-    const goToNoteFeedback = useCallback((id, coach_id) => {
+    const goToNoteCoachee = useCallback((id, coach_id, type, label, jl_id) => {
       coachingStore.isDetailJournal(true)
       const detailCoaching = coach_id == mainStore.userProfile.user_id
       coachingStore.setDetailCoaching(detailCoaching)
       coachingStore.setDetailID(id)
       coachingStore.setFormCoach(false)
-      // console.log('goToNoteFeedback id', id)
-      // console.log('goToNoteFeedback coach_id', coach_id)
-      // console.log('goToNoteFeedback user_id', mainStore.userProfile.user_id)
+      coachingStore.setJournalType(type)
+      coachingStore.setJournalLabel(label)
 
       navigation.navigate("overviewJournalEntry", {
         journalId: id,
         isCoachee: true,
+        jlId: jl_id
       })
     }, [])
 
@@ -326,6 +327,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
             type: journalData.journal_type,
             id: journalData.journal_id,
             isTagged: id != journalData.coach_id,
+            coach_id: journalData.coach_id,
           })
           return groups
         }, {})
@@ -437,8 +439,9 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
                 selectedActivities={selectedActivities}
                 onPressNote={goToNote}
                 onPressFeedback={goToFeedback}
-                onPressNoteFeedback={goToNoteFeedback}
+                onPressNoteCoachee={goToNoteCoachee}
                 goToCoaching={goToJournalCoaching}
+                userId={mainStore.userProfile.user_id}
               />
             </HomepageCardWrapper>
             <Spacer height={Spacing[12]} />

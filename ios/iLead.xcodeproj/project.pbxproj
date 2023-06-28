@@ -335,7 +335,7 @@
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = M2L9Z4F4CF;
+						DevelopmentTeam = K554GJBS9Y;
 						LastSwiftMigration = 1120;
 						ProvisioningStyle = Automatic;
 					};
@@ -740,7 +740,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 32;
-				DEVELOPMENT_TEAM = M2L9Z4F4CF;
+				DEVELOPMENT_TEAM = K554GJBS9Y;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = iLead/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -750,7 +750,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.kubik.ilead;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kubik.ilead.ileadJuara;
 				PRODUCT_NAME = iLead;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -770,7 +770,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 32;
-				DEVELOPMENT_TEAM = M2L9Z4F4CF;
+				DEVELOPMENT_TEAM = K554GJBS9Y;
 				INFOPLIST_FILE = iLead/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.1.1;
@@ -779,7 +779,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.kubik.ilead;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kubik.ilead.ileadJuara;
 				PRODUCT_NAME = iLead;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;

@@ -40,7 +40,7 @@ export type JournalDetail = {
   journal_id: string
   journal_title: string
   journal_coach_id: string
-  journal_commitment: string
+  journal_recommendation_for_coachee: string
   journal_content: string
   journal_improvement: string
   journal_strength: string
@@ -48,10 +48,7 @@ export type JournalDetail = {
   journal_date: string
   journal_label: string
 
-  jl_lesson_learned
-  jl_commitment
-  jl_content
-
+  jl_learner: LearnerJournalInJournalDetail[]
 
   jl_learner_fullname: []
   coach_fullname: string
@@ -60,10 +57,31 @@ export type JournalDetail = {
   is_coachee: boolean
 }
 
+export type LearnerJournalInJournalDetail = {
+  learner_fullname: string
+  journal_content: string
+  jl_lesson_learned: string
+  jl_commitment: string
+  jl_documents_url: string[]
+}
+
+export type LearnerJournalDetail = {
+  journal: JournalInLearnerJournalModel
+  jl_id: string
+  jl_content: string
+  jl_lesson_learned: string
+  jl_commitment: string
+  learner_fullname: string
+  coach_fullname: string
+  is_filled: boolean
+  jl_documents_url: string[]
+}
+
 export type JournalLearnerModel = {
   jl_id: string
   jl_learner_id: string
   jl_fullname: string
+  is_filled: boolean
 }
 
 export type JournalModel = {
@@ -76,7 +94,17 @@ export type JournalModel = {
   journal_label: string
   coach_fullname: string
   is_coachee: boolean
-  jourrnal_learner: JournalLearnerModel[]
+  journal_learner: JournalLearnerModel[]
+}
+
+export type JournalInLearnerJournalModel = {
+  id: string
+  title: string
+  content: string
+  date: string,
+  documents_url: string[],
+  recommendation_for_coachee: string
+  coach_fullname?: string
 }
 
 export default class CoachingStore {
@@ -101,6 +129,7 @@ export default class CoachingStore {
 
   listJournal : JournalModel[]
   journalDetail: JournalDetail
+  learnerJournalDetail: LearnerJournalDetail
 
   my_feedback: FeedbackJLSixth
   coachee_feedback: FeedbackJLSixth
@@ -112,9 +141,11 @@ export default class CoachingStore {
   content: string
   strength: string
   improvement:string
-  commitment: string
+  recommendationForCoachee: string
   learnerIds: string[]
   type: string
+  label: string
+  documentsUrl: string
   messageCreateJournal: string
   messageUpdatedJournal: string
   messageCreateFeedback: string
@@ -148,7 +179,7 @@ export default class CoachingStore {
       journal_id: '',
       journal_title: '',
       journal_coach_id: '',
-      journal_commitment: '',
+      journal_recommendation_for_coachee: '',
       journal_content: '',
       journal_improvement: '',
       journal_strength: '',
@@ -166,6 +197,26 @@ export default class CoachingStore {
       jl_learner_fullname: '',
       coach_fullname: ''
     }
+
+    this.learnerJournalDetail = {
+      jl_id: '',
+      jl_content: '',
+      jl_lesson_learned: '',
+      jl_commitment: '',
+      learner_fullname: '',
+      coach_fullname: '',
+      is_filled: false,
+      jl_documents_url: [],
+      journal: {
+        id: '',
+        title: '',
+        content: '',
+        date: '',
+        recommendation_for_coachee: '',
+        documents_url: []
+      }
+    }
+
     this.my_feedback= {
       q1: 0,
       q2: 0,
@@ -210,7 +261,7 @@ export default class CoachingStore {
         console.log(result)
         this.coachingFailed(result.response.errorCode)
       } else {
-        __DEV__ && console.tron.log(result.kind)
+        // __DEV__ && console.tron.log(result.kind)
       }
     } catch (e) {
       console.log(e)
@@ -225,6 +276,7 @@ export default class CoachingStore {
     this.errorCode = null
     this.errorMessage = null
     this.formErrorCode = null
+    // this.learnerJournalDetail = 
   }
 
   setRefreshData(data: boolean){
@@ -246,11 +298,11 @@ export default class CoachingStore {
       data.content,
       data.strength,
       data.improvement,
-      data.commitment,
+      data.recommendationForCoachee,
       data.learnerIds,
       data.type,
       data.label,
-      data.questions
+      data.documentsUrl
     )
     if (result.kind === "ok") {
       this.refreshData = true
@@ -258,7 +310,8 @@ export default class CoachingStore {
     } else if (result.kind === 'form-error'){
       this.coachingFailed(result.response.errorCode)
     } else {
-      __DEV__ && console.tron.log(result.kind)
+      await this.createJournalSucceed('Failed')
+      // __DEV__ && console.tron.log(result.kind)
     }
   }
 
@@ -268,6 +321,14 @@ export default class CoachingStore {
 
   setDetailID(id: string){
     this.detailId = id
+  }
+
+  setJournalType(type: string){
+    this.type = type
+  }
+
+  setJournalLabel(label: string){
+    this.label = label
   }
 
   setFormCoach(data: boolean){
@@ -285,9 +346,10 @@ export default class CoachingStore {
     content: string,
     strength: string,
     improvement: string,
-    commitment: string,
+    recommendationForCoachee: string,
     learnerIds: string[],
-    type: string
+    type: string,
+    documentsUrl: string
     ){
       this.coach_id = coach_id
       this.date = date
@@ -295,16 +357,18 @@ export default class CoachingStore {
       this.content = content
       this.strength = strength
       this.improvement = improvement
-      this.commitment = commitment
+      this.recommendationForCoachee = recommendationForCoachee
       this.learnerIds = learnerIds
       this.type = type
+      this.documentsUrl = documentsUrl
       console.log('coach_id', coach_id)
       console.log('date', date)
       console.log('title', title)
       console.log('content', content)
       console.log('strength', strength)
       console.log('improvement', improvement)
-      console.log('commitment', commitment)
+      console.log('recommendationForCoachee', recommendationForCoachee)
+      console.log('documentsUrl', documentsUrl)
       console.log('learnerIds', learnerIds)
   }
 
@@ -315,9 +379,10 @@ export default class CoachingStore {
     this.content = ''
     this.strength = ''
     this.improvement = ''
-    this.commitment = ''
+    this.recommendationForCoachee = ''
     this.learnerIds = []
     this.type = ''
+    this.documentsUrl = ''
     this.refreshData = true
     this.listJournal = []
     this.messageCreateJournal = message
@@ -346,6 +411,10 @@ export default class CoachingStore {
     this.isLoading = false
   }
 
+  createJournalFailed() {
+
+  }
+
   async isDetailJournal (detailCoach: boolean) {
     this.isDetail = detailCoach
   }
@@ -361,7 +430,7 @@ export default class CoachingStore {
     } else if (result.kind === 'form-error'){
       this.coachingFailed(result.response.errorCode)
     } else {
-      __DEV__ && console.tron.log(result.kind)
+      // __DEV__ && console.tron.log(result.kind)
     }
     } catch (e) {
       console.log(e)
@@ -372,6 +441,30 @@ export default class CoachingStore {
 
   journalDetailSucced (response: JournalDetail) {
     this.journalDetail = response
+    this.formErrorCode = null
+  }
+
+  async getJournalLearnerDetail(id: string) {
+    this.isLoading = true
+    try {
+    const result = await this.coachingApi.getJournalLearnerDetail(id)
+    if (result.kind === "ok") {
+      this.learnerJournalDetailSucceed(result.response)
+    } else if (result.kind === 'form-error'){
+      this.coachingFailed(result.response.errorCode)
+    } else {
+      // __DEV__ && console.tron.log(result.kind)
+    }
+    } catch (e) {
+      console.log(e)
+     } finally {
+      this.isLoading = false
+    }
+  }
+
+  learnerJournalDetailSucceed (response: LearnerJournalDetail) {
+    this.learnerJournalDetail = response
+    this.learnerJournalDetail.journal.coach_fullname = response.coach_fullname
     this.formErrorCode = null
   }
 
@@ -386,7 +479,7 @@ export default class CoachingStore {
       } else if (result.kind === 'form-error'){
         this.coachingFailed(result.response.errorCode)
       } else {
-        __DEV__ && console.tron.log(result.kind)
+        // __DEV__ && console.tron.log(result.kind)
       }
     } catch (e) {
       console.log(e)
@@ -411,7 +504,7 @@ export default class CoachingStore {
     } else if (result.kind === 'form-error'){
       this.coachingFailed(result.response.errorCode)
     } else {
-      __DEV__ && console.tron.log(result.kind)
+      // __DEV__ && console.tron.log(result.kind)
     }
   }
 
@@ -492,21 +585,42 @@ export default class CoachingStore {
     this.content = ''
     this.strength = ''
     this.improvement = ''
-    this.commitment = ''
+    this.recommendationForCoachee = ''
     this.learnerIds = []
     this.type = ''
+    this.documentsUrl = ''
     this.messageCreateJournal = ''
     this.messageUpdatedJournal = ''
     this.messageCreateFeedback = ''
 
+
     this.isDetail = false
     this.formErrorCode = null
     this.detailId = ''
+
+    this.learnerJournalDetail = {
+      jl_id: '',
+      jl_content: '',
+      jl_lesson_learned: '',
+      jl_commitment: '',
+      learner_fullname: '',
+      coach_fullname: '',
+      is_filled: false,
+      jl_documents_url: [],
+      journal: {
+        id: '',
+        title: '',
+        content: '',
+        date: '',
+        recommendation_for_coachee: '',
+        documents_url: []
+      }
+    }
   }
 
   async updateJournal(
     content: string,
-    commitment: string,
+    recommendationForCoachee: string,
     strength: string,
     type: string,
     improvement: string,
@@ -517,7 +631,7 @@ export default class CoachingStore {
 
     const result = await this.coachingApi.updateJournalCoach(
       content,
-      commitment,
+      recommendationForCoachee,
       strength,
       improvement,
       type,
@@ -530,7 +644,8 @@ export default class CoachingStore {
     } else if (result.kind === 'form-error'){
       this.coachingFailed(result.response.errorCode)
     } else {
-      __DEV__ && console.tron.log(result.kind)
+      await this.updateJournalSucced('Failed')
+      // __DEV__ && console.tron.log(result.kind)
     }
   }
 
@@ -556,7 +671,8 @@ export default class CoachingStore {
     } else if (result.kind === 'form-error'){
       this.coachingFailed(result.response.errorCode)
     } else {
-      __DEV__ && console.tron.log(result.kind)
+      await this.updateJournalSucced('Failed')
+      // __DEV__ && console.tron.log(result.kind)
     }
   }
 
@@ -567,7 +683,7 @@ export default class CoachingStore {
     this.content = ''
     this.strength = ''
     this.improvement = ''
-    this.commitment = ''
+    this.recommendationForCoachee = ''
     this.learnerIds = []
     this.type = ''
     this.messageUpdatedJournal = message
@@ -602,7 +718,7 @@ export default class CoachingStore {
     } else if (result.kind === 'form-error'){
       this.coachingFailed(result.response.errorCode)
     } else {
-      __DEV__ && console.tron.log(result.kind)
+      // __DEV__ && console.tron.log(result.kind)
     }
   }
 

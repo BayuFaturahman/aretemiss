@@ -163,7 +163,7 @@ export function Button(props: ButtonProps) {
       <TouchableOpacity style={[{
         backgroundColor: Colors.ABM_BG_BLUE,
         paddingVertical: Spacing[8],
-        borderRadius: Spacing[20],
+        borderRadius: Spacing[10],
         paddingHorizontal: Spacing[12]
       }, styleOverride]} {...rest}>
         <Text type={'button'} tx={tx} text={text} style={[{
@@ -175,6 +175,72 @@ export function Button(props: ButtonProps) {
     )
   }
 
+  if (type === 'primary-form') {
+    return (
+      <TouchableOpacity style={[{
+        backgroundColor: Colors.ABM_GREEN,
+        paddingVertical: Spacing[8],
+        borderRadius: Spacing[10]
+      }, styleOverride]} {...rest}>
+        <Text type={'button'} tx={tx} text={text} style={[{
+          textAlign: 'center',
+          color: Colors.WHITE,
+          fontSize: Spacing[14]
+        }, textStyleOverride]} />
+      </TouchableOpacity>
+    )
+  }
+
+  if (type === 'light-blue-form') {
+    return (
+      <TouchableOpacity style={[{
+        backgroundColor: Colors.ABM_LIGHT_BLUE,
+        paddingVertical: Spacing[8],
+        borderRadius: Spacing[10]
+      }, styleOverride]} {...rest}>
+        <Text type={'button'} tx={tx} text={text} style={[{
+          textAlign: 'center',
+          color: Colors.WHITE,
+          fontSize: Spacing[14]
+        }, textStyleOverride]} />
+      </TouchableOpacity>
+    )
+  }
+
+  if (type === 'red-bg') {
+    return (
+      <TouchableOpacity style={[{
+        backgroundColor: Colors.MAIN_RED,
+        paddingVertical: Spacing[8],
+        borderRadius: Spacing[10],
+        paddingHorizontal: Spacing[12]
+      }, styleOverride]} {...rest}>
+        <Text type={'button'} tx={tx} text={text} style={[{
+          textAlign: 'center',
+          color: Colors.WHITE,
+          fontSize: Spacing[14]
+        }, textStyleOverride]} />
+      </TouchableOpacity>
+    )
+  }
+
+  if (type === 'yellow-bg') {
+    return (
+      <TouchableOpacity style={[{
+        backgroundColor: Colors.ABM_YELLOW,
+        paddingVertical: Spacing[8],
+        borderRadius: Spacing[10],
+        paddingHorizontal: Spacing[12]
+      }, styleOverride]} {...rest}>
+        <Text type={'button'} tx={tx} text={text} style={[{
+          textAlign: 'center',
+          color: Colors.ABM_DARK_BLUE,
+          fontSize: Spacing[14]
+        }, textStyleOverride]} />
+      </TouchableOpacity>
+    )
+  }
+       
   if (type === 'dark-yellow') {
     return (
       <TouchableOpacity style={[{

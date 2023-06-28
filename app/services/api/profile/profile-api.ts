@@ -42,7 +42,7 @@ export class ProfileApi {
       const res = response.data
       return { kind: "ok", response: res }
     } catch (e) {
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }
@@ -77,7 +77,7 @@ export class ProfileApi {
       return { kind: "ok", response: res }
     } catch (e) {
       console.log('error', e)
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }
@@ -108,7 +108,7 @@ export class ProfileApi {
     } catch (e) {
       console.log(e)
       console.log('error')
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }
@@ -142,7 +142,7 @@ export class ProfileApi {
     } catch (e) {
       console.log('getTeamMember(): e', e)
 
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }
@@ -171,7 +171,7 @@ export class ProfileApi {
 
       return { kind: "ok", response: res }
     } catch (e) {
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data" }
     }
   }
@@ -209,7 +209,7 @@ export class ProfileApi {
       return { kind: "ok", response: res }
     } catch (e) {
       console.log('error', e)
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }
@@ -242,7 +242,7 @@ export class ProfileApi {
       return { kind: "ok", response: res }
     } catch (e) {
       console.log('error', e)
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }
@@ -278,7 +278,7 @@ export class ProfileApi {
       return { kind: "ok", response: res }
     } catch (e) {
       console.log('error', e)
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }
@@ -313,7 +313,7 @@ export class ProfileApi {
       return { kind: "ok", response: res }
     } catch (e) {
       console.log('error', e)
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }
@@ -348,7 +348,7 @@ export class ProfileApi {
       return { kind: "ok", response: res }
     } catch (e) {
       console.log('error', e)
-      __DEV__ && console.tron.log(e.message)
+      // __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data"}
     }
   }

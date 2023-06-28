@@ -1,5 +1,5 @@
 
-import { FeedbackDetail, JournalDetail, JournalModel } from "app/store/store.coaching"
+import { FeedbackDetail, JournalDetail, JournalModel, LearnerJournalDetail } from "app/store/store.coaching"
 import { GeneralApiProblem } from "../api-problem"
 
 
@@ -28,6 +28,8 @@ export type JournalListResult = { kind: "form-error"; response: ErrorFormRespons
 export type CreateJournalResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreateJournalResponse }  | GeneralApiProblem
 
 export type JournalDetailResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: JournalDetail}  | GeneralApiProblem
+
+export type LearnerJournalDetailResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: LearnerJournalDetail}  | GeneralApiProblem
 
 export type FeedbackDetailResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: FeedbackDetail }  | GeneralApiProblem
 

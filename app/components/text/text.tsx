@@ -164,6 +164,14 @@ export function Text(props: TextProps) {
     )
   }
 
+  if(props.type === 'response-modal-title'){
+    return(
+      <ReactNativeText {...rest} style={[style, presets.bold, {color: Colors.ABM_GREEN, fontSize: Spacing[14]} ,styleOverride ]}>
+        {content}
+      </ReactNativeText>
+    )
+  }
+
   return (
     <ReactNativeText {...rest} style={styles}>
       {content}
