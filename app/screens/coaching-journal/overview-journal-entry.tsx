@@ -595,7 +595,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                                 borderRadius: Spacing[12],
                                 alignItems: "flex-end",
                                 justifyContent: "flex-end",
-                                backgroundColor: Colors.ABM_MAIN_BLUE,
+                                backgroundColor: Colors.ABM_DARK_BLUE,
                               }}
                             >
                               <Text

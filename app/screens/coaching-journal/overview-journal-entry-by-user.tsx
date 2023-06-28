@@ -184,7 +184,7 @@ const OverviewJournalEntryByUser: FC<StackScreenProps<NavigatorParamList, "overv
                         </Text>
                         <TextField
                           style={{ paddingTop: 0 }}
-                          inputStyle={{ minHeight: Spacing[48] }}
+                          inputStyle={{ minHeight: Spacing[64] }}
                           editable={false}
                           isRequired={false}
                           value={content}
@@ -205,7 +205,7 @@ const OverviewJournalEntryByUser: FC<StackScreenProps<NavigatorParamList, "overv
                         </Text>
                         <TextField
                           style={{ paddingTop: 0 }}
-                          inputStyle={{ minHeight: Spacing[48] }}
+                          inputStyle={{ minHeight: Spacing[128] }}
                           editable={false}
                           isRequired={false}
                           value={recommendation}

@@ -284,6 +284,8 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                           isError={isError && !values.title}
                           secureTextEntry={false}
                           placeholder={"Tulis nama judul sesi coaching di sini."}
+                          inputStyle={{borderRadius: Spacing[12]}}
+                          
                         />
                         <HStack style={{ zIndex: 100 }}>
                           <VStack style={{ width: Spacing[64] }}>
@@ -291,7 +293,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                               type={"body-bold"}
                               style={[
                                 { textAlign: "center", top: Spacing[4] },
-                                isError && values.learnerIds.length == 0 ? styles.textError : null,
+                                isError && values.learnerIds.length < 0 ? styles.textError : null,
                               ]}
                               text="dengan"
                             />
@@ -328,7 +330,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                                 borderRadius: Spacing[12],
                                 alignItems: "flex-end",
                                 justifyContent: "flex-end",
-                                backgroundColor: Colors.ABM_MAIN_BLUE,
+                                backgroundColor: Colors.ABM_DARK_BLUE,
                               }}
                             >
                               <Text
@@ -369,7 +371,8 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                             />
                           </VStack>
                         </HStack>
-                        <HStack>
+                        {/* TODO: Add file upload */}
+                        {/* <HStack>
                         <VStack top={Spacing[8]}>
                           <Button
                               type={"yellow-bg"}
@@ -377,7 +380,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                               onPress={() => {console.log('kemek')}}
                             />
                           </VStack>
-                        </HStack>
+                        </HStack> */}
                         {coachingStore.isFormCoach && (
                           <VStack top={Spacing[12]}>
                             <Text
@@ -541,10 +544,10 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                             }}
                             textStyle={{
                               fontFamily: typography.primaryBold,
-                              colors: Colors.ABM_MAIN_BLUE,
+                              colors: Colors.ABM_DARK_BLUE,
                             }}
                             selectedDayColor={Colors.ABM_YELLOW}
-                            selectedDayTextColor={Colors.ABM_MAIN_BLUE}
+                            selectedDayTextColor={Colors.ABM_DARK_BLUE}
                             style={{ padding: Spacing[20] }}
                             width={dimensions.screenWidth - Spacing[64]}
                             maxDate={new Date()}
@@ -661,8 +664,8 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                       <VStack style={{ maxWidth: Spacing[256], minWidth: Spacing[128] }}>
                         <Button
                           type={"primary-form"}
-                          text={coachingStore.messageCreateJournal === "Success" ? "Kembali ke Menu Utama Coaching Journal" : "Kembali ke catatan"}
-                          style={{ height: Spacing[64], paddingHorizontal: Spacing[8] }}
+                          text={coachingStore.messageCreateJournal === "Success" ? "Kembali ke Menu Utama Coaching Journal" : "Kembali ke Menu Sebelumnya"}
+                          style={{ height: Spacing[64], paddingHorizontal: Spacing[18] }}
                           textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
                           onPress={handleModalResponse}
                         />
