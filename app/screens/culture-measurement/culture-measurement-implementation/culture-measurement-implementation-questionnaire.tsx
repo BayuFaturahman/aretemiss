@@ -1,5 +1,5 @@
-import React, { FC, useCallback, useEffect, useReducer, useState } from "react"
-import { ImageBackground, SafeAreaView, ScrollView, StyleSheet, View } from "react-native"
+import React, { FC, useCallback, useEffect, useReducer, useState, useRef } from "react"
+import { ImageBackground, KeyboardAvoidingView, SafeAreaView, ScrollView, StyleSheet, View } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Text, BackNavigation, Button } from "@components"
@@ -13,11 +13,15 @@ import { useStores } from "../../../bootstrap/context.boostrap"
 import { dimensions } from "@config/platform.config"
 import { images } from "@assets/images";
 
+import Spinner from "react-native-loading-spinner-overlay"
 import { ProgressBar } from "react-native-paper"
 import moment from "moment"
-import { CMSectionModel, QuestionnaireModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
 import { TouchableOpacity } from "react-native-gesture-handler"
+
+import { CMSectionModel, QuestionnaireModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
 import { CMObjectiveModel, CM_SECTION_EMPTY, CM_SECTION_MOCK_DATA, QUESTIONNAIRE_EXAMPLE, QUESTIONNAIRE_OPTION } from "../culture-measurement.type"
+import { ModalComponent } from "../component/cm-modal"
+import { Man1 } from "@assets/svgs"
 // import { EmptyList } from "./components/empty-list"
 
 const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, "cultureMeasurementImplementationQuestionnaire">> =
@@ -25,6 +29,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
 
         const [, forceUpdate] = useReducer((x) => x + 1, 0)
         const { cultureMeasurementStore } = useStores()
+        const scrollRef = useRef();
 
         const [submitBtnText, setSubmitBtnText] = useState<string>('Selanjutnya')
 
@@ -38,27 +43,55 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
         const [listDescription, setLisDescription] = useState<string[]>([])
         const [listQuestionnaire, setListQuestionnaire] = useState<QuestionnaireModel[]>([QUESTIONNAIRE_EXAMPLE])
 
+
+        const [isModalVisible, setModalVisible] = useState<boolean>(false)
+        const [isIconFromMood, setIsIconFromMood] = useState<boolean>(false)
+        const [modalTitle, setModalTitle] = useState<string>("")
+        const [modalDesc, setModalDesc] = useState<string>("")
+        const [modalIcon, setModalIcon] = useState("senang")
+        const [modalBtnText, setModalBtnText] = useState("senang")
+
+
+        const setModalContent = (title: string, desc: string, icon: string) => {
+            setModalTitle(title)
+            setModalDesc(desc)
+            setModalIcon(icon)
+        }
+
         const goBack = () => {
             if (currPage > 1) {
                 if (currPage === totalPage - 1) {
                     setSubmitBtnText('Selanjutnya')
                 }
                 setCurrPage(currPage - 1)
+                extractSection(currSectionNo - 1)
+                setCurrSectionNo(currSectionNo - 1)
             } else {
                 navigation.goBack()
             }
+            scrollUp()
         }
 
         const goToNextPage = () => {
+            // if going to last page
             if (currPage === totalPage - 2) {
                 setSubmitBtnText('Submit Kuisioner')
             }
 
+            // if current page = before last 2 pages
             if (currPage < (totalPage - 1)) {
                 setCurrPage(currPage + 1)
-                extractSection(currSectionNo + 1)
-                setCurrSectionNo(currSectionNo + 1)
             }
+            extractSection(currSectionNo + 1)
+            setCurrSectionNo(currSectionNo + 1)
+            scrollUp()
+        }
+
+        const scrollUp = () => {
+            scrollRef?.current?.scrollTo({
+                y: 0,
+                animated: true,
+            });
         }
 
         const extractDesc = useCallback(() => {
@@ -75,9 +108,10 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
         }, [currSectionData, listQuestionnaire])
 
         const extractSection = useCallback(async (sectionNo: number) => {
-            console.log(`extractSection section no ${sectionNo}`)
+            // console.log(`extractSection section no ${sectionNo}`)
             if (sectionNo < listSectionData.length) {
                 setCurrSectionData(listSectionData[sectionNo])
+                // console.log(`listSectionData[sectionNo]: ${JSON.stringify(listSectionData[sectionNo])}`)
             }
         }, [currSectionData])
 
@@ -99,7 +133,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
             setListSectionData(CM_SECTION_MOCK_DATA)
         }, [])
 
-        const selectOption1 = useCallback((index, indexQ) => {
+        const selectOption = useCallback((index, indexQ) => {
             let tempListQuestionnaire = [...listQuestionnaire]
             tempListQuestionnaire[index].point = indexQ + 1
             setListQuestionnaire(tempListQuestionnaire)
@@ -108,7 +142,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
         const renderQuesitonOptions = (data: QuestionnaireModel, index, dataQ, indexQ) => {
             return (
                 <>
-                    <TouchableOpacity disabled={false} onPress={() => selectOption1(index, indexQ)}>
+                    <TouchableOpacity disabled={false} onPress={() => selectOption(index, indexQ)}>
                         <HStack bottom={Spacing[6]} style={{ backgroundColor: data.point === indexQ + 1 ? Colors.ABM_BG_BLUE : Colors.WHITE, paddingHorizontal: Spacing[12], paddingVertical: Spacing[6], borderRadius: Spacing[10] }}>
                             {/* <Spacer /> */}
                             <View style={{
@@ -172,87 +206,146 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
             )
         }
 
+        const onClickCancel = () => {
+            renderCancelModal()
+        }
+
+        const toggleModal = (value: boolean) => {
+            setModalVisible(value)
+        }
+
+        const renderSuccessModal = () => {
+            setModalVisible(true)
+            setModalContent("Sukses!", "Kuesioner telah berhasil disubmit!", "senang")
+            setModalBtnText('Kembali ke Main Menu\nKuesioner')
+            setIsIconFromMood(true)
+        }
+
+        const renderFailModal = () => {
+            setModalVisible(true)
+            setModalContent("Ada Kesalahan!", "Ups! Sepertinya ada kesalahan!\nSilahkan coba lagi!", "sedih")
+            setModalBtnText('Kembali ke\nMenu Sebelumnya')
+            setIsIconFromMood(true)
+
+        }
+
+        const iconEl = () => {
+            return <>
+                <Man1 data={modalIcon} width={Spacing[64]} height={Spacing[64]} />
+            </>
+        }
+
+        const renderCancelModal = () => {
+            setModalVisible(true)
+            setModalContent("Kamu akan membatalkan pengisian kuesioner.", "Pengisian kuesioner akan dibatalkan. Apakah kamu yakin ingin membatalkannya?", "")
+            setModalBtnText('Kembali ke Main Menu\nKuesioner')
+            setIsIconFromMood(false)
+
+        }
+
+
         return (
-            <VStack
-                testID="cultureMeasurementImplementation"
-                style={styles.bg}
+            <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={Layout.flex}
             >
-                <SafeAreaView style={Layout.flex}>
-                    <ScrollView
-                    // refreshControl={
-                    // <RefreshControl
-                    // refreshing={}
-                    // onRefresh={onRefresh}
-                    //     tintColor={Colors.MAIN_RED}
-                    // />
-                    // }
-                    >
-                        <VStack style={{ backgroundColor: Colors.WHITE }}>
-                            {/* <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} /> */}
-                            <VStack top={Spacing[12]} horizontal={Spacing[24]} bottom={Spacing[12]}>
-                                <HStack>
-                                    <Text type={"left-header"} text={`Penilaian Pelaksanaan\nProyek Budaya Juara`} style={{ fontSize: Spacing[16], textAlign: 'left' }} />
-                                    <Spacer />
-                                    <Button type={"dark-yellow"} text="Simpan Data" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[12] }} />
-                                    <Spacer />
-                                    <Button type={"warning"} text="Cancel" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[12] }} onPress={() => goBack()} />
-                                </HStack>
-                                <Spacer height={Spacing[24]} />
-                                <HStack>
-                                    <Spacer />
-                                    <Text type="body-bold" style={{ fontSize: Spacing[16] }} text={currSectionData.title} />
-                                    <Spacer />
-                                </HStack>
+                <VStack
+                    testID="cultureMeasurementImplementation"
+                    style={styles.bg}
+                >
+                    <SafeAreaView style={Layout.flex}>
+                        <ScrollView
+                            ref={scrollRef}
+                        // refreshControl={
+                        // <RefreshControl
+                        // refreshing={}
+                        // onRefresh={onRefresh}
+                        //     tintColor={Colors.MAIN_RED}
+                        // />
+                        // }
+                        >
+                            <VStack style={{ backgroundColor: Colors.WHITE }}>
+                                {/* <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} /> */}
+                                <VStack top={Spacing[12]} horizontal={Spacing[24]} bottom={Spacing[12]}>
+                                    <HStack>
+                                        <Text type={"left-header"} text={`Penilaian Pelaksanaan\nProyek Budaya Juara`} style={{ fontSize: Spacing[16], textAlign: 'left' }} />
+                                        <Spacer />
+                                        <Button type={"dark-yellow"} text="Simpan Data" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[12] }} />
+                                        <Spacer />
+                                        <Button type={"warning"} text="Cancel" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[12] }} onPress={() => onClickCancel()} />
+                                    </HStack>
+                                    <Spacer height={Spacing[24]} />
+                                    <HStack>
+                                        <Spacer />
+                                        <Text type="body-bold" style={{ fontSize: Spacing[16] }} text={currSectionData.title} />
+                                        <Spacer />
+                                    </HStack>
 
-                                {listDescription.map((item, index) => {
-                                    return (
-                                        <>
-                                            <Text type={"body"} style={{ textAlign: "center", fontSize: Spacing[12] }}>
-                                                {item}
-                                            </Text>
-                                            {/* <Spacer height={Spacing[12]} /> */}
-                                        </>
-                                    )
-                                })}
-                                <Spacer height={Spacing[8]} />
-                                <View style={[{ height: Spacing[6], backgroundColor: Colors.ABM_YELLOW }, Layout.widthFull]}></View>
-                                <Spacer height={Spacing[8]} />
-
-                                {/* start questionaire */}
-                                {
-                                    listQuestionnaire.map((data, index) => {
+                                    {listDescription.map((item, index) => {
                                         return (
-                                            renderQuestionnaire(data, index)
+                                            <>
+                                                <Text type={"body"} style={{ textAlign: "center", fontSize: Spacing[12] }}>
+                                                    {item}
+                                                </Text>
+                                                {/* <Spacer height={Spacing[12]} /> */}
+                                            </>
                                         )
-                                    })
-                                }
-                                <Spacer height={Spacing[24]} />
-                                <HStack>
-                                    <Button type={"primary-dark"} text="Sebelumnya" style={{ paddingHorizontal: Spacing[14], borderRadius: Spacing[12] }} onPress={() => goBack()} />
-                                    <Spacer />
-                                    <Button type={"primary"} text={submitBtnText} style={{ paddingHorizontal: Spacing[14], borderRadius: Spacing[12] }} onPress={() => goToNextPage()} />
-                                </HStack>
+                                    })}
+                                    <Spacer height={Spacing[8]} />
+                                    <View style={[{ height: Spacing[6], backgroundColor: Colors.ABM_YELLOW }, Layout.widthFull]}></View>
+                                    <Spacer height={Spacing[8]} />
 
-                                <Spacer height={Spacing[24]} />
-                                {/* <Spacer height={Spacing[2]} /> */}
-                                <ProgressBar
-                                    progress={(currPage + 1) / totalPage}
-                                    color={Colors.ABM_YELLOW}
-                                    style={{ height: Spacing[8], backgroundColor: Colors.GRAY74 }}
-                                // displayName={`1/3`}
-                                />
-                                <HStack>
-                                    <Spacer />
-                                    <Text>{currPage + 1}/{totalPage}</Text>
-                                    <Spacer />
-                                </HStack>
-                                <Spacer height={Spacing[6]} />
+                                    {/* start questionaire */}
+                                    {
+                                        listQuestionnaire.map((data, index) => {
+                                            return (
+                                                renderQuestionnaire(data, index)
+                                            )
+                                        })
+                                    }
+                                    <Spacer height={Spacing[24]} />
+                                    <HStack>
+                                        <Button type={"primary-dark"} text="Sebelumnya" style={{ paddingHorizontal: Spacing[14], borderRadius: Spacing[12] }} onPress={() => goBack()} />
+                                        <Spacer />
+                                        <Button type={"primary"} text={submitBtnText} style={{ paddingHorizontal: Spacing[14], borderRadius: Spacing[12] }} onPress={() => goToNextPage()} />
+                                    </HStack>
+
+                                    <Spacer height={Spacing[24]} />
+                                    {/* <Spacer height={Spacing[2]} /> */}
+                                    <ProgressBar
+                                        progress={(currPage + 1) / totalPage}
+                                        color={Colors.ABM_YELLOW}
+                                        style={{ height: Spacing[8], backgroundColor: Colors.GRAY74 }}
+                                    // displayName={`1/3`}
+                                    />
+                                    <HStack>
+                                        <Spacer />
+                                        <Text>{currPage + 1}/{totalPage}</Text>
+                                        <Spacer />
+                                    </HStack>
+                                    <Spacer height={Spacing[6]} />
+                                </VStack>
+
                             </VStack>
+                        </ScrollView >
+                    </SafeAreaView >
+                    <Spinner visible={cultureMeasurementStore.isLoading} textContent={"Memuat..."} />
 
-                        </VStack>
-                    </ScrollView >
-                </SafeAreaView >
-            </VStack >
+                    {isModalVisible &&
+                        <ModalComponent
+                            isModalVisible={isModalVisible}
+                            isIconFromMood={isIconFromMood}
+                            toggleModal={() => toggleModal(false)}
+                            onClickModalBtn={() => toggleModal(false)}
+                            modalTitle={modalTitle}
+                            modalIcon={modalIcon}
+                            modalDesc={modalDesc}
+                            modalBtnText={modalBtnText}
+                        />
+                        // </ModalComponent>
+                    }
+                </VStack >
+            </KeyboardAvoidingView>
         )
     })
 
