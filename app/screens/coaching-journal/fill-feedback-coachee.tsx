@@ -1,5 +1,5 @@
-import React, {FC, useCallback, useEffect, useReducer, useState} from "react"
-import {FlatList, ImageBackground, SafeAreaView, ScrollView, TouchableOpacity, View} from "react-native"
+import React, { FC, useCallback, useEffect, useReducer, useState } from "react"
+import { FlatList, ImageBackground, SafeAreaView, ScrollView, TouchableOpacity, View } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {
@@ -7,15 +7,15 @@ import {
   BackNavigation, Button,
 } from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
-import {HStack, VStack} from "@components/view-stack";
+import { HStack, VStack } from "@components/view-stack";
 import Spacer from "@components/spacer";
-import {Colors, Layout, Spacing} from "@styles";
+import { Colors, Layout, Spacing } from "@styles";
 
-import {EmptyList} from "@screens/coaching-journal/components/empty-list";
+import { EmptyList } from "@screens/coaching-journal/components/empty-list";
 import { useStores } from "../../bootstrap/context.boostrap"
 
 import Spinner from 'react-native-loading-spinner-overlay';
-import {images} from "@assets/images";
+import { images } from "@assets/images";
 
 export type ChoiceItemType = {
   id: string
@@ -23,7 +23,7 @@ export type ChoiceItemType = {
   choice: 0 | 1 | 2 | 3 | 4 | 5
 }
 
-const EXAMPLE_DATA:Array<ChoiceItemType> = [
+const EXAMPLE_DATA: Array<ChoiceItemType> = [
   {
     id: '0',
     title: 'Dalam skala 1 - 5, seberapa baik coach-mu sudah membangun rapport atau kedekatan di awal sesi?',
@@ -70,11 +70,11 @@ const FillFeedbackCoachee: FC<StackScreenProps<NavigatorParamList, "fillFeedback
 
     const goBack = () => navigation.goBack()
 
-    const selectFeedbackItem = useCallback((id, choice)=>{
+    const selectFeedbackItem = useCallback((id, choice) => {
 
-      const updated = feedbackData.map((item)=>{
-        if(item.id === id){
-          return { ...item, choice: choice}
+      const updated = feedbackData.map((item) => {
+        if (item.id === id) {
+          return { ...item, choice: choice }
         }
         return item;
       })
@@ -89,14 +89,14 @@ const FillFeedbackCoachee: FC<StackScreenProps<NavigatorParamList, "fillFeedback
       let isError = false
 
       for (const item of feedbackData) {
-        if(item.choice === "" || item.choice === 0) {
+        if (item.choice === "" || item.choice === 0) {
           isError = true
           break;
         }
         console.log(item.choice);
       }
 
-      if(isError === false){
+      if (isError === false) {
         await coachingStore.createFeedback(
           feedbackData[0].choice,
           feedbackData[1].choice,
@@ -133,40 +133,40 @@ const FillFeedbackCoachee: FC<StackScreenProps<NavigatorParamList, "fillFeedback
     useEffect(() => {
       // coachingStore.resetLoading()
       // mainStore.resetLoading()
-    },[])
+    }, [])
 
-  useEffect(() => {
-      if(coachingStore.messageCreateJournal == "Success" && !coachingStore.isDetail){
+    useEffect(() => {
+      if (coachingStore.messageCreateJournal == "Success" && !coachingStore.isDetail) {
         coachingStore.resetCoachingStore()
         coachingStore.setRefreshData(true)
-        coachingStore.clearJournal().then(()=>{
+        coachingStore.clearJournal().then(() => {
           navigation.reset({
             routes: [{ name: 'coachingJournalMain' }]
           })
         })
       }
-  },[coachingStore.messageCreateJournal, coachingStore.createJournalSucceed])
+    }, [coachingStore.messageCreateJournal, coachingStore.createJournalSucceed])
 
-  useEffect(() => {
-      if(coachingStore.messageCreateFeedback == "Success" && coachingStore.isDetail){
+    useEffect(() => {
+      if (coachingStore.messageCreateFeedback == "Success" && coachingStore.isDetail) {
         coachingStore.resetCoachingStore()
         coachingStore.setRefreshData(true)
-        coachingStore.clearJournal().then(()=>{
+        coachingStore.clearJournal().then(() => {
           navigation.reset({
             routes: [{ name: 'coachingJournalMain' }]
           })
         })
       }
-  },[coachingStore.messageCreateFeedback, coachingStore.createFeedbackSucced])
+    }, [coachingStore.messageCreateFeedback, coachingStore.createFeedbackSucced])
 
-    const getFeedbackDetail = useCallback(async ()=>{
+    const getFeedbackDetail = useCallback(async () => {
       await coachingStore.getFeedbackDetailById(journalId, true)
 
-      if(coachingStore.my_feedback){
+      if (coachingStore.my_feedback) {
         const myFeedback = coachingStore.my_feedback
 
         const updated = feedbackData.map((item, index) => {
-          if(myFeedback[`q${index + 1}`]){
+          if (myFeedback[`q${index + 1}`]) {
             setIsAlreadyFilled(true)
           }
           return {
@@ -178,22 +178,22 @@ const FillFeedbackCoachee: FC<StackScreenProps<NavigatorParamList, "fillFeedback
         console.log(`updated`, updated)
         setFeedbackData(updated)
       }
-    },[])
+    }, [])
 
     useEffect(() => {
       getFeedbackDetail()
-    },[])
+    }, [])
 
-    const ChoiceItem = ({item, index}) => {
-      return(
+    const ChoiceItem = ({ item, index }) => {
+      return (
         <VStack vertical={Spacing[8]}>
-          <Text type={'body'} style={{textAlign: 'center'}}>
+          <Text type={'body'} style={{ textAlign: 'center' }}>
             {item.title}
           </Text>
-          <HStack top={Spacing[12]} style={{justifyContent: 'space-around'}}>
-            {Array(5).fill(0).map((value, i, array)=>{
-              return(
-                <TouchableOpacity onPress={()=> selectFeedbackItem(item.id, i + 1)} disabled={isAlreadyFilled}>
+          <HStack top={Spacing[12]} style={{ justifyContent: 'space-around' }}>
+            {Array(5).fill(0).map((value, i, array) => {
+              return (
+                <TouchableOpacity onPress={() => selectFeedbackItem(item.id, i + 1)} disabled={isAlreadyFilled}>
                   <VStack>
                     <View style={{
                       height: Spacing[24],
@@ -202,7 +202,7 @@ const FillFeedbackCoachee: FC<StackScreenProps<NavigatorParamList, "fillFeedback
                       borderRadius: Spacing[128], borderWidth: Spacing[2],
                       borderColor: item.choice === i + 1 ? Colors.ABM_LIGHT_BLUE : Colors.ABM_LIGHT_BLUE
                     }} />
-                    <Text type={'body'} style={{textAlign: 'center'}}>
+                    <Text type={'body'} style={{ textAlign: 'center' }}>
                       {i + 1}
                     </Text>
                   </VStack>
@@ -215,26 +215,26 @@ const FillFeedbackCoachee: FC<StackScreenProps<NavigatorParamList, "fillFeedback
     }
 
     return (
-      <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.ABM_MAIN_BLUE, flex: 1, justifyContent: 'center'}}>
+      <VStack testID="CoachingJournalMain" style={{ backgroundColor: Colors.ABM_MAIN_BLUE, flex: 1, justifyContent: 'center' }}>
         <SafeAreaView style={Layout.flex}>
           <ScrollView>
-            <ImageBackground source={images.bgPattern} style={{width: '100%'}} resizeMode={"cover"}>
+            <ImageBackground source={images.bgPattern} style={{ width: '100%' }} resizeMode={"cover"}>
               <BackNavigation goBack={goBack} />
               <VStack top={Spacing[8]} horizontal={Spacing[24]} bottom={Spacing[12]}>
-                <Text type={'left-header'} style={{color: Colors.WHITE}} text="Feedback untuk coach" />
+                <Text type={'left-header'} style={{ color: Colors.WHITE }} text="Feedback untuk coach" />
                 <Spacer height={Spacing[24]} />
-                <Text type={"header"} style={{color: Colors.WHITE, textAlign:'center', fontSize: Spacing[12]}}>Terima kasih sudah memberikan feedback untuk coach-mu! Inilah penilaian yang sudah kamu berikan untuk sesi coaching kali ini.</Text>
+                <Text type={"header"} style={{ color: Colors.WHITE, textAlign: 'center', fontSize: Spacing[12] }}>Terima kasih sudah memberikan feedback untuk coach-mu! Inilah penilaian yang sudah kamu berikan untuk sesi coaching kali ini.</Text>
                 <Spacer height={Spacing[32]} />
               </VStack>
             </ImageBackground>
-            <VStack top={Spacing[32]} horizontal={Spacing[24]} style={[Layout.heightFull, {backgroundColor: Colors.WHITE, borderTopStartRadius: Spacing[48], borderTopEndRadius: Spacing[48]}]}>
+            <VStack top={Spacing[32]} horizontal={Spacing[24]} style={[Layout.heightFull, { backgroundColor: Colors.WHITE, borderTopStartRadius: Spacing[48], borderTopEndRadius: Spacing[48] }]}>
               <FlatList
-                ItemSeparatorComponent={()=><Spacer height={Spacing[24]} />}
+                ItemSeparatorComponent={() => <Spacer height={Spacing[24]} />}
                 data={feedbackData}
-                ListEmptyComponent={()=>
+                ListEmptyComponent={() =>
                   <EmptyList />
                 }
-                renderItem={({item, index})=> <ChoiceItem item={item} index={index} />}
+                renderItem={({ item, index }) => <ChoiceItem item={item} index={index} />}
                 keyExtractor={item => item.id}
                 ListFooterComponent={
                   isAlreadyFilled ?
@@ -244,7 +244,7 @@ const FillFeedbackCoachee: FC<StackScreenProps<NavigatorParamList, "fillFeedback
                         type={"primary"}
                         text={"Submit"}
                         onPress={submit}
-                        style={{minWidth: Spacing[72]}}
+                        style={{ minWidth: Spacing[72] }}
                       />
                     </VStack>
                 }
@@ -256,7 +256,7 @@ const FillFeedbackCoachee: FC<StackScreenProps<NavigatorParamList, "fillFeedback
         <Spinner
           visqible={coachingStore.isLoading || mainStore.isLoading}
           textContent={'Memuat...'}
-          // textStyle={styles.spinnerTextStyle}
+        // textStyle={styles.spinnerTextStyle}
         />
       </VStack>
     )

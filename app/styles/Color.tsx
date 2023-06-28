@@ -13,6 +13,7 @@ export const BLACK = '#000000';
 export const WHITE = '#FFFFFF';
 export const TRANSPARENT = '#00000a0';
 // Gray
+export const GRAY74 = '#BDBDBD';
 export const GRAY100 = '#F7FAFC';
 export const GRAY200 = '#EDF2F7';
 export const GRAY300 = '#E2E8F0';
@@ -22,6 +23,7 @@ export const GRAY600 = '#718096';
 export const GRAY700 = '#4A5568';
 export const GRAY800 = '#2D3748';
 export const GRAY900 = '#1A202C';
+export const GRAY_DISABLEB = '#BDBDBD';
 
 // Red
 export const RED100 = '#FFF5F5';

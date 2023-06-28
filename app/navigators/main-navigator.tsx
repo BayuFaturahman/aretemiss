@@ -48,6 +48,8 @@ import {
   newBrainstormsGroup,
   sendEmail,
 } from "@screens/brainstorm"
+import { cultureMeasurementImplementation, cultureMeasurementMain } from "@screens/culture-measurement"
+import { feedbackCommitment, feedbackDetail, feedbackMain } from "@screens/feedback"
 
 const screens: AppRoute[] = [
   {
@@ -198,6 +200,26 @@ const screens: AppRoute[] = [
     name: "juaraQuizResult",
     component: juaraQuizResult,
   },
+  {
+    name: "feedbackMain",
+    component: feedbackMain,
+  },
+  {
+    name: "feedbackDetail",
+    component: feedbackDetail,
+  },
+  {
+    name: "feedbackCommitment",
+    component: feedbackCommitment,
+  },
+  {
+    name: "cultureMeasurementMain",
+    component: cultureMeasurementMain,
+  },
+  {
+    name: "cultureMeasurementImplementation",
+    component: cultureMeasurementImplementation,
+  },
 ]
 
 export type NavigatorParamList = {
@@ -287,7 +309,17 @@ export type NavigatorParamList = {
   juaraQuizResult: {
     score: number,
     totalQuestions: number;
+  },
+  feedbackMain: undefined,
+  feedbackDetail: {
+    id: string,
+    isFeedbackRequest: boolean
   }
+  feedbackCommitment: {
+    feedbackUserId: string
+  }
+  cultureMeasurementMain: undefined,
+  cultureMeasurementImplementation: undefined
 }
 
 export default screens

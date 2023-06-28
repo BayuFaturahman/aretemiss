@@ -9,7 +9,7 @@ import {
 } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
-import {Button, Text, TextYellowLine} from "@components"
+import { Button, Text, TextYellowLine } from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
 import { VStack, HStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
@@ -43,6 +43,8 @@ import { ProfileUpdateForm } from "@screens/settings/my-account"
 
 import { MoodComponent } from "./components/mood-component"
 import { BrainstormsComponent } from "@screens/homepage/components/brainstorms-component"
+import { FeeedbackComponent } from "./components/feedback-component"
+import { CultureMeasurementComponent } from "./components/culture-measurement-component"
 
 const FEED_EXAMPLE_DATA_ITEM: FeedItemType[] = [
   {
@@ -162,7 +164,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     // const [feedData, setFeedDAta] = useState<FeedItemType>(FEED_EXAMPLE_DATA_ITEM);
     const [feedData, setFeedData] = useState<FeedItemType>(null)
     const [coachingJournalData, setCoachingJournalData] = useState<CoachingJournalItem>(null)
-    const { mainStore, coachingStore, authStore, feedStore, leaderboardStore } = useStores()
+    const { mainStore, coachingStore, authStore, feedStore, feedbackStore, leaderboardStore } = useStores()
 
     const userProfile: ProfileUpdateForm = {
       fullname: mainStore.userProfile.user_fullname,
@@ -193,6 +195,11 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       })
     }, [])
 
+    const goToFeedbackUser = useCallback((id) => {
+      navigation.navigate("feedbackMain")
+      console.log(id)
+    }, [])
+
     const goToFeedback = useCallback((id) => {
       coachingStore.isDetailJournal(true)
       coachingStore.setDetailID(id)
@@ -215,6 +222,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
         jlId: jl_id
       })
     }, [])
+
 
     const getUserProfile = useCallback(async () => {
       await mainStore.getProfile()
@@ -352,9 +360,16 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
     const goToJuaraAssessment = () => navigation.navigate("juaraQuizMain")
 
+    const goToCultureMeasurement = () => {
+      console.log('lala')
+      navigation.navigate("cultureMeasurementMain")
+    }
+
     // const goToBrainstormsGroup = () => navigation.navigate("newBrainstormsGroup")
 
     const goToBrainstormsGroup = () => navigation.navigate("brainstormGroupList")
+
+    // const goToFeeedbackGroup = () => navigation.navigate("brainstormGroupList")
 
     const goToTeamMood = () => {
       setModalVisible(false)
@@ -428,6 +443,16 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
                 goToCoaching={goToJournalCoaching}
                 userId={mainStore.userProfile.user_id}
               />
+            </HomepageCardWrapper>
+            <Spacer height={Spacing[12]} />
+            <HomepageCardWrapper animationDuration={700}>
+              <VStack>
+                <FeeedbackComponent goToFeedback={goToFeedbackUser} />
+              </VStack>
+            </HomepageCardWrapper>
+            <Spacer height={Spacing[12]} />
+            <HomepageCardWrapper animationDuration={700}>
+              <CultureMeasurementComponent goToCultureMeasurement={goToCultureMeasurement} />
             </HomepageCardWrapper>
             <Spacer height={Spacing[12]} />
             <HomepageCardWrapper animationDuration={700}>
@@ -646,7 +671,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
                 style={{ textAlign: "center" }}
                 text={"Mood Anda hari ini sudah terpilih."}
               />
-              <TextYellowLine underlineWidth={120}/>
+              <TextYellowLine underlineWidth={120} />
               <Spacer height={Spacing[32]} />
               <HStack bottom={Spacing[28]}>
                 <Spacer />
