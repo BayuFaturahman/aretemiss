@@ -428,16 +428,16 @@ export default class FeedbackStore {
 
     try {
       const result = await this.feedbackApi.createFeedbackUser(data)
-      // console.log('requestFeedbackUser result', result)
+      // console.log('createFeedbackUser result', result)
 
       if (result.kind === "ok") {
         this.createFeedbackUserSucceed(result.response.message)
       } else if (result.kind === 'form-error') {
-        console.log('requestFeedbackUser failed')
+        console.log('createFeedbackUser failed')
         // console.log(result.response.errorCode)
-        this.feedbackFailed(result.response.errorCode)
+        this.formError(result.response)
       } else if (result.kind === 'unauthorized') {
-        console.log('token expired requestFeedbackUser')
+        console.log('token expired createFeedbackUser')
         // console.log(result)
         this.feedbackFailed(result.response.errorCode)
       } else {
@@ -457,7 +457,7 @@ export default class FeedbackStore {
     this.isLoading = false
   }
 
-  feedbackFailed(errorId: number) {
+  feedbackFailed(errorId: number,) {
     this.formErrorCode = errorId
     this.isLoading = false
   }
