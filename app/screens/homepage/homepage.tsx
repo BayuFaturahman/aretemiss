@@ -44,6 +44,7 @@ import { ProfileUpdateForm } from "@screens/settings/my-account"
 import { MoodComponent } from "./components/mood-component"
 import { BrainstormsComponent } from "@screens/homepage/components/brainstorms-component"
 import { FeeedbackComponent } from "./components/feedback-component"
+import { CultureMeasurementComponent } from "./components/culture-measurement-component"
 
 const FEED_EXAMPLE_DATA_ITEM: FeedItemType[] = [
   {
@@ -221,7 +222,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       })
     }, [])
 
-  
+
     const getUserProfile = useCallback(async () => {
       await mainStore.getProfile()
     }, [])
@@ -357,6 +358,11 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
     const goToJuaraAssessment = () => navigation.navigate("juaraQuizMain")
 
+    const goToCultureMeasurement = () => {
+      console.log('lala')
+      navigation.navigate("cultureMeasurementMain")
+    }
+
     // const goToBrainstormsGroup = () => navigation.navigate("newBrainstormsGroup")
 
     const goToBrainstormsGroup = () => navigation.navigate("brainstormGroupList")
@@ -440,6 +446,10 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
               <VStack>
                 <FeeedbackComponent goToFeedback={goToFeedbackUser} />
               </VStack>
+            </HomepageCardWrapper>
+            <Spacer height={Spacing[12]} />
+            <HomepageCardWrapper animationDuration={700}>
+              <CultureMeasurementComponent goToCultureMeasurement={goToCultureMeasurement} />
             </HomepageCardWrapper>
             <Spacer height={Spacing[12]} />
             <HomepageCardWrapper animationDuration={700}>
@@ -658,7 +668,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
                 style={{ textAlign: "center" }}
                 text={"Mood Anda hari ini sudah terpilih."}
               />
-              <TextYellowLine underlineWidth={120}/>
+              <TextYellowLine underlineWidth={120} />
               <Spacer height={Spacing[32]} />
               <HStack bottom={Spacing[28]}>
                 <Spacer />
