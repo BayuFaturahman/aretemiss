@@ -217,7 +217,7 @@ const FeedbackDetail: FC<StackScreenProps<NavigatorParamList, "feedbackDetail">>
                 }
                 await createFeedbackUser(tempParamData)
 
-                if (feedbackStore.messageCreateFeedbackUser == "Success" || feedbackStore.errorCode === null) {
+                if (feedbackStore.errorMessage == "Success" || feedbackStore.errorCode === null) {
                     feedbackStore.setRefreshData(true)
                     setModalContent("Sukses!", "Feedback telah sukses disimpan!", "senang")
                     setIsSubmitSuccess(true)
@@ -227,7 +227,7 @@ const FeedbackDetail: FC<StackScreenProps<NavigatorParamList, "feedbackDetail">>
                 }
                 toggleModal(true)
             }
-        }, [isError, isSubmitClicked, feedbackQuestionChoice, feedbackStore.errorCode, feedbackStore.messageCreateFeedbackUser, isSubmitSuccess])
+        }, [isError, isSubmitClicked, feedbackQuestionChoice, feedbackStore.errorCode, feedbackStore.errorMessage, isSubmitSuccess])
 
         return (
             <KeyboardAvoidingView

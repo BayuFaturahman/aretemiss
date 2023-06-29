@@ -553,7 +553,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
               <Spacer />
               <FlatList
                 refreshControl={
-                  <RefreshControl refreshing={false}
+                  <RefreshControl refreshing={true}
                     onRefresh={onRefreshFeedbackUserByCoachee} />
                 }
                 scrollEnabled={true}

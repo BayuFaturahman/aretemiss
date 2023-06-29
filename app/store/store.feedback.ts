@@ -532,12 +532,6 @@ export default class FeedbackStore {
     this.isLoadingListFeedbackUserByCoachee = false
     this.isLoadingListRequetsFeedbackUser = false
   }
-
-  resetJournalList() {
-    this.listJournal = []
-    this.formErrorCode = null
-    this.isLoading = false
-  }
   // #endregion
 }
 
