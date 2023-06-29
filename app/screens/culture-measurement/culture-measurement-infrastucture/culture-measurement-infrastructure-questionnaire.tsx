@@ -311,7 +311,7 @@ const CultureMeasurementInfrastructureQuestionnaire: FC<StackScreenProps<Navigat
                         // />
                         // }
                         >
-                            <VStack style={{ backgroundColor: Colors.WHITE }}>
+                            <VStack style={{ backgroundColor: Colors.WHITE, paddingTop: Spacing[12] }}>
                                 {/* <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} /> */}
                                 <VStack top={Spacing[12]} horizontal={Spacing[24]} bottom={Spacing[12]}>
                                     <HStack>
