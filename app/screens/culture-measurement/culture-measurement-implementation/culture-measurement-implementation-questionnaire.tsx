@@ -33,6 +33,9 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
 
         const [submitBtnText, setSubmitBtnText] = useState<string>('Selanjutnya')
 
+        const [isError, setIsError] = useState<boolean>(false)
+        const [isNextClicked, setIsNextClicked] = useState<boolean>(false)
+
         const [currSectionNo, setCurrSectionNo] = useState<number>(0)
         const [currSectionData, setCurrSectionData] = useState<CMSectionModel>(CM_SECTION_EMPTY)
 
@@ -42,6 +45,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
         const [listSectionData, setListSectionData] = useState<CMSectionModel[]>(CM_SECTION_MOCK_DATA)
         const [listDescription, setLisDescription] = useState<string[]>([])
         const [listQuestionnaire, setListQuestionnaire] = useState<QuestionnaireModel[]>([QUESTIONNAIRE_EXAMPLE])
+        const [listError, setListError] = useState<number[]>([])
 
 
         const [isModalVisible, setModalVisible] = useState<boolean>(false)
@@ -73,6 +77,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
         }
 
         const goToNextPage = () => {
+            console.log(`goToNextPage `)
             // if going to last page
             if (currPage === totalPage - 2) {
                 setSubmitBtnText('Submit Kuisioner')
@@ -105,6 +110,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
 
         const extractQuestionnaire = useCallback(() => {
             setListQuestionnaire(currSectionData.questionnaire)
+            setListError(new Array(currSectionData.questionnaire.length).fill(0))
         }, [currSectionData, listQuestionnaire])
 
         const extractSection = useCallback(async (sectionNo: number) => {
@@ -131,6 +137,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
 
         useEffect(() => {
             setListSectionData(CM_SECTION_MOCK_DATA)
+            setIsNextClicked(false)
         }, [])
 
         const selectOption = useCallback((index, indexQ) => {
@@ -176,11 +183,10 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                             <Spacer />
                         </VStack>
                         <Spacer width={Spacing[6]} />
-                        <Text type="body-bold" style={{ fontSize: Spacing[14] }}>{data.item}</Text>
+                        <Text type={(listError[index] === 1 && isNextClicked) ? "warning-not-bold" : "body-bold"} style={{ fontSize: Spacing[14] }}>{data.item}</Text>
                     </HStack>
                     <HStack >
                         <VStack horizontal={Spacing[12]} vertical={Spacing[8]} >
-
                             {QUESTIONNAIRE_OPTION.map((dataQ, indexQ) => {
                                 if (indexQ < 3) {
                                     return (
@@ -208,6 +214,46 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
 
         const onClickCancel = () => {
             renderCancelModal()
+        }
+
+        const onClickSave = () => {
+            console.log(`click save`)
+        }
+
+        const onClickNextOrSubmit = () => {
+            console.log(`click next or submit `)
+
+            setIsNextClicked(true)
+
+            let temptErrorList = new Array(listQuestionnaire.length).fill(0)
+            let tempIsError = false
+
+            listQuestionnaire.map((data, index) => {
+                if (!data.point || data.point === 0) {
+                    temptErrorList[index] = 1
+                    tempIsError = true
+                    setIsError(true)
+                }
+            })
+            setListError(temptErrorList)
+
+            console.log(`listQuestionnaire: ${JSON.stringify(listQuestionnaire)}`)
+            console.log(`temptErrorList: ${JSON.stringify(temptErrorList)}`)
+            console.log(`tempIsError: ${tempIsError}`)
+            // console.log(`temptErrorList: ${tempIsError}`)
+            if (!tempIsError) {
+                if (currPage === totalPage - 1) {
+                    submitData()
+                } else {
+                    // goToNextPage()
+                }
+            }
+
+
+        }
+
+        const submitData = () => {
+            console.log(`submit data`)
         }
 
         const toggleModal = (value: boolean) => {
@@ -243,7 +289,6 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
 
         }
 
-
         return (
             <KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -270,7 +315,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                                     <HStack>
                                         <Text type={"left-header"} text={`Penilaian Pelaksanaan\nProyek Budaya Juara`} style={{ fontSize: Spacing[16], textAlign: 'left' }} />
                                         <Spacer />
-                                        <Button type={"dark-yellow"} text="Simpan Data" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[12] }} />
+                                        <Button type={"dark-yellow"} text="Simpan Data" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[12] }} onPress={() => onClickSave()} />
                                         <Spacer />
                                         <Button type={"warning"} text="Cancel" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[12] }} onPress={() => onClickCancel()} />
                                     </HStack>
@@ -295,6 +340,16 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                                     <View style={[{ height: Spacing[6], backgroundColor: Colors.ABM_YELLOW }, Layout.widthFull]}></View>
                                     <Spacer height={Spacing[8]} />
 
+                                    {isError && <Text
+                                        type={"warning-not-bold"}
+                                        style={{
+                                            textAlign: 'center',
+                                            marginTop: Spacing[4],
+                                            color: Colors.MAIN_RED
+                                        }}
+                                    >Ups! Sepertinya ada kolom yang belum diisi! Silahkan dicek kembali dan isi semua kolom yang tersedia!</Text>
+                                    }
+
                                     {/* start questionaire */}
                                     {
                                         listQuestionnaire.map((data, index) => {
@@ -307,11 +362,10 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                                     <HStack>
                                         <Button type={"primary-dark"} text="Sebelumnya" style={{ paddingHorizontal: Spacing[14], borderRadius: Spacing[12] }} onPress={() => goBack()} />
                                         <Spacer />
-                                        <Button type={"primary"} text={submitBtnText} style={{ paddingHorizontal: Spacing[14], borderRadius: Spacing[12] }} onPress={() => goToNextPage()} />
+                                        <Button type={"primary"} text={submitBtnText} style={{ paddingHorizontal: Spacing[14], borderRadius: Spacing[12] }} onPress={() => onClickNextOrSubmit()} />
                                     </HStack>
 
                                     <Spacer height={Spacing[24]} />
-                                    {/* <Spacer height={Spacing[2]} /> */}
                                     <ProgressBar
                                         progress={(currPage + 1) / totalPage}
                                         color={Colors.ABM_YELLOW}
@@ -342,7 +396,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                             modalDesc={modalDesc}
                             modalBtnText={modalBtnText}
                         />
-                        // </ModalComponent>
+
                     }
                 </VStack >
             </KeyboardAvoidingView>
