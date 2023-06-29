@@ -8,6 +8,7 @@ import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
 import { Colors, Layout, Spacing } from "@styles"
 import moment from "moment"
+import { useIsFocused } from "@react-navigation/native";
 
 import { useStores } from "../../bootstrap/context.boostrap"
 
@@ -24,6 +25,7 @@ import { IconClose } from "@assets/svgs"
 import { spacing } from "@theme/spacing"
 import Spinner from 'react-native-loading-spinner-overlay';
 import { EmptyList } from "./components/empty-list"
+ 
 
 const MOCK_EXISTING_COACHEE: ExistingCoacheeModel[] = [
   {
@@ -129,6 +131,7 @@ const MOCK_LIST_REQUEST_FEEDBACK: RequestFeedbackUserModel[] = [
 const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
   observer(({ navigation }) => {
 
+    const isFocused = useIsFocused();
     const [existingCoacheeData, setExistingCoacheeData] = useState<Array<ExistingCoacheeModel>>([])
     const [listFeedbackUser, setListFeedbackUser] = useState<Array<FeedbackUserDetailModel>>([])
 
@@ -367,8 +370,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
     useEffect(() => {
       firstLoadExistingCoachee()
       firstLoadListRequestFeedbackUser()
-      console.log('useeffect []')
-    }, [])
+    }, [isFocused])
 
     const renderExistingCoachee = () => {
       return (
