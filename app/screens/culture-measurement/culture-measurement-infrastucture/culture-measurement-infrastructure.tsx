@@ -197,9 +197,9 @@ const CultureMeasurementInfrastructure: FC<StackScreenProps<NavigatorParamList, 
                                 <HStack>
                                     <Text type={"left-header"} text={`Penilaian Infrastruktur\nBudaya Juara`} style={{ fontSize: Spacing[16], textAlign: 'left' }} />
                                     <Spacer />
-                                    <Button type={"dark-yellow"} text="Simpan Data" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[12] }} />
+                                    {/* <Button type={"dark-yellow"} text="Simpan Data" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[12] }} />
                                     <Spacer />
-                                    <Button type={"warning"} text="Cancel" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[12] }} onPress={() => goBack()} />
+                                    <Button type={"warning"} text="Cancel" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[12] }} onPress={() => goBack()} /> */}
                                 </HStack>
                                 <Spacer height={Spacing[24]} />
                                 {listDescription.map((item, index) => {
