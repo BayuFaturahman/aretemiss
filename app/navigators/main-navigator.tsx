@@ -49,7 +49,7 @@ import {
   sendEmail,
 } from "@screens/brainstorm"
 import { feedbackCommitment, feedbackDetail, feedbackMain } from "@screens/feedback"
-import { cultureMeasurementImplementation, cultureMeasurementImplementationQuestionnaire, cultureMeasurementIntroduction, cultureMeasurementMain } from "@screens/culture-measurement"
+import { cultureMeasurementImplementation, cultureMeasurementImplementationQuestionnaire, cultureMeasurementInfrastructure, cultureMeasurementInfrastructureQuestionnaire, cultureMeasurementIntroduction, cultureMeasurementMain } from "@screens/culture-measurement"
 
 const screens: AppRoute[] = [
   {
@@ -228,6 +228,14 @@ const screens: AppRoute[] = [
     name: "cultureMeasurementImplementationQuestionnaire",
     component: cultureMeasurementImplementationQuestionnaire,
   },
+  {
+    name: "cultureMeasurementInfrastructure",
+    component: cultureMeasurementInfrastructure,
+  },
+  {
+    name: "cultureMeasurementInfrastructureQuestionnaire",
+    component: cultureMeasurementInfrastructureQuestionnaire,
+  },
 ]
 
 export type NavigatorParamList = {
@@ -330,6 +338,8 @@ export type NavigatorParamList = {
   cultureMeasurementIntroduction: undefined,
   cultureMeasurementImplementation: undefined,
   cultureMeasurementImplementationQuestionnaire: undefined
+  cultureMeasurementInfrastructure: undefined,
+  cultureMeasurementInfrastructureQuestionnaire: undefined
 }
 
 export default screens

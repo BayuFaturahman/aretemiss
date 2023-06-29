@@ -210,6 +210,221 @@ export const CM_SECTION_MOCK_DATA: CMSectionModel[] = [
     }
 ]
 
+export const CM_SECTION_INFRA_MOCK_DATE: CMSectionModel[] = [
+    {
+        "id": "5a207ba6-f41f-4d2d-9c8f-5b9a8631e911",
+        "title": "Petunjuk Pengisian",
+        "description": "<p>Terdapat 33 pernyataan yang perlu Anda cermati terkait sejauh mana infrastruktur budaya yang ada saat ini, memadai untuk mendukung terlaksananya proyek-proyek Budaya Juara, beserta dengan 5 pilihan penilaian:</p><br>{{type_answer}}<br><p>Kemudian, Anda diminta untuk memberikan jawaban dengan cara meng-klik langsung simbol (O) pada skor penilaian yang Anda anggap paling tepat untuk menilai kesiapan infrastruktur budaya sesuai dengan kenyataan yang ditampilkan saat ini.</p>",
+        "type": "example",
+        "questionnaire": []
+    },
+    {
+        "id": "d701cb80-b9ee-4b85-bd6f-c151400284ef",
+        "title": "Concept Readiness",
+        "description": "<p>Memiliki konsep Budaya Juara yang menyeluruh dan dipahami pihak terkait.</p>",
+        "type": "questionnaire",
+        "questionnaire": [
+            {
+                "item": "Mengajarkan pengetahuan tentang perilaku dan Budaya Juara kepada anggota tim54563",
+                "description": "66666666666666666666666666fasdfasddd455dddddddddddddddddddddddasddfasd45e54448",
+                "type": "likert_1"
+            },
+            {
+                "item": "Memberikan pemahaman tentang keterkaitan antara pekerjaan yang dilakukan anggota tim dengan prinsip dan perilaku Juaraq",
+                "description": "33",
+                "type": "likert_1"
+            },
+            {
+                "item": "Berbagi pengalaman dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
+                "description": "",
+                "type": "likert_1"
+            },
+            {
+                "item": "Melakukan sesi Coaching dengan anggota Tim untuk mendukung Tim dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
+                "description": "asdfasdf",
+                "type": "likert_1"
+            },
+            {
+                "description": "",
+                "item": "",
+                "type": "likert_1"
+            },
+            {
+                "description": "",
+                "item": "",
+                "type": "likert_1"
+            },
+            {
+                "description": "",
+                "item": "",
+                "type": "likert_1"
+            },
+            {
+                "description": "",
+                "item": "",
+                "type": "likert_1"
+            },
+            {
+                "description": "",
+                "item": "",
+                "type": "likert_1"
+            },
+            {
+                "description": "",
+                "item": "",
+                "type": "likert_1"
+            },
+            {
+                "description": "",
+                "item": "",
+                "type": "likert_1"
+            },
+            {
+                "description": "",
+                "item": "",
+                "type": "likert_1"
+            },
+            {
+                "description": "",
+                "item": "",
+                "type": "likert_1"
+            },
+            {
+                "description": "",
+                "item": "",
+                "type": "likert_1"
+            },
+            {
+                "description": "",
+                "item": "",
+                "type": "likert_1"
+            },
+            {
+                "description": "",
+                "item": "",
+                "type": "likert_1"
+            },
+            {
+                "description": "",
+                "item": "",
+                "type": "likert_1"
+            }
+        ]
+    },
+    {
+        "id": "af442772-4e73-4e6b-8445-c0fc2da965a5",
+        "title": "Team Readiness",
+        "description": "<p>Memiliki Winning Team dengan struktur dan pembagian tugas yang jelas, serta dibekali dengan pengetahuan dan keterampilan untuk melaksanakan tugasnya.</p>",
+        "type": "questionnaire",
+        "questionnaire": [
+            {
+                "item": "Mengajarkan pengetahuan tentang perilaku dan Budaya Juara kepada anggota tim",
+                "description": "",
+                "type": "likert_1"
+            },
+            {
+                "item": "Memberikan pemahaman tentang keterkaitan antara pekerjaan yang dilakukan anggota tim dengan prinsip dan perilaku Juara",
+                "description": "",
+                "type": "likert_1"
+            },
+            {
+                "item": "Berbagi pengalaman dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
+                "description": "",
+                "type": "likert_1"
+            },
+            {
+                "item": "Melakukan sesi Coaching dengan anggota Tim untuk mendukung Tim dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
+                "description": "",
+                "type": "likert_1"
+            }
+        ]
+    },
+    {
+        "id": "39723c02-3ab9-417c-87c9-f81a32aeda6c",
+        "title": "Process Readiness",
+        "description": "<p>Memiliki alur proses pengembangan budaya dari perencanaan, pelaksanaan, evaluasi dan tindak lanjut yang berjalan teratur dan sistematis. Proyek Budaya Juara adalah proyek yang dilakukan oleh Winning Team untuk mengimplementasi budaya juara</p>",
+        "type": "questionnaire",
+        "questionnaire": [
+            {
+                "item": "Mengajarkan pengetahuan tentang perilaku dan Budaya Juara kepada anggota timasdfasdf",
+                "description": "asdf",
+                "type": "likert_1"
+            },
+            {
+                "item": "Memberikan pemahaman tentang keterkaitan antara pekerjaan yang dilakukan anggota tim dengan prinsip dan perilaku Juara",
+                "description": "",
+                "type": "likert_1"
+            },
+            {
+                "item": "Berbagi pengalaman dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
+                "description": "",
+                "type": "likert_1"
+            },
+            {
+                "item": "Melakukan sesi Coaching dengan anggota Tim untuk mendukung Tim dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
+                "description": "",
+                "type": "likert_1"
+            }
+        ]
+    },
+    {
+        "id": "f8a4e7c7-bbc6-4bb7-8167-717d3ecca2c0",
+        "title": "Digital Platform Readiness ",
+        "description": "<p>Memiliki platform berbasis teknologi digital yang menghidupkan interaksi, komunikasi dan pemantauan aktivitas Budaya.</p>",
+        "type": "questionnaire",
+        "questionnaire": [
+            {
+                "item": "Mengajarkan pengetahuan tentang perilaku dan Budaya Juara kepada anggota tim",
+                "description": "",
+                "type": "likert_1"
+            },
+            {
+                "item": "Memberikan pemahaman tentang keterkaitan antara pekerjaan yang dilakukan anggota tim dengan prinsip dan perilaku Juara",
+                "description": "",
+                "type": "likert_1"
+            },
+            {
+                "item": "Berbagi pengalaman dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
+                "description": "",
+                "type": "likert_1"
+            },
+            {
+                "item": "Melakukan sesi Coaching dengan anggota Tim untuk mendukung Tim dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
+                "description": "",
+                "type": "likert_1"
+            }
+        ]
+    },
+    {
+        "id": "415a2b51-5e0d-4b2b-bef1-3bbee87fa777",
+        "title": "Recognition Mechanism Readiness",
+        "description": "<p>Memiliki mekanisme pemberian pengakuan atas pencapaian pelaksanaan Proyek Budaya Juara, yang terintegrasi ke dalam pengembangan karir.</p>",
+        "type": "questionnaire",
+        "questionnaire": [
+            {
+                "item": "Mengajarkan pengetahuan tentang perilaku dan Budaya Juara kepada anggota tim",
+                "description": "",
+                "type": "likert_1"
+            },
+            {
+                "item": "Memberikan pemahaman tentang keterkaitan antara pekerjaan yang dilakukan anggota tim dengan prinsip dan perilaku Juara",
+                "description": "",
+                "type": "likert_1"
+            },
+            {
+                "item": "Berbagi pengalaman dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
+                "description": "",
+                "type": "likert_1"
+            },
+            {
+                "item": "Melakukan sesi Coaching dengan anggota Tim untuk mendukung Tim dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
+                "description": "",
+                "type": "likert_1"
+            }
+        ]
+    }
+]
+
 export const QUESTIONNAIRE_OPTION = [
     {
         text: 'Sangat tidak sesuai',
@@ -523,4 +738,3 @@ export const QUESTIONNAIRE_TYPE = [
         color: 'ABM_GREEN'
     }
 ]
-
