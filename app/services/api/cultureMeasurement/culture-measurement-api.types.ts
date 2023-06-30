@@ -50,11 +50,14 @@ export type CMSectionModel = {
   questionnaire: QuestionnaireModel[]
 }
 
-
-
 export interface GetListPublishResponse {
   message: string
   data: CMPublishDataModel,
+}
+
+export interface GetAllSectionResponse {
+  message: string
+  data: CMSectionModel,
 }
 
 export interface ErrorFormResponse {
@@ -63,3 +66,4 @@ export interface ErrorFormResponse {
 }
 
 export type GetListPublishResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListPublishResponse } | GeneralApiProblem
+export type GetAllSectionResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetAllSectionResponse } | GeneralApiProblem

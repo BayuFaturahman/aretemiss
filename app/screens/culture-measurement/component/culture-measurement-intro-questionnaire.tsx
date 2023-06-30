@@ -31,9 +31,11 @@ export type CultureMeasurementIntroductionComponentProps = {
   }
 
 const CultureMeasurementIntroduction: FC<StackScreenProps<NavigatorParamList, "cultureMeasurementIntroduction">> =
-    observer(({ navigation }) => {
+    observer(({ navigation, route }) => {
 
         const [, forceUpdate] = useReducer((x) => x + 1, 0)
+        const { cmoId } = route.params
+        const { cultureMeasurementStore } = useStores()
         
         const [totalPage, setTotalPage] = useState<number>(1)
 
@@ -68,16 +70,17 @@ const CultureMeasurementIntroduction: FC<StackScreenProps<NavigatorParamList, "c
         }
 
         useEffect(() => {
-            if (listSectionData.length > 0) {
+            if (listSectionData?.length > 0) {
                 let tempListSectionQuestionnaire = listSectionData.filter(data => data.type === 'questionnaire')
                 setTotalPage(tempListSectionQuestionnaire.length)
+                extractDesc()
             }
         }, [listSectionData])
 
 
         useEffect(() => {
-            extractDesc()
-            setListSectionData(CM_SECTION_MOCK_DATA)
+            // setListSectionData(CM_SECTION_MOCK_DATA)
+            setListSectionData(cultureMeasurementStore.cmImplementationSection)
         }, [])
 
         const renderQuesitonOptions = (data, index) => {

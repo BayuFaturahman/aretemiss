@@ -32,6 +32,8 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
         const [startDate, setStartDate] = useState<string>('')
         const [endDate, setEndDate] = useState<string>('')
 
+        // const [selectedCMOId, setSelectedCMOId] = useState<string>('')
+
         const descSeparator = '{{objective}}';
 
         const goBack = () => {
@@ -40,7 +42,9 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
             })
         }
 
-        const goToQuestionnaire = (type: number) => {
+        const goToQuestionnaire = (cmoId: string, type: number) => {
+            console.log(`cmoId: ${cmoId}`)
+            // setSelectedCMOId(cmoId)
             // if budaya juara
             if (type === 0) { }
             // if penilaian infrastruktur budaya juara
@@ -49,13 +53,15 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
             }
             // if penilaian pelaksanaan budaya juara
             else if (type === 2) {
-                goToCultureMeasurementImplementation()
+                goToCultureMeasurementImplementation(cmoId)
             }
         }
 
-        const goToCultureMeasurementInfrastructure = () => navigation.navigate("cultureMeasurementInfrastructure")
+        const goToCultureMeasurementImplementation = (cmoId: string) => navigation.navigate("cultureMeasurementImplementation", {
+            cmoId: cmoId
+        })
 
-        const goToCultureMeasurementImplementation = () => navigation.navigate("cultureMeasurementImplementation")
+        const goToCultureMeasurementInfrastructure = () => navigation.navigate("cultureMeasurementInfrastructure")
 
         const loadCMPublishData = async () => {
             console.log('loadCMPublishData ')
@@ -225,7 +231,7 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
                                                             <Spacer />
                                                             <Button type={data.isEnable ? "primary" : "negative"} text="Isi Kuisioner" style={{ paddingHorizontal: Spacing[8] }} textStyle={{ fontSize: Spacing[12] }}
                                                                 // disabled={!data.isEnable} onPress={() => goToQuestionnaire(index)} />
-                                                                disabled={false} onPress={() => goToQuestionnaire(index)} />
+                                                                disabled={false} onPress={() => goToQuestionnaire(data.cmoId, index)} />
                                                         </HStack>
                                                         <Text type="body" style={{ fontSize: Spacing[12], fontWeight: '100' }}>{`Terakhir diisi  pada tanggal ${moment(data.cmoLastModified).format('DD MMM YYYY')}`}</Text>
                                                         <Spacer height={Spacing[2]} />

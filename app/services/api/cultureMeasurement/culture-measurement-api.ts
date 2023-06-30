@@ -2,8 +2,7 @@ import { ApiResponse } from "apisauce"
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
 import { DEFAULT_API_CONFIG } from "@services/api/api-config";
-import { ErrorFormResponse } from "./culture-measurement-api.types";
-import { GetListPublishResponse } from "../feed/feed-api.types";
+import { ErrorFormResponse, GetAllSectionResult, GetListPublishResponse, GetListPublishResult } from "./culture-measurement-api.types";
 
 export class CultureMeasurementApi {
   private api: Api
@@ -17,7 +16,7 @@ export class CultureMeasurementApi {
     this.api = api
   }
 
-  async getListPublish(): Promise<GetListPublishResponse> {
+  async getListPublish(): Promise<GetListPublishResult> {
     console.log('getListPublish')
     try {
       // make the api call
@@ -41,29 +40,28 @@ export class CultureMeasurementApi {
     }
   }
 
-  // async getListPublish(): Promise<GetListPublishResponse> {
-  //   console.log("getListPublish()")
-  //   try {
-  //     const response: ApiResponse<any> = await this.api.apisauce.get(`/culture-measurement`)
+  async getAllSection(id: string): Promise<GetAllSectionResult> {
+    console.log('getAllSection')
+    try {
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.get(`/culture-measurement/objective/${id}`)
+      console.log('response detail', response.data)
+      if (response.status === 400) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
 
-  //     if (response.kind === "form-error") {
-  //       this.formError(response.response)
-  //     }
-
-  //     if (response.kind === "ok") {
-  //       this.getListMyFeedsSuccess(response.response.data, response.response.new_notif)
-  //     }
-  //   } catch (e) {
-  //     console.log(e)
-  //     this.setErrorMessage(e)
-  //   } finally {
-  //     console.log("getListMyFeeds done")
-  //     this.isLoading = false
-  //   }
-  // }
-
-  getListMyFeedsSuccess(data: any, new_notif: any) {
-    throw new Error("Method not implemented.");
+      const res = response.data.data
+      return { kind: "ok", response: res }
+    } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data" }
+    }
   }
 
   formReset() {

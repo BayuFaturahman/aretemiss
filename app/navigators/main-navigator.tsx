@@ -38,7 +38,7 @@ import {
   juaraQuizMain,
   juaraQuizResult
 } from "@screens/leaderboard"
-import { JLDetail, JournalDetail, JournalInLearnerJournalModel, LearnerJournalInJournalDetail} from "app/store/store.coaching"
+import { JLDetail, JournalDetail, JournalInLearnerJournalModel, LearnerJournalInJournalDetail } from "app/store/store.coaching"
 import juaraAssessmentQuiz from "@screens/leaderboard/juara-assessment-quiz"
 import { FeedItemType } from "@screens/feed/feed.type"
 import {
@@ -336,7 +336,9 @@ export type NavigatorParamList = {
   }
   cultureMeasurementMain: undefined,
   cultureMeasurementIntroduction: undefined,
-  cultureMeasurementImplementation: undefined,
+  cultureMeasurementImplementation: {
+    cmoId: string
+  },
   cultureMeasurementImplementationQuestionnaire: undefined
   cultureMeasurementInfrastructure: undefined,
   cultureMeasurementInfrastructureQuestionnaire: undefined

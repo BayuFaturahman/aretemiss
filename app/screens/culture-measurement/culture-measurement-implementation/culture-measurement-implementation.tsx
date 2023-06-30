@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useReducer, useState } from "react"
+import React, { FC, useCallback, useEffect, useReducer, useState } from "react"
 import { ImageBackground, SafeAreaView, ScrollView, StyleSheet, View } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
@@ -13,22 +13,25 @@ import { useStores } from "../../../bootstrap/context.boostrap"
 import { dimensions } from "@config/platform.config"
 import { images } from "@assets/images";
 
+import Spinner from "react-native-loading-spinner-overlay"
 import { ProgressBar } from "react-native-paper"
 import moment from "moment"
 import { CMSectionModel, QuestionnaireModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { CM_SECTION_MOCK_DATA, QUESTIONNAIRE_EXAMPLE, QUESTIONNAIRE_OPTION } from "../culture-measurement.type"
+import { debounce } from "lodash"
 // import { EmptyList } from "./components/empty-list"
 
 const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, "cultureMeasurementImplementation">> =
-    observer(({ navigation }) => {
+    observer(({ navigation, route }) => {
 
         const [, forceUpdate] = useReducer((x) => x + 1, 0)
+        const { cmoId } = route.params
         const { cultureMeasurementStore } = useStores()
 
         const [totalPage, setTotalPage] = useState<number>(1)
 
-        const [listSectionData, setListSectionData] = useState<CMSectionModel[]>(CM_SECTION_MOCK_DATA)
+        const [listSectionData, setListSectionData] = useState<CMSectionModel[]>([])
         const [listDescription, setLisDescription] = useState<string[]>([])
         const [listQuestionnaire, setListQuestionnaire] = useState<QuestionnaireModel[]>([QUESTIONNAIRE_EXAMPLE])
 
@@ -42,34 +45,50 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
             navigation.navigate("cultureMeasurementImplementationQuestionnaire")
         }
 
+        const loadCMAllSectionData = async (cmoId: string) => {
+            console.log('loadCMPublishData ')
+            await cultureMeasurementStore.getAllSection(cmoId)
+            setListSectionData(cultureMeasurementStore.cmImplementationSection)
+            // console.log(`------ cultureMeasurementStore.cmImplementationSection: ${JSON.stringify(cultureMeasurementStore.cmImplementationSection)}`)
+        }
+
+        const firstLoadCMAllSectionData = debounce(async () => {
+            console.log(`firstLoadExistingCoachee`)
+            await loadCMAllSectionData(cmoId)
+            forceUpdate()
+        }, 500)
+
         const extractDesc = () => {
-            let tempData = CM_SECTION_MOCK_DATA.filter((data) => data.type === 'example')
+            let tempData = listSectionData.filter((data) => data.type === "example")
+
             let tempCopyWriting: CMSectionModel
             if (tempData.length > 0) {
                 tempCopyWriting = tempData[0]
+                let tempDesc = tempCopyWriting.description
+                tempDesc = tempDesc.replaceAll('<br>', '')
+                tempDesc = tempDesc.replaceAll('</p>', '')
+                tempDesc = tempDesc.replaceAll(descSeparator, `<p>${descSeparator}`)
+
+                let listTempDesc = tempDesc.split('<p>',)
+                setLisDescription(listTempDesc)
             }
-
-            let tempDesc = tempCopyWriting.description
-            tempDesc = tempDesc.replaceAll('<br>', '')
-            tempDesc = tempDesc.replaceAll('</p>', '')
-            tempDesc = tempDesc.replaceAll(descSeparator, `<p>${descSeparator}`)
-
-            let listTempDesc = tempDesc.split('<p>',)
-            setLisDescription(listTempDesc)
         }
 
         useEffect(() => {
-            if (listSectionData.length > 0) {
+            if (listSectionData?.length > 0) {
                 let tempListSectionQuestionnaire = listSectionData.filter(data => data.type === 'questionnaire')
                 setTotalPage(tempListSectionQuestionnaire.length)
+                extractDesc()
             }
         }, [listSectionData])
 
 
         useEffect(() => {
-            extractDesc()
-            setListSectionData(CM_SECTION_MOCK_DATA)
-        }, [])
+            if (cmoId) {
+                firstLoadCMAllSectionData()
+                // setListSectionData(CM_SECTION_MOCK_DATA)
+            }
+        }, [cmoId])
 
         const renderQuesitonOptions = (data, index) => {
             return (
@@ -197,9 +216,9 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                                 <HStack>
                                     <Text type={"left-header"} text={`Penilaian Pelaksanaan\nProyek Budaya Juara`} style={{ fontSize: Spacing[16], textAlign: 'left' }} />
                                     <Spacer />
-                                    <Button type={"dark-yellow"} text="Simpan Data" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[12] }} />
+                                    {/* <Button type={"dark-yellow"} text="Simpan Data" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[12] }} />
                                     <Spacer />
-                                    <Button type={"warning"} text="Cancel" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[12] }} onPress={() => goBack()} />
+                                    <Button type={"warning"} text="Cancel" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[12] }} onPress={() => goBack()} /> */}
                                 </HStack>
                                 <Spacer height={Spacing[24]} />
                                 {listDescription.map((item, index) => {
@@ -245,6 +264,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                         </VStack>
                     </ScrollView >
                 </SafeAreaView >
+                <Spinner visible={cultureMeasurementStore.isLoading || listDescription.length === 0} textContent={"Memuat..."} />
             </VStack >
         )
     })

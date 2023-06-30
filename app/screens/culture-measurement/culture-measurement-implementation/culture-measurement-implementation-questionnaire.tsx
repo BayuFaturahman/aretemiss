@@ -42,7 +42,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
         const [currPage, setCurrPage] = useState<number>(1)
         const [totalPage, setTotalPage] = useState<number>(1)
 
-        const [listSectionData, setListSectionData] = useState<CMSectionModel[]>(CM_SECTION_MOCK_DATA)
+        const [listSectionData, setListSectionData] = useState<CMSectionModel[]>()
         const [listDescription, setLisDescription] = useState<string[]>([])
         const [listQuestionnaire, setListQuestionnaire] = useState<QuestionnaireModel[]>([QUESTIONNAIRE_EXAMPLE])
         const [listError, setListError] = useState<number[]>([])
@@ -78,6 +78,8 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
 
         const goToNextPage = () => {
             console.log(`goToNextPage `)
+            setIsError(false)
+
             // if going to last page
             if (currPage === totalPage - 2) {
                 setSubmitBtnText('Submit Kuisioner')
@@ -108,26 +110,29 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
             setLisDescription(listTempDesc)
         }, [currSectionData, listDescription])
 
+        const extractSection = useCallback(async (sectionNo: number) => {
+            // console.log(`extractSection section no ${sectionNo}`)
+            if (listSectionData?.length > 0 && sectionNo < listSectionData.length) {
+                setCurrSectionData(listSectionData[sectionNo])
+                // console.log(`listSectionData[sectionNo]: ${JSON.stringify(listSectionData[sectionNo])}`)
+            }
+        }, [listSectionData])
+
         const extractQuestionnaire = useCallback(() => {
             setListQuestionnaire(currSectionData.questionnaire)
             setListError(new Array(currSectionData.questionnaire.length).fill(0))
         }, [currSectionData, listQuestionnaire])
 
-        const extractSection = useCallback(async (sectionNo: number) => {
-            // console.log(`extractSection section no ${sectionNo}`)
-            if (sectionNo < listSectionData.length) {
-                setCurrSectionData(listSectionData[sectionNo])
-                // console.log(`listSectionData[sectionNo]: ${JSON.stringify(listSectionData[sectionNo])}`)
+        useEffect(() => {
+            if (currSectionData?.id !== '') {
+                extractDesc()
+                extractQuestionnaire()
             }
         }, [currSectionData])
 
         useEffect(() => {
-            extractDesc()
-            extractQuestionnaire()
-        }, [currSectionData])
-
-        useEffect(() => {
-            if (listSectionData.length > 0) {
+            if (listSectionData?.length > 0) {
+                // console.log(`listSectionData.length ${listSectionData.length}`)
                 setCurrSectionNo(1)
                 extractSection(1)
                 let tempListSectionQuestionnaire = listSectionData.filter(data => data.type === 'questionnaire')
@@ -136,7 +141,9 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
         }, [listSectionData])
 
         useEffect(() => {
-            setListSectionData(CM_SECTION_MOCK_DATA)
+            // setListSectionData(CM_SECTION_MOCK_DATA)
+            setListSectionData(cultureMeasurementStore.cmImplementationSection)
+            // console.log(`cultureMeasurementStore.cmImplementationSection: ${JSON.stringify(cultureMeasurementStore.cmImplementationSection)}`)
             setIsNextClicked(false)
         }, [])
 
@@ -245,7 +252,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                 if (currPage === totalPage - 1) {
                     submitData()
                 } else {
-                    // goToNextPage()
+                    goToNextPage()
                 }
             }
 
@@ -273,12 +280,6 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
             setModalBtnText('Kembali ke\nMenu Sebelumnya')
             setIsIconFromMood(true)
 
-        }
-
-        const iconEl = () => {
-            return <>
-                <Man1 data={modalIcon} width={Spacing[64]} height={Spacing[64]} />
-            </>
         }
 
         const renderCancelModal = () => {
