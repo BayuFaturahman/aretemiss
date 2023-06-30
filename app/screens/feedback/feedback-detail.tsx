@@ -56,7 +56,7 @@ const EMPTY_FEEDBACK_USER_DETAIL = {
 const FeedbackDetail: FC<StackScreenProps<NavigatorParamList, "feedbackDetail">> =
     observer(({ navigation, route }) => {
 
-        const { id, isFeedbackRequest } = route.params;
+        const { id, coachId, isFeedbackRequest } = route.params;
 
         const [feedbackUserDetail, setFeedbackUserDetail] = useState<FeedbackUserDetail>()
 
@@ -212,9 +212,10 @@ const FeedbackDetail: FC<StackScreenProps<NavigatorParamList, "feedbackDetail">>
                     "q2": feedbackQuestionChoice[1],
                     "q3": feedbackQuestionChoice[2],
                     "q4": feedbackQuestionChoice[3],
-                    "coach_id": mainStore.userProfile.user_id,
+                    "coach_id": coachId,
                     "rfu_id": id
                 }
+                // console.log(`tempParamData: ${JSON.stringify(tempParamData)}`)
                 await createFeedbackUser(tempParamData)
 
                 if (feedbackStore.errorMessage == "Success" || feedbackStore.errorCode === null) {

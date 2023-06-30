@@ -25,7 +25,7 @@ import { IconClose } from "@assets/svgs"
 import { spacing } from "@theme/spacing"
 import Spinner from 'react-native-loading-spinner-overlay';
 import { EmptyList } from "./components/empty-list"
- 
+
 
 const MOCK_EXISTING_COACHEE: ExistingCoacheeModel[] = [
   {
@@ -185,7 +185,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
     }
 
     const requestFeedbackToCoachee = async () => {
-      console.log('selectedPreviousFeedbackUser ', selectedExistingCoachee)
+      console.log('selectedPreviousFeedbackUser ')
       await feedbackStore.requestFeedbackUser(selectedExistingCoachee)
       firstLoadExistingCoachee()
     }
@@ -347,11 +347,12 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       setSelectedExistingCoachee("")
     }
 
-    const goToFeedbackDetail = (seledtecFR: string = '', isFeedbackRequest: boolean = false) => {
+    const goToFeedbackDetail = (seledtecFR: string = '', coachIdData: string = '', isFeedbackRequest: boolean = false) => {
       setSelectedFeedbackRequest('')
       forceUpdate()
       navigation.navigate("feedbackDetail", {
         id: isFeedbackRequest ? seledtecFR : selectedPreviousFeedbackUserByCoachee,
+        coachId: coachIdData,
         isFeedbackRequest: isFeedbackRequest
       })
     }
@@ -362,8 +363,8 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       goToFeedbackDetail()
     }
 
-    const openFillFeedbackPage = () => {
-      goToFeedbackDetail(selectedFeedbackRequest, true)
+    const openFillFeedbackPage = (coachId: string) => {
+      goToFeedbackDetail(selectedFeedbackRequest, coachId, true)
       // console.log('openFillFeedbackPage')
     }
 
@@ -438,7 +439,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
                     index={index}
                     selectedId={selectedFeedbackRequest}
                     onPressActivity={holdFeedbackRequest}
-                    onPressFillFeedback={openFillFeedbackPage}
+                    onPressFillFeedback={() => openFillFeedbackPage(item.coach_id)}
                   />
                 </TouchableOpacity>
               )}

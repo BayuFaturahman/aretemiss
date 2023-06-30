@@ -63,6 +63,7 @@ export type FeedbackCommitmentModel = {
 export type RequestFeedbackUserModel = {
   rfu_user_from_id: string
   user_fullname: string
+  coach_id: string
 }
 
 export type CreateFeedbackUserModel = {
