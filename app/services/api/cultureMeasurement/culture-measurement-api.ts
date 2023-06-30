@@ -2,7 +2,7 @@ import { ApiResponse } from "apisauce"
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
 import { DEFAULT_API_CONFIG } from "@services/api/api-config";
-import { ErrorFormResponse } from "./culture-measurement-api.types";
+import { ErrorFormResponse, GetObjectiveResult } from "./culture-measurement-api.types";
 import { GetListPublishResponse } from "../feed/feed-api.types";
 
 export class CultureMeasurementApi {
@@ -61,6 +61,30 @@ export class CultureMeasurementApi {
   //     this.isLoading = false
   //   }
   // }
+
+  async getObjectiveById(id: string): Promise<GetObjectiveResult> {
+    try {
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.get(`/culture-measurement/objective/${id}`)
+
+      if (response.status === 400) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data
+      return { kind: "ok", response: res }
+    } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data" }
+    }
+  }
 
   getListMyFeedsSuccess(data: any, new_notif: any) {
     throw new Error("Method not implemented.");

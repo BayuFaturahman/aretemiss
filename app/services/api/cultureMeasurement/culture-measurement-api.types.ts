@@ -35,6 +35,14 @@ export interface CMPublishDataModel {
   culture_measurement_objectives: cultureMeasurementObjectiveModel[]
 }
 
+export interface CMObjectiveDataModel {
+  id: string
+  title: string
+  description: string
+  type: string
+  questionare: QuestionnaireModel[]
+}
+
 export type QuestionnaireModel = {
   item: string
   description: string
@@ -57,9 +65,11 @@ export interface GetListPublishResponse {
   data: CMPublishDataModel,
 }
 
-export interface ErrorFormResponse {
-  errorCode: number
+export interface GetObjectiveResponse {
   message: string
+  data: CMObjectiveDataModel[],
 }
 
 export type GetListPublishResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListPublishResponse } | GeneralApiProblem
+
+export type GetObjectiveResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetObjectiveResponse } | GeneralApiProblem

@@ -128,7 +128,9 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
 
         const goToQuestionnaire = (type: number) => {
             // if budaya juara
-            if (type === 1) { }
+            if (type === 0) {
+                goToCultureMeasurementRating()
+            }
             // if penilaian infrastruktur budaya juara
             else if (type === 1) { }
             // if penilaian pelaksanaan budaya juara
@@ -138,6 +140,7 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
 
         }
 
+        const goToCultureMeasurementRating = () => navigation.navigate("cultureMeasurementRating")
         const goToCultureMeasurementImplementation = () => navigation.navigate("cultureMeasurementImplementation")
 
         const loadCMPublishData = async () => {
