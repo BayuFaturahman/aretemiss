@@ -48,8 +48,8 @@ import {
   newBrainstormsGroup,
   sendEmail,
 } from "@screens/brainstorm"
-import { cultureMeasurementImplementation, CultureMeasurementRating, cultureMeasurementMain } from "@screens/culture-measurement"
 import { feedbackCommitment, feedbackDetail, feedbackMain } from "@screens/feedback"
+import { cultureMeasurementImplementation, cultureMeasurementImplementationQuestionnaire, cultureMeasurementInfrastructure, cultureMeasurementInfrastructureQuestionnaire, cultureMeasurementIntroduction, CultureMeasurementRating, cultureMeasurementMain } from "@screens/culture-measurement"
 
 const screens: AppRoute[] = [
   {
@@ -217,12 +217,28 @@ const screens: AppRoute[] = [
     component: cultureMeasurementMain,
   },
   {
+    name: "cultureMeasurementIntroduction",
+    component: cultureMeasurementIntroduction,
+  },
+  {
     name: "cultureMeasurementImplementation",
     component: cultureMeasurementImplementation,
   },
   {
     name: "cultureMeasurementRating",
     component: CultureMeasurementRating
+  },
+  {
+    name: "cultureMeasurementImplementationQuestionnaire",
+    component: cultureMeasurementImplementationQuestionnaire,
+  },
+  {
+    name: "cultureMeasurementInfrastructure",
+    component: cultureMeasurementInfrastructure,
+  },
+  {
+    name: "cultureMeasurementInfrastructureQuestionnaire",
+    component: cultureMeasurementInfrastructureQuestionnaire,
   }
 ]
 
@@ -322,8 +338,12 @@ export type NavigatorParamList = {
   feedbackCommitment: {
     feedbackUserId: string
   }
-  cultureMeasurementMain: undefined,
+  cultureMeasurementMain: undefined
+  cultureMeasurementIntroduction: undefined
   cultureMeasurementImplementation: undefined
+  cultureMeasurementImplementationQuestionnaire: undefined
+  cultureMeasurementInfrastructure: undefined
+  cultureMeasurementInfrastructureQuestionnaire: undefined
   cultureMeasurementRating: undefined
 }
 

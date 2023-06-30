@@ -7,28 +7,8 @@ import { FeedApi } from "@services/api/feed/feed-api"
 import { ErrorFormResponse, FeedApiModel } from "@services/api/feed/feed-api.types"
 import { CommentNotificationType, FeedCategoryType, FeedItemType, FeedPostCommentType } from "@screens/feed/feed.type"
 import { CultureMeasurementApi } from "@services/api/cultureMeasurement/culture-measurement-api"
-import { CMObjectiveDataModel, CMPublishDataModel, GetObjectiveResponse, cultureMeasurementObjectiveModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
-
-const CM_OBJECTIVES_EMPTY: cultureMeasurementObjectiveModel = {
-    cm_objective_id: '',
-    cm_objective_title: '',
-    cm_objective_max_answerred: 0,
-    culture_measurement_takers: [],
-    is_enable: false
-}
-
-const CM_PUBLISH_EMPTY: CMPublishDataModel = {
-    id: '',
-    title: '',
-    description: '',
-    status: '',
-    startDate: '',
-    endDate: '',
-    cm_created_at: '',
-    cm_updated_at: '',
-    cm_deleted_at: '',
-    culture_measurement_objectives: []
-}
+import { CMObjectiveDataModel, CMPublishDataModel, CMSectionModel, cultureMeasurementObjectiveModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
+import { CM_PUBLISH_EMPTY, CM_SECTION_EMPTY, GET_PUBLISH_MOCK_DATA } from "@screens/culture-measurement/culture-measurement.type"
 
 export default class CultureMeasurementStore {
     // #region PROPERTIES
@@ -45,6 +25,7 @@ export default class CultureMeasurementStore {
     cmApi: CultureMeasurementApi
 
     cmPublishData: CMPublishDataModel
+    cmImplementationSection: CMSectionModel[]
 
     cmObjectiveData: CMObjectiveDataModel[]
 
@@ -61,6 +42,8 @@ export default class CultureMeasurementStore {
         this.cmApi = new CultureMeasurementApi(this.api)
 
         this.cmPublishData = CM_PUBLISH_EMPTY
+        this.cmImplementationSection = [CM_SECTION_EMPTY]
+
     }
 
     async getListPublish() {
@@ -69,18 +52,21 @@ export default class CultureMeasurementStore {
         try {
             const result = await this.cmApi.getListPublish()
             console.log('in store getListPublish')
+            // console.log(`result ${result}`)
             if (result.kind === "ok") {
                 // console.log('result.response  ', result.response)
                 await this.getListPublishSuccess(result.response)
             } else if (result.kind === 'form-error') {
                 console.log('getListFeedbackUserByCoachee failed')
                 // console.log(result.response.errorCode)
-                this.cMFailed(result.response.errorCode)
+                this.cMFailed(result?.response?.errorCode)
             } else if (result.kind === 'unauthorized') {
                 console.log('token expired getListFeedbackUserByCoachee')
                 // console.log(result)
                 this.cMFailed(result.response.errorCode)
             } else {
+                // below code is used during development
+                // await this.getListPublishSuccess(GET_PUBLISH_MOCK_DATA.data)
                 __DEV__ && console.tron.log(result.kind)
             }
         } catch (e) {

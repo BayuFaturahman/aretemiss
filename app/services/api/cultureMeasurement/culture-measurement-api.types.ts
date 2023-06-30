@@ -50,7 +50,7 @@ export type QuestionnaireModel = {
   point?: number
 }
 
-export type CopyWritingModel = {
+export type CMSectionModel = {
   id: string
   title: string
   description: string
