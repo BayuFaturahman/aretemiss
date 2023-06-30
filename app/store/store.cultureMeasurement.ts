@@ -53,18 +53,18 @@ export default class CultureMeasurementStore {
             // console.log(`result ${result}`)
             if (result.kind === "ok") {
                 // console.log('result.response  ', result.response)
-                await this.getListPublishSuccess(result.response)
+                await this.getListPublishSucceed(result.response)
             } else if (result.kind === 'form-error') {
-                console.log('getListFeedbackUserByCoachee failed')
+                console.log('getListPublish failed')
                 // console.log(result.response.errorCode)
                 this.cMFailed(result?.response?.errorCode)
             } else if (result.kind === 'unauthorized') {
-                console.log('token expired getListFeedbackUserByCoachee')
+                console.log('token expired getListPublish')
                 // console.log(result)
                 this.cMFailed(result.response.errorCode)
             } else {
                 // below code is used during development
-                // await this.getListPublishSuccess(GET_PUBLISH_MOCK_DATA.data)
+                // await this.getListPublishSucceed(GET_PUBLISH_MOCK_DATA.data)
                 __DEV__ && console.tron.log(result.kind)
             }
         } catch (e) {
@@ -74,9 +74,46 @@ export default class CultureMeasurementStore {
         }
     }
 
-    getListPublishSuccess(data: CMPublishDataModel) {
-        console.log('getListPublishSuccess')
+    getListPublishSucceed(data: CMPublishDataModel) {
+        console.log('getListPublishSucceed')
         this.cmPublishData = data
+        this.isLoading = false
+        this.refreshData = true
+    }
+
+    async getAllSection(id: string) {
+        this.isLoading = true
+
+        try {
+            const result = await this.cmApi.getAllSection(id)
+            console.log('in store getAllSection')
+            // console.log(`result ${result}`)
+            if (result.kind === "ok") {
+                // console.log('result.response  ', JSON.stringify(result.response))
+                await this.getAllSectionSucceed(result.response)
+            } else if (result.kind === 'form-error') {
+                console.log('getAllSection failed')
+                // console.log(result.response.errorCode)
+                this.cMFailed(result?.response?.errorCode)
+            } else if (result.kind === 'unauthorized') {
+                console.log('token expired getAllSection')
+                // console.log(result)
+                this.cMFailed(result.response.errorCode)
+            } else {
+                // below code is used during development
+                // await this.getListPublishSucceed(GET_PUBLISH_MOCK_DATA.data)
+                __DEV__ && console.tron.log(result.kind)
+            }
+        } catch (e) {
+            console.log(e)
+        } finally {
+            this.isLoading = false
+        }
+    }
+
+    getAllSectionSucceed(data: CMSectionModel[]) {
+        console.log('getAllSectionSucceed')
+        this.cmImplementationSection = data
         this.isLoading = false
         this.refreshData = true
     }
