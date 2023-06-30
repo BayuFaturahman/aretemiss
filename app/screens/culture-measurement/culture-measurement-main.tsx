@@ -46,9 +46,11 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
             console.log(`cmoId: ${cmoId}`)
             // setSelectedCMOId(cmoId)
             // if budaya juara
-            if (type === 1) { }
+            if (type === 0) { }
             // if penilaian infrastruktur budaya juara
-            else if (type === 1) { }
+            else if (type === 1) {
+                goToCultureMeasurementInfrastructure()
+            }
             // if penilaian pelaksanaan budaya juara
             else if (type === 2) {
                 goToCultureMeasurementImplementation(cmoId)
@@ -58,6 +60,8 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
         const goToCultureMeasurementImplementation = (cmoId: string) => navigation.navigate("cultureMeasurementImplementation", {
             cmoId: cmoId
         })
+
+        const goToCultureMeasurementInfrastructure = () => navigation.navigate("cultureMeasurementInfrastructure")
 
         const loadCMPublishData = async () => {
             console.log('loadCMPublishData ')
