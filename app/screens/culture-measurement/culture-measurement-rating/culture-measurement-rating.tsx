@@ -20,23 +20,12 @@ import { TouchableOpacity } from "react-native-gesture-handler"
 import { CM_SECTION_MOCK_DATA, QUESTIONNAIRE_EXAMPLE, QUESTIONNAIRE_OPTION } from "../culture-measurement.type"
 // import { EmptyList } from "./components/empty-list"
 
-
-export type CultureMeasurementIntroductionComponentProps = {
-    listSectionData: CMSectionModel[];
-    totalPages: number;
-    onPressRequestFeedback(): void
-    onPressExistingCoachee(): void;
-    onPressPreviousFeedback(): void;
-    selectedCoachee: string;
-  }
-
-const CultureMeasurementIntroduction: FC<StackScreenProps<NavigatorParamList, "cultureMeasurementIntroduction">> =
-    observer(({ navigation, route }) => {
+const CultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "cultureMeasurementRating">> =
+    observer(({ navigation }) => {
 
         const [, forceUpdate] = useReducer((x) => x + 1, 0)
-        const { cmoId } = route.params
         const { cultureMeasurementStore } = useStores()
-        
+
         const [totalPage, setTotalPage] = useState<number>(1)
 
         const [listSectionData, setListSectionData] = useState<CMSectionModel[]>(CM_SECTION_MOCK_DATA)
@@ -50,7 +39,7 @@ const CultureMeasurementIntroduction: FC<StackScreenProps<NavigatorParamList, "c
         }
 
         const goToQuestionnaire = () => {
-            navigation.navigate("cultureMeasurementImplementationQuestionnaire")
+            navigation.navigate("cultureMeasurementRatingQuestionnaire")
         }
 
         const extractDesc = () => {
@@ -70,17 +59,17 @@ const CultureMeasurementIntroduction: FC<StackScreenProps<NavigatorParamList, "c
         }
 
         useEffect(() => {
-            if (listSectionData?.length > 0) {
+            if (listSectionData.length > 0) {
                 let tempListSectionQuestionnaire = listSectionData.filter(data => data.type === 'questionnaire')
                 setTotalPage(tempListSectionQuestionnaire.length)
-                extractDesc()
             }
         }, [listSectionData])
 
 
         useEffect(() => {
-            // setListSectionData(CM_SECTION_MOCK_DATA)
-            setListSectionData(cultureMeasurementStore.cmImplementationSection)
+            cultureMeasurementStore.getRatingSection('c511ca4e-e6c5-4209-8ba7-4c8b11dcce6a')
+            extractDesc()
+            setListSectionData(CM_SECTION_MOCK_DATA)
         }, [])
 
         const renderQuesitonOptions = (data, index) => {
@@ -118,7 +107,7 @@ const CultureMeasurementIntroduction: FC<StackScreenProps<NavigatorParamList, "c
                             <Spacer />
                         </VStack>
                         <Spacer width={Spacing[6]} />
-                        <Text type="body-bold" >Konsep pengembangan Budaya Perusahaan telah disusun secara jelas dan mencakup seluruh aspek organisasi perusahaan.</Text>
+                        <Text type="body-bold" >Melaksanakan tugas dengan semangat untuk menunjukan hasil terbaik.</Text>
                     </HStack>
                     <Spacer height={Spacing[12]} />
                     <HStack >
@@ -190,7 +179,7 @@ const CultureMeasurementIntroduction: FC<StackScreenProps<NavigatorParamList, "c
 
         return (
             <VStack
-                testID="cultureMeasurementImplementation"
+                testID="cultureMeasurementRating"
                 style={styles.bg}
             >
                 <SafeAreaView style={Layout.flex}>
@@ -207,7 +196,7 @@ const CultureMeasurementIntroduction: FC<StackScreenProps<NavigatorParamList, "c
                             {/* <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} /> */}
                             <VStack top={Spacing[12]} horizontal={Spacing[24]} bottom={Spacing[12]}>
                                 <HStack>
-                                    <Text type={"left-header"} text={`Penilaian Pelaksanaan\nProyek Budaya Juara`} style={{ fontSize: Spacing[16], textAlign: 'left' }} />
+                                    <Text type={"left-header"} text={`Penilaian Budaya Juara`} style={{ fontSize: Spacing[16], textAlign: 'left' }} />
                                     <Spacer />
                                     <Button type={"dark-yellow"} text="Simpan Data" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[12] }} />
                                     <Spacer />
@@ -232,7 +221,7 @@ const CultureMeasurementIntroduction: FC<StackScreenProps<NavigatorParamList, "c
                                 {/* start example questionaire */}
                                 <Text type="body-bold" style={{ fontSize: Spacing[16] }}>Contoh:</Text>
                                 {renderQuestionExample()}
-                                <Text type="body" style={{ fontSize: Spacing[12] }} >Jawaban tersebut berarti pernyataan “Konsep pengembangan Budaya Perusahaan telah disusun secara jelas dan mencakup seluruh aspek organisasi perusahaan.” dinilai tidak sesuai dengan gambaran kesiapan infrastruktur budaya.</Text>
+                                <Text type="body" style={{ fontSize: Spacing[12] }} >Jawaban tersebut berarti perilaku “Melaksanakan tugas dengan semangat untuk menunjukan hasil terbaik” yang dijalankan oleh pemimpin Juara yang Anda nilai dinilai masih di bawah standar yang diharapkan.</Text>
                                 <Spacer height={Spacing[24]} />
                                 <HStack>
                                     <Button type={"primary-dark"} text="Sebelumnya" style={{ paddingHorizontal: Spacing[14], borderRadius: Spacing[12] }} onPress={() => goBack()} />
@@ -261,7 +250,7 @@ const CultureMeasurementIntroduction: FC<StackScreenProps<NavigatorParamList, "c
         )
     })
 
-export default CultureMeasurementIntroduction
+export default CultureMeasurementRating
 
 const styles = StyleSheet.create({
     bg: {

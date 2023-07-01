@@ -24,7 +24,7 @@ import { ModalComponent } from "../component/cm-modal"
 import { Man1 } from "@assets/svgs"
 // import { EmptyList } from "./components/empty-list"
 
-const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, "cultureMeasurementImplementationQuestionnaire">> =
+const CultureMeasurementRatingQuestionnaire: FC<StackScreenProps<NavigatorParamList, "cultureMeasurementRatingQuestionnaire">> =
     observer(({ navigation }) => {
 
         const [, forceUpdate] = useReducer((x) => x + 1, 0)
@@ -42,7 +42,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
         const [currPage, setCurrPage] = useState<number>(1)
         const [totalPage, setTotalPage] = useState<number>(1)
 
-        const [listSectionData, setListSectionData] = useState<CMSectionModel[]>()
+        const [listSectionData, setListSectionData] = useState<CMSectionModel[]>(CM_SECTION_MOCK_DATA)
         const [listDescription, setLisDescription] = useState<string[]>([])
         const [listQuestionnaire, setListQuestionnaire] = useState<QuestionnaireModel[]>([QUESTIONNAIRE_EXAMPLE])
         const [listError, setListError] = useState<number[]>([])
@@ -78,8 +78,6 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
 
         const goToNextPage = () => {
             console.log(`goToNextPage `)
-            setIsError(false)
-
             // if going to last page
             if (currPage === totalPage - 2) {
                 setSubmitBtnText('Submit Kuisioner')
@@ -110,29 +108,26 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
             setLisDescription(listTempDesc)
         }, [currSectionData, listDescription])
 
-        const extractSection = useCallback(async (sectionNo: number) => {
-            // console.log(`extractSection section no ${sectionNo}`)
-            if (listSectionData?.length > 0 && sectionNo < listSectionData.length) {
-                setCurrSectionData(listSectionData[sectionNo])
-                // console.log(`listSectionData[sectionNo]: ${JSON.stringify(listSectionData[sectionNo])}`)
-            }
-        }, [listSectionData])
-
         const extractQuestionnaire = useCallback(() => {
             setListQuestionnaire(currSectionData.questionnaire)
             setListError(new Array(currSectionData.questionnaire.length).fill(0))
         }, [currSectionData, listQuestionnaire])
 
-        useEffect(() => {
-            if (currSectionData?.id !== '') {
-                extractDesc()
-                extractQuestionnaire()
+        const extractSection = useCallback(async (sectionNo: number) => {
+            // console.log(`extractSection section no ${sectionNo}`)
+            if (sectionNo < listSectionData.length) {
+                setCurrSectionData(listSectionData[sectionNo])
+                // console.log(`listSectionData[sectionNo]: ${JSON.stringify(listSectionData[sectionNo])}`)
             }
         }, [currSectionData])
 
         useEffect(() => {
-            if (listSectionData?.length > 0) {
-                // console.log(`listSectionData.length ${listSectionData.length}`)
+            extractDesc()
+            extractQuestionnaire()
+        }, [currSectionData])
+
+        useEffect(() => {
+            if (listSectionData.length > 0) {
                 setCurrSectionNo(1)
                 extractSection(1)
                 let tempListSectionQuestionnaire = listSectionData.filter(data => data.type === 'questionnaire')
@@ -141,9 +136,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
         }, [listSectionData])
 
         useEffect(() => {
-            // setListSectionData(CM_SECTION_MOCK_DATA)
-            setListSectionData(cultureMeasurementStore.cmImplementationSection)
-            // console.log(`cultureMeasurementStore.cmImplementationSection: ${JSON.stringify(cultureMeasurementStore.cmImplementationSection)}`)
+            setListSectionData(CM_SECTION_MOCK_DATA)
             setIsNextClicked(false)
         }, [])
 
@@ -252,7 +245,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                 if (currPage === totalPage - 1) {
                     submitData()
                 } else {
-                    goToNextPage()
+                    // goToNextPage()
                 }
             }
 
@@ -282,6 +275,12 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
 
         }
 
+        const iconEl = () => {
+            return <>
+                <Man1 data={modalIcon} width={Spacing[64]} height={Spacing[64]} />
+            </>
+        }
+
         const renderCancelModal = () => {
             setModalVisible(true)
             setModalContent("Kamu akan membatalkan pengisian kuesioner.", "Pengisian kuesioner akan dibatalkan. Apakah kamu yakin ingin membatalkannya?", "")
@@ -296,7 +295,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                 style={Layout.flex}
             >
                 <VStack
-                    testID="cultureMeasurementImplementation"
+                    testID="cultureMeasurementRating"
                     style={styles.bg}
                 >
                     <SafeAreaView style={Layout.flex}>
@@ -404,7 +403,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
         )
     })
 
-export default CultureMeasurementImplementation
+export default CultureMeasurementRatingQuestionnaire
 
 const styles = StyleSheet.create({
     bg: {

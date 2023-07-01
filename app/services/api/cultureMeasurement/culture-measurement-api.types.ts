@@ -58,18 +58,21 @@ export type CMSectionModel = {
   questionnaire: QuestionnaireModel[]
 }
 
-
-
 export interface GetListPublishResponse {
   message: string
   data: CMPublishDataModel,
 }
 
-export interface GetObjectiveResponse {
+export interface GetAllSectionResponse {
+  message: string
+  data: CMSectionModel,
+}
+
+export interface ErrorFormResponse {
+  errorCode: number
   message: string
   data: CMObjectiveDataModel[],
 }
 
 export type GetListPublishResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListPublishResponse } | GeneralApiProblem
-
-export type GetObjectiveResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetObjectiveResponse } | GeneralApiProblem
+export type GetAllSectionResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetAllSectionResponse } | GeneralApiProblem
