@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState, } from "react"
+import React, { FC, useCallback, useEffect, useReducer, useState, } from "react"
 import { ActivityIndicator, FlatList, ImageBackground, RefreshControl, SafeAreaView, View } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
@@ -143,7 +143,6 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
 
     const goToFeedbackDetail = (seledtecFR: string = '', coachIdData: string = '', isFeedbackRequest: boolean = false, coacheeId: string = '') => {
       // setSelectedFeedbackRequest('')
-      // forceUpdate()
       navigation.navigate("feedbackDetail", {
         id: isFeedbackRequest ? seledtecFR : coacheeId,
         coachId: coachIdData,
@@ -237,7 +236,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
                         </VStack>
                       </VStack> : null}
                     {item.type === 'submitted_feedback' ?
-                      
+
                       <VStack>
                         <Text type={'body'}>
                           <Text type={'body-bold'} text={`${item.content} `} />
@@ -257,7 +256,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
                         </VStack>
                       </VStack> : <></>}
                     {item.type === 'submited_feedback_user' ?
-                      <VStack>
+                      < VStack >
                         <Text type={'body'}>
                           <Text type={'body-bold'} text={`${item.content} `} />
                         </Text>
@@ -269,7 +268,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
                             style={{ height: Spacing[32] }}
                             textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
                             onPress={() => {
-                              goToFeedbackDetail('', '', false, item.authorId)
+                              goToFeedbackDetail('', '', false, item.data.fu_id)
                             }
                             }
                           />
@@ -288,7 +287,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
                             style={{ height: Spacing[32] }}
                             textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
                             onPress={() => {
-                              goToFeedback(item.data.journalId)
+                              goToFeedbackDetail('', '', false, item.data.fu_id)
                             }
                             }
                           />
@@ -357,7 +356,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
               />
             </VStack> : null
         }
-      </VStack>
+      </VStack >
     )
   },
 )

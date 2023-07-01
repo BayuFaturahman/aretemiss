@@ -7,8 +7,10 @@ export type NotificationItemModel = {
   "notification_content": string;
   "notification_type": NotificationType
   "notification_data": {
-    "journal_id": string;
+    "journal_id": string
     "feed_id": string
+    "fu_id": string
+    "rfu_id": string
   },
   "notification_created_at": string;
   "notification_updated_at": string;
