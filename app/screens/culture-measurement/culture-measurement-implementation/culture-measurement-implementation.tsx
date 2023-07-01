@@ -45,7 +45,8 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
             navigation.navigate("cultureMeasurementImplementationQuestionnaire", {
                 cmoId: cmoId,
                 isToCreate: isToCreate,
-                totalPage: totalPage
+                totalPage: totalPage,
+                cmTakerId: cmTakerId
             })
         }
 
@@ -57,13 +58,28 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
         }
 
         const firstLoadCMAllSectionData = debounce(async () => {
-            console.log(`firstLoadExistingCoachee`)
+            console.log(`firstLoadCMAllSectionData`)
             await loadCMAllSectionData(cmoId)
+            forceUpdate()
+        }, 500)
+
+
+        const loadGetAnswerData = async (cmTakerId: string) => {
+            console.log(`loadGetAnswerData, ${cmTakerId} `)
+            await cultureMeasurementStore.getCMAnswerById(cmTakerId)
+            setListSectionData(cultureMeasurementStore.cmAnswerData.temp_data)
+            // console.log(`------ cultureMeasurementStore.cmImplementationSection: ${JSON.stringify(cultureMeasurementStore.cmImplementationSection)}`)
+        }
+
+        const firstLoadGetAnswerData = debounce(async () => {
+            console.log(`firstLoadGetAnswerData`)
+            await loadGetAnswerData(cmTakerId)
             forceUpdate()
         }, 500)
 
         const extractDesc = () => {
             let tempData = listSectionData.filter((data) => data.type === "example")
+            console.log(`tempData ${JSON.stringify(tempData)}`)
 
             let tempCopyWriting: CMSectionModel
             if (tempData.length > 0) {
@@ -79,6 +95,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
         }
 
         useEffect(() => {
+            console.log(`listSectionData: ${JSON.stringify(listSectionData)}`)
             if (listSectionData?.length > 0) {
                 // let tempListSectionQuestionnaire = listSectionData.filter(data => data.type === 'questionnaire')
                 setTotalPage(listSectionData.length)
@@ -88,11 +105,14 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
 
 
         useEffect(() => {
-            if (cmoId) {
+            console.log(`isToCreate: ${isToCreate} ; cmoId: ${cmoId}`)
+            if (isToCreate && cmoId) {
                 firstLoadCMAllSectionData()
                 // setListSectionData(CM_SECTION_MOCK_DATA)
+            } else if (!isToCreate && cmTakerId) {
+                firstLoadGetAnswerData()
             }
-        }, [cmoId])
+        }, [cmoId, isToCreate, cmTakerId])
 
         const renderQuesitonOptions = (data, index) => {
             return (

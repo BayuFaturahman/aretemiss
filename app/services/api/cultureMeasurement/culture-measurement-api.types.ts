@@ -19,7 +19,7 @@ export interface cultureMeasurementObjectiveModel {
   cm_objective_id: string
   cm_objective_title: string
   cm_objective_max_answerred: number
-  culture_measurement_takers: cultureMeasurementTakers[]  
+  culture_measurement_takers: cultureMeasurementTakers[]
   is_enable: boolean
 }
 
@@ -60,14 +60,15 @@ export type CMCreateAnswerModel = {
   temp_data: CMSectionModel[]
 }
 
+export type CMGetAnswerModel = {
+  id: string
+  status: string
+  temp_data: CMSectionModel[]
+}
+
 export interface GetListPublishResponse {
   message: string
   data: CMPublishDataModel,
-}
-
-export interface GetAllSectionResponse {
-  message: string
-  data: CMSectionModel,
 }
 
 export interface GetAllSectionResponse {
@@ -80,6 +81,11 @@ export interface CreateAnswerResponse {
   data: CMCreateAnswerModel,
 }
 
+export interface GetAnswerByIdResponse {
+  message: string
+  data: CMGetAnswerModel,
+}
+
 export interface ErrorFormResponse {
   errorCode: number
   message: string
@@ -88,3 +94,4 @@ export interface ErrorFormResponse {
 export type GetListPublishResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListPublishResponse } | GeneralApiProblem
 export type GetAllSectionResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetAllSectionResponse } | GeneralApiProblem
 export type CreateAnswerResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreateAnswerResponse } | GeneralApiProblem
+export type GetAnswerByIdResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetAnswerByIdResponse } | GeneralApiProblem

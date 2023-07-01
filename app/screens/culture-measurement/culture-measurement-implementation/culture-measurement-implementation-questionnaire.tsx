@@ -28,7 +28,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
     observer(({ navigation, route }) => {
 
         const [, forceUpdate] = useReducer((x) => x + 1, 0)
-        const { cmoId, isToCreate, totalPage } = route.params
+        const { cmoId, isToCreate, totalPage, cmTakerId } = route.params
         const { cultureMeasurementStore, mainStore } = useStores()
         const scrollRef = useRef();
 
@@ -119,10 +119,8 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
         }, [currSectionData, listDescription])
 
         const extractSection = useCallback(async (sectionNo: number) => {
-            // console.log(`extractSection section no ${sectionNo}`)
             if (listSectionData?.length > 0 && sectionNo < listSectionData.length) {
                 setCurrSectionData(listSectionData[sectionNo])
-                // console.log(`listSectionData[sectionNo]: ${JSON.stringify(listSectionData[sectionNo])}`)
             }
         }, [listSectionData])
 
@@ -140,18 +138,19 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
 
         useEffect(() => {
             if (listSectionData?.length > 0) {
-                // console.log(`listSectionData.length ${listSectionData.length}`)
                 setCurrSectionNo(1)
                 extractSection(1)
-                // let tempListSectionQuestionnaire = listSectionData.filter(data => data.type === 'questionnaire')
-                // setTotalPage(listSectionData.length)
             }
         }, [listSectionData])
 
         useEffect(() => {
             // setListSectionData(CM_SECTION_MOCK_DATA)
-            setListSectionData(cultureMeasurementStore.cmImplementationSection)
-            // console.log(`cultureMeasurementStore.cmImplementationSection: ${JSON.stringify(cultureMeasurementStore.cmImplementationSection)}`)
+            if (isToCreate && cmoId) {
+                setListSectionData(cultureMeasurementStore.cmImplementationSection)
+            } else if (!isToCreate && cmTakerId) {
+                setListSectionData(cultureMeasurementStore.cmAnswerData.temp_data)
+            }
+
             setIsNextClicked(false)
         }, [])
 
@@ -297,12 +296,16 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                 temp_data: listSectionData
             }
 
-            // console.log(`tempParam ${JSON.stringify(tempParam)}`)
-            await createCMAnswer(tempParam)
-
-            if (cultureMeasurementStore.message === 'Culture Measurement Created') {
-                renderSuccessModal('disimpan')
+            console.log(`tempParam ${JSON.stringify(tempParam)}`)
+            if (isToCreate) {
+                await createCMAnswer(tempParam)
+            } else {
+                
             }
+
+            // if (cultureMeasurementStore.message === 'Culture Measurement Created') {
+            renderSuccessModal('disimpan')
+            // }
         }, [cultureMeasurementStore.message])
 
         const toggleModal = (value: boolean) => {

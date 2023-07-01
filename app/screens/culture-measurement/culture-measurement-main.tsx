@@ -107,13 +107,13 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
                 let curColor = ''
 
                 let tempTakers = [...data.culture_measurement_takers]
-                let tempTotalSubmittedTakers = tempTakers.filter(item => item.cm_taker_status !== 'draft')
-                let tempDraftTakers = tempTakers.filter(item => item.cm_taker_status === "draft")
-                let tempLastDraftTaker: cultureMeasurementTakers = null;
+                let tempTotalSubmittedTakers = tempTakers.filter(item => item.cm_taker_status === 'submitted') //get submitted taker
+                let tempDraftTakers = tempTakers.filter(item => item.cm_taker_status === "draft") //get draft taker
+
+                let tempLastDraftTaker: cultureMeasurementTakers = null; // last taker with status = draft
                 if (tempDraftTakers.length > 0) {
                     tempLastDraftTaker = tempDraftTakers[0]
                 }
-                // console.log(`tempLastDraftTaker: ${JSON.stringify}`)
 
                 if (data.cm_objective_title === CMObjectiveType.BUDAYA_JUARA) {
                     curColor = 'ABM_LIGHT_BLUE'
@@ -128,7 +128,7 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
                     {
                         cmoId: data.cm_objective_id,
                         cmoTitle: data.cm_objective_title,
-                        cmoMaxAnswerred: data.cm_objective_max_answerred,
+                        cmoMaxAnswerred: tempLastDraftTaker !== null ? tempLastDraftTaker.cm_taker_total_section : 10,
                         cmTakers: data.culture_measurement_takers,
                         cmTakersLastDraft: tempLastDraftTaker,
                         cmSubmittedTakers: tempTotalSubmittedTakers.length,
@@ -265,7 +265,7 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
                                                         }
                                                         <Spacer height={Spacing[2]} />
                                                         <ProgressBar
-                                                            progress={1 / data.cmoMaxAnswerred}
+                                                            progress={(data['cmTakersLastDraft'] && data['cmTakersLastDraft']['cm_taker_last_filled'] ? data['cmTakersLastDraft']['cm_taker_last_filled'] : 0) / data.cmoMaxAnswerred}
                                                             color={Colors.ABM_YELLOW}
                                                             style={{ height: Spacing[8], backgroundColor: Colors.GRAY74 }}
                                                         />
