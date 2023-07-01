@@ -1,7 +1,7 @@
 import { ApiResponse } from "apisauce"
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
-import { CMCreateAnswerModel, CreateAnswerResult, ErrorFormResponse, GetAllSectionResult, GetAnswerByIdResult, GetListPublishResult } from "./culture-measurement-api.types";
+import { CMCreateAnswerModel, CMUpdateAnswerModel, CreateAnswerResult, ErrorFormResponse, GetAllSectionResult, GetAnswerByIdResult, GetListPublishResult, UpdateAnswerResult } from "./culture-measurement-api.types";
 
 export class CultureMeasurementApi {
   private api: Api
@@ -20,7 +20,7 @@ export class CultureMeasurementApi {
     try {
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.get(`/culture-measurement`)
-      console.log('response detail', response.data)
+      // console.log('response detail', response.data)
       if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
@@ -44,7 +44,7 @@ export class CultureMeasurementApi {
     try {
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.get(`/culture-measurement/objective/${id}`)
-      console.log('response detail', response.data)
+      // console.log('response detail', response.data)
       if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
@@ -90,11 +90,10 @@ export class CultureMeasurementApi {
   }
 
   async getCMAnswerById(id: string): Promise<GetAnswerByIdResult> {
-    console.log(`getCMAnswerById /culture-measurement/${id}`)
     try {
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.get(`/culture-measurement/${id}`)
-      console.log('response detail', response.data)
+      // console.log('response detail', response.data)
       if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
@@ -106,6 +105,31 @@ export class CultureMeasurementApi {
       }
 
       const res = response.data.data
+      return { kind: "ok", response: res }
+    } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data" }
+    }
+  }
+
+  async updateAnswer(cmTakerId: string, data: CMUpdateAnswerModel): Promise<UpdateAnswerResult> {
+    console.log('updateAnswer')
+    try {
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.put(`/culture-measurement/${cmTakerId}`, data)
+
+      // console.log('response detail', JSON.stringify(response.data))
+      if (response.status === 400) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data
       return { kind: "ok", response: res }
     } catch (e) {
       __DEV__ && console.tron.log(e.message)

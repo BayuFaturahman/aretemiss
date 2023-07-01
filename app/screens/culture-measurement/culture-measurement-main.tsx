@@ -18,13 +18,15 @@ import { ProgressBar } from "react-native-paper"
 import moment from "moment"
 import { CMPublishDataModel, cultureMeasurementTakers } from "@services/api/cultureMeasurement/culture-measurement-api.types"
 import { CMObjectiveModel, CMObjectiveType, CM_PUBLISH_EMPTY, DaysType, QUESTIONNAIRE_TYPE } from "./culture-measurement.type"
+import { useIsFocused } from "@react-navigation/native";
 // import { EmptyList } from "./components/empty-list"
 
 const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMeasurementMain">> =
     observer(({ navigation }) => {
 
         const [, forceUpdate] = useReducer((x) => x + 1, 0)
-        const { mainStore, cultureMeasurementStore } = useStores()
+        const isFocused = useIsFocused();
+        const { cultureMeasurementStore } = useStores()
 
         const [publishData, setPublishData] = useState<CMPublishDataModel>(CM_PUBLISH_EMPTY)
         const [listCMObjectives, setListCMObjectives] = useState<CMObjectiveModel[]>([])
@@ -43,12 +45,8 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
         }
 
         const goToQuestionnaire = (cmoId: string, type: number) => {
-            console.log(`cmoId: ${cmoId}`)
-            // setSelectedCMOId(cmoId)
-
+            // console.log(`cmoId: ${cmoId}`)
             let tempCMTaker: cultureMeasurementTakers = listCMObjectives[type]['cmTakersLastDraft']
-            console.log(`tempCtempCMTakerMOId: ${JSON.stringify(tempCMTaker)}`)
-
 
             // if budaya juara
             if (type === 0) { }
@@ -58,15 +56,11 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
             }
             // if penilaian pelaksanaan budaya juara
             else if (type === 2) {
-                if (tempCMTaker !== null || tempCMTaker !== undefined) {
+                if (tempCMTaker !== null && tempCMTaker !== undefined) {
                     goToCultureMeasurementImplementation(cmoId, false, tempCMTaker.cm_taker_id)
                 } else {
                     goToCultureMeasurementImplementation(cmoId, true)
                 }
-                // if (draft.length === 0) {
-                //     goToCultureMeasurementImplementation(cmoId, true)
-                // } else {
-                // }
             }
         }
 
@@ -81,7 +75,7 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
         const goToCultureMeasurementInfrastructure = () => navigation.navigate("cultureMeasurementInfrastructure")
 
         const loadCMPublishData = async () => {
-            console.log('loadCMPublishData ')
+            // console.log('loadCMPublishData ')
             await cultureMeasurementStore.getListPublish()
             setPublishData(cultureMeasurementStore.cmPublishData)
         }
@@ -115,14 +109,30 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
                     tempLastDraftTaker = tempDraftTakers[0]
                 }
 
+
                 if (data.cm_objective_title === CMObjectiveType.BUDAYA_JUARA) {
                     curColor = 'ABM_LIGHT_BLUE'
                     data.cm_objective_title = `${data.cm_objective_title} ${tempTotalSubmittedTakers.length}/${data.cm_objective_max_answerred} orang`
                 } else if (data.cm_objective_title === CMObjectiveType.INFRASTRUKTUR) {
                     curColor = 'ABM_YELLOW'
+
+                    // get data for budaya juara
+                    let tempBudayaJuaraData = publishData.culture_measurement_objectives.filter(tempData => tempData.cm_objective_title === CMObjectiveType.BUDAYA_JUARA)
+                    if (tempBudayaJuaraData.length > 0) {
+
+                        //get submitted takers
+                        let tempTotalSubmittedTakersBudayaJuara = tempBudayaJuaraData[0].culture_measurement_takers.filter(item => item.cm_taker_status === 'submitted') //get submitted taker
+                        if (tempTotalSubmittedTakersBudayaJuara.length>0) {
+
+                            //to enable indicator for infrastructure culture measurement
+                            data.is_enable = true
+                        }
+
+                    }
                 } else if (data.cm_objective_title === CMObjectiveType.PELAKSANAAN) {
                     curColor = 'ABM_GREEN'
                 }
+
 
                 return (
                     {
@@ -145,7 +155,7 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
 
         useEffect(() => {
             loadCMPublishData()
-        }, [])
+        }, [isFocused])
 
 
         useEffect(() => {
@@ -257,19 +267,23 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
                                                             <Text type="body-bold" style={{ fontSize: Spacing[12], width: Spacing[128] }} >{data.cmoTitle}</Text>
                                                             <Spacer />
                                                             <Button type={data.isEnable ? "primary" : "negative"} text="Isi Kuisioner" style={{ paddingHorizontal: Spacing[8] }} textStyle={{ fontSize: Spacing[12] }}
-                                                                // disabled={!data.isEnable} onPress={() => goToQuestionnaire(index)} />
-                                                                disabled={false} onPress={() => goToQuestionnaire(data.cmoId, index)} />
+                                                                disabled={!data.isEnable} onPress={() => goToQuestionnaire(data.cmoId, index)} />
+                                                            {/* disabled={false} onPress={() => goToQuestionnaire(data.cmoId, index)} /> */}
                                                         </HStack>
+                                                        {/* <Text type="body-bold" style={{ fontSize: Spacing[12], width: Spacing[128] }} >{
+                                                            data['cmTakersLastDraft'] && data['cmTakersLastDraft']['cm_taker_id'] ? data['cmTakersLastDraft']['cm_taker_id'] : 'lala'}</Text> */}
                                                         {data.cmoLastModified !== null &&
                                                             <Text type="body" style={{ fontSize: Spacing[12], fontWeight: '100' }}>{`Terakhir diisi  pada tanggal ${data.cmoLastModified}`}</Text>
                                                         }
-                                                        <Spacer height={Spacing[2]} />
+                                                        <Spacer height={data.cmoLastModified !== null ? Spacing[2] : Spacing[6]} />
                                                         <ProgressBar
-                                                            progress={(data['cmTakersLastDraft'] && data['cmTakersLastDraft']['cm_taker_last_filled'] ? data['cmTakersLastDraft']['cm_taker_last_filled'] : 0) / data.cmoMaxAnswerred}
+                                                            progress={(data && data['cmTakersLastDraft'] && data['cmTakersLastDraft']['cm_taker_last_filled'] ?
+                                                                data['cmTakersLastDraft']['cm_taker_last_filled'] : 0) / (data && data['cmTakersLastDraft'] && data['cmTakersLastDraft']['cm_taker_total_section'] ?
+                                                                    data['cmTakersLastDraft']['cm_taker_total_section'] : 1)}
                                                             color={Colors.ABM_YELLOW}
                                                             style={{ height: Spacing[8], backgroundColor: Colors.GRAY74 }}
                                                         />
-                                                        <Spacer height={Spacing[6]} />
+                                                        {/* <Spacer height={Spacing[6]} /> */}
                                                     </VStack>
                                                 )
                                             })}

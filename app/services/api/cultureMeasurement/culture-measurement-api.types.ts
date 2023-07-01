@@ -63,27 +63,40 @@ export type CMCreateAnswerModel = {
 export type CMGetAnswerModel = {
   id: string
   status: string
+  rated_user_id: string
+  last_filled: number
+  temp_data: CMSectionModel[]
+}
+
+export type CMUpdateAnswerModel = {
+  rated_user_id: string
+  status: string
   temp_data: CMSectionModel[]
 }
 
 export interface GetListPublishResponse {
   message: string
-  data: CMPublishDataModel,
+  data: CMPublishDataModel
 }
 
 export interface GetAllSectionResponse {
   message: string
-  data: CMSectionModel,
+  data: CMSectionModel
 }
 
 export interface CreateAnswerResponse {
   message: string
-  data: CMCreateAnswerModel,
+  data: CMCreateAnswerModel
 }
 
 export interface GetAnswerByIdResponse {
   message: string
-  data: CMGetAnswerModel,
+  data: CMGetAnswerModel
+}
+
+export interface UpdateAnswerResponse {
+  message: string
+  data: CMUpdateAnswerModel
 }
 
 export interface ErrorFormResponse {
@@ -95,3 +108,4 @@ export type GetListPublishResult = { kind: "form-error"; response: ErrorFormResp
 export type GetAllSectionResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetAllSectionResponse } | GeneralApiProblem
 export type CreateAnswerResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreateAnswerResponse } | GeneralApiProblem
 export type GetAnswerByIdResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetAnswerByIdResponse } | GeneralApiProblem
+export type UpdateAnswerResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: UpdateAnswerResponse } | GeneralApiProblem

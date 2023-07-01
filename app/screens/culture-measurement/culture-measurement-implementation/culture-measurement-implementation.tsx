@@ -65,7 +65,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
 
 
         const loadGetAnswerData = async (cmTakerId: string) => {
-            console.log(`loadGetAnswerData, ${cmTakerId} `)
+            // console.log(`loadGetAnswerData, ${cmTakerId} `)
             await cultureMeasurementStore.getCMAnswerById(cmTakerId)
             setListSectionData(cultureMeasurementStore.cmAnswerData.temp_data)
             // console.log(`------ cultureMeasurementStore.cmImplementationSection: ${JSON.stringify(cultureMeasurementStore.cmImplementationSection)}`)
@@ -79,7 +79,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
 
         const extractDesc = () => {
             let tempData = listSectionData.filter((data) => data.type === "example")
-            console.log(`tempData ${JSON.stringify(tempData)}`)
+            // console.log(`tempData ${JSON.stringify(tempData)}`)
 
             let tempCopyWriting: CMSectionModel
             if (tempData.length > 0) {
@@ -95,7 +95,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
         }
 
         useEffect(() => {
-            console.log(`listSectionData: ${JSON.stringify(listSectionData)}`)
+            // console.log(`listSectionData: ${JSON.stringify(listSectionData)}`)
             if (listSectionData?.length > 0) {
                 // let tempListSectionQuestionnaire = listSectionData.filter(data => data.type === 'questionnaire')
                 setTotalPage(listSectionData.length)
@@ -105,7 +105,6 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
 
 
         useEffect(() => {
-            console.log(`isToCreate: ${isToCreate} ; cmoId: ${cmoId}`)
             if (isToCreate && cmoId) {
                 firstLoadCMAllSectionData()
                 // setListSectionData(CM_SECTION_MOCK_DATA)
@@ -234,7 +233,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                     // />
                     // }
                     >
-                        <VStack style={{ backgroundColor: Colors.WHITE }}>
+                        <VStack style={{ backgroundColor: Colors.WHITE, paddingTop: Spacing[12] }}>
                             {/* <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} /> */}
                             <VStack top={Spacing[12]} horizontal={Spacing[24]} bottom={Spacing[12]}>
                                 <HStack>

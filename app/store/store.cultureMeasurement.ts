@@ -3,12 +3,10 @@
 // PACKAGES
 import ServiceStore from "./store.service"
 import { Api } from "@services/api"
-import { FeedApi } from "@services/api/feed/feed-api"
-import { ErrorFormResponse, FeedApiModel } from "@services/api/feed/feed-api.types"
-import { CommentNotificationType, FeedCategoryType, FeedItemType, FeedPostCommentType } from "@screens/feed/feed.type"
+import { ErrorFormResponse } from "@services/api/feed/feed-api.types"
 import { CultureMeasurementApi } from "@services/api/cultureMeasurement/culture-measurement-api"
-import { CMCreateAnswerModel, CMGetAnswerModel, CMPublishDataModel, CMSectionModel, cultureMeasurementObjectiveModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
-import { CM_GET_ANSWER_EMPTY_DATA, CM_PUBLISH_EMPTY, CM_SECTION_EMPTY, GET_PUBLISH_MOCK_DATA } from "@screens/culture-measurement/culture-measurement.type"
+import { CMCreateAnswerModel, CMGetAnswerModel, CMPublishDataModel, CMSectionModel, CMUpdateAnswerModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
+import { CM_GET_ANSWER_EMPTY_DATA, CM_PUBLISH_EMPTY, CM_SECTION_EMPTY } from "@screens/culture-measurement/culture-measurement.type"
 
 export default class CultureMeasurementStore {
     // #region PROPERTIES
@@ -45,7 +43,6 @@ export default class CultureMeasurementStore {
         this.cmPublishData = CM_PUBLISH_EMPTY
         this.cmImplementationSection = [CM_SECTION_EMPTY]
         this.cmAnswerData = CM_GET_ANSWER_EMPTY_DATA
-
     }
 
     async getListPublish() {
@@ -56,7 +53,7 @@ export default class CultureMeasurementStore {
             console.log('in store getListPublish')
             // console.log(`result ${result}`)
             if (result.kind === "ok") {
-                console.log('result.response  ', JSON.stringify(result.response))
+                // console.log('result.response  ', JSON.stringify(result.response))
                 await this.getListPublishSucceed(result.response)
             } else if (result.kind === 'form-error') {
                 console.log('getListPublish failed')
@@ -130,7 +127,7 @@ export default class CultureMeasurementStore {
             console.log('in store createCMAnswer')
             // console.log(`result ${result}`)
             if (result.kind === "ok") {
-                console.log('result.response  ', JSON.stringify(result.response))
+                // console.log('result.response  ', JSON.stringify(result.response))
                 await this.createCMAnswerSucceed(result.response.message, result.response)
             } else if (result.kind === 'form-error') {
                 console.log('createCMAnswer failed')
@@ -151,9 +148,11 @@ export default class CultureMeasurementStore {
         }
     }
 
-    createCMAnswerSucceed(message: string, data: CMSectionModel[]) {
+    createCMAnswerSucceed(message: string, data: CMCreateAnswerModel) {
         console.log('createCMAnswerSucceed')
         this.message = message
+        this.cmAnswerData.temp_data = data.temp_data
+        this.cmAnswerData.rated_user_id = data.rated_user_id
         this.isLoading = false
         this.refreshData = true
     }
@@ -195,23 +194,70 @@ export default class CultureMeasurementStore {
         this.refreshData = true
     }
 
+    async updateCMAnswer(id: string, data: CMUpdateAnswerModel) {
+        this.isLoading = true
+
+        try {
+            const result = await this.cmApi.updateAnswer(id, data)
+            console.log('in store updateCMAnswer')
+            // console.log(`id: ${id} ;; data: ${data}`)
+            // console.log(`result ${JSON.stringify(result)}`)
+            if (result.kind === "ok") {
+                // console.log('result.response  ', JSON.stringify(result.response))
+                await this.updateCMAnswerSucceed(result.response.message, result.response.data)
+            } else if (result.kind === 'form-error') {
+                console.log('updateCMAnswer failed')
+                // console.log(result.response.errorCode)
+                this.cMFailed(result?.response?.errorCode)
+            } else if (result.kind === 'unauthorized') {
+                console.log('token expired updateCMAnswer')
+                // console.log(result)
+                this.cMFailed(result.response.errorCode)
+            } else {
+                // console.log(`result error ${JSON.stringify(result)}`)
+                __DEV__ && console.tron.log(result.kind)
+            }
+        } catch (e) {
+            console.log(e)
+        } finally {
+            this.isLoading = false
+        }
+    }
+
+    updateCMAnswerSucceed(message: string, data: CMUpdateAnswerModel) {
+        console.log('updateCMAnswerSucceed')
+        this.message = message
+        this.cmAnswerData.temp_data = data.temp_data
+        this.cmAnswerData.rated_user_id = data.rated_user_id
+        this.isLoading = false
+        this.refreshData = true
+
+        console.log(`message ${message}`)
+    }
 
     cMFailed(errorId: number) {
         this.errorCode = errorId
         this.isLoading = false
     }
 
+    clearCMData() {
+        this.cmPublishData = CM_PUBLISH_EMPTY
+        this.cmImplementationSection = [CM_SECTION_EMPTY]
+        this.cmAnswerData = CM_GET_ANSWER_EMPTY_DATA
+    }
 
     formReset() {
         this.errorCode = null
         this.errorMessage = null
         this.refreshData = false
         this.message = null
+        this.isLoading = false
     }
 
     formError(data: ErrorFormResponse) {
         this.errorCode = data.errorCode
         this.errorMessage = data.message
+        this.isLoading = false
     }
 
     setErrorMessage(e: any) {
