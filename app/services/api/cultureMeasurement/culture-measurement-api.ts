@@ -81,7 +81,7 @@ export class CultureMeasurementApi {
         if (problem) return problem
       }
 
-      const res = response.data.data
+      const res = response.data
       return { kind: "ok", response: res }
     } catch (e) {
       __DEV__ && console.tron.log(e.message)

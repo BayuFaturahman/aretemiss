@@ -261,6 +261,8 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                 } else {
                     goToNextPage()
                 }
+            } else {
+                scrollUp()
             }
         }
 
@@ -302,7 +304,6 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                 await updateCMAnswer(tempParam)
                 // console.log(`let tempParam =  ${JSON.stringify(tempParam)}`)
             }
-
 
 
             if (cultureMeasurementStore.message === 'Culture Measurement updated' || cultureMeasurementStore.message === 'Culture Measurement Created') {
