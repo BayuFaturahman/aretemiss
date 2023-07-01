@@ -360,10 +360,8 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
 
     const goToJuaraAssessment = () => navigation.navigate("juaraQuizMain")
 
-    const goToCultureMeasurement = () => {
-      console.log('lala')
-      navigation.navigate("cultureMeasurementMain")
-    }
+    const goToCultureMeasurement = () => navigation.navigate("cultureMeasurementMain")
+
 
     // const goToBrainstormsGroup = () => navigation.navigate("newBrainstormsGroup")
 

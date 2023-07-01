@@ -12,13 +12,14 @@ export interface cultureMeasurementTakers {
   cm_taker_status: string
   cm_taker_last_filled: number
   cm_taker_total_section: number
+  cm_taker_updated_at: string
 }
 
 export interface cultureMeasurementObjectiveModel {
   cm_objective_id: string
   cm_objective_title: string
   cm_objective_max_answerred: number
-  culture_measurement_takers: cultureMeasurementTakers[]
+  culture_measurement_takers: cultureMeasurementTakers[]  
   is_enable: boolean
 }
 
@@ -50,6 +51,15 @@ export type CMSectionModel = {
   questionnaire: QuestionnaireModel[]
 }
 
+export type CMCreateAnswerModel = {
+  cmo_id: string
+  rated_user_id: string
+  status: string
+  sn: string
+  structural_position: string
+  temp_data: CMSectionModel[]
+}
+
 export interface GetListPublishResponse {
   message: string
   data: CMPublishDataModel,
@@ -60,6 +70,16 @@ export interface GetAllSectionResponse {
   data: CMSectionModel,
 }
 
+export interface GetAllSectionResponse {
+  message: string
+  data: CMSectionModel,
+}
+
+export interface CreateAnswerResponse {
+  message: string
+  data: CMCreateAnswerModel,
+}
+
 export interface ErrorFormResponse {
   errorCode: number
   message: string
@@ -67,3 +87,4 @@ export interface ErrorFormResponse {
 
 export type GetListPublishResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListPublishResponse } | GeneralApiProblem
 export type GetAllSectionResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetAllSectionResponse } | GeneralApiProblem
+export type CreateAnswerResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreateAnswerResponse } | GeneralApiProblem

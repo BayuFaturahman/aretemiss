@@ -16,7 +16,7 @@ import { images } from "@assets/images";
 
 import { ProgressBar } from "react-native-paper"
 import moment from "moment"
-import { CMPublishDataModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
+import { CMPublishDataModel, cultureMeasurementTakers } from "@services/api/cultureMeasurement/culture-measurement-api.types"
 import { CMObjectiveModel, CMObjectiveType, CM_PUBLISH_EMPTY, DaysType, QUESTIONNAIRE_TYPE } from "./culture-measurement.type"
 // import { EmptyList } from "./components/empty-list"
 
@@ -45,6 +45,11 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
         const goToQuestionnaire = (cmoId: string, type: number) => {
             console.log(`cmoId: ${cmoId}`)
             // setSelectedCMOId(cmoId)
+
+            let tempCMTaker: cultureMeasurementTakers = listCMObjectives[type]['cmTakersLastDraft']
+            console.log(`tempCtempCMTakerMOId: ${JSON.stringify(tempCMTaker)}`)
+
+
             // if budaya juara
             if (type === 0) { }
             // if penilaian infrastruktur budaya juara
@@ -53,13 +58,25 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
             }
             // if penilaian pelaksanaan budaya juara
             else if (type === 2) {
-                goToCultureMeasurementImplementation(cmoId)
+                if (tempCMTaker !== null || tempCMTaker !== undefined) {
+                    goToCultureMeasurementImplementation(cmoId, false, tempCMTaker.cm_taker_id)
+                } else {
+                    goToCultureMeasurementImplementation(cmoId, true)
+                }
+                // if (draft.length === 0) {
+                //     goToCultureMeasurementImplementation(cmoId, true)
+                // } else {
+                // }
             }
         }
 
-        const goToCultureMeasurementImplementation = (cmoId: string) => navigation.navigate("cultureMeasurementImplementation", {
-            cmoId: cmoId
-        })
+        const goToCultureMeasurementImplementation = (cmoId: string, isNew: boolean = true, cmTakerId: string = '') => {
+            navigation.navigate("cultureMeasurementImplementation", {
+                cmoId: cmoId,
+                isToCreate: isNew,
+                cmTakerId: cmTakerId
+            })
+        }
 
         const goToCultureMeasurementInfrastructure = () => navigation.navigate("cultureMeasurementInfrastructure")
 
@@ -88,7 +105,15 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
             //start extracting CM objectives
             let tempObjectives = publishData.culture_measurement_objectives.map((data, index) => {
                 let curColor = ''
-                let tempTotalSubmittedTakers = data.culture_measurement_takers.filter((item) => { item.cm_taker_status !== 'draft' })
+
+                let tempTakers = [...data.culture_measurement_takers]
+                let tempTotalSubmittedTakers = tempTakers.filter(item => item.cm_taker_status !== 'draft')
+                let tempDraftTakers = tempTakers.filter(item => item.cm_taker_status === "draft")
+                let tempLastDraftTaker: cultureMeasurementTakers = null;
+                if (tempDraftTakers.length > 0) {
+                    tempLastDraftTaker = tempDraftTakers[0]
+                }
+                // console.log(`tempLastDraftTaker: ${JSON.stringify}`)
 
                 if (data.cm_objective_title === CMObjectiveType.BUDAYA_JUARA) {
                     curColor = 'ABM_LIGHT_BLUE'
@@ -105,13 +130,15 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
                         cmoTitle: data.cm_objective_title,
                         cmoMaxAnswerred: data.cm_objective_max_answerred,
                         cmTakers: data.culture_measurement_takers,
+                        cmTakersLastDraft: tempLastDraftTaker,
                         cmSubmittedTakers: tempTotalSubmittedTakers.length,
                         isEnable: data.is_enable,
                         color: curColor,
-                        cmoLastModified: "2023-06-25T09:21:35.000Z", //to be updated
+                        cmoLastModified: tempLastDraftTaker === null ? null : moment(tempLastDraftTaker.cm_taker_updated_at).format('DD MMM YYYY'), //to be updated
                     }
                 )
             })
+
             setListCMObjectives(tempObjectives)
         }
 
@@ -233,7 +260,9 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
                                                                 // disabled={!data.isEnable} onPress={() => goToQuestionnaire(index)} />
                                                                 disabled={false} onPress={() => goToQuestionnaire(data.cmoId, index)} />
                                                         </HStack>
-                                                        <Text type="body" style={{ fontSize: Spacing[12], fontWeight: '100' }}>{`Terakhir diisi  pada tanggal ${moment(data.cmoLastModified).format('DD MMM YYYY')}`}</Text>
+                                                        {data.cmoLastModified !== null &&
+                                                            <Text type="body" style={{ fontSize: Spacing[12], fontWeight: '100' }}>{`Terakhir diisi  pada tanggal ${data.cmoLastModified}`}</Text>
+                                                        }
                                                         <Spacer height={Spacing[2]} />
                                                         <ProgressBar
                                                             progress={1 / data.cmoMaxAnswerred}

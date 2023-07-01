@@ -7,7 +7,7 @@ import { FeedApi } from "@services/api/feed/feed-api"
 import { ErrorFormResponse, FeedApiModel } from "@services/api/feed/feed-api.types"
 import { CommentNotificationType, FeedCategoryType, FeedItemType, FeedPostCommentType } from "@screens/feed/feed.type"
 import { CultureMeasurementApi } from "@services/api/cultureMeasurement/culture-measurement-api"
-import { CMPublishDataModel, CMSectionModel, cultureMeasurementObjectiveModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
+import { CMCreateAnswerModel, CMPublishDataModel, CMSectionModel, cultureMeasurementObjectiveModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
 import { CM_PUBLISH_EMPTY, CM_SECTION_EMPTY, GET_PUBLISH_MOCK_DATA } from "@screens/culture-measurement/culture-measurement.type"
 
 export default class CultureMeasurementStore {
@@ -21,6 +21,7 @@ export default class CultureMeasurementStore {
 
     errorCode: number
     errorMessage: string
+    message: string
 
     cmApi: CultureMeasurementApi
 
@@ -36,6 +37,7 @@ export default class CultureMeasurementStore {
 
         this.errorCode = null
         this.errorMessage = null
+        this.message = null
 
         this.cmApi = new CultureMeasurementApi(this.api)
 
@@ -117,6 +119,42 @@ export default class CultureMeasurementStore {
         this.isLoading = false
         this.refreshData = true
     }
+    
+    async createCMAnswer(data: CMCreateAnswerModel) {
+        this.isLoading = true
+
+        try {
+            const result = await this.cmApi.createAnswer(data)
+            console.log('in store createCMAnswer')
+            // console.log(`result ${result}`)
+            if (result.kind === "ok") {
+                console.log('result.response  ', JSON.stringify(result.response))
+                await this.createCMAnswerSucceed(result.response.message, result.response)
+            } else if (result.kind === 'form-error') {
+                console.log('createCMAnswer failed')
+                // console.log(result.response.errorCode)
+                this.cMFailed(result?.response?.errorCode)
+            } else if (result.kind === 'unauthorized') {
+                console.log('token expired createCMAnswer')
+                // console.log(result)
+                this.cMFailed(result.response.errorCode)
+            } else {
+                // console.log(`result error ${JSON.stringify(result)}`)
+                __DEV__ && console.tron.log(result.kind)
+            }
+        } catch (e) {
+            console.log(e)
+        } finally {
+            this.isLoading = false
+        }
+    }
+
+    createCMAnswerSucceed(message: string, data: CMSectionModel[]) {
+        console.log('createCMAnswerSucceed')
+        this.message = message
+        this.isLoading = false
+        this.refreshData = true
+    }
 
 
     cMFailed(errorId: number) {
@@ -129,6 +167,7 @@ export default class CultureMeasurementStore {
         this.errorCode = null
         this.errorMessage = null
         this.refreshData = false
+        this.message = null
     }
 
     formError(data: ErrorFormResponse) {

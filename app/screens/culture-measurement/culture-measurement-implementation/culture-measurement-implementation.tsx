@@ -26,7 +26,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
     observer(({ navigation, route }) => {
 
         const [, forceUpdate] = useReducer((x) => x + 1, 0)
-        const { cmoId } = route.params
+        const { cmoId, isToCreate, cmTakerId } = route.params
         const { cultureMeasurementStore } = useStores()
 
         const [totalPage, setTotalPage] = useState<number>(1)
@@ -42,7 +42,11 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
         }
 
         const goToQuestionnaire = () => {
-            navigation.navigate("cultureMeasurementImplementationQuestionnaire")
+            navigation.navigate("cultureMeasurementImplementationQuestionnaire", {
+                cmoId: cmoId,
+                isToCreate: isToCreate,
+                totalPage: totalPage
+            })
         }
 
         const loadCMAllSectionData = async (cmoId: string) => {
@@ -76,8 +80,8 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
 
         useEffect(() => {
             if (listSectionData?.length > 0) {
-                let tempListSectionQuestionnaire = listSectionData.filter(data => data.type === 'questionnaire')
-                setTotalPage(tempListSectionQuestionnaire.length)
+                // let tempListSectionQuestionnaire = listSectionData.filter(data => data.type === 'questionnaire')
+                setTotalPage(listSectionData.length)
                 extractDesc()
             }
         }, [listSectionData])

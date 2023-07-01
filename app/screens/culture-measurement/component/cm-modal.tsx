@@ -18,9 +18,11 @@ type ModalProps = {
     modalBtnText?: string
     toggleModal(): void
     onClickModalBtn(): void
+    onClickCancelModalBtn?(): void
 }
 
-export const ModalComponent = ({ isModalVisible = true, isIconFromMood = true, modalTitle = '', modalIcon = '', modalDesc = '', modalBtnText = '', toggleModal = () => { }, onClickModalBtn = () => { } }: ModalProps) => {
+export const ModalComponent = ({ isModalVisible = true, isIconFromMood = true, modalTitle = '', modalIcon = '', modalDesc = '', modalBtnText = '',
+    toggleModal = () => { }, onClickModalBtn = () => { }, onClickCancelModalBtn = () => { } }: ModalProps) => {
     return (
         <Modal
             onClosed={() => toggleModal()}
@@ -99,7 +101,7 @@ export const ModalComponent = ({ isModalVisible = true, isIconFromMood = true, m
                                             text={'Batalkan'}
                                             style={{ paddingVertical: Spacing[14], paddingHorizontal: Spacing[12], justifyContent: 'center', alignContent: 'center' }}
                                             textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
-                                            onPress={onClickModalBtn}
+                                            onPress={onClickCancelModalBtn}
                                         />
                                     </>
                                 }
