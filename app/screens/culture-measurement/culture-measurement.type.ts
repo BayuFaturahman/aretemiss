@@ -1,4 +1,4 @@
-import { CMPublishDataModel, CMSectionModel, QuestionnaireModel, cultureMeasurementObjectiveModel, cultureMeasurementTakers } from "@services/api/cultureMeasurement/culture-measurement-api.types"
+import { CMGetAnswerModel, CMPublishDataModel, CMSectionModel, QuestionnaireModel, cultureMeasurementObjectiveModel, cultureMeasurementTakers } from "@services/api/cultureMeasurement/culture-measurement-api.types"
 
 export const CMObjectiveType = {
     BUDAYA_JUARA: 'Penilaian Infrastruktur Budaya Juara',
@@ -50,165 +50,6 @@ export const CM_SECTION_EMPTY: CMSectionModel = {
     questionnaire: []
 }
 
-export const CM_SECTION_MOCK_DATA: CMSectionModel[] = [
-    {
-        "id": "d34c76e5-5e82-4e88-a10c-c1ced9c32dd0",
-        "title": "Petunjuk Pengisian",
-        "description": "<p>Terdapat 22 pernyataan yang perlu Anda cermati untuk menilai sejauh mana keberhasilan pelaksanaan proyek-proyek Budaya berdasarkan pengalaman dan observasi Anda selama menjalankan Budaya Juara, beserta dengan 5 pilihan penilaian:</p><br>{{type_answer}}<br><p>Kemudian, Anda diminta untuk memberikan jawaban dengan cara meng-klik langsung simbol (O) pada skor penilaian yang Anda anggap paling tepat untuk menilai pelaksanaan proyek-proyek Budaya sesuai dengan kenyataan yang ditampilkan saat ini.</p>",
-        "type": "example",
-        "questionnaire": []
-    },
-    {
-        "id": "fa0752b2-6f79-450f-9848-39fb4c42aec2",
-        "title": "Project Target Accuracy",
-        "description": "<p>Proyek Budaya yang dilaksanakan menyasar perubahan perilaku yang berdampak pada KPI.</p>",
-        "type": "questionnaire",
-        "questionnaire": [
-            {
-                "item": "Mengajarkan pengetahuan tentang perilaku dan Budaya Juara kepada anggota tim63",
-                "description": "2222222222222222222222222222222222dddssssssssssssssdddddddddddddd22222222222",
-                "type": "likert_1"
-            },
-            {
-                "item": "Memberikan pemahaman tentang keterkaitan antara pekerjaan yang dilakukan anggota tim dengan prinsip dan perilaku Juara",
-                "description": "",
-                "type": "likert_1"
-            },
-            {
-                "item": "Berbagi pengalaman dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
-                "description": "",
-                "type": "likert_1"
-            },
-            {
-                "item": "Melakukan sesi Coaching dengan anggota Tim untuk mendukung Tim dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
-                "description": "",
-                "type": "likert_1"
-            },
-            {
-                "description": "",
-                "item": "",
-                "type": "likert_1"
-            },
-            {
-                "description": "",
-                "item": "",
-                "type": "likert_1"
-            }
-        ]
-    },
-    {
-        "id": "3de3c309-c819-4c5e-a355-66a3d25ad14a",
-        "title": "Project Completion",
-        "description": "<p>Proyek Budaya dilaksanakan dengan tuntas dan lengkap sesuai rencana proyek.</p>",
-        "type": "questionnaire",
-        "questionnaire": [
-            {
-                "item": "Mengajarkan pengetahuan tentang perilaku dan Budaya Juara kepada anggota tim",
-                "description": "",
-                "type": "likert_1"
-            },
-            {
-                "item": "Memberikan pemahaman tentang keterkaitan antara pekerjaan yang dilakukan anggota tim dengan prinsip dan perilaku Juara",
-                "description": "",
-                "type": "likert_1"
-            },
-            {
-                "item": "Berbagi pengalaman dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
-                "description": "",
-                "type": "likert_1"
-            },
-            {
-                "item": "Melakukan sesi Coaching dengan anggota Tim untuk mendukung Tim dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
-                "description": "",
-                "type": "likert_1"
-            }
-        ]
-    },
-    {
-        "id": "5c55d7af-3913-412b-b6f2-70441a3e20a5",
-        "title": "Project Participation",
-        "description": "<p>Proyek Budaya dilaksanakan dengan melibatkan dan mendapatkan dukungan dari Tim.</p>",
-        "type": "questionnaire",
-        "questionnaire": [
-            {
-                "item": "Mengajarkan pengetahuan tentang perilaku dan Budaya Juara kepada anggota tim",
-                "description": "",
-                "type": "likert_1"
-            },
-            {
-                "item": "Memberikan pemahaman tentang keterkaitan antara pekerjaan yang dilakukan anggota tim dengan prinsip dan perilaku Juara",
-                "description": "",
-                "type": "likert_1"
-            },
-            {
-                "item": "Berbagi pengalaman dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
-                "description": "",
-                "type": "likert_1"
-            },
-            {
-                "item": "Melakukan sesi Coaching dengan anggota Tim untuk mendukung Tim dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
-                "description": "",
-                "type": "likert_1"
-            }
-        ]
-    },
-    {
-        "id": "fcbf6bd6-a181-4c98-9ef8-3ffbc19dd843",
-        "title": "Project Sustainability",
-        "description": "<p>Proyek Budaya dapat dilaksanakan secara mandiri dan berkesinambungan.</p>",
-        "type": "questionnaire",
-        "questionnaire": [
-            {
-                "item": "Mengajarkan pengetahuan tentang perilaku dan Budaya Juara kepada anggota tim",
-                "description": "4444444444444444444444444444444444444444444",
-                "type": "likert_1"
-            },
-            {
-                "item": "Memberikan pemahaman tentang keterkaitan antara pekerjaan yang dilakukan anggota tim dengan prinsip dan perilaku Juara",
-                "description": "",
-                "type": "likert_1"
-            },
-            {
-                "item": "Berbagi pengalaman dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
-                "description": "",
-                "type": "likert_1"
-            },
-            {
-                "item": "Melakukan sesi Coaching dengan anggota Tim untuk mendukung Tim dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
-                "description": "",
-                "type": "likert_1"
-            }
-        ]
-    },
-    {
-        "id": "192c7d89-6156-4440-8593-615713e62ace",
-        "title": "Project Replicability",
-        "description": "<p>Proyek Budaya memiliki konsep yang dapat diduplikasi ke area kerja lain.</p>",
-        "type": "questionnaire",
-        "questionnaire": [
-            {
-                "item": "Mengajarkan pengetahuan tentang perilaku dan Budaya Juara kepada anggota tim",
-                "description": "",
-                "type": "likert_1"
-            },
-            {
-                "item": "Memberikan pemahaman tentang keterkaitan antara pekerjaan yang dilakukan anggota tim dengan prinsip dan perilaku Juara",
-                "description": "",
-                "type": "likert_1"
-            },
-            {
-                "item": "Berbagi pengalaman dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
-                "description": "",
-                "type": "likert_1"
-            },
-            {
-                "item": "Melakukan sesi Coaching dengan anggota Tim untuk mendukung Tim dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
-                "description": "",
-                "type": "likert_1"
-            }
-        ]
-    }
-]
 
 export const CM_SECTION_INFRA_MOCK_DATE: CMSectionModel[] = [
     {
@@ -650,7 +491,6 @@ export const QUESTIONNAIRE_EXAMPLE: QuestionnaireModel = {
 
 }
 
-
 export const GET_PUBLISH_MOCK_DATA = {
     "message": "success",
     "data": {
@@ -724,6 +564,166 @@ export const CM_PUBLISH_MOCK_DATA: CMPublishDataModel = {
     ]
 }
 
+export const CM_SECTION_MOCK_DATA: CMSectionModel[] = [
+    {
+        "id": "d34c76e5-5e82-4e88-a10c-c1ced9c32dd0",
+        "title": "Petunjuk Pengisian",
+        "description": "<p>Terdapat 22 pernyataan yang perlu Anda cermati untuk menilai sejauh mana keberhasilan pelaksanaan proyek-proyek Budaya berdasarkan pengalaman dan observasi Anda selama menjalankan Budaya Juara, beserta dengan 5 pilihan penilaian:</p><br>{{type_answer}}<br><p>Kemudian, Anda diminta untuk memberikan jawaban dengan cara meng-klik langsung simbol (O) pada skor penilaian yang Anda anggap paling tepat untuk menilai pelaksanaan proyek-proyek Budaya sesuai dengan kenyataan yang ditampilkan saat ini.</p>",
+        "type": "example",
+        "questionnaire": []
+    },
+    {
+        "id": "fa0752b2-6f79-450f-9848-39fb4c42aec2",
+        "title": "Project Target Accuracy",
+        "description": "<p>Proyek Budaya yang dilaksanakan menyasar perubahan perilaku yang berdampak pada KPI.</p>",
+        "type": "questionnaire",
+        "questionnaire": [
+            {
+                "item": "Mengajarkan pengetahuan tentang perilaku dan Budaya Juara kepada anggota tim63",
+                "description": "2222222222222222222222222222222222dddssssssssssssssdddddddddddddd22222222222",
+                "type": "likert_1"
+            },
+            {
+                "item": "Memberikan pemahaman tentang keterkaitan antara pekerjaan yang dilakukan anggota tim dengan prinsip dan perilaku Juara",
+                "description": "",
+                "type": "likert_1"
+            },
+            {
+                "item": "Berbagi pengalaman dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
+                "description": "",
+                "type": "likert_1"
+            },
+            {
+                "item": "Melakukan sesi Coaching dengan anggota Tim untuk mendukung Tim dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
+                "description": "",
+                "type": "likert_1"
+            },
+            {
+                "description": "",
+                "item": "",
+                "type": "likert_1"
+            },
+            {
+                "description": "",
+                "item": "",
+                "type": "likert_1"
+            }
+        ]
+    },
+    {
+        "id": "3de3c309-c819-4c5e-a355-66a3d25ad14a",
+        "title": "Project Completion",
+        "description": "<p>Proyek Budaya dilaksanakan dengan tuntas dan lengkap sesuai rencana proyek.</p>",
+        "type": "questionnaire",
+        "questionnaire": [
+            {
+                "item": "Mengajarkan pengetahuan tentang perilaku dan Budaya Juara kepada anggota tim",
+                "description": "",
+                "type": "likert_1"
+            },
+            {
+                "item": "Memberikan pemahaman tentang keterkaitan antara pekerjaan yang dilakukan anggota tim dengan prinsip dan perilaku Juara",
+                "description": "",
+                "type": "likert_1"
+            },
+            {
+                "item": "Berbagi pengalaman dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
+                "description": "",
+                "type": "likert_1"
+            },
+            {
+                "item": "Melakukan sesi Coaching dengan anggota Tim untuk mendukung Tim dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
+                "description": "",
+                "type": "likert_1"
+            }
+        ]
+    },
+    {
+        "id": "5c55d7af-3913-412b-b6f2-70441a3e20a5",
+        "title": "Project Participation",
+        "description": "<p>Proyek Budaya dilaksanakan dengan melibatkan dan mendapatkan dukungan dari Tim.</p>",
+        "type": "questionnaire",
+        "questionnaire": [
+            {
+                "item": "Mengajarkan pengetahuan tentang perilaku dan Budaya Juara kepada anggota tim",
+                "description": "",
+                "type": "likert_1"
+            },
+            {
+                "item": "Memberikan pemahaman tentang keterkaitan antara pekerjaan yang dilakukan anggota tim dengan prinsip dan perilaku Juara",
+                "description": "",
+                "type": "likert_1"
+            },
+            {
+                "item": "Berbagi pengalaman dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
+                "description": "",
+                "type": "likert_1"
+            },
+            {
+                "item": "Melakukan sesi Coaching dengan anggota Tim untuk mendukung Tim dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
+                "description": "",
+                "type": "likert_1"
+            }
+        ]
+    },
+    {
+        "id": "fcbf6bd6-a181-4c98-9ef8-3ffbc19dd843",
+        "title": "Project Sustainability",
+        "description": "<p>Proyek Budaya dapat dilaksanakan secara mandiri dan berkesinambungan.</p>",
+        "type": "questionnaire",
+        "questionnaire": [
+            {
+                "item": "Mengajarkan pengetahuan tentang perilaku dan Budaya Juara kepada anggota tim",
+                "description": "4444444444444444444444444444444444444444444",
+                "type": "likert_1"
+            },
+            {
+                "item": "Memberikan pemahaman tentang keterkaitan antara pekerjaan yang dilakukan anggota tim dengan prinsip dan perilaku Juara",
+                "description": "",
+                "type": "likert_1"
+            },
+            {
+                "item": "Berbagi pengalaman dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
+                "description": "",
+                "type": "likert_1"
+            },
+            {
+                "item": "Melakukan sesi Coaching dengan anggota Tim untuk mendukung Tim dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
+                "description": "",
+                "type": "likert_1"
+            }
+        ]
+    },
+    {
+        "id": "192c7d89-6156-4440-8593-615713e62ace",
+        "title": "Project Replicability",
+        "description": "<p>Proyek Budaya memiliki konsep yang dapat diduplikasi ke area kerja lain.</p>",
+        "type": "questionnaire",
+        "questionnaire": [
+            {
+                "item": "Mengajarkan pengetahuan tentang perilaku dan Budaya Juara kepada anggota tim",
+                "description": "",
+                "type": "likert_1"
+            },
+            {
+                "item": "Memberikan pemahaman tentang keterkaitan antara pekerjaan yang dilakukan anggota tim dengan prinsip dan perilaku Juara",
+                "description": "",
+                "type": "likert_1"
+            },
+            {
+                "item": "Berbagi pengalaman dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
+                "description": "",
+                "type": "likert_1"
+            },
+            {
+                "item": "Melakukan sesi Coaching dengan anggota Tim untuk mendukung Tim dalam menghidupkan perilaku sesuai prinsip Budaya Juara.",
+                "description": "",
+                "type": "likert_1"
+            }
+        ]
+    }
+]
+
 export const QUESTIONNAIRE_TYPE = [
     {
         text: 'Budaya Juara',
@@ -738,3 +738,9 @@ export const QUESTIONNAIRE_TYPE = [
         color: 'ABM_GREEN'
     }
 ]
+
+export const CM_GET_ANSWER_EMPTY_DATA: CMGetAnswerModel = {
+    id: '',
+    status: '',
+    temp_data: []
+}

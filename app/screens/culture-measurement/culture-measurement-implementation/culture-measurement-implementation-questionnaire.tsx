@@ -18,17 +18,18 @@ import { ProgressBar } from "react-native-paper"
 import moment from "moment"
 import { TouchableOpacity } from "react-native-gesture-handler"
 
-import { CMSectionModel, QuestionnaireModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
+import { CMCreateAnswerModel, CMSectionModel, CMUpdateAnswerModel, QuestionnaireModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
 import { CMObjectiveModel, CM_SECTION_EMPTY, CM_SECTION_MOCK_DATA, QUESTIONNAIRE_EXAMPLE, QUESTIONNAIRE_OPTION } from "../culture-measurement.type"
 import { ModalComponent } from "../component/cm-modal"
 import { Man1 } from "@assets/svgs"
 // import { EmptyList } from "./components/empty-list"
 
 const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, "cultureMeasurementImplementationQuestionnaire">> =
-    observer(({ navigation }) => {
+    observer(({ navigation, route }) => {
 
         const [, forceUpdate] = useReducer((x) => x + 1, 0)
-        const { cultureMeasurementStore } = useStores()
+        const { cmoId, isToCreate, totalPage, cmTakerId } = route.params
+        const { cultureMeasurementStore, mainStore } = useStores()
         const scrollRef = useRef();
 
         const [submitBtnText, setSubmitBtnText] = useState<string>('Selanjutnya')
@@ -40,20 +41,18 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
         const [currSectionData, setCurrSectionData] = useState<CMSectionModel>(CM_SECTION_EMPTY)
 
         const [currPage, setCurrPage] = useState<number>(1)
-        const [totalPage, setTotalPage] = useState<number>(1)
 
-        const [listSectionData, setListSectionData] = useState<CMSectionModel[]>(CM_SECTION_MOCK_DATA)
+        const [listSectionData, setListSectionData] = useState<CMSectionModel[]>()
         const [listDescription, setLisDescription] = useState<string[]>([])
         const [listQuestionnaire, setListQuestionnaire] = useState<QuestionnaireModel[]>([QUESTIONNAIRE_EXAMPLE])
         const [listError, setListError] = useState<number[]>([])
-
 
         const [isModalVisible, setModalVisible] = useState<boolean>(false)
         const [isIconFromMood, setIsIconFromMood] = useState<boolean>(false)
         const [modalTitle, setModalTitle] = useState<string>("")
         const [modalDesc, setModalDesc] = useState<string>("")
         const [modalIcon, setModalIcon] = useState("senang")
-        const [modalBtnText, setModalBtnText] = useState("senang")
+        const [modalBtnText, setModalBtnText] = useState("")
 
 
         const setModalContent = (title: string, desc: string, icon: string) => {
@@ -78,6 +77,8 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
 
         const goToNextPage = () => {
             console.log(`goToNextPage `)
+            setIsError(false)
+
             // if going to last page
             if (currPage === totalPage - 2) {
                 setSubmitBtnText('Submit Kuisioner')
@@ -92,12 +93,24 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
             scrollUp()
         }
 
+        const goToCultureMeasurement = () => navigation.navigate("cultureMeasurementMain")
+
         const scrollUp = () => {
             scrollRef?.current?.scrollTo({
                 y: 0,
                 animated: true,
             });
         }
+
+        const createCMAnswer = useCallback(async (data: CMCreateAnswerModel) => {
+            // console.log(`create answer ${JSON.stringify(data)}`)
+            await cultureMeasurementStore.createCMAnswer(data)
+        }, [])
+
+        const updateCMAnswer = useCallback(async (data: CMUpdateAnswerModel) => {
+            // console.log(`updateCMAnswer ${JSON.stringify(data)}`)
+            await cultureMeasurementStore.updateCMAnswer(cmTakerId, data)
+        }, [])
 
         const extractDesc = useCallback(() => {
             let tempDesc = currSectionData.description
@@ -108,35 +121,39 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
             setLisDescription(listTempDesc)
         }, [currSectionData, listDescription])
 
+        const extractSection = useCallback(async (sectionNo: number) => {
+            if (listSectionData?.length > 0 && sectionNo < listSectionData.length) {
+                setCurrSectionData(listSectionData[sectionNo])
+            }
+        }, [listSectionData])
+
         const extractQuestionnaire = useCallback(() => {
             setListQuestionnaire(currSectionData.questionnaire)
             setListError(new Array(currSectionData.questionnaire.length).fill(0))
         }, [currSectionData, listQuestionnaire])
 
-        const extractSection = useCallback(async (sectionNo: number) => {
-            // console.log(`extractSection section no ${sectionNo}`)
-            if (sectionNo < listSectionData.length) {
-                setCurrSectionData(listSectionData[sectionNo])
-                // console.log(`listSectionData[sectionNo]: ${JSON.stringify(listSectionData[sectionNo])}`)
+        useEffect(() => {
+            if (currSectionData?.id !== '') {
+                extractDesc()
+                extractQuestionnaire()
             }
         }, [currSectionData])
 
         useEffect(() => {
-            extractDesc()
-            extractQuestionnaire()
-        }, [currSectionData])
-
-        useEffect(() => {
-            if (listSectionData.length > 0) {
+            if (listSectionData?.length > 0) {
                 setCurrSectionNo(1)
                 extractSection(1)
-                let tempListSectionQuestionnaire = listSectionData.filter(data => data.type === 'questionnaire')
-                setTotalPage(tempListSectionQuestionnaire.length)
             }
         }, [listSectionData])
 
         useEffect(() => {
-            setListSectionData(CM_SECTION_MOCK_DATA)
+            // setListSectionData(CM_SECTION_MOCK_DATA)
+            if (isToCreate && cmoId) {
+                setListSectionData(cultureMeasurementStore.cmImplementationSection)
+            } else if (!isToCreate && cmTakerId) {
+                setListSectionData(cultureMeasurementStore.cmAnswerData.temp_data)
+            }
+
             setIsNextClicked(false)
         }, [])
 
@@ -216,8 +233,9 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
             renderCancelModal()
         }
 
-        const onClickSave = () => {
+        const onClickSave = async () => {
             console.log(`click save`)
+            await saveData()
         }
 
         const onClickNextOrSubmit = () => {
@@ -237,32 +255,82 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
             })
             setListError(temptErrorList)
 
-            console.log(`listQuestionnaire: ${JSON.stringify(listQuestionnaire)}`)
-            console.log(`temptErrorList: ${JSON.stringify(temptErrorList)}`)
-            console.log(`tempIsError: ${tempIsError}`)
-            // console.log(`temptErrorList: ${tempIsError}`)
             if (!tempIsError) {
                 if (currPage === totalPage - 1) {
                     submitData()
                 } else {
-                    // goToNextPage()
+                    goToNextPage()
                 }
+            } else {
+                scrollUp()
             }
-
-
         }
 
         const submitData = () => {
             console.log(`submit data`)
+            saveOrSubmitData('submitted')
         }
+
+        const saveData = useCallback(async () => {
+            console.log(`simpan data`)
+            saveOrSubmitData('draft')
+
+        }, [cultureMeasurementStore.message, listSectionData])
+
+        const saveOrSubmitData = useCallback(async (type: string) => {
+            cultureMeasurementStore.formReset()
+            // let tempParam = {}
+            if (isToCreate) {
+                console.log(`will create CM answer`)
+                //prepare param
+                let tempParam = {
+                    cmo_id: cmoId,
+                    rated_user_id: isToCreate ? mainStore.userProfile.user_id : cultureMeasurementStore.cmAnswerData.rated_user_id,
+                    status: type,
+                    sn: "", //null
+                    structural_position: "", //null
+                    temp_data: listSectionData
+                }
+                await createCMAnswer(tempParam)
+                // console.log(`let tempParam =  ${JSON.stringify(tempParam)}`)
+            } else {
+                console.log(`will update CM answer`)
+                //prepare body 
+                let tempParam = {
+                    rated_user_id: cultureMeasurementStore.cmAnswerData.rated_user_id,
+                    status: type,
+                    temp_data: listSectionData
+                }
+                await updateCMAnswer(tempParam)
+                // console.log(`let tempParam =  ${JSON.stringify(tempParam)}`)
+            }
+
+
+            if (cultureMeasurementStore.message === 'Culture Measurement updated' || cultureMeasurementStore.message === 'Culture Measurement Created') {
+                renderSuccessModal('disimpan')
+            } else {
+                renderFailModal()
+            }
+            forceUpdate()
+        }, [listSectionData])
 
         const toggleModal = (value: boolean) => {
             setModalVisible(value)
         }
 
-        const renderSuccessModal = () => {
+        const onClickModalBtn = () => {
+            if (modalBtnText.includes('Kembali ke Main Menu')) {
+                // on success save/submit
+                goToCultureMeasurement()
+            } else {
+                // on fail to save/submit
+                toggleModal(false)
+            }
+        }
+
+        const renderSuccessModal = (actionType: string) => {
             setModalVisible(true)
-            setModalContent("Sukses!", "Kuesioner telah berhasil disubmit!", "senang")
+            setModalContent("Sukses!", `Kuesioner telah berhasil ${actionType}!`, "senang")
             setModalBtnText('Kembali ke Main Menu\nKuesioner')
             setIsIconFromMood(true)
         }
@@ -273,12 +341,6 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
             setModalBtnText('Kembali ke\nMenu Sebelumnya')
             setIsIconFromMood(true)
 
-        }
-
-        const iconEl = () => {
-            return <>
-                <Man1 data={modalIcon} width={Spacing[64]} height={Spacing[64]} />
-            </>
         }
 
         const renderCancelModal = () => {
@@ -309,7 +371,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                         // />
                         // }
                         >
-                            <VStack style={{ backgroundColor: Colors.WHITE }}>
+                            <VStack style={{ backgroundColor: Colors.WHITE, paddingTop: Spacing[12] }}>
                                 {/* <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} /> */}
                                 <VStack top={Spacing[12]} horizontal={Spacing[24]} bottom={Spacing[12]}>
                                     <HStack>
@@ -390,7 +452,8 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                             isModalVisible={isModalVisible}
                             isIconFromMood={isIconFromMood}
                             toggleModal={() => toggleModal(false)}
-                            onClickModalBtn={() => toggleModal(false)}
+                            onClickModalBtn={() => onClickModalBtn()}
+                            onClickCancelModalBtn={() => goToCultureMeasurement()}
                             modalTitle={modalTitle}
                             modalIcon={modalIcon}
                             modalDesc={modalDesc}
