@@ -287,7 +287,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
                             style={{ height: Spacing[32] }}
                             textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
                             onPress={() => {
-                              goToFeedbackDetail('', '', false, item.data.fu_id)
+                              goToFeedbackDetail(item.data.rfu_id, item.data.coach_id, true, '')
                             }
                             }
                           />

@@ -16,6 +16,7 @@ export type NotificationItem = {
     "feedId" : string;
     "fu_id" : string;
     "rfu_id" : string;
+    "coach_id" : string;
   },
   "createdAt": string;
   "updatedAt": string;
@@ -86,7 +87,8 @@ export default class NotificationStore {
           journalId: item.notification_data.journal_id,
           feedId: item.notification_data.feed_id,
           fu_id: item.notification_data.fu_id,
-          rfu_id: item.notification_data.rfu_id
+          rfu_id: item.notification_data.rfu_id,
+          coach_id: item.notification_data.coach_id
         },
         createdAt: item.notification_created_at,
         updatedAt: item.notification_updated_at,
