@@ -13,22 +13,25 @@ import { useStores } from "../../../bootstrap/context.boostrap"
 import { dimensions } from "@config/platform.config"
 import { images } from "@assets/images";
 
+import Spinner from "react-native-loading-spinner-overlay"
 import { ProgressBar } from "react-native-paper"
 import moment from "moment"
 import { CMSectionModel, QuestionnaireModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
 import { TouchableOpacity } from "react-native-gesture-handler"
-import { CM_SECTION_INFRA_MOCK_DATE, QUESTIONNAIRE_EXAMPLE, QUESTIONNAIRE_OPTION } from "../culture-measurement.type"
+import { QUESTIONNAIRE_EXAMPLE, QUESTIONNAIRE_OPTION } from "../culture-measurement.type"
+import { debounce } from "lodash"
 // import { EmptyList } from "./components/empty-list"
 
 const CultureMeasurementInfrastructure: FC<StackScreenProps<NavigatorParamList, "cultureMeasurementInfrastructure">> =
-    observer(({ navigation }) => {
+    observer(({ navigation, route }) => {
 
         const [, forceUpdate] = useReducer((x) => x + 1, 0)
+        const { cmoId, isToCreate, cmTakerId } = route.params
         const { cultureMeasurementStore } = useStores()
 
         const [totalPage, setTotalPage] = useState<number>(1)
 
-        const [listSectionData, setListSectionData] = useState<CMSectionModel[]>(CM_SECTION_INFRA_MOCK_DATE)
+        const [listSectionData, setListSectionData] = useState<CMSectionModel[]>([])
         const [listDescription, setLisDescription] = useState<string[]>([])
         const [listQuestionnaire, setListQuestionnaire] = useState<QuestionnaireModel[]>([QUESTIONNAIRE_EXAMPLE])
 
@@ -39,42 +42,76 @@ const CultureMeasurementInfrastructure: FC<StackScreenProps<NavigatorParamList, 
         }
 
         const goToQuestionnaire = () => {
-            navigation.navigate("cultureMeasurementInfrastructureQuestionnaire")
+            navigation.navigate("cultureMeasurementInfrastructureQuestionnaire", {
+                cmoId: cmoId,
+                isToCreate: isToCreate,
+                totalPage: totalPage,
+                cmTakerId: cmTakerId
+            })
         }
 
+        const loadCMAllSectionData = async (cmoId: string) => {
+            console.log('loadCMPublishData ')
+            await cultureMeasurementStore.getAllSection(cmoId)
+            setListSectionData(cultureMeasurementStore.cmSections)
+            // console.log(`------ cultureMeasurementStore.cmImplementationSection: ${JSON.stringify(cultureMeasurementStore.cmImplementationSection)}`)
+        }
+
+        const firstLoadCMAllSectionData = debounce(async () => {
+            console.log(`firstLoadCMAllSectionData`)
+            await loadCMAllSectionData(cmoId)
+            forceUpdate()
+        }, 500)
+
+        const loadGetAnswerData = async (cmTakerId: string) => {
+            // console.log(`loadGetAnswerData, ${cmTakerId} `)
+            await cultureMeasurementStore.getCMAnswerById(cmTakerId)
+            setListSectionData(cultureMeasurementStore.cmAnswerData.temp_data)
+            // console.log(`------ cultureMeasurementStore.cmImplementationSection: ${JSON.stringify(cultureMeasurementStore.cmImplementationSection)}`)
+        }
+
+        const firstLoadGetAnswerData = debounce(async () => {
+            console.log(`firstLoadGetAnswerData`)
+            await loadGetAnswerData(cmTakerId)
+            forceUpdate()
+        }, 500)
+
         const extractDesc = () => {
-            let tempData = CM_SECTION_INFRA_MOCK_DATE.filter((data) => data.type === 'example')
+            let tempData = listSectionData.filter((data) => data.type === 'example')
+
             let tempCopyWriting: CMSectionModel
             if (tempData.length > 0) {
                 tempCopyWriting = tempData[0]
+                let tempDesc = tempCopyWriting.description
+                tempDesc = tempDesc.replaceAll('<br>', '')
+                tempDesc = tempDesc.replaceAll('</p>', '')
+                tempDesc = tempDesc.replaceAll(descSeparator, `<p>${descSeparator}`)
+
+                let listTempDesc = tempDesc.split('<p>',)
+                setLisDescription(listTempDesc)
             }
-
-            let tempDesc = tempCopyWriting.description
-            tempDesc = tempDesc.replaceAll('<br>', '')
-            tempDesc = tempDesc.replaceAll('</p>', '')
-            tempDesc = tempDesc.replaceAll(descSeparator, `<p>${descSeparator}`)
-
-            let listTempDesc = tempDesc.split('<p>',)
-            setLisDescription(listTempDesc)
         }
 
         useEffect(() => {
             if (listSectionData.length > 0) {
-                let tempListSectionQuestionnaire = listSectionData.filter(data => data.type === 'questionnaire')
-                setTotalPage(tempListSectionQuestionnaire.length)
+                setTotalPage(listSectionData.length)
+                extractDesc()
             }
         }, [listSectionData])
 
 
         useEffect(() => {
-            extractDesc()
-            setListSectionData(CM_SECTION_INFRA_MOCK_DATE)
-        }, [])
+            if (isToCreate && cmoId) {
+                firstLoadCMAllSectionData()
+            } else if (!isToCreate && cmTakerId) {
+                firstLoadGetAnswerData()
+            }
+        }, [cmoId, isToCreate, cmTakerId])
 
         const renderQuesitonOptions = (data, index) => {
             return (
                 <TouchableOpacity disabled={true}>
-                    <HStack bottom={Spacing[6]}>
+                    <HStack bottom={Spacing[6]} style={{ backgroundColor: index === 1 ? Colors.ABM_BG_BLUE : Colors.WHITE, paddingHorizontal: Spacing[12], paddingVertical: Spacing[6], borderRadius: Spacing[10] }}>
                         {/* <Spacer /> */}
                         <View style={{
                             height: Spacing[18] + Spacing[3],
@@ -87,7 +124,7 @@ const CultureMeasurementInfrastructure: FC<StackScreenProps<NavigatorParamList, 
                             justifyContent: 'center'
                         }} >
                             <HStack>
-                                <Spacer /><Text type="body" text={(index + 1).toString()} style={{ fontSize: Spacing[12], color: Colors[data.fontColor] }} /><Spacer />
+                                <Spacer /><Text type="body" text={(index + 1).toString()} style={{ fontSize: Spacing[12], color: 'BLACK' }} /><Spacer />
                             </HStack>
                         </View>
                         <Text type={"body"} style={{ fontSize: Spacing[12] }}>{data.text}</Text>
@@ -143,7 +180,7 @@ const CultureMeasurementInfrastructure: FC<StackScreenProps<NavigatorParamList, 
                     <Spacer height={Spacing[12]} />
                     <HStack horizontal={Spacing[2]}>
                         <Spacer />
-                        <VStack horizontal={Spacing[24]} vertical={Spacing[12]} style={{ backgroundColor: Colors.ABM_BG_BLUE, width: Spacing[160] + Spacing[24], borderRadius: Spacing[20], borderWidth: Spacing[0]}}>
+                        <VStack horizontal={Spacing[24]} vertical={Spacing[12]} style={{ backgroundColor: Colors.ABM_BG_BLUE, width: Spacing[160] + Spacing[24], borderRadius: Spacing[20], borderWidth: Spacing[2], borderColor: Colors.ABM_DARK_BLUE }}>
                             {QUESTIONNAIRE_OPTION.map((data, index) => {
                                 return (
                                     <HStack bottom={Spacing[6]}>
@@ -178,7 +215,7 @@ const CultureMeasurementInfrastructure: FC<StackScreenProps<NavigatorParamList, 
 
         return (
             <VStack
-                testID="cultureMeasurementImplementation"
+                testID="cultureMeasurementInfrastructure"
                 style={styles.bg}
             >
                 <SafeAreaView style={Layout.flex}>
@@ -245,6 +282,7 @@ const CultureMeasurementInfrastructure: FC<StackScreenProps<NavigatorParamList, 
                         </VStack>
                     </ScrollView >
                 </SafeAreaView >
+                <Spinner visible={cultureMeasurementStore.isLoading || listDescription.length === 0} textContent={"Memuat..."} />
             </VStack >
         )
     })

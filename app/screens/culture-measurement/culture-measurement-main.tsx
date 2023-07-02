@@ -58,7 +58,11 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
             }
             // if penilaian infrastruktur budaya juara
             else if (type === 1) {
-                goToCultureMeasurementInfrastructure()
+                if (tempCMTaker !== null && tempCMTaker !== undefined) {
+                    goToCultureMeasurementInfrastructure(cmoId, false, tempCMTaker.cm_taker_id)
+                } else {
+                    goToCultureMeasurementInfrastructure(cmoId, true)
+                }
             }
             // if penilaian pelaksanaan budaya juara
             else if (type === 2) {
@@ -86,7 +90,13 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
             })
         }
 
-        const goToCultureMeasurementInfrastructure = () => navigation.navigate("cultureMeasurementInfrastructure")
+        const goToCultureMeasurementInfrastructure = (cmoId: string, isNew: boolean = true, cmTakerId: string = '') => {
+            navigation.navigate("cultureMeasurementInfrastructure", {
+                cmoId: cmoId,
+                isToCreate: isNew,
+                cmTakerId: cmTakerId
+            })
+        }
 
         const loadCMPublishData = async () => {
             // console.log('loadCMPublishData ')

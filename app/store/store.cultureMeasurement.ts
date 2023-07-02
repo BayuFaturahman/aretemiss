@@ -24,7 +24,7 @@ export default class CultureMeasurementStore {
     cmApi: CultureMeasurementApi
 
     cmPublishData: CMPublishDataModel
-    cmImplementationSection: CMSectionModel[]
+    cmSections: CMSectionModel[]
     cmAnswerData: CMGetAnswerModel
 
 
@@ -41,7 +41,7 @@ export default class CultureMeasurementStore {
         this.cmApi = new CultureMeasurementApi(this.api)
 
         this.cmPublishData = CM_PUBLISH_EMPTY
-        this.cmImplementationSection = [CM_SECTION_EMPTY]
+        this.cmSections = [CM_SECTION_EMPTY]
         this.cmAnswerData = CM_GET_ANSWER_EMPTY_DATA
     }
 
@@ -114,7 +114,7 @@ export default class CultureMeasurementStore {
 
     getAllSectionSucceed(data: CMSectionModel[]) {
         console.log('getAllSectionSucceed')
-        this.cmImplementationSection = data
+        this.cmSections = data
         this.isLoading = false
         this.refreshData = true
     }
@@ -242,7 +242,7 @@ export default class CultureMeasurementStore {
 
     clearCMData() {
         this.cmPublishData = CM_PUBLISH_EMPTY
-        this.cmImplementationSection = [CM_SECTION_EMPTY]
+        this.cmSections = [CM_SECTION_EMPTY]
         this.cmAnswerData = CM_GET_ANSWER_EMPTY_DATA
     }
 
