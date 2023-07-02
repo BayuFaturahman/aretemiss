@@ -47,7 +47,7 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
             // setSelectedCMOId(cmoId)
             // if budaya juara
             if (type === 0) {
-                goToCultureMeasurementRating()
+                goToCultureMeasurementRating(cmoId)
             }
             // if penilaian infrastruktur budaya juara
             else if (type === 1) {
@@ -59,7 +59,9 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
             }
         }
 
-        const goToCultureMeasurementRating = () => navigation.navigate("cultureMeasurementRating")
+        const goToCultureMeasurementRating = (cmoId: string) => navigation.navigate("cultureMeasurementRating", {
+            cmoId: cmoId
+        })
         const goToCultureMeasurementImplementation = (cmoId: string) => navigation.navigate("cultureMeasurementImplementation", {
             cmoId: cmoId
         })

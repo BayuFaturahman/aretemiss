@@ -2,7 +2,7 @@ import { ApiResponse } from "apisauce"
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
 import { DEFAULT_API_CONFIG } from "@services/api/api-config";
-import { ErrorFormResponse, GetAllSectionResult, GetListPublishResponse, GetListPublishResult } from "./culture-measurement-api.types";
+import { ErrorFormResponse, GetAllSectionResult, GetListPublishResult } from "./culture-measurement-api.types";
 
 export class CultureMeasurementApi {
   private api: Api

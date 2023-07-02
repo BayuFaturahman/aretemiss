@@ -347,7 +347,9 @@ export type NavigatorParamList = {
   cultureMeasurementImplementationQuestionnaire: undefined
   cultureMeasurementInfrastructure: undefined
   cultureMeasurementInfrastructureQuestionnaire: undefined
-  cultureMeasurementRating: undefined
+  cultureMeasurementRating: {
+    cmoId: string
+  }
 }
 
 export default screens
