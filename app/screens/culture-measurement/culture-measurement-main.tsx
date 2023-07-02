@@ -50,7 +50,11 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
 
             // if budaya juara
             if (type === 0) {
-                goToCultureMeasurementRating(cmoId)
+                if (tempCMTaker !== null && tempCMTaker !== undefined) {
+                    goToCultureMeasurementRating(cmoId, false, tempCMTaker.cm_taker_id)
+                } else {
+                    goToCultureMeasurementRating(cmoId, true)
+                }
             }
             // if penilaian infrastruktur budaya juara
             else if (type === 1) {
@@ -66,9 +70,13 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
             }
         }
 
-        const goToCultureMeasurementRating = (cmoId: string) => navigation.navigate("cultureMeasurementRating", {
-            cmoId: cmoId
-        })
+        const goToCultureMeasurementRating = (cmoId: string, isNew: boolean = true, cmTakerId: string = '') => {
+            navigation.navigate("cultureMeasurementRating", {
+            cmoId: cmoId,
+            isToCreate: isNew,
+            cmTakerId: cmTakerId
+            })
+        }
         
         const goToCultureMeasurementImplementation = (cmoId: string, isNew: boolean = true, cmTakerId: string = '') => {
             navigation.navigate("cultureMeasurementImplementation", {

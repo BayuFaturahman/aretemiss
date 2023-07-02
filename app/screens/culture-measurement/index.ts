@@ -4,7 +4,8 @@ import cultureMeasurementImplementation from "./culture-measurement-implementati
 import cultureMeasurementImplementationQuestionnaire from "./culture-measurement-implementation/culture-measurement-implementation-questionnaire"
 import cultureMeasurementInfrastructure from "./culture-measurement-infrastucture/culture-measurement-infrastructure"
 import cultureMeasurementInfrastructureQuestionnaire from "./culture-measurement-infrastucture/culture-measurement-infrastructure-questionnaire"
-import CultureMeasurementRating from "./culture-measurement-rating"
+import cultureMeasurementRating from "./culture-measurement-rating/culture-measurement-rating"
+import cultureMeasurementRatingQuestionnaire from "./culture-measurement-rating/culture-measurement-rating-questionnaire"
 
 
 export {
@@ -14,5 +15,6 @@ export {
     cultureMeasurementInfrastructureQuestionnaire,
     cultureMeasurementImplementation,
     cultureMeasurementImplementationQuestionnaire,
-    CultureMeasurementRating
+    cultureMeasurementRating,
+    cultureMeasurementRatingQuestionnaire
 }
