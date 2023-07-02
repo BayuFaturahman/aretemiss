@@ -12,6 +12,7 @@ export interface cultureMeasurementTakers {
   cm_taker_status: string
   cm_taker_last_filled: number
   cm_taker_total_section: number
+  cm_taker_updated_at: string
 }
 
 export interface cultureMeasurementObjectiveModel {
@@ -50,14 +51,52 @@ export type CMSectionModel = {
   questionnaire: QuestionnaireModel[]
 }
 
+export type CMCreateAnswerModel = {
+  cmo_id: string
+  rated_user_id: string
+  status: string
+  sn: string
+  structural_position: string
+  temp_data: CMSectionModel[]
+}
+
+export type CMGetAnswerModel = {
+  id: string
+  status: string
+  rated_user_id: string
+  last_filled: number
+  temp_data: CMSectionModel[]
+}
+
+export type CMUpdateAnswerModel = {
+  rated_user_id: string
+  status: string
+  temp_data: CMSectionModel[]
+}
+
 export interface GetListPublishResponse {
   message: string
-  data: CMPublishDataModel,
+  data: CMPublishDataModel
 }
 
 export interface GetAllSectionResponse {
   message: string
-  data: CMSectionModel,
+  data: CMSectionModel
+}
+
+export interface CreateAnswerResponse {
+  message: string
+  data: CMCreateAnswerModel
+}
+
+export interface GetAnswerByIdResponse {
+  message: string
+  data: CMGetAnswerModel
+}
+
+export interface UpdateAnswerResponse {
+  message: string
+  data: CMUpdateAnswerModel
 }
 
 export interface ErrorFormResponse {
@@ -67,3 +106,6 @@ export interface ErrorFormResponse {
 
 export type GetListPublishResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListPublishResponse } | GeneralApiProblem
 export type GetAllSectionResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetAllSectionResponse } | GeneralApiProblem
+export type CreateAnswerResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreateAnswerResponse } | GeneralApiProblem
+export type GetAnswerByIdResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetAnswerByIdResponse } | GeneralApiProblem
+export type UpdateAnswerResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: UpdateAnswerResponse } | GeneralApiProblem

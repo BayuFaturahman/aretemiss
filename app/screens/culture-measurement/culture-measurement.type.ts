@@ -1,4 +1,4 @@
-import { CMPublishDataModel, CMSectionModel, QuestionnaireModel, cultureMeasurementObjectiveModel, cultureMeasurementTakers } from "@services/api/cultureMeasurement/culture-measurement-api.types"
+import { CMGetAnswerModel, CMPublishDataModel, CMSectionModel, QuestionnaireModel, cultureMeasurementObjectiveModel, cultureMeasurementTakers } from "@services/api/cultureMeasurement/culture-measurement-api.types"
 
 export const CMObjectiveType = {
     BUDAYA_JUARA: 'Penilaian Infrastruktur Budaya Juara',
@@ -738,3 +738,9 @@ export const QUESTIONNAIRE_TYPE = [
         color: 'ABM_GREEN'
     }
 ]
+
+export const CM_GET_ANSWER_EMPTY_DATA: CMGetAnswerModel = {
+    id: '',
+    status: '',
+    temp_data: []
+}
