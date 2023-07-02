@@ -19,9 +19,8 @@ import moment from "moment"
 import { TouchableOpacity } from "react-native-gesture-handler"
 
 import { CMCreateAnswerModel, CMSectionModel, CMUpdateAnswerModel, QuestionnaireModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
-import { CMObjectiveModel, CM_SECTION_EMPTY, CM_SECTION_MOCK_DATA, QUESTIONNAIRE_EXAMPLE, QUESTIONNAIRE_OPTION } from "../culture-measurement.type"
+import { CM_SECTION_EMPTY, CM_SECTION_MOCK_DATA, QUESTIONNAIRE_EXAMPLE, QUESTIONNAIRE_OPTION } from "../culture-measurement.type"
 import { ModalComponent } from "../component/cm-modal"
-import { Man1 } from "@assets/svgs"
 // import { EmptyList } from "./components/empty-list"
 
 const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, "cultureMeasurementImplementationQuestionnaire">> =
@@ -149,7 +148,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
         useEffect(() => {
             // setListSectionData(CM_SECTION_MOCK_DATA)
             if (isToCreate && cmoId) {
-                setListSectionData(cultureMeasurementStore.cmImplementationSection)
+                setListSectionData(cultureMeasurementStore.cmSections)
             } else if (!isToCreate && cmTakerId) {
                 setListSectionData(cultureMeasurementStore.cmAnswerData.temp_data)
             }

@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useReducer, useState } from "react"
+import React, { FC, useEffect, useReducer, useState } from "react"
 import { ImageBackground, SafeAreaView, ScrollView, StyleSheet, View } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
@@ -18,7 +18,7 @@ import { ProgressBar } from "react-native-paper"
 import moment from "moment"
 import { CMSectionModel, QuestionnaireModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
 import { TouchableOpacity } from "react-native-gesture-handler"
-import { CM_SECTION_MOCK_DATA, QUESTIONNAIRE_EXAMPLE, QUESTIONNAIRE_OPTION } from "../culture-measurement.type"
+import { QUESTIONNAIRE_EXAMPLE, QUESTIONNAIRE_OPTION } from "../culture-measurement.type"
 import { debounce } from "lodash"
 // import { EmptyList } from "./components/empty-list"
 
@@ -53,7 +53,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
         const loadCMAllSectionData = async (cmoId: string) => {
             console.log('loadCMPublishData ')
             await cultureMeasurementStore.getAllSection(cmoId)
-            setListSectionData(cultureMeasurementStore.cmImplementationSection)
+            setListSectionData(cultureMeasurementStore.cmSections)
             // console.log(`------ cultureMeasurementStore.cmImplementationSection: ${JSON.stringify(cultureMeasurementStore.cmImplementationSection)}`)
         }
 
@@ -116,7 +116,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
         const renderQuesitonOptions = (data, index) => {
             return (
                 <TouchableOpacity disabled={true}>
-                    <HStack bottom={Spacing[6]}>
+                    <HStack bottom={Spacing[6]} style={{ backgroundColor: index === 1 ? Colors.ABM_BG_BLUE : Colors.WHITE, paddingHorizontal: Spacing[12], paddingVertical: Spacing[6], borderRadius: Spacing[10] }}>
                         {/* <Spacer /> */}
                         <View style={{
                             height: Spacing[18] + Spacing[3],
@@ -129,7 +129,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                             justifyContent: 'center'
                         }} >
                             <HStack>
-                                <Spacer /><Text type="body" text={(index + 1).toString()} style={{ fontSize: Spacing[12], color: Colors[data.fontColor] }} /><Spacer />
+                                <Spacer /><Text type="body" text={(index + 1).toString()} style={{ fontSize: Spacing[12], color: 'BLACK' }} /><Spacer />
                             </HStack>
                         </View>
                         <Text type={"body"} style={{ fontSize: Spacing[12] }}>{data.text}</Text>
@@ -185,7 +185,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                     <Spacer height={Spacing[12]} />
                     <HStack horizontal={Spacing[2]}>
                         <Spacer />
-                        <VStack horizontal={Spacing[24]} vertical={Spacing[12]} style={{ backgroundColor: Colors.WHITE, width: Spacing[160] + Spacing[24], borderRadius: Spacing[20], borderWidth: Spacing[2], borderColor: Colors.ABM_DARK_BLUE }}>
+                        <VStack horizontal={Spacing[24]} vertical={Spacing[12]} style={{ backgroundColor: Colors.ABM_BG_BLUE, width: Spacing[160] + Spacing[24], borderRadius: Spacing[20], borderWidth: Spacing[2], borderColor: Colors.ABM_DARK_BLUE }}>
                             {QUESTIONNAIRE_OPTION.map((data, index) => {
                                 return (
                                     <HStack bottom={Spacing[6]}>

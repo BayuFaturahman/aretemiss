@@ -80,7 +80,7 @@ const CultureMeasurementIntroduction: FC<StackScreenProps<NavigatorParamList, "c
 
         useEffect(() => {
             // setListSectionData(CM_SECTION_MOCK_DATA)
-            setListSectionData(cultureMeasurementStore.cmImplementationSection)
+            setListSectionData(cultureMeasurementStore.cmSections)
         }, [])
 
         const renderQuesitonOptions = (data, index) => {
