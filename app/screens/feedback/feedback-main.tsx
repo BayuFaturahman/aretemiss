@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useReducer, useState, useEffect } from "react"
-import { ActivityIndicator, FlatList, ImageBackground, RefreshControl, SafeAreaView, StyleSheet, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, FlatList, ImageBackground, KeyboardAvoidingView, RefreshControl, SafeAreaView, StyleSheet, TouchableOpacity, View } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Text, BackNavigation, Button } from "@components"
@@ -8,6 +8,7 @@ import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
 import { Colors, Layout, Spacing } from "@styles"
 import moment from "moment"
+import { useIsFocused } from "@react-navigation/native";
 
 import { useStores } from "../../bootstrap/context.boostrap"
 
@@ -24,6 +25,7 @@ import { IconClose } from "@assets/svgs"
 import { spacing } from "@theme/spacing"
 import Spinner from 'react-native-loading-spinner-overlay';
 import { EmptyList } from "./components/empty-list"
+
 
 const MOCK_EXISTING_COACHEE: ExistingCoacheeModel[] = [
   {
@@ -129,6 +131,7 @@ const MOCK_LIST_REQUEST_FEEDBACK: RequestFeedbackUserModel[] = [
 const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
   observer(({ navigation }) => {
 
+    const isFocused = useIsFocused();
     const [existingCoacheeData, setExistingCoacheeData] = useState<Array<ExistingCoacheeModel>>([])
     const [listFeedbackUser, setListFeedbackUser] = useState<Array<FeedbackUserDetailModel>>([])
 
@@ -166,9 +169,12 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
 
     const toggleModal = (value: boolean) => {
       setModalVisible(value)
-      if (!value) {
+      if (value === false) {
         resetSelectedIndicator()
         setModalType("")
+        firstLoadExistingCoachee()
+        firstLoadListRequestFeedbackUser()
+
       }
     }
 
@@ -179,7 +185,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
     }
 
     const requestFeedbackToCoachee = async () => {
-      console.log('selectedPreviousFeedbackUser ', selectedExistingCoachee)
+      console.log('selectedPreviousFeedbackUser ')
       await feedbackStore.requestFeedbackUser(selectedExistingCoachee)
       firstLoadExistingCoachee()
     }
@@ -341,10 +347,12 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       setSelectedExistingCoachee("")
     }
 
-    const goToFeedbackDetail = (seledtecFR: string = '', isFeedbackRequest: boolean = false) => {
+    const goToFeedbackDetail = (seledtecFR: string = '', coachIdData: string = '', isFeedbackRequest: boolean = false) => {
       setSelectedFeedbackRequest('')
+      forceUpdate()
       navigation.navigate("feedbackDetail", {
         id: isFeedbackRequest ? seledtecFR : selectedPreviousFeedbackUserByCoachee,
+        coachId: coachIdData,
         isFeedbackRequest: isFeedbackRequest
       })
     }
@@ -355,15 +363,15 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
       goToFeedbackDetail()
     }
 
-    const openFillFeedbackPage = () => {
-      goToFeedbackDetail(selectedFeedbackRequest, true)
+    const openFillFeedbackPage = (coachId: string) => {
+      goToFeedbackDetail(selectedFeedbackRequest, coachId, true)
       // console.log('openFillFeedbackPage')
     }
 
     useEffect(() => {
       firstLoadExistingCoachee()
       firstLoadListRequestFeedbackUser()
-    }, [])
+    }, [isFocused])
 
     const renderExistingCoachee = () => {
       return (
@@ -431,7 +439,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
                     index={index}
                     selectedId={selectedFeedbackRequest}
                     onPressActivity={holdFeedbackRequest}
-                    onPressFillFeedback={openFillFeedbackPage}
+                    onPressFillFeedback={() => openFillFeedbackPage(item.coach_id)}
                   />
                 </TouchableOpacity>
               )}
@@ -548,7 +556,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
               <Spacer />
               <FlatList
                 refreshControl={
-                  <RefreshControl refreshing={false}
+                  <RefreshControl refreshing={true}
                     onRefresh={onRefreshFeedbackUserByCoachee} />
                 }
                 scrollEnabled={true}
@@ -609,53 +617,57 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
     }
 
     return (
-      <VStack
-        testID="feedback"
-        style={styles.bg}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={Layout.flex}
       >
-        <SafeAreaView style={Layout.flex}>
-          <VStack style={{ backgroundColor: Colors.ABM_BG_BLUE }}>
-            <ImageBackground source={images.feedbackBgPattern} style={{ height: '100%' }} resizeMode={"cover"}>
-              <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
-              <VStack top={Spacing[0]} horizontal={Spacing[24]} bottom={Spacing[12]}>
-                <Text type={"header"} text="Feedback" />
-                <Spacer height={Spacing[24]} />
-                <Text type={"body"} style={{ textAlign: "center" }}>
-                  <Text type={"body-bold"}>Lihat dan minta feedback </Text>
-                  kepada coachee-mu. Coachee yang muncul di sini hanyalah coachee
-                  <Text type={"body-bold"}> yang sudah pernah kamu tandai </Text>
-                  di coaching journal-mu sebelumnya. Kamu juga dapat
-                  <Text type={"body-bold"}> memberikan feedback </Text>
-                  kepada coach-mu di sini.
-                </Text>
-                <Spacer height={Spacing[32]} />
-                <VStack top={Spacing[8]} horizontal={Spacing[12]} bottom={Spacing[12]}>
-                  {renderExistingCoachee()}
-                </VStack>
-                <VStack top={Spacing[8]} horizontal={Spacing[12]} bottom={Spacing[12]}>
-                  {renderFeedbackRequests()}
-                  <Spacer height={Spacing[24]} />
-                </VStack>
-              </VStack>
-            </ImageBackground>
-            <Spacer height={Spacing[24]} />
-          </VStack>
-        </SafeAreaView>
-
-
-        <Modal
-          onClosed={() => toggleModal(false)}
-          isOpen={isModalVisible}
-          style={{
-            height: "50%",
-            width: dimensions.screenWidth - Spacing[24],
-            backgroundColor: "rgba(52, 52, 52, 0)",
-          }}
-
-          onRequestClose={() => toggleModal(false)}
+        <VStack
+          testID="feedback"
+          style={styles.bg}
         >
-          <View style={{ flex: 1, justifyContent: "center" }}>
-            {/* <VStack
+          <SafeAreaView style={Layout.flex}>
+            <VStack style={{ backgroundColor: Colors.ABM_BG_BLUE }}>
+              <ImageBackground source={images.feedbackBgPattern} style={{ height: '100%' }} resizeMode={"cover"}>
+                <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
+                <VStack top={Spacing[0]} horizontal={Spacing[24]} bottom={Spacing[12]}>
+                  <Text type={"header"} text="Feedback" />
+                  <Spacer height={Spacing[24]} />
+                  <Text type={"body"} style={{ textAlign: "center" }}>
+                    <Text type={"body-bold"}>Lihat dan minta feedback </Text>
+                    kepada coachee-mu. Coachee yang muncul di sini hanyalah coachee
+                    <Text type={"body-bold"}> yang sudah pernah kamu tandai </Text>
+                    di coaching journal-mu sebelumnya. Kamu juga dapat
+                    <Text type={"body-bold"}> memberikan feedback </Text>
+                    kepada coach-mu di sini.
+                  </Text>
+                  <Spacer height={Spacing[32]} />
+                  <VStack top={Spacing[8]} horizontal={Spacing[12]} bottom={Spacing[12]}>
+                    {renderExistingCoachee()}
+                  </VStack>
+                  <VStack top={Spacing[8]} horizontal={Spacing[12]} bottom={Spacing[12]}>
+                    {renderFeedbackRequests()}
+                    <Spacer height={Spacing[24]} />
+                  </VStack>
+                </VStack>
+              </ImageBackground>
+              <Spacer height={Spacing[24]} />
+            </VStack>
+          </SafeAreaView>
+
+
+          <Modal
+            onClosed={() => toggleModal(false)}
+            isOpen={isModalVisible}
+            style={{
+              height: "50%",
+              width: dimensions.screenWidth - Spacing[24],
+              backgroundColor: "rgba(52, 52, 52, 0)",
+            }}
+
+            onRequestClose={() => toggleModal(false)}
+          >
+            <View style={{ flex: 1, justifyContent: "center" }}>
+              {/* <VStack
               style={{
                 backgroundColor: Colors.ORANGE100,
                 borderRadius: Spacing[48],
@@ -672,11 +684,12 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
               </VStack>
               {modalType === 'notification' ? null : renderPreviousFeedbackDatesModal()}
             </VStack> */}
-            {modalType === 'notification' ? renderNotificationModal() : renderFeedbackDatesModal()}
-          </View>
-        </Modal>
+              {modalType === 'notification' ? renderNotificationModal() : renderFeedbackDatesModal()}
+            </View>
+          </Modal>
 
-      </VStack>
+        </VStack>
+      </KeyboardAvoidingView>
     )
   })
 

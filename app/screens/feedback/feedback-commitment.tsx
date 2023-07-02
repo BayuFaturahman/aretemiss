@@ -1,5 +1,5 @@
 import React, { FC, useReducer, useState, useEffect, useCallback } from "react"
-import { SafeAreaView, StyleSheet, View } from "react-native"
+import { KeyboardAvoidingView, SafeAreaView, StyleSheet, View } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Text, BackNavigation, Button, TextField } from "@components"
@@ -193,123 +193,128 @@ const FeedbackCommitment: FC<StackScreenProps<NavigatorParamList, "feedbackCommi
         }, [feedbackStore.errorCode])
 
         return (
-            <VStack
-                testID="feedbackCommitment"
-                style={styles.bg}
+            <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={Layout.flex}
             >
-                <SafeAreaView style={Layout.flex}>
-                    <VStack style={{ backgroundColor: Colors.WHITE }}>
-                        <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
-                        <VStack top={Spacing[0]} horizontal={Spacing[24]} bottom={Spacing[12]}>
-                            <Text type={"header"} text="Commitment for Improvement." />
-
-
-                            {/* <Spacer height={Spacing[32]} /> */}
-                            <VStack top={Spacing[8]} horizontal={Spacing[0]} bottom={Spacing[12]}>
-
-                                <Formik initialValues={feedbackCommitmentInitialForm} onSubmit={submitFeedbackCommitment}>
-                                    {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => (
-                                        <VStack top={Spacing[8]} horizontal={Spacing[0]} bottom={Spacing[12]} style={[Layout.heightFull, { justifyContent: 'space-between' }]}>
-                                            <VStack top={Spacing[12]}>
-                                                <Text type={"body"} style={{ textAlign: "center" }}>
-                                                    <Text type={"body-bold"}>Isi kolom dibawah ini dengan
-                                                        <Text type={"body-bold"} style={{ color: Colors.ABM_LIGHT_BLUE }}> pernyataan komitmen </Text>
-                                                        agar kamu akan terus berkembang kedepannya.</Text>
-                                                </Text>
-
-                                                {isCommitmentError &&
-                                                    <>
-                                                        <Spacer height={Spacing[12]} />
-                                                        <Text type={"warning"} style={{ textAlign: "center" }}>
-                                                            Ups! Sepertinya ada kolom yang belum diisi! Silahkan dicek kembali dan isi semua kolom yang tersedia!
-                                                        </Text>
-                                                    </>
-                                                }
-
-                                                <Spacer height={Spacing[12]} />
-                                                <Text type={"body"} style={{ textAlign: "center" }}>
-                                                    <Text type={"label"}>Apa saja yang saya lakukan untuk memperbaiki dan meningkatkankan performa saya dari
-                                                        <Text type={"label"} style={{ color: Colors.ABM_LIGHT_BLUE }}> hasil feedback sebelumnya </Text>
-                                                        ?</Text>
-                                                </Text>
-                                                <TextField
-                                                    value={values.commitment}
-                                                    style={{ paddingTop: 0, textAlign: "left" }}
-                                                    inputStyle={isCommitmentEmpty ?
-                                                        (isCommitmentError ? { minHeight: Spacing[144], textAlign: 'left', paddingLeft: Spacing[12], borderColor: Colors.MAIN_RED } :
-                                                            { minHeight: Spacing[144], textAlign: 'left', paddingLeft: Spacing[12], borderColor: Colors.ABM_DARK_BLUE }) :
-                                                        { minHeight: Spacing[144], textAlign: 'left', paddingLeft: Spacing[12], borderColor: Colors.ABM_DARK_BLUE, backgroundColor: Colors.ABM_BG_BLUE }}
-                                                    isRequired={true}
-                                                    secureTextEntry={false}
-                                                    isTextArea={true}
-                                                    onChangeText={handleChange("commitment")}
-                                                    isError={isCommitmentError}
-                                                    charCounter={true}
-                                                    maxChar={2500}
-                                                    editable={isCommitmentEmpty}
-                                                />
-                                            </VStack>
-                                            {isCommitmentEmpty &&
-                                                <HStack>
-                                                    <Spacer />
-                                                    <Button
-                                                        type={"primary-dark"}
-                                                        text={"Simpan Komitmen"}
-                                                        style={{ borderRadius: Spacing[10], paddingHorizontal: Spacing[12], paddingVertical: Spacing[14] }}
-                                                        textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
-                                                        onPress={handleSubmit}
-                                                    />
-                                                    <Spacer />
-                                                </HStack>
-                                            }
-                                            <Spacer height={Spacing[32]} />
-                                        </VStack>
-                                    )}
-                                </Formik>
-                            </VStack>
-
-
-                        </VStack>
-
-                        <Spacer height={Spacing[24]} />
-
-                    </VStack>
-
-                </SafeAreaView>
-                <Spinner visible={initialLoading || feedbackStore.isLoading} textContent={"Memuat..."} />
-
-                <Modal
-                    onClosed={() => toggleModal(false)}
-                    isOpen={isModalVisible}
-                    style={{
-                        height: "50%",
-                        width: dimensions.screenWidth - Spacing[24],
-                        backgroundColor: "rgba(52, 52, 52, 0)",
-                    }}
-
-                    onRequestClose={() => toggleModal(false)}
+                <VStack
+                    testID="feedbackCommitment"
+                    style={styles.bg}
                 >
-                    <View style={{ flex: 1, justifyContent: "center" }}>
-                        <VStack
-                            style={{
-                                backgroundColor: Colors.WHITE,
-                                borderRadius: Spacing[48],
-                                minHeight: Spacing[256],
-                                alignItems: "center",
-                                justifyContent: "center",
+                    <SafeAreaView style={Layout.flex}>
+                        <VStack style={{ backgroundColor: Colors.WHITE }}>
+                            <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
+                            <VStack top={Spacing[0]} horizontal={Spacing[24]} bottom={Spacing[12]}>
+                                <Text type={"header"} text="Commitment for Improvement." />
 
-                            }}
-                            horizontal={Spacing[24]}
-                            vertical={Spacing[24]}
-                        >
-                            <VStack horizontal={Spacing[24]} top={Spacing[12]} style={[Layout.widthFull, { justifyContent: "center" }]}>
-                                {renderNotificationModal()}
+
+                                {/* <Spacer height={Spacing[32]} /> */}
+                                <VStack top={Spacing[8]} horizontal={Spacing[0]} bottom={Spacing[12]}>
+
+                                    <Formik initialValues={feedbackCommitmentInitialForm} onSubmit={submitFeedbackCommitment}>
+                                        {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => (
+                                            <VStack top={Spacing[8]} horizontal={Spacing[0]} bottom={Spacing[12]} style={[Layout.heightFull, { justifyContent: 'space-between' }]}>
+                                                <VStack top={Spacing[12]}>
+                                                    <Text type={"body"} style={{ textAlign: "center" }}>
+                                                        <Text type={"body-bold"}>Isi kolom dibawah ini dengan
+                                                            <Text type={"body-bold"} style={{ color: Colors.ABM_LIGHT_BLUE }}> pernyataan komitmen </Text>
+                                                            agar kamu akan terus berkembang kedepannya.</Text>
+                                                    </Text>
+
+                                                    {isCommitmentError &&
+                                                        <>
+                                                            <Spacer height={Spacing[12]} />
+                                                            <Text type={"warning"} style={{ textAlign: "center" }}>
+                                                                Ups! Sepertinya ada kolom yang belum diisi! Silahkan dicek kembali dan isi semua kolom yang tersedia!
+                                                            </Text>
+                                                        </>
+                                                    }
+
+                                                    <Spacer height={Spacing[12]} />
+                                                    <Text type={"body"} style={{ textAlign: "center" }}>
+                                                        <Text type={"label"}>Apa saja yang saya lakukan untuk memperbaiki dan meningkatkankan performa saya dari
+                                                            <Text type={"label"} style={{ color: Colors.ABM_LIGHT_BLUE }}> hasil feedback sebelumnya </Text>
+                                                            ?</Text>
+                                                    </Text>
+                                                    <TextField
+                                                        value={values.commitment}
+                                                        style={{ paddingTop: 0, textAlign: "left" }}
+                                                        inputStyle={isCommitmentEmpty ?
+                                                            (isCommitmentError ? { minHeight: Spacing[144], textAlign: 'left', paddingLeft: Spacing[12], borderColor: Colors.MAIN_RED } :
+                                                                { minHeight: Spacing[144], textAlign: 'left', paddingLeft: Spacing[12], borderColor: Colors.ABM_DARK_BLUE }) :
+                                                            { minHeight: Spacing[144], textAlign: 'left', paddingLeft: Spacing[12], borderColor: Colors.ABM_DARK_BLUE, backgroundColor: Colors.ABM_BG_BLUE }}
+                                                        isRequired={true}
+                                                        secureTextEntry={false}
+                                                        isTextArea={true}
+                                                        onChangeText={handleChange("commitment")}
+                                                        isError={isCommitmentError}
+                                                        charCounter={true}
+                                                        maxChar={2500}
+                                                        editable={isCommitmentEmpty}
+                                                    />
+                                                </VStack>
+                                                {isCommitmentEmpty &&
+                                                    <HStack>
+                                                        <Spacer />
+                                                        <Button
+                                                            type={"primary-dark"}
+                                                            text={"Simpan Komitmen"}
+                                                            style={{ borderRadius: Spacing[10], paddingHorizontal: Spacing[12], paddingVertical: Spacing[14] }}
+                                                            textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
+                                                            onPress={handleSubmit}
+                                                        />
+                                                        <Spacer />
+                                                    </HStack>
+                                                }
+                                                <Spacer height={Spacing[32]} />
+                                            </VStack>
+                                        )}
+                                    </Formik>
+                                </VStack>
+
+
                             </VStack>
-                        </VStack>
-                    </View>
-                </Modal>
 
-            </VStack>
+                            <Spacer height={Spacing[24]} />
+
+                        </VStack>
+
+                    </SafeAreaView>
+                    <Spinner visible={initialLoading || feedbackStore.isLoading} textContent={"Memuat..."} />
+
+                    <Modal
+                        onClosed={() => toggleModal(false)}
+                        isOpen={isModalVisible}
+                        style={{
+                            height: "50%",
+                            width: dimensions.screenWidth - Spacing[24],
+                            backgroundColor: "rgba(52, 52, 52, 0)",
+                        }}
+
+                        onRequestClose={() => toggleModal(false)}
+                    >
+                        <View style={{ flex: 1, justifyContent: "center" }}>
+                            <VStack
+                                style={{
+                                    backgroundColor: Colors.WHITE,
+                                    borderRadius: Spacing[48],
+                                    minHeight: Spacing[256],
+                                    alignItems: "center",
+                                    justifyContent: "center",
+
+                                }}
+                                horizontal={Spacing[24]}
+                                vertical={Spacing[24]}
+                            >
+                                <VStack horizontal={Spacing[24]} top={Spacing[12]} style={[Layout.widthFull, { justifyContent: "center" }]}>
+                                    {renderNotificationModal()}
+                                </VStack>
+                            </VStack>
+                        </View>
+                    </Modal>
+
+                </VStack>
+            </KeyboardAvoidingView>
         )
     })
 

@@ -1,14 +1,17 @@
 import { GeneralApiProblem } from "../api-problem"
 
-export type NotificationType = "request_feedback" | "submitted_feedback" | "submitted_comment" | "reaction_feed"
+export type NotificationType = "request_feedback" | "submitted_feedback" | "submitted_comment" | "reaction_feed" | "submited_feedback_user" | "request_feedback_user"
 
 export type NotificationItemModel = {
   "notification_id": string;
   "notification_content": string;
   "notification_type": NotificationType
   "notification_data": {
-    "journal_id": string;
+    "journal_id": string
     "feed_id": string
+    "fu_id": string
+    "rfu_id": string
+    "coach_id": string
   },
   "notification_created_at": string;
   "notification_updated_at": string;

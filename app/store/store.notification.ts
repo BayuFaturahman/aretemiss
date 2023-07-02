@@ -14,6 +14,9 @@ export type NotificationItem = {
   "data": {
     "journalId": string;
     "feedId" : string;
+    "fu_id" : string;
+    "rfu_id" : string;
+    "coach_id" : string;
   },
   "createdAt": string;
   "updatedAt": string;
@@ -73,7 +76,7 @@ export default class NotificationStore {
   }
 
   getNotificationsSuccess(data: NotificationItemModel[]) {
-    console.log("getNotificationsSuccess data", data)
+    console.log("getNotificationsSuccess data", JSON.stringify(data))
     const newNotification = []
     data.forEach(item => {
       newNotification.push({
@@ -82,7 +85,10 @@ export default class NotificationStore {
         type: item.notification_type,
         data: {
           journalId: item.notification_data.journal_id,
-          feedId: item.notification_data.feed_id
+          feedId: item.notification_data.feed_id,
+          fu_id: item.notification_data.fu_id,
+          rfu_id: item.notification_data.rfu_id,
+          coach_id: item.notification_data.coach_id
         },
         createdAt: item.notification_created_at,
         updatedAt: item.notification_updated_at,
@@ -96,7 +102,7 @@ export default class NotificationStore {
       ...this.notificationsList,
       ...(newNotification ?? [])
     ]
-    console.log("list notifications data: ", this.notificationsList)
+    console.log("list notifications data: ", JSON.stringify(this.notificationsList))
   }
 
   clearListNotifications() {
