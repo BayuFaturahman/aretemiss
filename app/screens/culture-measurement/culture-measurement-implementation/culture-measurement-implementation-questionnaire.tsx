@@ -179,7 +179,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                                 justifyContent: 'center'
                             }} >
                                 <HStack>
-                                    <Spacer /><Text type="body" text={(indexQ + 1).toString()} style={{ fontSize: Spacing[12], color: Colors[dataQ.fontColor] }} /><Spacer />
+                                    <Spacer /><Text type="body" text={(indexQ + 1).toString()} style={{ fontSize: Spacing[12], color: data.point === indexQ + 1 ? Colors[dataQ.fontColor] : Colors.WHITE }} /><Spacer />
                                 </HStack>
                             </View>
                             <Text type={"body"} style={{ fontSize: Spacing[12] }}>{dataQ.text}</Text>
@@ -401,14 +401,17 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                                     <View style={[{ height: Spacing[6], backgroundColor: Colors.ABM_YELLOW }, Layout.widthFull]}></View>
                                     <Spacer height={Spacing[8]} />
 
-                                    {isError && <Text
-                                        type={"warning-not-bold"}
-                                        style={{
-                                            textAlign: 'center',
-                                            marginTop: Spacing[4],
-                                            color: Colors.MAIN_RED
-                                        }}
-                                    >Ups! Sepertinya ada kolom yang belum diisi! Silahkan dicek kembali dan isi semua kolom yang tersedia!</Text>
+                                    {isError &&
+                                        <><Text
+                                            type={"warning-not-bold"}
+                                            style={{
+                                                textAlign: 'center',
+                                                marginTop: Spacing[4],
+                                                color: Colors.MAIN_RED
+                                            }}
+                                        >Ups! Sepertinya ada kolom yang belum diisi! Silahkan dicek kembali dan isi semua kolom yang tersedia!</Text>
+                                            <Spacer height={Spacing[12]} />
+                                        </>
                                     }
 
                                     {/* start questionaire */}

@@ -129,7 +129,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                             justifyContent: 'center'
                         }} >
                             <HStack>
-                                <Spacer /><Text type="body" text={(index + 1).toString()} style={{ fontSize: Spacing[12], color: 'BLACK' }} /><Spacer />
+                                <Spacer /><Text type="body" text={(index + 1).toString()} style={{ fontSize: Spacing[12], color: listQuestionnaire[0].point === index + 1 ? Colors.BLACK : Colors.WHITE }} /><Spacer />
                             </HStack>
                         </View>
                         <Text type={"body"} style={{ fontSize: Spacing[12] }}>{data.text}</Text>
