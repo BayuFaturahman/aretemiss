@@ -1,8 +1,8 @@
 import React, { FC, useCallback, useEffect, useReducer, useState, useRef } from "react"
-import { ImageBackground, KeyboardAvoidingView, SafeAreaView, ScrollView, StyleSheet, View } from "react-native"
+import { KeyboardAvoidingView, SafeAreaView, ScrollView, StyleSheet, View } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
-import { Text, BackNavigation, Button } from "@components"
+import { Text, Button } from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
 import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
@@ -11,23 +11,21 @@ import { Colors, Layout, Spacing } from "@styles"
 import { useStores } from "../../../bootstrap/context.boostrap"
 
 import { dimensions } from "@config/platform.config"
-import { images } from "@assets/images";
+import { debounce } from "lodash"
 
 import Spinner from "react-native-loading-spinner-overlay"
 import { ProgressBar } from "react-native-paper"
-import moment from "moment"
 import { TouchableOpacity } from "react-native-gesture-handler"
 
 import { CMCreateAnswerModel, CMSectionModel, CMUpdateAnswerModel, QuestionnaireModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
-import { CM_SECTION_EMPTY, CM_SECTION_MOCK_DATA, QUESTIONNAIRE_EXAMPLE, QUESTIONNAIRE_OPTION } from "../culture-measurement.type"
+import { CM_SECTION_EMPTY, QUESTIONNAIRE_EXAMPLE, QUESTIONNAIRE_OPTION } from "../culture-measurement.type"
 import { ModalComponent } from "../component/cm-modal"
-// import { EmptyList } from "./components/empty-list"
 
 const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, "cultureMeasurementImplementationQuestionnaire">> =
     observer(({ navigation, route }) => {
 
         const [, forceUpdate] = useReducer((x) => x + 1, 0)
-        const { cmoId, isToCreate, totalPage, cmTakerId } = route.params
+        const { cmoId, isToCreate, totalPage, cmTakerId, goToPage } = route.params
         const { cultureMeasurementStore, mainStore } = useStores()
         const scrollRef = useRef();
 
@@ -61,6 +59,8 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
         }
 
         const goBack = () => {
+            setIsError(false)
+
             if (currPage > 1) {
                 if (currPage === totalPage - 1) {
                     setSubmitBtnText('Selanjutnya')
@@ -101,6 +101,21 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
             });
         }
 
+        const loadGetAnswerData = async (cmTakerId: string) => {
+            // console.log(`loadGetAnswerData, ${cmTakerId} `)
+            await cultureMeasurementStore.getCMAnswerById(cmTakerId)
+            setListSectionData(cultureMeasurementStore.cmAnswerData.temp_data)
+            // console.log(`------ cultureMeasurementStore.cmAnswerData.temp_data: ${JSON.stringify(cultureMeasurementStore.cmAnswerData.temp_data)}`)
+        }
+
+        const firstLoadGetAnswerData = debounce(async () => {
+            console.log(`firstLoadGetAnswerData`)
+            await loadGetAnswerData(cmTakerId)
+            forceUpdate()
+        }, 500)
+
+
+
         const createCMAnswer = useCallback(async (data: CMCreateAnswerModel) => {
             // console.log(`create answer ${JSON.stringify(data)}`)
             await cultureMeasurementStore.createCMAnswer(data)
@@ -140,8 +155,17 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
 
         useEffect(() => {
             if (listSectionData?.length > 0) {
-                setCurrSectionNo(1)
-                extractSection(1)
+                if (isToCreate && cmoId) {
+                    setCurrSectionNo(1)
+                    extractSection(1)
+                } else if (!isToCreate && cmTakerId) {
+                    console.log(`goToPage: ${goToPage}`)
+                    let tempGoToPage = goToPage - 1
+                    extractSection(tempGoToPage)
+                    setCurrSectionNo(tempGoToPage)
+                    setCurrPage(tempGoToPage)
+                    setCurrSectionNo(tempGoToPage)
+                }
             }
         }, [listSectionData])
 
@@ -150,7 +174,9 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
             if (isToCreate && cmoId) {
                 setListSectionData(cultureMeasurementStore.cmSections)
             } else if (!isToCreate && cmTakerId) {
-                setListSectionData(cultureMeasurementStore.cmAnswerData.temp_data)
+                firstLoadGetAnswerData()
+
+
             }
 
             setIsNextClicked(false)

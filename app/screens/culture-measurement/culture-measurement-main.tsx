@@ -61,7 +61,9 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
             // if penilaian pelaksanaan budaya juara
             else if (type === 2) {
                 if (tempCMTaker !== null && tempCMTaker !== undefined) {
-                    goToCultureMeasurementImplementation(cmoId, false, tempCMTaker.cm_taker_id)
+                    let tempLastFilledSection = tempCMTaker.cm_taker_last_filled
+                    let tempTotalSection = tempCMTaker.cm_taker_total_section
+                    goToCultureMeasurementImplementationQuestionnaire(cmoId, false, tempCMTaker.cm_taker_id, tempLastFilledSection > 1 ? tempLastFilledSection : 2, tempTotalSection)
                 } else {
                     goToCultureMeasurementImplementation(cmoId, true)
                 }
@@ -72,7 +74,17 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
             navigation.navigate("cultureMeasurementImplementation", {
                 cmoId: cmoId,
                 isToCreate: isNew,
-                cmTakerId: cmTakerId
+                cmTakerId: cmTakerId,
+            })
+        }
+
+        const goToCultureMeasurementImplementationQuestionnaire = (cmoId: string, isNew: boolean = true, cmTakerId: string = '', page: number = 1, totalPage: number = 1) => {
+            navigation.navigate("cultureMeasurementImplementationQuestionnaire", {
+                cmoId: cmoId,
+                isToCreate: isNew,
+                totalPage: totalPage,
+                cmTakerId: cmTakerId,
+                goToPage: page
             })
         }
 
@@ -132,7 +144,7 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
 
                         //get submitted takers
                         let tempTotalSubmittedTakersBudayaJuara = tempBudayaJuaraData[0].culture_measurement_takers.filter(item => item.cm_taker_status === 'submitted') //get submitted taker
-                        if (tempTotalSubmittedTakersBudayaJuara.length>0) {
+                        if (tempTotalSubmittedTakersBudayaJuara.length > 0) {
 
                             //to enable indicator for infrastructure culture measurement
                             data.is_enable = true

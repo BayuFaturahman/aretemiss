@@ -68,7 +68,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
             // console.log(`loadGetAnswerData, ${cmTakerId} `)
             await cultureMeasurementStore.getCMAnswerById(cmTakerId)
             setListSectionData(cultureMeasurementStore.cmAnswerData.temp_data)
-            // console.log(`------ cultureMeasurementStore.cmImplementationSection: ${JSON.stringify(cultureMeasurementStore.cmImplementationSection)}`)
+            // console.log(`------ cultureMeasurementStore.cmAnswerData.temp_data: ${JSON.stringify(cultureMeasurementStore.cmAnswerData.temp_data)}`)
         }
 
         const firstLoadGetAnswerData = debounce(async () => {
@@ -95,9 +95,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
         }
 
         useEffect(() => {
-            // console.log(`listSectionData: ${JSON.stringify(listSectionData)}`)
             if (listSectionData?.length > 0) {
-                // let tempListSectionQuestionnaire = listSectionData.filter(data => data.type === 'questionnaire')
                 setTotalPage(listSectionData.length)
                 extractDesc()
             }
