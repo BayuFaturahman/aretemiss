@@ -1,7 +1,7 @@
 import { ApiResponse } from "apisauce"
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
-import { CMCreateAnswerModel, CMUpdateAnswerModel, CreateAnswerResult, ErrorFormResponse, GetAllSectionResult, GetAnswerByIdResult, GetListPublishResult, UpdateAnswerResult } from "./culture-measurement-api.types";
+import { CMCreateAnswerModel, CMUpdateAnswerModel, CreateAnswerResult, ErrorFormResponse, GetAllSectionResult, GetAnswerByIdResult, GetListPublishResult, GetCmListUserResult, UpdateAnswerResult } from "./culture-measurement-api.types";
 
 export class CultureMeasurementApi {
   private api: Api
@@ -20,7 +20,7 @@ export class CultureMeasurementApi {
     try {
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.get(`/culture-measurement`)
-      // console.log('response detail', response.data)
+      console.log('response detail', response)
       if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
@@ -56,6 +56,42 @@ export class CultureMeasurementApi {
       }
 
       const res = response.data.data
+      return { kind: "ok", response: res }
+    } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data" }
+    }
+  }
+
+  async getCmMemberList(page: number, limit: number): Promise<GetCmListUserResult> {
+    console.log('getCmMemberList')
+    try {
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.get(`/user/list-user-culture-measurement}`,
+      {
+        limit: limit,
+        page: page
+      })
+
+      // console.log('response detail', response.data)
+      if (response.status === 400) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = {
+        message: response.data.message,
+        data: {
+          data: response.data.data,
+          totalPages: response.data.meta.total_pages,
+          totalItems: response.data.meta.total_items
+        }
+      }
       return { kind: "ok", response: res }
     } catch (e) {
       __DEV__ && console.tron.log(e.message)

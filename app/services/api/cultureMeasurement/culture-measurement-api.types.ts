@@ -51,6 +51,18 @@ export type CMSectionModel = {
   questionnaire: QuestionnaireModel[]
 }
 
+export type CMListUserModel = {
+  data: CMUserModel[]
+  totalPages: number
+  totalItems: number
+}
+
+export type CMUserModel = {
+  id: string
+  fullname: string
+  position: string
+}
+
 export type CMCreateAnswerModel = {
   cmo_id: string
   rated_user_id: string
@@ -94,6 +106,11 @@ export interface GetAnswerByIdResponse {
   data: CMGetAnswerModel
 }
 
+export interface GetCmListUserResponse {
+  message: string
+  data: CMListUserModel
+}
+
 export interface UpdateAnswerResponse {
   message: string
   data: CMUpdateAnswerModel
@@ -106,6 +123,7 @@ export interface ErrorFormResponse {
 
 export type GetListPublishResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListPublishResponse } | GeneralApiProblem
 export type GetAllSectionResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetAllSectionResponse } | GeneralApiProblem
+export type GetCmListUserResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetCmListUserResponse } | GeneralApiProblem
 export type CreateAnswerResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreateAnswerResponse } | GeneralApiProblem
 export type GetAnswerByIdResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetAnswerByIdResponse } | GeneralApiProblem
 export type UpdateAnswerResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: UpdateAnswerResponse } | GeneralApiProblem

@@ -291,7 +291,7 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
                                                             <Text type="body-bold" style={{ fontSize: Spacing[12], width: Spacing[128] }} >{data.cmoTitle}</Text>
                                                             <Spacer />
                                                             <Button type={data.isEnable ? "primary" : "negative"} text="Isi Kuisioner" style={{ paddingHorizontal: Spacing[8] }} textStyle={{ fontSize: Spacing[12] }}
-                                                                disabled={!data.isEnable} onPress={() => goToQuestionnaire(data.cmoId, index)} />
+                                                                disabled={!data.isEnable} onPress={() => goToQuestionnaire(data.cmoId, index)} />                                                                
                                                             {/* disabled={false} onPress={() => goToQuestionnaire(data.cmoId, index)} /> */}
                                                         </HStack>
                                                         {/* <Text type="body-bold" style={{ fontSize: Spacing[12], width: Spacing[128] }} >{

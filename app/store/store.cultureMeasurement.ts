@@ -5,8 +5,8 @@ import ServiceStore from "./store.service"
 import { Api } from "@services/api"
 import { ErrorFormResponse } from "@services/api/feed/feed-api.types"
 import { CultureMeasurementApi } from "@services/api/cultureMeasurement/culture-measurement-api"
-import { CMCreateAnswerModel, CMGetAnswerModel, CMPublishDataModel, CMSectionModel, CMUpdateAnswerModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
-import { CM_GET_ANSWER_EMPTY_DATA, CM_PUBLISH_EMPTY, CM_SECTION_EMPTY } from "@screens/culture-measurement/culture-measurement.type"
+import { CMCreateAnswerModel, CMGetAnswerModel, CMListUserModel, CMPublishDataModel, CMSectionModel, CMUpdateAnswerModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
+import { CM_GET_ANSWER_EMPTY_DATA, CM_LIST_USER_EMPTY, CM_PUBLISH_EMPTY, CM_SECTION_EMPTY } from "@screens/culture-measurement/culture-measurement.type"
 
 export default class CultureMeasurementStore {
     // #region PROPERTIES
@@ -26,6 +26,7 @@ export default class CultureMeasurementStore {
     cmPublishData: CMPublishDataModel
     cmSections: CMSectionModel[]
     cmAnswerData: CMGetAnswerModel
+    cmListUsersData: CMListUserModel
 
 
     constructor(api: Api) {
@@ -43,6 +44,7 @@ export default class CultureMeasurementStore {
         this.cmPublishData = CM_PUBLISH_EMPTY
         this.cmSections = [CM_SECTION_EMPTY]
         this.cmAnswerData = CM_GET_ANSWER_EMPTY_DATA
+        this.cmListUsersData = CM_LIST_USER_EMPTY
     }
 
     async getListPublish() {
@@ -84,6 +86,7 @@ export default class CultureMeasurementStore {
 
     async getAllSection(id: string) {
         this.isLoading = true
+        console.log(id);
 
         try {
             const result = await this.cmApi.getAllSection(id)
@@ -112,9 +115,46 @@ export default class CultureMeasurementStore {
         }
     }
 
+    async getCmMemberList(page = 1, limit = 10) {
+        this.isLoading = true
+
+        try {
+            const result = await this.cmApi.getCmMemberList(page, limit)
+            console.log('in store getCmMemberList')
+            // console.log(`result ${result}`)
+            if (result.kind === "ok") {
+                // console.log('result.response  ', JSON.stringify(result.response))
+                await this.getCmMemberListSucceed(result.response.data)
+            } else if (result.kind === 'form-error') {
+                console.log('getCmMemberList failed')
+                // console.log(result.response.errorCode)
+                this.cMFailed(result?.response?.errorCode)
+            } else if (result.kind === 'unauthorized') {
+                console.log('token expired getCmMemberList')
+                // console.log(result)
+                this.cMFailed(9)
+            } else {
+                // below code is used during development
+                // await this.getListPublishSucceed(GET_PUBLISH_MOCK_DATA.data)
+                __DEV__ && console.tron.log(result.kind)
+            }
+        } catch (e) {
+            console.log(e)
+        } finally {
+            this.isLoading = false
+        }
+    }
+
     getAllSectionSucceed(data: CMSectionModel[]) {
         console.log('getAllSectionSucceed')
         this.cmSections = data
+        this.isLoading = false
+        this.refreshData = true
+    }
+
+    getCmMemberListSucceed(data: CMListUserModel) {
+        console.log('getAllSectionSucceed')
+        this.cmListUsersData = data
         this.isLoading = false
         this.refreshData = true
     }

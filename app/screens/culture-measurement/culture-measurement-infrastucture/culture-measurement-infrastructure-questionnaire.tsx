@@ -358,7 +358,7 @@ const CultureMeasurementInfrastructureQuestionnaire: FC<StackScreenProps<Navigat
                 style={Layout.flex}
             >
                 <VStack
-                    testID="cultureMeasurementImplementation"
+                    testID="cultureMeasurementInfrastructure"
                     style={styles.bg}
                 >
                     <SafeAreaView style={Layout.flex}>

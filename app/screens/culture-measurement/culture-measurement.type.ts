@@ -1,4 +1,4 @@
-import { CMGetAnswerModel, CMPublishDataModel, CMSectionModel, QuestionnaireModel, cultureMeasurementObjectiveModel, cultureMeasurementTakers } from "@services/api/cultureMeasurement/culture-measurement-api.types"
+import { CMGetAnswerModel, CMListUserModel, CMUserModel, CMPublishDataModel, CMSectionModel, QuestionnaireModel, cultureMeasurementObjectiveModel, cultureMeasurementTakers } from "@services/api/cultureMeasurement/culture-measurement-api.types"
 
 export const CMObjectiveType = {
     BUDAYA_JUARA: 'Penilaian Infrastruktur Budaya Juara',
@@ -48,6 +48,12 @@ export const CM_SECTION_EMPTY: CMSectionModel = {
     description: '',
     type: '',
     questionnaire: []
+}
+
+export const CM_LIST_USER_EMPTY: CMListUserModel = {
+    data: [],
+    totalItems: 0,
+    totalPages: 0
 }
 
 
