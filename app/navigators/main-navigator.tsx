@@ -346,8 +346,7 @@ export type NavigatorParamList = {
     cmoId: string,
     isToCreate: boolean,
     totalPage: number,
-    cmTakerId: string,
-    goToPage?: number,
+    cmTakerId: string
   }
   cultureMeasurementInfrastructure: {
     cmoId: string,

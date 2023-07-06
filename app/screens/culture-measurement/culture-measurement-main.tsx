@@ -61,9 +61,8 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
             // if penilaian pelaksanaan budaya juara
             else if (type === 2) {
                 if (tempCMTaker !== null && tempCMTaker !== undefined) {
-                    let tempLastFilledSection = tempCMTaker.cm_taker_last_filled
                     let tempTotalSection = tempCMTaker.cm_taker_total_section
-                    goToCultureMeasurementImplementationQuestionnaire(cmoId, false, tempCMTaker.cm_taker_id, tempLastFilledSection > 1 ? tempLastFilledSection : 2, tempTotalSection)
+                    goToCultureMeasurementImplementationQuestionnaire(cmoId, false, tempCMTaker.cm_taker_id, tempTotalSection)
                 } else {
                     goToCultureMeasurementImplementation(cmoId, true)
                 }
@@ -78,13 +77,12 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
             })
         }
 
-        const goToCultureMeasurementImplementationQuestionnaire = (cmoId: string, isNew: boolean = true, cmTakerId: string = '', page: number = 1, totalPage: number = 1) => {
+        const goToCultureMeasurementImplementationQuestionnaire = (cmoId: string, isNew: boolean = true, cmTakerId: string = '', totalPage: number = 1) => {
             navigation.navigate("cultureMeasurementImplementationQuestionnaire", {
                 cmoId: cmoId,
                 isToCreate: isNew,
                 totalPage: totalPage,
                 cmTakerId: cmTakerId,
-                goToPage: page
             })
         }
 

@@ -165,8 +165,15 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                     setCurrSectionNo(1)
                     extractSection(1)
                 } else if (!isToCreate && cmTakerId) {
-                    console.log(`goToPage: ${goToPage}`)
-                    let tempGoToPage = goToPage - 1
+
+                    let tempGoToPage = 1
+                    for (let i = 0; i < listSectionData.length; i++) {
+                        let tempQues = listSectionData[i].questionnaire.filter(item => item.point === undefined)
+                        if (tempQues.length > 0) {
+                            tempGoToPage = i
+                            i = listSectionData.length
+                        }
+                    }
                     extractSection(tempGoToPage)
                     setCurrSectionNo(tempGoToPage)
                     setCurrPage(tempGoToPage)
