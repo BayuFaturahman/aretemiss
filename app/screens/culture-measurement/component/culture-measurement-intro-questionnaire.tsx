@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useReducer, useState } from "react"
-import { ImageBackground, SafeAreaView, ScrollView, StyleSheet, View } from "react-native"
+import { ImageBackground, SafeAreaView, ScrollView, StyleSheet, View, TouchableOpacity } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Text, BackNavigation, Button } from "@components"
@@ -16,7 +16,6 @@ import { images } from "@assets/images";
 import { ProgressBar } from "react-native-paper"
 import moment from "moment"
 import { CMSectionModel, QuestionnaireModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
-import { TouchableOpacity } from "react-native-gesture-handler"
 import { CM_SECTION_MOCK_DATA, QUESTIONNAIRE_EXAMPLE, QUESTIONNAIRE_OPTION } from "../culture-measurement.type"
 // import { EmptyList } from "./components/empty-list"
 

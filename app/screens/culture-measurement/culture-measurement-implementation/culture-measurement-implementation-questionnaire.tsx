@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useReducer, useState, useRef } from "react"
-import { KeyboardAvoidingView, SafeAreaView, ScrollView, StyleSheet, View } from "react-native"
+import { KeyboardAvoidingView, SafeAreaView, ScrollView, StyleSheet, View, TouchableOpacity } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Text, Button } from "@components"
@@ -15,7 +15,6 @@ import { debounce } from "lodash"
 
 import Spinner from "react-native-loading-spinner-overlay"
 import { ProgressBar } from "react-native-paper"
-import { TouchableOpacity } from "react-native-gesture-handler"
 
 import { CMCreateAnswerModel, CMSectionModel, CMUpdateAnswerModel, QuestionnaireModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
 import { CM_SECTION_EMPTY, QUESTIONNAIRE_EXAMPLE, QUESTIONNAIRE_OPTION } from "../culture-measurement.type"
@@ -128,10 +127,17 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
 
         const extractDesc = useCallback(() => {
             let tempDesc = currSectionData.description
-            tempDesc = tempDesc.replaceAll('<br>', '')
-            tempDesc = tempDesc.replaceAll('</p>', '')
+            // tempDesc = tempDesc.replaceAll('<br>', '')
+            // tempDesc = tempDesc.replaceAll('</p>', '')
 
-            let listTempDesc = tempDesc.split('<p>',)
+            let tempSplittedDesc = tempDesc.split('<br>')
+            let tempJoinedDesc = tempSplittedDesc.join('')
+
+            tempSplittedDesc = tempJoinedDesc.split('</p>')
+            tempJoinedDesc = tempSplittedDesc.join('')
+
+            let listTempDesc = tempJoinedDesc.split('<p>',)
+        
             setLisDescription(listTempDesc)
         }, [currSectionData, listDescription])
 
