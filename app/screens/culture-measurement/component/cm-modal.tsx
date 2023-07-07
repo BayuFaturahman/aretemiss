@@ -93,7 +93,7 @@ export const ModalComponent = ({ isModalVisible = true, isIconFromMood = true, m
                                             text={'Lanjutkan'}
                                             style={{ paddingVertical: Spacing[14], paddingHorizontal: Spacing[12], justifyContent: 'center', alignContent: 'center' }}
                                             textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
-                                            onPress={onClickModalBtn}
+                                            onPress={toggleModal}
                                         />
                                         <Spacer />
                                         <Button

@@ -61,7 +61,8 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
             // if penilaian pelaksanaan budaya juara
             else if (type === 2) {
                 if (tempCMTaker !== null && tempCMTaker !== undefined) {
-                    goToCultureMeasurementImplementation(cmoId, false, tempCMTaker.cm_taker_id)
+                    let tempTotalSection = tempCMTaker.cm_taker_total_section
+                    goToCultureMeasurementImplementationQuestionnaire(cmoId, false, tempCMTaker.cm_taker_id, tempTotalSection)
                 } else {
                     goToCultureMeasurementImplementation(cmoId, true)
                 }
@@ -72,7 +73,16 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
             navigation.navigate("cultureMeasurementImplementation", {
                 cmoId: cmoId,
                 isToCreate: isNew,
-                cmTakerId: cmTakerId
+                cmTakerId: cmTakerId,
+            })
+        }
+
+        const goToCultureMeasurementImplementationQuestionnaire = (cmoId: string, isNew: boolean = true, cmTakerId: string = '', totalPage: number = 1) => {
+            navigation.navigate("cultureMeasurementImplementationQuestionnaire", {
+                cmoId: cmoId,
+                isToCreate: isNew,
+                totalPage: totalPage,
+                cmTakerId: cmTakerId,
             })
         }
 
@@ -93,12 +103,26 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
         const extractData = () => {
             // start extracting description
             let tempDesc = publishData.description
-            tempDesc = tempDesc.replaceAll('<br>', '')
-            // tempDesc = tempDesc.replaceAll('<p>', 'new')
-            tempDesc = tempDesc.replaceAll('</p>', '')
-            tempDesc = tempDesc.replaceAll(descSeparator, `<p>${descSeparator}`)
+            // console.log(`tempDesc : ${JSON.stringify(tempDesc)}`)
 
-            let listTempDesc = tempDesc.split('<p>',)
+            let tempSplittedDesc = tempDesc.split('<br>')
+            let tempJoinedDesc = tempSplittedDesc.join('')
+            // console.log(`tempJoinedDesc: ${JSON.stringify(tempJoinedDesc)}`)
+
+            tempSplittedDesc = tempJoinedDesc.split('</p>')
+            tempJoinedDesc = tempSplittedDesc.join('')
+            // console.log(`tempJoinedDesc: ${JSON.stringify(tempJoinedDesc)}`)
+
+            tempSplittedDesc = tempJoinedDesc.split(`${descSeparator}`)
+            tempJoinedDesc = tempSplittedDesc.join(`<p>${descSeparator}`)
+            // console.log(`tempJoinedDesc: ${JSON.stringify(tempJoinedDesc)}`)
+
+            // tempDesc = tempDesc.replaceAll('<br>', '')
+            // // tempDesc = tempDesc.replaceAll('<p>', 'new')
+            // tempDesc = tempDesc.replaceAll('</p>', '')
+            // tempDesc = tempDesc.replaceAll(descSeparator, `<p>${descSeparator}`)
+
+            let listTempDesc = tempJoinedDesc.split('<p>',)
             setLisDescription(listTempDesc)
 
 
@@ -132,7 +156,7 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
 
                         //get submitted takers
                         let tempTotalSubmittedTakersBudayaJuara = tempBudayaJuaraData[0].culture_measurement_takers.filter(item => item.cm_taker_status === 'submitted') //get submitted taker
-                        if (tempTotalSubmittedTakersBudayaJuara.length>0) {
+                        if (tempTotalSubmittedTakersBudayaJuara.length > 0) {
 
                             //to enable indicator for infrastructure culture measurement
                             data.is_enable = true
@@ -169,7 +193,7 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
 
 
         useEffect(() => {
-            if (publishData) {
+            if (publishData && publishData.description !== '') {
                 extractData()
             }
         }, [publishData])
@@ -305,7 +329,7 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
                         </VStack>
                     </ScrollView >
                 </SafeAreaView >
-                <Spinner visible={cultureMeasurementStore.isLoading} textContent={"Memuat..."} />
+                <Spinner visible={cultureMeasurementStore.isLoading || listDescription.length === 0} textContent={"Memuat..."} />
             </VStack >
         )
     })
