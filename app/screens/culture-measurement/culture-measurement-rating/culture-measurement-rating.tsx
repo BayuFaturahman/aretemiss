@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useReducer, useState, useRef } from "react"
-import { ImageBackground, SafeAreaView, ScrollView, StyleSheet, View } from "react-native"
+import { SafeAreaView, ScrollView, StyleSheet, View, TouchableOpacity } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Text, Button, TextField, DropDownPicker, DropDownItem } from "@components"
@@ -12,20 +12,18 @@ import { Colors, Layout, Spacing } from "@styles"
 import { useStores } from "../../../bootstrap/context.boostrap"
 
 import { dimensions } from "@config/platform.config"
-import { images } from "@assets/images";
 
 import Spinner from "react-native-loading-spinner-overlay"
+import { Formik } from "formik"
+
 import { IOption } from "react-native-modal-selector"
 
 import { ProgressBar } from "react-native-paper"
 import moment from "moment"
 import { CMSectionModel, QuestionnaireModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
-import { TouchableOpacity } from "react-native-gesture-handler"
-import { CM_SECTION_MOCK_DATA, QUESTIONNAIRE_EXAMPLE, QUESTIONNAIRE_OPTION } from "../culture-measurement.type"
+import { QUESTIONNAIRE_EXAMPLE, QUESTIONNAIRE_OPTION } from "../culture-measurement.type"
 import { debounce } from "lodash"
 import { USER_POSITION } from "@screens/settings/change-user-position"
-
-// import { EmptyList } from "./components/empty-list"
 
 const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "cultureMeasurementRating">> =
     observer(({ navigation, route }) => {
@@ -46,32 +44,23 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
         // states for appraisal form
         const [date, setDate] = useState<string>('')
         const [fullName, setFullName] = useState<string>('')
-        const [userPositionData, setUserPositionData] = useState<string>('')
+        const [userPosition, setUserPosition] = useState<string>('')
         const [sn, setSn] = useState<string>('')
         const [structurePos, setStructurePos] = useState<string>('')
 
         const [teamList, setTeamList] = useState<DropDownItem[]>([])
         const [memberList, setMemberList] = useState<DropDownItem[]>([])
+        
+        const [editFullName, setEditFullname] = useState<boolean>(false)
+        const [myTeamValue, setMyTeamValue] = useState(mainStore.userProfile.team1_id? {"id": mainStore.userProfile.team1_id, "item": mainStore.userProfile.team1_name}:{})
+        const [teamMemberValue, setTeamMemberValue] = useState<string>()
+        const [cmMemberPagination, setCmMemberPagination] = useState<number>(1)
+        const [cmMemberLimit, setCmMemberLimit] = useState<number>(10)
 
-        const [fullNameEditable, setFullNameEditable] = useState<boolean>(false)
-        const [teamData, setTeamData] = useState(useState(mainStore.userProfile.team1_id? {"id": mainStore.userProfile.team1_id, "item": mainStore.userProfile.team1_name}:{}))
 
         const descSeparator = '{{type_answer}}';
         const positionSeparator = '{{user_position}}';
         const teamSeparator = '{{user_team}}';
-
-        const goBack = () => {
-            navigation.goBack()
-        }
-
-        const goToQuestionnaire = () => {
-            navigation.navigate("cultureMeasurementRatingQuestionnaire", {
-                cmoId: cmoId,
-                isToCreate: isToCreate,
-                totalPage: totalPage,
-                cmTakerId: cmTakerId
-            })
-        }
 
         const handleNextButton = () => {
             if (currPage === 3) {
@@ -89,27 +78,30 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
             }
         }
 
+        const goBack = () => {
+            navigation.goBack()
+        }
+
+        const goToQuestionnaire = () => {
+            navigation.navigate("cultureMeasurementRatingQuestionnaire", {
+                cmoId: cmoId,
+                isToCreate: isToCreate,
+                totalPage: totalPage,
+                cmTakerId: cmTakerId
+            })
+        }
+
         const goToChangePosition = () => navigation.navigate("changeUserPosition")
-
-        const toggleFullnameEditable = () => {
-            setFullNameEditable(!fullNameEditable)
-        }
-
-        const scrollUp = () => {
-            scrollRef?.current?.scrollTo({
-                y: 0,
-                animated: true,
-            });
-        }
 
         const getTeam = useCallback(async () => {
             await mainStore.getTeamList()
         }, [])
 
         const getMemberList = useCallback(async () => {
-            await cultureMeasurementStore.getCmMemberList(1, 10)
+            await cultureMeasurementStore.getCmMemberList(cmMemberPagination, cmMemberLimit)
         }, [])
 
+        // Fetch area / fungsi dropdown selection
         useEffect(() => {
             if (mainStore.teamResponse !== null) {
                 const itemsData: DropDownItem[] = mainStore.teamResponse.data.map((item, index) => {
@@ -122,9 +114,9 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
             }
           }, [mainStore.teamResponse])
 
+        // Fetch culturemeasurement people to-rate
         useEffect(() => {
             if (cultureMeasurementStore.cmListUsersData !== null) {
-                console.log(cultureMeasurementStore.cmListUsersData, 'memek');
                 const itemsData: DropDownItem[] = cultureMeasurementStore.cmListUsersData.data.map((item, index) => {
                     return {
                     item: item.fullname,
@@ -133,13 +125,12 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
                 })
                 setMemberList(itemsData)
             }
-        }, [mainStore.teamResponse])
+        }, [cultureMeasurementStore.cmListUsersData])
 
         const loadCMAllSectionData = async (cmoId: string) => {
             console.log('loadCMPublishData ')
             await cultureMeasurementStore.getAllSection(cmoId)
             setListSectionData(cultureMeasurementStore.cmSections)
-            // console.log(`------ cultureMeasurementStore.cmImplementationSection: ${JSON.stringify(cultureMeasurementStore.cmImplementationSection)}`)
         }
 
         const firstLoadCMAllSectionData = debounce(async () => {
@@ -150,10 +141,8 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
 
 
         const loadGetAnswerData = async (cmTakerId: string) => {
-            // console.log(`loadGetAnswerData, ${cmTakerId} `)
             await cultureMeasurementStore.getCMAnswerById(cmTakerId)
             setListSectionData(cultureMeasurementStore.cmAnswerData.temp_data)
-            // console.log(`------ cultureMeasurementStore.cmImplementationSection: ${JSON.stringify(cultureMeasurementStore.cmImplementationSection)}`)
         }
 
         const firstLoadGetAnswerData = debounce(async () => {
@@ -174,33 +163,32 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
             if (tempData.length > 0) {
                 tempCopyWriting = tempData[0]
                 let tempDesc = tempCopyWriting.description
-                tempDesc = tempDesc.replaceAll('<br>', '')
-                tempDesc = tempDesc.replaceAll('</p>', '')
-                tempDesc = tempDesc.replaceAll(descSeparator, `<p>${descSeparator}`)
-                tempDesc = tempDesc.replaceAll(positionSeparator, userPositionData)
-                tempDesc = tempDesc.replaceAll(teamSeparator, structurePos)
+                tempDesc = tempDesc.split('<br>').join('')
+                tempDesc = tempDesc.split('</p>').join('')
+                tempDesc = tempDesc.split(descSeparator).join(`<p>${descSeparator}`)
+                tempDesc = tempDesc.split(positionSeparator).join(userPosition)
+                tempDesc = tempDesc.split(teamSeparator).join(structurePos)
                 let listTempDesc = tempDesc.split('<p>',)
                 setListDescription(listTempDesc)
             }
         }
 
+        // Initial render hook
         useEffect(() => {
-            setUserPositionData(mainStore.userProfile.user_position ? USER_POSITION.filter((position) => position.id === mainStore.userProfile.user_position).length > 0 ? USER_POSITION.filter((position) => position.id === mainStore.userProfile.user_position)[0].item : '' : '')
-
-            setFullName(mainStore.userProfile.user_fullname)
-
-            getTeam()
-
-            getMemberList()
-
+            // Set initial Date
             setDate(moment().format('DD MMMM YYYY'))
-
+            // Set position
+            setUserPosition(mainStore.userProfile.user_position ? USER_POSITION.filter((position) => position.id === mainStore.userProfile.user_position).length > 0 ? USER_POSITION.filter((position) => position.id === mainStore.userProfile.user_position)[0].item : '' : '')
+            // Set fullname
+            setFullName(mainStore.userProfile.user_fullname)
+            // Fetch area / fungsi dropdown
+            getTeam()
+            // Fetch member to-rate drodown
+            getMemberList()
         }, [])
 
         useEffect(() => {
-            // console.log(`listSectionData: ${JSON.stringify(listSectionData)}`)
             if (listSectionData?.length > 0) {
-                // let tempListSectionQuestionnaire = listSectionData.filter(data => data.type === 'questionnaire')
                 setTotalPage(listSectionData.length)
                 extractDesc(currPage)
             }
@@ -210,7 +198,6 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
         useEffect(() => {
             if (isToCreate && cmoId) {
                 firstLoadCMAllSectionData()
-                // setListSectionData(CM_SECTION_MOCK_DATA)
             } else if (!isToCreate && cmTakerId) {
                 firstLoadGetAnswerData()
             }
@@ -232,7 +219,7 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
                     <TextField
                         label="Tanggal pengisian dimulai:"
                         value={date}
-                        isRequired={false}
+                        isRequired={true}
                         editable={false}
                         isError={isError}
                         secureTextEntry={false}
@@ -246,24 +233,24 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
                         changeButtonText="Edit"
                         onChangeText={(e, val) => setFullName(val)}
                         isRequired={false}
-                        editable={fullNameEditable}
+                        editable={editFullName}
                         isError={isError}
                         secureTextEntry={false}
                         inputStyle={{borderRadius: Spacing[12]}}
-                        onPressChangeButton={toggleFullnameEditable}
+                        onPressChangeButton={() => setEditFullname(!editFullName)}
                     />
 
                     <TextField
                         label="Posisi dalam Winning Team"
                         style={{ paddingTop: 0}}
-                        inputStyle={{textAlign: 'left', paddingLeft: Spacing[12], paddingVertical: Spacing[4]}}
+                        inputStyle={{textAlign: 'left', borderRadius: Spacing[12], paddingLeft: Spacing[12], paddingVertical: Spacing[4]}}
                         isRequired={true}
                         secureTextEntry={false}
                         isTextArea={true}
                         changeButton={true}
                         changeButtonText="Edit"
                         editable={false}
-                        value={userPositionData}
+                        value={userPosition}
                         onPressChangeButton={goToChangePosition}
                         />
 
@@ -298,10 +285,12 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
                         
                       }}
                       containerStyle={{ marginTop: Spacing[4] }}
+                      placeholder={"Pilih salah satu"}
                       zIndex={3000}
                       zIndexInverse={1000}
                       dropDownDirection={"BOTTOM"}
                       isRemovable={false}
+                      initialValue={myTeamValue}
                     />
                 </>
             )
@@ -326,7 +315,7 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
                       label="Nama individu yang dinilai:"
                       isError={isError}
                       onValueChange={(value: IOption) => {
-                        console.log(value?.id)
+                        setTeamMemberValue(value?.id)
                       }}
                       placeholder={""}
                       containerStyle={{ marginTop: Spacing[4] }}
@@ -334,7 +323,6 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
                       zIndexInverse={1000}
                       dropDownDirection={"BOTTOM"}
                       isRemovable={false}
-                      initialValue={teamData}
                     />
                 </>
             )
@@ -453,17 +441,8 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
                 style={styles.bg}
             >
                 <SafeAreaView style={Layout.flex}>
-                    <ScrollView
-                    // refreshControl={
-                    // <RefreshControl
-                    // refreshing={}
-                    // onRefresh={onRefresh}
-                    //     tintColor={Colors.MAIN_RED}
-                    // />
-                    // }
-                    >
+                    <ScrollView>
                         <VStack style={{ backgroundColor: Colors.WHITE, paddingTop: Spacing[12] }}>
-                            {/* <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} /> */}
                             <VStack top={Spacing[12]} horizontal={Spacing[24]} bottom={Spacing[12]}>
                                 <HStack>
                                     <Text type={"left-header"} text={`Penilaian Budaya Juara`} style={{ fontSize: Spacing[16], textAlign: 'left' }} />

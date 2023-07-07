@@ -153,8 +153,8 @@ export default class CultureMeasurementStore {
     }
 
     getCmMemberListSucceed(data: CMListUserModel) {
-        console.log('getAllSectionSucceed')
-        this.cmListUsersData = data
+        console.log('getCmMemberListSucceed')
+        this.cmListUsersData = {...this.cmListUsersData, ...data}
         this.isLoading = false
         this.refreshData = true
     }
