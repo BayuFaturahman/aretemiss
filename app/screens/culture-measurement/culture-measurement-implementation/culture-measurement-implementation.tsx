@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useReducer, useState } from "react"
-import { ImageBackground, SafeAreaView, ScrollView, StyleSheet, View } from "react-native"
+import { ImageBackground, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Text, BackNavigation, Button } from "@components"
@@ -17,7 +17,6 @@ import Spinner from "react-native-loading-spinner-overlay"
 import { ProgressBar } from "react-native-paper"
 import moment from "moment"
 import { CMSectionModel, QuestionnaireModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
-import { TouchableOpacity } from "react-native-gesture-handler"
 import { QUESTIONNAIRE_EXAMPLE, QUESTIONNAIRE_OPTION } from "../culture-measurement.type"
 import { debounce } from "lodash"
 // import { EmptyList } from "./components/empty-list"
@@ -68,7 +67,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
             // console.log(`loadGetAnswerData, ${cmTakerId} `)
             await cultureMeasurementStore.getCMAnswerById(cmTakerId)
             setListSectionData(cultureMeasurementStore.cmAnswerData.temp_data)
-            // console.log(`------ cultureMeasurementStore.cmImplementationSection: ${JSON.stringify(cultureMeasurementStore.cmImplementationSection)}`)
+            // console.log(`------ cultureMeasurementStore.cmAnswerData.temp_data: ${JSON.stringify(cultureMeasurementStore.cmAnswerData.temp_data)}`)
         }
 
         const firstLoadGetAnswerData = debounce(async () => {
@@ -85,19 +84,28 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
             if (tempData.length > 0) {
                 tempCopyWriting = tempData[0]
                 let tempDesc = tempCopyWriting.description
-                tempDesc = tempDesc.replaceAll('<br>', '')
-                tempDesc = tempDesc.replaceAll('</p>', '')
-                tempDesc = tempDesc.replaceAll(descSeparator, `<p>${descSeparator}`)
+                // tempDesc = tempDesc.replaceAll('<br>', '')
+                // tempDesc = tempDesc.replaceAll('</p>', '')
+                // tempDesc = tempDesc.replaceAll(descSeparator, `<p>${descSeparator}`)
+   
+                let tempSplittedDesc = tempDesc.split('<br>')
+                let tempJoinedDesc = tempSplittedDesc.join('')
+                // console.log(`tempJoinedDesc: ${JSON.stringify(tempJoinedDesc)}`)
+    
+                tempSplittedDesc = tempJoinedDesc.split('</p>')
+                tempJoinedDesc = tempSplittedDesc.join('')
+                // console.log(`tempJoinedDesc: ${JSON.stringify(tempJoinedDesc)}`)
+    
+                tempSplittedDesc = tempJoinedDesc.split(`${descSeparator}`)
+                tempJoinedDesc = tempSplittedDesc.join(`<p>${descSeparator}`)
 
-                let listTempDesc = tempDesc.split('<p>',)
+                let listTempDesc = tempJoinedDesc.split('<p>',)
                 setLisDescription(listTempDesc)
             }
         }
 
         useEffect(() => {
-            // console.log(`listSectionData: ${JSON.stringify(listSectionData)}`)
             if (listSectionData?.length > 0) {
-                // let tempListSectionQuestionnaire = listSectionData.filter(data => data.type === 'questionnaire')
                 setTotalPage(listSectionData.length)
                 extractDesc()
             }
@@ -129,7 +137,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                             justifyContent: 'center'
                         }} >
                             <HStack>
-                                <Spacer /><Text type="body" text={(index + 1).toString()} style={{ fontSize: Spacing[12], color: 'BLACK' }} /><Spacer />
+                                <Spacer /><Text type="body" text={(index + 1).toString()} style={{ fontSize: Spacing[12], color: listQuestionnaire[0].point === index + 1 ? Colors.BLACK : Colors.WHITE }} /><Spacer />
                             </HStack>
                         </View>
                         <Text type={"body"} style={{ fontSize: Spacing[12] }}>{data.text}</Text>

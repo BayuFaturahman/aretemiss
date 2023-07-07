@@ -5,7 +5,6 @@ import { Source } from "react-native-fast-image";
 import {Text} from "@components";
 import Spacer from "@components/spacer";
 
-// import { TouchableOpacity } from "react-native-gesture-handler";
 import { TouchableOpacity, View } from "react-native";
 
 // import { MarahActive, SedihActive, SenyumActive, SenyumInactive, SickActive, SurprisedActive } from "@assets/svgs"
