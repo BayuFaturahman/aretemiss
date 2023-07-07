@@ -1,8 +1,8 @@
 import React, { FC, useCallback, useEffect, useReducer, useState, useRef } from "react"
-import { ImageBackground, KeyboardAvoidingView, SafeAreaView, ScrollView, StyleSheet, View } from "react-native"
+import { KeyboardAvoidingView, SafeAreaView, ScrollView, StyleSheet, View, TouchableOpacity } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
-import { Text, BackNavigation, Button } from "@components"
+import { Text, Button } from "@components"
 import { NavigatorParamList } from "@navigators/main-navigator"
 import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
@@ -11,23 +11,20 @@ import { Colors, Layout, Spacing } from "@styles"
 import { useStores } from "../../../bootstrap/context.boostrap"
 
 import { dimensions } from "@config/platform.config"
-import { images } from "@assets/images";
+import { debounce } from "lodash"
 
 import Spinner from "react-native-loading-spinner-overlay"
 import { ProgressBar } from "react-native-paper"
-import moment from "moment"
-import { TouchableOpacity } from "react-native-gesture-handler"
 
 import { CMCreateAnswerModel, CMSectionModel, CMUpdateAnswerModel, QuestionnaireModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
-import { CM_SECTION_EMPTY, CM_SECTION_MOCK_DATA, QUESTIONNAIRE_EXAMPLE, QUESTIONNAIRE_OPTION } from "../culture-measurement.type"
+import { CM_SECTION_EMPTY, QUESTIONNAIRE_EXAMPLE, QUESTIONNAIRE_OPTION } from "../culture-measurement.type"
 import { ModalComponent } from "../component/cm-modal"
-// import { EmptyList } from "./components/empty-list"
 
 const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, "cultureMeasurementImplementationQuestionnaire">> =
     observer(({ navigation, route }) => {
 
         const [, forceUpdate] = useReducer((x) => x + 1, 0)
-        const { cmoId, isToCreate, totalPage, cmTakerId } = route.params
+        const { cmoId, isToCreate, totalPage, cmTakerId, goToPage } = route.params
         const { cultureMeasurementStore, mainStore } = useStores()
         const scrollRef = useRef();
 
@@ -61,6 +58,8 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
         }
 
         const goBack = () => {
+            setIsError(false)
+
             if (currPage > 1) {
                 if (currPage === totalPage - 1) {
                     setSubmitBtnText('Selanjutnya')
@@ -101,6 +100,21 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
             });
         }
 
+        const loadGetAnswerData = async (cmTakerId: string) => {
+            // console.log(`loadGetAnswerData, ${cmTakerId} `)
+            await cultureMeasurementStore.getCMAnswerById(cmTakerId)
+            setListSectionData(cultureMeasurementStore.cmAnswerData.temp_data)
+            // console.log(`------ cultureMeasurementStore.cmAnswerData.temp_data: ${JSON.stringify(cultureMeasurementStore.cmAnswerData.temp_data)}`)
+        }
+
+        const firstLoadGetAnswerData = debounce(async () => {
+            console.log(`firstLoadGetAnswerData`)
+            await loadGetAnswerData(cmTakerId)
+            forceUpdate()
+        }, 500)
+
+
+
         const createCMAnswer = useCallback(async (data: CMCreateAnswerModel) => {
             // console.log(`create answer ${JSON.stringify(data)}`)
             await cultureMeasurementStore.createCMAnswer(data)
@@ -113,10 +127,17 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
 
         const extractDesc = useCallback(() => {
             let tempDesc = currSectionData.description
-            tempDesc = tempDesc.replaceAll('<br>', '')
-            tempDesc = tempDesc.replaceAll('</p>', '')
+            // tempDesc = tempDesc.replaceAll('<br>', '')
+            // tempDesc = tempDesc.replaceAll('</p>', '')
 
-            let listTempDesc = tempDesc.split('<p>',)
+            let tempSplittedDesc = tempDesc.split('<br>')
+            let tempJoinedDesc = tempSplittedDesc.join('')
+
+            tempSplittedDesc = tempJoinedDesc.split('</p>')
+            tempJoinedDesc = tempSplittedDesc.join('')
+
+            let listTempDesc = tempJoinedDesc.split('<p>',)
+        
             setLisDescription(listTempDesc)
         }, [currSectionData, listDescription])
 
@@ -140,8 +161,24 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
 
         useEffect(() => {
             if (listSectionData?.length > 0) {
-                setCurrSectionNo(1)
-                extractSection(1)
+                if (isToCreate && cmoId) {
+                    setCurrSectionNo(1)
+                    extractSection(1)
+                } else if (!isToCreate && cmTakerId) {
+
+                    let tempGoToPage = 1
+                    for (let i = 0; i < listSectionData.length; i++) {
+                        let tempQues = listSectionData[i].questionnaire.filter(item => item.point === undefined)
+                        if (tempQues.length > 0) {
+                            tempGoToPage = i
+                            i = listSectionData.length
+                        }
+                    }
+                    extractSection(tempGoToPage)
+                    setCurrSectionNo(tempGoToPage)
+                    setCurrPage(tempGoToPage)
+                    setCurrSectionNo(tempGoToPage)
+                }
             }
         }, [listSectionData])
 
@@ -150,7 +187,9 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
             if (isToCreate && cmoId) {
                 setListSectionData(cultureMeasurementStore.cmSections)
             } else if (!isToCreate && cmTakerId) {
-                setListSectionData(cultureMeasurementStore.cmAnswerData.temp_data)
+                firstLoadGetAnswerData()
+
+
             }
 
             setIsNextClicked(false)
@@ -179,7 +218,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                                 justifyContent: 'center'
                             }} >
                                 <HStack>
-                                    <Spacer /><Text type="body" text={(indexQ + 1).toString()} style={{ fontSize: Spacing[12], color: Colors[dataQ.fontColor] }} /><Spacer />
+                                    <Spacer /><Text type="body" text={(indexQ + 1).toString()} style={{ fontSize: Spacing[12], color: data.point === indexQ + 1 ? Colors[dataQ.fontColor] : Colors.WHITE }} /><Spacer />
                                 </HStack>
                             </View>
                             <Text type={"body"} style={{ fontSize: Spacing[12] }}>{dataQ.text}</Text>
@@ -401,14 +440,17 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                                     <View style={[{ height: Spacing[6], backgroundColor: Colors.ABM_YELLOW }, Layout.widthFull]}></View>
                                     <Spacer height={Spacing[8]} />
 
-                                    {isError && <Text
-                                        type={"warning-not-bold"}
-                                        style={{
-                                            textAlign: 'center',
-                                            marginTop: Spacing[4],
-                                            color: Colors.MAIN_RED
-                                        }}
-                                    >Ups! Sepertinya ada kolom yang belum diisi! Silahkan dicek kembali dan isi semua kolom yang tersedia!</Text>
+                                    {isError &&
+                                        <><Text
+                                            type={"warning-not-bold"}
+                                            style={{
+                                                textAlign: 'center',
+                                                marginTop: Spacing[4],
+                                                color: Colors.MAIN_RED
+                                            }}
+                                        >Ups! Sepertinya ada kolom yang belum diisi! Silahkan dicek kembali dan isi semua kolom yang tersedia!</Text>
+                                            <Spacer height={Spacing[12]} />
+                                        </>
                                     }
 
                                     {/* start questionaire */}
