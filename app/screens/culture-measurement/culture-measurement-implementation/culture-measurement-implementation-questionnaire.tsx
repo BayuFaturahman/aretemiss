@@ -127,17 +127,10 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
 
         const extractDesc = useCallback(() => {
             let tempDesc = currSectionData.description
-            // tempDesc = tempDesc.replaceAll('<br>', '')
-            // tempDesc = tempDesc.replaceAll('</p>', '')
-
-            let tempSplittedDesc = tempDesc.split('<br>')
-            let tempJoinedDesc = tempSplittedDesc.join('')
-
-            tempSplittedDesc = tempJoinedDesc.split('</p>')
-            tempJoinedDesc = tempSplittedDesc.join('')
-
-            let listTempDesc = tempJoinedDesc.split('<p>',)
-        
+            tempDesc = tempDesc.split('<br>').join('')
+            tempDesc = tempDesc.split('</p>').join('')
+            
+            let listTempDesc = tempDesc.split('<p>')
             setLisDescription(listTempDesc)
         }, [currSectionData, listDescription])
 

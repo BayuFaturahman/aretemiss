@@ -113,16 +113,10 @@ const CultureMeasurementInfrastructureQuestionnaire: FC<StackScreenProps<Navigat
 
         const extractDesc = useCallback(() => {
             let tempDesc = currSectionData.description
-            // tempDesc = tempDesc.replaceAll('<br>', '')
-            // tempDesc = tempDesc.replaceAll('</p>', '')
+            tempDesc = tempDesc.split('<br>').join('')
+            tempDesc = tempDesc.split('</p>').join('')
 
-            let tempSplittedDesc = tempDesc.split('<br>')
-            let tempJoinedDesc = tempSplittedDesc.join('')
-
-            tempSplittedDesc = tempJoinedDesc.split('</p>')
-            tempJoinedDesc = tempSplittedDesc.join('')
-
-            let listTempDesc = tempJoinedDesc.split('<p>',)
+            let listTempDesc = tempDesc.split('<p>',)
             setLisDescription(listTempDesc)
         }, [currSectionData, listDescription])
 
