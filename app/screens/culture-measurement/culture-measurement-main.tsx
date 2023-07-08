@@ -141,8 +141,8 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
 
 
             //start extracting period date
-            setStartDate(`${DaysType[moment(publishData.startDate).day()]}, ${moment(publishData.startDate).format('DD MMM YYYY')}`)
-            setEndDate(`${DaysType[moment(publishData.endDate).day()]}, ${moment(publishData.endDate).format('DD MMM YYYY')}`)
+            setStartDate(`${DaysType[moment(publishData.startDate).day()]}, ${moment(publishData.startDate).format('DD MMMM YYYY')}`)
+            setEndDate(`${DaysType[moment(publishData.endDate).day()]}, ${moment(publishData.endDate).format('DD MMMM YYYY')}`)
 
             //start extracting CM objectives
             let tempObjectives = publishData.culture_measurement_objectives.map((data, index) => {

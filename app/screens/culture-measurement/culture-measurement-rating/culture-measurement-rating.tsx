@@ -24,6 +24,8 @@ import { CMSectionModel, QuestionnaireModel } from "@services/api/cultureMeasure
 import { QUESTIONNAIRE_EXAMPLE, QUESTIONNAIRE_OPTION } from "../culture-measurement.type"
 import { debounce } from "lodash"
 import { USER_POSITION } from "@screens/settings/change-user-position"
+import { ProfileUpdateForm } from "@screens/settings/my-account"
+import { ModalComponent } from "../component/cm-modal"
 
 const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "cultureMeasurementRating">> =
     observer(({ navigation, route }) => {
@@ -36,6 +38,7 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
         const [totalPage, setTotalPage] = useState<number>(1)
         const [currPage, setCurrPage] = useState<number>(1)
         const [isError, setIsError] = useState<boolean>(false)
+        const [listError, setListError] = useState<number[]>([])
 
         const [listSectionData, setListSectionData] = useState<CMSectionModel[]>([])
         const [listDescription, setListDescription] = useState<string[]>([])
@@ -50,32 +53,49 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
 
         const [teamList, setTeamList] = useState<DropDownItem[]>([])
         const [memberList, setMemberList] = useState<DropDownItem[]>([])
-        
+
         const [editFullName, setEditFullname] = useState<boolean>(false)
-        const [myTeamValue, setMyTeamValue] = useState(mainStore.userProfile.team1_id? {"id": mainStore.userProfile.team1_id, "item": mainStore.userProfile.team1_name}:{})
+        const [myTeamValue, setMyTeamValue] = useState(mainStore.userProfile.team1_id ? { "id": mainStore.userProfile.team1_id, "item": mainStore.userProfile.team1_name } : {})
         const [teamMemberValue, setTeamMemberValue] = useState<string>()
         const [cmMemberPagination, setCmMemberPagination] = useState<number>(1)
         const [cmMemberLimit, setCmMemberLimit] = useState<number>(10)
+
+        const [isModalVisible, setModalVisible] = useState<boolean>(false)
+        const [isIconFromMood, setIsIconFromMood] = useState<boolean>(true)
+        const [modalTitle, setModalTitle] = useState<string>("")
+        const [modalDesc, setModalDesc] = useState<string>("")
+        const [modalIcon, setModalIcon] = useState("senang")
+        const [modalBtnText, setModalBtnText] = useState("")
 
 
         const descSeparator = '{{type_answer}}';
         const positionSeparator = '{{user_position}}';
         const teamSeparator = '{{user_team}}';
-
-        const handleNextButton = () => {
-            if (currPage === 3) {
-                goToQuestionnaire()
-            } else {
-                setCurrPage((page) => page + 1 )
-            }
+        const userProfile: ProfileUpdateForm = {
+            fullname: mainStore.userProfile.user_fullname,
+            nickname: mainStore.userProfile.user_nickname,
+            email: mainStore.userProfile.user_email,
+            team1Id: mainStore.userProfile.team1_id,
+            team2Id: mainStore.userProfile.team2_id,
+            team3Id: mainStore.userProfile.team3_id,
+            team1Name: mainStore.userProfile.team1_name,
+            team2Name: mainStore.userProfile.team2_name,
+            team3Name: mainStore.userProfile.team3_name,
+            photo: mainStore.userProfile.user_photo,
+            isAllowNotification: mainStore.userProfile.user_is_allow_notification,
+            isAllowReminderNotification: mainStore.userProfile.user_is_allow_reminder_notification,
+            mood: mainStore.userProfile.user_mood,
+            userPosition: mainStore.userProfile.user_position ? USER_POSITION.filter((position) => position.id === mainStore.userProfile.user_position).length > 0 ? USER_POSITION.filter((position) => position.id === mainStore.userProfile.user_position)[0].item : '' : '',
         }
 
-        const handleBackButton = () => {
-            if (currPage !== 1) {
-                setCurrPage((page) => page - 1 )
-            } else {
-                goBack()
-            }
+        const setModalContent = (title: string, desc: string, icon: string) => {
+            setModalTitle(title)
+            setModalDesc(desc)
+            setModalIcon(icon)
+        }
+
+        const toggleModal = (value: boolean) => {
+            setModalVisible(value)
         }
 
         const goBack = () => {
@@ -91,41 +111,160 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
             })
         }
 
-        const goToChangePosition = () => navigation.navigate("changeUserPosition")
+        const goToChangePosition = () => navigation.navigate("changeUserPosition", {
+            isFromSetting: false
+        })
 
-        const getTeam = useCallback(async () => {
+        const loadGetTeam = useCallback(async () => {
             await mainStore.getTeamList()
         }, [])
 
-        const getMemberList = useCallback(async () => {
+        const firstLoadGetTeam = debounce(async () => {
+            console.log(`firstLoadGetTeam`)
+            await loadGetTeam()
+            forceUpdate()
+        }, 500)
+
+        const loadGetMemberList = useCallback(async () => {
             await cultureMeasurementStore.getCmMemberList(cmMemberPagination, cmMemberLimit)
         }, [])
+
+        const handleBackButton = () => {
+            if (currPage !== 1) {
+                setCurrPage((page) => page - 1)
+            } else {
+                goBack()
+            }
+        }
+
+        const handleNextButton = (async () => {
+            if (currPage === 3) {
+                goToQuestionnaire()
+            } else {
+                if (currPage === 1) {
+                    validateAppraiserForm()
+                }
+            }
+        })
+
+
+        const validateAppraiserForm = async () => {
+            setIsError(false)
+            // if (currPage === 1) {
+            setListError(new Array(3).fill(0))
+
+            let tempListError = new Array(5).fill(0)
+            let tempIsError = false
+            if (fullName === '') {
+                tempListError[0] = 1
+                tempIsError = true
+            }
+
+            if (userPosition === '') {
+                tempListError[1] = 1
+                tempIsError = true
+            }
+
+            if (sn === '') {
+                tempListError[2] = 1
+                tempIsError = true
+            }
+
+            if (structurePos === '') {
+                tempListError[3] = 1
+                tempIsError = true
+            }
+
+            if (myTeamValue.id == null) {
+                tempListError[4] = 1
+                tempIsError = true
+            }
+
+
+            setListError(tempListError)
+            setIsError(tempIsError)
+
+
+            if (tempIsError) {
+                return false
+            }
+
+
+            cultureMeasurementStore.cmSN = sn
+            cultureMeasurementStore.cmStructurelPosition = structurePos
+            userProfile.fullname = fullName
+            userProfile.userPosition = userPosition
+            userProfile.team1Id = myTeamValue.id
+
+            await updateProfile()
+
+
+        }
+
+        const updateProfile = async () => {
+            console.log('on updateProfile')
+            console.log("Data to be submitted", userProfile)
+            await mainStore.updateProfile(mainStore.userProfile.user_id, userProfile)
+            if (mainStore.errorCode === null) {
+                await mainStore.getProfile()
+
+                cultureMeasurementStore.clearCMListUsersData()
+                await loadGetMemberList()
+                forceUpdate()
+                renderSuccessModal()
+            } else {
+                renderFailModal()
+                console.log('error code ', mainStore.errorCode)
+            }
+        }
+
+        const renderSuccessModal = () => {
+            setModalVisible(true)
+            setModalContent("Sukses!", `Data telah berhasil disimpan!`, "senang")
+            setModalBtnText('Kembali ke Kuesioner')
+            setIsIconFromMood(true)
+        }
+
+        const renderFailModal = () => {
+            setModalVisible(true)
+            setModalContent("Ada Kesalahan!", "Ups! Sepertinya ada kesalahan!\nSilahkan coba lagi!", "sedih")
+            setModalBtnText('Kembali ke\nMenu Sebelumnya')
+            setIsIconFromMood(true)
+
+        }
+
+        const onClikModalBtn = () => {
+            if (modalTitle.includes('Sukses')) {
+                toggleModal(false)
+                setCurrPage((page) => page + 1)
+            }
+        }
 
         // Fetch area / fungsi dropdown selection
         useEffect(() => {
             if (mainStore.teamResponse !== null) {
                 const itemsData: DropDownItem[] = mainStore.teamResponse.data.map((item, index) => {
                     return {
-                    item: item.name,
-                    id: item.id,
+                        item: item.name,
+                        id: item.id,
                     }
                 })
                 setTeamList(itemsData)
             }
-          }, [mainStore.teamResponse])
+        }, [mainStore.teamResponse])
 
         // Fetch culturemeasurement people to-rate
         useEffect(() => {
             if (cultureMeasurementStore.cmListUsersData !== null) {
-                const itemsData: DropDownItem[] = cultureMeasurementStore.cmListUsersData.data.map((item, index) => {
+                const itemsData: DropDownItem[] = cultureMeasurementStore.cmListUsersData.map((item, index) => {
                     return {
-                    item: item.fullname,
-                    id: item.id,
+                        item: item.fullname,
+                        id: item.id,
                     }
                 })
                 setMemberList(itemsData)
             }
-        }, [cultureMeasurementStore.cmListUsersData])
+        }, [cultureMeasurementStore.getCmMemberListSucceed, cultureMeasurementStore.cmListUsersData, cultureMeasurementStore.isLoading])
 
         const loadCMAllSectionData = async (cmoId: string) => {
             console.log('loadCMPublishData ')
@@ -173,31 +312,32 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
             }
         }
 
-        // Initial render hook
-        useEffect(() => {
-            // Set initial Date
-            setDate(moment().format('DD MMMM YYYY'))
-            // Set position
-            setUserPosition(mainStore.userProfile.user_position ? USER_POSITION.filter((position) => position.id === mainStore.userProfile.user_position).length > 0 ? USER_POSITION.filter((position) => position.id === mainStore.userProfile.user_position)[0].item : '' : '')
-            // Set fullname
-            setFullName(mainStore.userProfile.user_fullname)
-            // Fetch area / fungsi dropdown
-            getTeam()
-            // Fetch member to-rate drodown
-            getMemberList()
-        }, [])
-
         useEffect(() => {
             if (listSectionData?.length > 0) {
                 setTotalPage(listSectionData.length)
                 extractDesc(currPage)
             }
-        }, [listSectionData, currPage])
 
+            // console.log(`list section data: ${listSectionData.length}`)
+        }, [listSectionData, currPage])
 
         useEffect(() => {
             if (isToCreate && cmoId) {
                 firstLoadCMAllSectionData()
+
+                // Initial render hook
+                // Fetch area / fungsi dropdown
+                firstLoadGetTeam()
+                // Set initial Date
+                setDate(moment().format('DD MMMM YYYY'))
+                // Set position
+                setUserPosition(mainStore.userProfile.user_position ? USER_POSITION.filter((position) => position.id === mainStore.userProfile.user_position).length > 0 ? USER_POSITION.filter((position) => position.id === mainStore.userProfile.user_position)[0].item : '' : '')
+                // Set fullname
+                setFullName(mainStore.userProfile.user_fullname)
+
+                setIsError(false)
+                setListError(new Array(5).fill(0))
+                forceUpdate()
             } else if (!isToCreate && cmTakerId) {
                 firstLoadGetAnswerData()
             }
@@ -221,9 +361,8 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
                         value={date}
                         isRequired={true}
                         editable={false}
-                        isError={isError}
                         secureTextEntry={false}
-                        inputStyle={{borderRadius: Spacing[12]}}
+                        inputStyle={{ borderRadius: Spacing[12], backgroundColor: Colors.ABM_BG_BLUE }}
                     />
 
                     <TextField
@@ -231,66 +370,67 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
                         value={fullName}
                         changeButton={true}
                         changeButtonText="Edit"
-                        onChangeText={(e, val) => setFullName(val)}
+                        onChangeText={(val) => setFullName(val)}
                         isRequired={false}
                         editable={editFullName}
-                        isError={isError}
+                        isError={listError[0] === 1}
                         secureTextEntry={false}
-                        inputStyle={{borderRadius: Spacing[12]}}
+                        inputStyle={{ borderRadius: Spacing[12], backgroundColor: editFullName ? Colors.WHITE : Colors.ABM_BG_BLUE }}
                         onPressChangeButton={() => setEditFullname(!editFullName)}
                     />
 
                     <TextField
                         label="Posisi dalam Winning Team"
-                        style={{ paddingTop: 0}}
-                        inputStyle={{textAlign: 'left', borderRadius: Spacing[12], paddingLeft: Spacing[12], paddingVertical: Spacing[4]}}
+                        style={{ paddingTop: 0 }}
+                        inputStyle={{ textAlign: 'left', borderRadius: Spacing[12], paddingLeft: Spacing[12], paddingVertical: Spacing[4], backgroundColor: Colors.ABM_BG_BLUE }}
                         isRequired={true}
                         secureTextEntry={false}
                         isTextArea={true}
                         changeButton={true}
                         changeButtonText="Edit"
                         editable={false}
+                        isError={listError[1] === 1}
                         value={userPosition}
-                        onPressChangeButton={goToChangePosition}
-                        />
+                        onPressChangeButton={() => goToChangePosition()}
+                    />
 
                     <TextField
                         label="SN:"
                         value={sn}
-                        onChangeText={(e, val) => setSn(val)}
+                        onChangeText={(val) => setSn(val)}
                         isRequired={true}
                         editable={true}
-                        isError={isError}
+                        isError={listError[2] === 1}
                         secureTextEntry={false}
-                        inputStyle={{borderRadius: Spacing[12]}}
+                        inputStyle={{ borderRadius: Spacing[12] }}
                     />
 
                     <TextField
                         label="Posisi Struktural:"
                         value={structurePos}
-                        onChangeText={(e, val) => setStructurePos(val)}
+                        onChangeText={(val) => setStructurePos(val)}
                         isRequired={true}
                         editable={true}
-                        isError={isError}
+                        isError={listError[3] === 1}
                         secureTextEntry={false}
-                        inputStyle={{borderRadius: Spacing[12]}}
+                        inputStyle={{ borderRadius: Spacing[12] }}
                     />
 
                     <DropDownPicker
-                      items={teamList}
-                      isRequired={true}
-                      label="Area / Fungsi:"
-                      isError={isError}
-                      onValueChange={(value: IOption) => {
-                        
-                      }}
-                      containerStyle={{ marginTop: Spacing[4] }}
-                      placeholder={"Pilih salah satu"}
-                      zIndex={3000}
-                      zIndexInverse={1000}
-                      dropDownDirection={"BOTTOM"}
-                      isRemovable={false}
-                      initialValue={myTeamValue}
+                        items={teamList}
+                        isRequired={true}
+                        label="Area / Fungsi:"
+                        isError={listError[4] === 1}
+                        onValueChange={(value: IOption) => {
+                            setMyTeamValue(value)
+                        }}
+                        containerStyle={{ marginTop: Spacing[4] }}
+                        placeholder={"Pilih salah satu"}
+                        zIndex={3000}
+                        zIndexInverse={1000}
+                        dropDownDirection={"BOTTOM"}
+                        isRemovable={false}
+                        initialValue={myTeamValue}
                     />
                 </>
             )
@@ -310,19 +450,19 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
                     }
 
                     <DropDownPicker
-                      items={memberList}
-                      isRequired={true}
-                      label="Nama individu yang dinilai:"
-                      isError={isError}
-                      onValueChange={(value: IOption) => {
-                        setTeamMemberValue(value?.id)
-                      }}
-                      placeholder={""}
-                      containerStyle={{ marginTop: Spacing[4] }}
-                      zIndex={3000}
-                      zIndexInverse={1000}
-                      dropDownDirection={"BOTTOM"}
-                      isRemovable={false}
+                        items={memberList}
+                        isRequired={true}
+                        label="Nama individu yang dinilai:"
+                        isError={isError}
+                        onValueChange={(value: IOption) => {
+                            setTeamMemberValue(value?.id)
+                        }}
+                        placeholder={""}
+                        containerStyle={{ marginTop: Spacing[4] }}
+                        zIndex={3000}
+                        zIndexInverse={1000}
+                        dropDownDirection={"BOTTOM"}
+                        isRemovable={false}
                     />
                 </>
             )
@@ -477,9 +617,9 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
                                 {currPage === 2 && renderRatePerson()}
 
                                 {/* render example questionaire on page 3*/}
-                                
+
                                 {currPage === 3 && renderQuestionExample()}
-                                
+
                                 <Spacer height={Spacing[24]} />
                                 <HStack>
                                     <Button type={"primary-dark"} text="Sebelumnya" style={{ paddingHorizontal: Spacing[14], borderRadius: Spacing[12] }} onPress={() => handleBackButton()} />
@@ -504,7 +644,22 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
                         </VStack>
                     </ScrollView >
                 </SafeAreaView >
-                <Spinner visible={cultureMeasurementStore.isLoading || listDescription.length === 0} textContent={"Memuat..."} />
+                <Spinner visible={mainStore.isLoading || cultureMeasurementStore.isLoading || (currPage > 1 ? listDescription.length === 0 : false)} textContent={"Memuat..."} />
+
+                {isModalVisible &&
+                    <ModalComponent
+                        isModalVisible={isModalVisible}
+                        isIconFromMood={isIconFromMood}
+                        toggleModal={() => toggleModal(false)}
+                        onClickModalBtn={() => onClikModalBtn()}
+                        // onClickCancelModalBtn={() => goToCultureMeasurement()}
+                        modalTitle={modalTitle}
+                        modalIcon={modalIcon}
+                        modalDesc={modalDesc}
+                        modalBtnText={modalBtnText}
+                    />
+
+                }
             </VStack >
         )
     })

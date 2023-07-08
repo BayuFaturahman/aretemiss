@@ -67,13 +67,12 @@ export class CultureMeasurementApi {
     console.log('getCmMemberList')
     try {
       // make the api call
-      const response: ApiResponse<any> = await this.api.apisauce.get(`/user/list-user-culture-measurement}`,
+      const response: ApiResponse<any> = await this.api.apisauce.get(`/user/list-user-culture-measurement`,
       {
         limit: limit,
         page: page
       })
 
-      // console.log('response detail', response.data)
       if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
@@ -84,14 +83,15 @@ export class CultureMeasurementApi {
         if (problem) return problem
       }
 
-      const res = {
-        message: response.data.message,
-        data: {
-          data: response.data.data,
-          totalPages: response.data.meta.total_pages,
-          totalItems: response.data.meta.total_items
-        }
-      }
+      // const res = {
+      //   message: response.data.message,
+      //   data: {
+      //     data: response.data.data,
+      //     totalPages: response.data.meta.total_pages,
+      //     totalItems: response.data.meta.total_items
+      //   }
+      // }
+      const res = response.data.data
       return { kind: "ok", response: res }
     } catch (e) {
       __DEV__ && console.tron.log(e.message)

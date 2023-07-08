@@ -269,7 +269,9 @@ export type NavigatorParamList = {
   changePhone: undefined
   changePassword: undefined
   changeDivision: undefined
-  changeUserPosition: undefined
+  changeUserPosition: {
+    isFromSetting: boolean
+  }
   newJournalEntry: {
     isDetail: boolean
   }

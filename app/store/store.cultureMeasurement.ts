@@ -5,7 +5,7 @@ import ServiceStore from "./store.service"
 import { Api } from "@services/api"
 import { ErrorFormResponse } from "@services/api/feed/feed-api.types"
 import { CultureMeasurementApi } from "@services/api/cultureMeasurement/culture-measurement-api"
-import { CMCreateAnswerModel, CMGetAnswerModel, CMListUserModel, CMPublishDataModel, CMSectionModel, CMUpdateAnswerModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
+import { CMCreateAnswerModel, CMGetAnswerModel, CMListUserModel, CMPublishDataModel, CMSectionModel, CMUpdateAnswerModel, CMUserModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
 import { CM_GET_ANSWER_EMPTY_DATA, CM_LIST_USER_EMPTY, CM_PUBLISH_EMPTY, CM_SECTION_EMPTY } from "@screens/culture-measurement/culture-measurement.type"
 
 export default class CultureMeasurementStore {
@@ -26,7 +26,11 @@ export default class CultureMeasurementStore {
     cmPublishData: CMPublishDataModel
     cmSections: CMSectionModel[]
     cmAnswerData: CMGetAnswerModel
-    cmListUsersData: CMListUserModel
+    cmListUsersData: CMUserModel[]
+
+    cmRatedUserId: string
+    cmSN: string
+    cmStructurelPosition: string
 
 
     constructor(api: Api) {
@@ -44,7 +48,12 @@ export default class CultureMeasurementStore {
         this.cmPublishData = CM_PUBLISH_EMPTY
         this.cmSections = [CM_SECTION_EMPTY]
         this.cmAnswerData = CM_GET_ANSWER_EMPTY_DATA
-        this.cmListUsersData = CM_LIST_USER_EMPTY
+        this.cmListUsersData = []
+
+        this.cmRatedUserId = ''
+        this.cmSN = ''
+        this.cmStructurelPosition = ''
+
     }
 
     async getListPublish() {
@@ -115,6 +124,13 @@ export default class CultureMeasurementStore {
         }
     }
 
+    getAllSectionSucceed(data: CMSectionModel[]) {
+        console.log('getAllSectionSucceed')
+        this.cmSections = data
+        this.isLoading = false
+        this.refreshData = true
+    }
+
     async getCmMemberList(page = 1, limit = 10) {
         this.isLoading = true
 
@@ -122,9 +138,10 @@ export default class CultureMeasurementStore {
             const result = await this.cmApi.getCmMemberList(page, limit)
             console.log('in store getCmMemberList')
             // console.log(`result ${result}`)
+            // console.log('result.response  ', JSON.stringify(result.response))
             if (result.kind === "ok") {
-                // console.log('result.response  ', JSON.stringify(result.response))
-                await this.getCmMemberListSucceed(result.response.data)
+                // console.log('result.response x ', JSON.stringify(result.response))
+                await this.getCmMemberListSucceed(result.response)
             } else if (result.kind === 'form-error') {
                 console.log('getCmMemberList failed')
                 // console.log(result.response.errorCode)
@@ -145,16 +162,10 @@ export default class CultureMeasurementStore {
         }
     }
 
-    getAllSectionSucceed(data: CMSectionModel[]) {
-        console.log('getAllSectionSucceed')
-        this.cmSections = data
-        this.isLoading = false
-        this.refreshData = true
-    }
 
-    getCmMemberListSucceed(data: CMListUserModel) {
+    getCmMemberListSucceed(data: CMUserModel[]) {
         console.log('getCmMemberListSucceed')
-        this.cmListUsersData = {...this.cmListUsersData, ...data}
+        this.cmListUsersData = [...this.cmListUsersData, ...(data ?? [])]
         this.isLoading = false
         this.refreshData = true
     }
@@ -284,6 +295,11 @@ export default class CultureMeasurementStore {
         this.cmPublishData = CM_PUBLISH_EMPTY
         this.cmSections = [CM_SECTION_EMPTY]
         this.cmAnswerData = CM_GET_ANSWER_EMPTY_DATA
+        this.cmListUsersData = []
+    }
+
+    clearCMListUsersData() {
+        this.cmListUsersData = []
     }
 
     formReset() {
