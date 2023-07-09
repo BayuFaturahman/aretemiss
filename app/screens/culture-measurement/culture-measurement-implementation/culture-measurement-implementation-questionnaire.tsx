@@ -24,7 +24,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
     observer(({ navigation, route }) => {
 
         const [, forceUpdate] = useReducer((x) => x + 1, 0)
-        const { cmoId, isToCreate, totalPage, cmTakerId, goToPage } = route.params
+        const { cmoId, isToCreate, totalPage, cmTakerId } = route.params
         const { cultureMeasurementStore, mainStore } = useStores()
         const scrollRef = useRef();
 
@@ -49,7 +49,6 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
         const [modalDesc, setModalDesc] = useState<string>("")
         const [modalIcon, setModalIcon] = useState("senang")
         const [modalBtnText, setModalBtnText] = useState("")
-
 
         const setModalContent = (title: string, desc: string, icon: string) => {
             setModalTitle(title)
@@ -113,8 +112,6 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
             forceUpdate()
         }, 500)
 
-
-
         const createCMAnswer = useCallback(async (data: CMCreateAnswerModel) => {
             // console.log(`create answer ${JSON.stringify(data)}`)
             await cultureMeasurementStore.createCMAnswer(data)
@@ -158,7 +155,6 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                     setCurrSectionNo(1)
                     extractSection(1)
                 } else if (!isToCreate && cmTakerId) {
-
                     let tempGoToPage = 1
                     for (let i = 0; i < listSectionData.length; i++) {
                         let tempQues = listSectionData[i].questionnaire.filter(item => item.point === undefined)
@@ -181,8 +177,6 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                 setListSectionData(cultureMeasurementStore.cmSections)
             } else if (!isToCreate && cmTakerId) {
                 firstLoadGetAnswerData()
-
-
             }
 
             setIsNextClicked(false)
@@ -316,7 +310,7 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
                 //prepare param
                 let tempParam = {
                     cmo_id: cmoId,
-                    rated_user_id: isToCreate ? mainStore.userProfile.user_id : cultureMeasurementStore.cmAnswerData.rated_user_id,
+                    rated_user_id: '',
                     status: type,
                     sn: "", //null
                     structural_position: "", //null

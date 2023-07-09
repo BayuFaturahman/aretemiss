@@ -27,7 +27,7 @@ export type CultureMeasurementIntroductionComponentProps = {
     onPressExistingCoachee(): void;
     onPressPreviousFeedback(): void;
     selectedCoachee: string;
-  }
+}
 
 const CultureMeasurementIntroduction: FC<StackScreenProps<NavigatorParamList, "cultureMeasurementIntroduction">> =
     observer(({ navigation, route }) => {
@@ -35,7 +35,7 @@ const CultureMeasurementIntroduction: FC<StackScreenProps<NavigatorParamList, "c
         const [, forceUpdate] = useReducer((x) => x + 1, 0)
         const { cmoId } = route.params
         const { cultureMeasurementStore } = useStores()
-        
+
         const [totalPage, setTotalPage] = useState<number>(1)
 
         const [listSectionData, setListSectionData] = useState<CMSectionModel[]>(CM_SECTION_MOCK_DATA)
@@ -60,9 +60,9 @@ const CultureMeasurementIntroduction: FC<StackScreenProps<NavigatorParamList, "c
             }
 
             let tempDesc = tempCopyWriting.description
-            tempDesc = tempDesc.replaceAll('<br>', '')
-            tempDesc = tempDesc.replaceAll('</p>', '')
-            tempDesc = tempDesc.replaceAll(descSeparator, `<p>${descSeparator}`)
+            tempDesc = tempDesc.split('<br>').join('')
+            tempDesc = tempDesc.split('</p>').join('')
+            tempDesc = tempDesc.split(descSeparator).join(`<p>${descSeparator}`)
 
             let listTempDesc = tempDesc.split('<p>',)
             setLisDescription(listTempDesc)
