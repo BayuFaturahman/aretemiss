@@ -27,6 +27,7 @@ export default class CultureMeasurementStore {
     cmSections: CMSectionModel[]
     cmAnswerData: CMGetAnswerModel
     cmListUsersData: CMUserModel[]
+    cmIsExistSubmttedRating: boolean
 
     cmRatedUserId: string
     cmSN: string
@@ -49,6 +50,7 @@ export default class CultureMeasurementStore {
         this.cmSections = [CM_SECTION_EMPTY]
         this.cmAnswerData = CM_GET_ANSWER_EMPTY_DATA
         this.cmListUsersData = []
+        this.cmIsExistSubmttedRating = false
 
         this.cmRatedUserId = ''
         this.cmSN = ''
@@ -176,7 +178,8 @@ export default class CultureMeasurementStore {
         try {
             const result = await this.cmApi.createAnswer(data)
             console.log('in store createCMAnswer')
-            // console.log(`result ${result}`)
+            console.log(`data ${JSON.stringify(data)}`)
+            console.log(`result ${JSON.stringify(result)}`)
             if (result.kind === "ok") {
                 // console.log('result.response  ', JSON.stringify(result.response))
                 await this.createCMAnswerSucceed(result.response.message, result.response)
@@ -216,7 +219,7 @@ export default class CultureMeasurementStore {
             console.log('in store getCMAnswerById')
             // console.log(`result ${result}`)
             if (result.kind === "ok") {
-                // console.log('result.response  ', JSON.stringify(result.response))
+                console.log('result.response  ', JSON.stringify(result.response))
                 await this.getCMAnswerByIdSucceed(result.response)
             } else if (result.kind === 'form-error') {
                 console.log('getAllSection failed')
@@ -251,14 +254,14 @@ export default class CultureMeasurementStore {
         try {
             const result = await this.cmApi.updateAnswer(id, data)
             console.log('in store updateCMAnswer')
-            // console.log(`id: ${id} ;; data: ${data}`)
+            console.log(`id: ${id} ;; data: ${JSON.stringify(data)}`)
             // console.log(`result ${JSON.stringify(result)}`)
             if (result.kind === "ok") {
                 // console.log('result.response  ', JSON.stringify(result.response))
                 await this.updateCMAnswerSucceed(result.response.message, result.response.data)
             } else if (result.kind === 'form-error') {
                 console.log('updateCMAnswer failed')
-                // console.log(result.response.errorCode)
+                // console.log(`result ${JSON.stringify(result)}`)
                 this.cMFailed(result?.response?.errorCode)
             } else if (result.kind === 'unauthorized') {
                 console.log('token expired updateCMAnswer')
@@ -296,11 +299,13 @@ export default class CultureMeasurementStore {
         this.cmSections = [CM_SECTION_EMPTY]
         this.cmAnswerData = CM_GET_ANSWER_EMPTY_DATA
         this.cmListUsersData = []
+        this.cmStructurelPosition = ''
+        this.cmSN = ''
+        this.cmRatedUserId = ''
+        this.cmIsExistSubmttedRating = false
     }
 
-    clearCMListUsersData() {
-        this.cmListUsersData = []
-    }
+    clearCMListUsersData() { }
 
     formReset() {
         this.errorCode = null

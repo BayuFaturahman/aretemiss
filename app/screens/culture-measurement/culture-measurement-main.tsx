@@ -34,8 +34,6 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
         const [startDate, setStartDate] = useState<string>('')
         const [endDate, setEndDate] = useState<string>('')
 
-        // const [selectedCMOId, setSelectedCMOId] = useState<string>('')
-
         const descSeparator = '{{objective}}';
 
         const goBack = () => {
@@ -59,7 +57,8 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
             // if penilaian infrastruktur budaya juara
             else if (type === 1) {
                 if (tempCMTaker !== null && tempCMTaker !== undefined) {
-                    goToCultureMeasurementInfrastructure(cmoId, false, tempCMTaker.cm_taker_id)
+                    let tempTotalSection = tempCMTaker.cm_taker_total_section
+                    goToCultureMeasurementInfrastructureQuestionnaire(cmoId, false, tempCMTaker.cm_taker_id, tempTotalSection)
                 } else {
                     goToCultureMeasurementInfrastructure(cmoId, true)
                 }
@@ -77,12 +76,13 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
 
         const goToCultureMeasurementRating = (cmoId: string, isNew: boolean = true, cmTakerId: string = '') => {
             navigation.navigate("cultureMeasurementRating", {
-            cmoId: cmoId,
-            isToCreate: isNew,
-            cmTakerId: cmTakerId
+                cmoId: cmoId,
+                isToCreate: isNew,
+                cmTakerId: cmTakerId,
+                isFromQuestionnaire: false
             })
         }
-        
+
         const goToCultureMeasurementImplementation = (cmoId: string, isNew: boolean = true, cmTakerId: string = '') => {
             navigation.navigate("cultureMeasurementImplementation", {
                 cmoId: cmoId,
@@ -108,6 +108,15 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
             })
         }
 
+        const goToCultureMeasurementInfrastructureQuestionnaire = (cmoId: string, isNew: boolean = true, cmTakerId: string = '', totalPage: number = 1) => {
+            navigation.navigate("cultureMeasurementInfrastructureQuestionnaire", {
+                cmoId: cmoId,
+                isToCreate: isNew,
+                totalPage: totalPage,
+                cmTakerId: cmTakerId,
+            })
+        }
+
         const loadCMPublishData = async () => {
             // console.log('loadCMPublishData ')
             await cultureMeasurementStore.getListPublish()
@@ -115,28 +124,14 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
         }
 
         const extractData = () => {
+            console.log('extract')
             // start extracting description
             let tempDesc = publishData.description
-            // console.log(`tempDesc : ${JSON.stringify(tempDesc)}`)
+            tempDesc = tempDesc.split('<br>').join('')
+            tempDesc = tempDesc.split('</p>').join('')
+            tempDesc = tempDesc.split(`${descSeparator}`).join(`<p>${descSeparator}`)
 
-            let tempSplittedDesc = tempDesc.split('<br>')
-            let tempJoinedDesc = tempSplittedDesc.join('')
-            // console.log(`tempJoinedDesc: ${JSON.stringify(tempJoinedDesc)}`)
-
-            tempSplittedDesc = tempJoinedDesc.split('</p>')
-            tempJoinedDesc = tempSplittedDesc.join('')
-            // console.log(`tempJoinedDesc: ${JSON.stringify(tempJoinedDesc)}`)
-
-            tempSplittedDesc = tempJoinedDesc.split(`${descSeparator}`)
-            tempJoinedDesc = tempSplittedDesc.join(`<p>${descSeparator}`)
-            // console.log(`tempJoinedDesc: ${JSON.stringify(tempJoinedDesc)}`)
-
-            // tempDesc = tempDesc.replaceAll('<br>', '')
-            // // tempDesc = tempDesc.replaceAll('<p>', 'new')
-            // tempDesc = tempDesc.replaceAll('</p>', '')
-            // tempDesc = tempDesc.replaceAll(descSeparator, `<p>${descSeparator}`)
-
-            let listTempDesc = tempJoinedDesc.split('<p>',)
+            let listTempDesc = tempDesc.split('<p>',)
             setLisDescription(listTempDesc)
 
 
@@ -157,11 +152,13 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
                     tempLastDraftTaker = tempDraftTakers[0]
                 }
 
-
-                if (data.cm_objective_title === CMObjectiveType.BUDAYA_JUARA) {
+                if (index === 0) {
                     curColor = 'ABM_LIGHT_BLUE'
                     data.cm_objective_title = `${data.cm_objective_title} ${tempTotalSubmittedTakers.length}/${data.cm_objective_max_answerred} orang`
-                } else if (data.cm_objective_title === CMObjectiveType.INFRASTRUKTUR) {
+                    if (tempTotalSubmittedTakers.length > 0) {
+                        cultureMeasurementStore.cmIsExistSubmttedRating = true
+                    }
+                } else if (index === 1) {
                     curColor = 'ABM_YELLOW'
 
                     // get data for budaya juara
@@ -177,10 +174,9 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
                         }
 
                     }
-                } else if (data.cm_objective_title === CMObjectiveType.PELAKSANAAN) {
+                } else if (index === 2) {
                     curColor = 'ABM_GREEN'
                 }
-
 
                 return (
                     {
@@ -202,6 +198,7 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
 
 
         useEffect(() => {
+            cultureMeasurementStore.clearCMData()
             loadCMPublishData()
         }, [isFocused])
 
@@ -221,7 +218,7 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
                         <VStack horizontal={Spacing[24]} vertical={Spacing[12]} style={{ backgroundColor: Colors.WHITE, width: Spacing[160] + Spacing[24], borderRadius: Spacing[20], borderWidth: Spacing[2], borderColor: Colors.ABM_DARK_BLUE }}>
                             {QUESTIONNAIRE_TYPE.map((data, index) => {
                                 return (
-                                    <HStack bottom={Spacing[6]}>
+                                    <HStack bottom={Spacing[6]} key={`quistype${index}`}>
                                         <Spacer />
                                         <View style={{
                                             height: Spacing[18],
@@ -300,7 +297,7 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
                                             style={[Layout.widthFull, { backgroundColor: Colors.WHITE, borderRadius: Spacing[20], borderWidth: Spacing[2], borderColor: Colors.ABM_DARK_BLUE }]}>
                                             {listCMObjectives.map((data, index) => {
                                                 return (
-                                                    <VStack style={{ borderBottomColor: Colors.ABM_DARK_BLUE, borderBottomWidth: index < 2 ? Spacing[1] : Spacing[0], paddingVertical: Spacing[12] }}>
+                                                    <VStack style={{ borderBottomColor: Colors.ABM_DARK_BLUE, borderBottomWidth: index < 2 ? Spacing[1] : Spacing[0], paddingVertical: Spacing[12] }} key={`quiz${index}`}>
                                                         <HStack style={{ bottom: Spacing[6] }}>
                                                             <View style={{
                                                                 height: Spacing[18],
@@ -315,11 +312,9 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
                                                             <Text type="body-bold" style={{ fontSize: Spacing[12], width: Spacing[128] }} >{data.cmoTitle}</Text>
                                                             <Spacer />
                                                             <Button type={data.isEnable ? "primary" : "negative"} text="Isi Kuisioner" style={{ paddingHorizontal: Spacing[8] }} textStyle={{ fontSize: Spacing[12] }}
-                                                                disabled={!data.isEnable} onPress={() => goToQuestionnaire(data.cmoId, index)} />                                                                
+                                                                disabled={!data.isEnable} onPress={() => goToQuestionnaire(data.cmoId, index)} />
                                                             {/* disabled={false} onPress={() => goToQuestionnaire(data.cmoId, index)} /> */}
                                                         </HStack>
-                                                        {/* <Text type="body-bold" style={{ fontSize: Spacing[12], width: Spacing[128] }} >{
-                                                            data['cmTakersLastDraft'] && data['cmTakersLastDraft']['cm_taker_id'] ? data['cmTakersLastDraft']['cm_taker_id'] : 'lala'}</Text> */}
                                                         {data.cmoLastModified !== null &&
                                                             <Text type="body" style={{ fontSize: Spacing[12], fontWeight: '100' }}>{`Terakhir diisi  pada tanggal ${data.cmoLastModified}`}</Text>
                                                         }

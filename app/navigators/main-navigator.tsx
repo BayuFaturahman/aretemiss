@@ -373,13 +373,15 @@ export type NavigatorParamList = {
   cultureMeasurementRating: {
     cmoId: string,
     isToCreate: boolean,
-    cmTakerId: string
+    cmTakerId: string,
+    isFromQuestionnaire: boolean
   }
   cultureMeasurementRatingQuestionnaire: {
       cmoId: string,
       isToCreate: boolean,
       totalPage: number,
       cmTakerId: string
+      isGoToLastModifiedPage: boolean
   }
 }
 

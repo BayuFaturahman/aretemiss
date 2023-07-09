@@ -11,7 +11,7 @@ import { Colors, Layout, Spacing } from "@styles"
 import { useStores } from "../../../bootstrap/context.boostrap"
 
 import { dimensions } from "@config/platform.config"
-import { images } from "@assets/images";
+import { debounce } from "lodash"
 
 import Spinner from "react-native-loading-spinner-overlay"
 import { ProgressBar } from "react-native-paper"
@@ -27,7 +27,7 @@ const CultureMeasurementRatingQuestionnaire: FC<StackScreenProps<NavigatorParamL
     observer(({ navigation, route }) => {
 
         const [, forceUpdate] = useReducer((x) => x + 1, 0)
-        const { cmoId, isToCreate, totalPage, cmTakerId } = route.params
+        const { cmoId, isToCreate, totalPage, cmTakerId, isGoToLastModifiedPage } = route.params
         const { cultureMeasurementStore, mainStore } = useStores()
         const scrollRef = useRef();
 
@@ -39,7 +39,7 @@ const CultureMeasurementRatingQuestionnaire: FC<StackScreenProps<NavigatorParamL
         const [currSectionNo, setCurrSectionNo] = useState<number>(0)
         const [currSectionData, setCurrSectionData] = useState<CMSectionModel>(CM_SECTION_EMPTY)
 
-        const [currPage, setCurrPage] = useState<number>(1)
+        const [currPage, setCurrPage] = useState<number>(3)
 
         const [listSectionData, setListSectionData] = useState<CMSectionModel[]>()
         const [listDescription, setLisDescription] = useState<string[]>([])
@@ -61,8 +61,17 @@ const CultureMeasurementRatingQuestionnaire: FC<StackScreenProps<NavigatorParamL
             setModalIcon(icon)
         }
 
+        const goToCultureMeasurementRating = (cmoId: string, isNew: boolean = true, cmTakerId: string = '') => {
+            navigation.navigate("cultureMeasurementRating", {
+                cmoId: cmoId,
+                isToCreate: isNew,
+                cmTakerId: cmTakerId,
+                isFromQuestionnaire: true
+            })
+        }
+
         const goBack = () => {
-            if (currPage > 1) {
+            if (currPage > 3) {
                 if (currPage === totalPage - 1) {
                     setSubmitBtnText('Selanjutnya')
                 }
@@ -70,13 +79,13 @@ const CultureMeasurementRatingQuestionnaire: FC<StackScreenProps<NavigatorParamL
                 extractSection(currSectionNo - 1)
                 setCurrSectionNo(currSectionNo - 1)
             } else {
-                navigation.goBack()
+                goToCultureMeasurementRating(cmoId, isToCreate, cultureMeasurementStore.cmAnswerData.id)
+                console.log(`go back isTocreate from page ${currPage}`)
             }
             scrollUp()
         }
 
         const goToNextPage = () => {
-            console.log(`goToNextPage `)
             setIsError(false)
 
             // if going to last page
@@ -103,20 +112,29 @@ const CultureMeasurementRatingQuestionnaire: FC<StackScreenProps<NavigatorParamL
             });
         }
 
+        const loadGetAnswerData = async (cmTakerId: string) => {
+            await cultureMeasurementStore.getCMAnswerById(cmTakerId)
+            setListSectionData(cultureMeasurementStore.cmAnswerData.temp_data)
+        }
+
+        const firstLoadGetAnswerData = debounce(async () => {
+            console.log(`firstLoadGetAnswerData`)
+            await loadGetAnswerData(cmTakerId)
+            forceUpdate()
+        }, 500)
+
         const createCMAnswer = useCallback(async (data: CMCreateAnswerModel) => {
-            // console.log(`create answer ${JSON.stringify(data)}`)
             await cultureMeasurementStore.createCMAnswer(data)
         }, [])
 
         const updateCMAnswer = useCallback(async (data: CMUpdateAnswerModel) => {
-            // console.log(`updateCMAnswer ${JSON.stringify(data)}`)
             await cultureMeasurementStore.updateCMAnswer(cmTakerId, data)
         }, [])
 
         const extractDesc = useCallback(() => {
             let tempDesc = currSectionData.description
-            tempDesc = tempDesc.replaceAll('<br>', '')
-            tempDesc = tempDesc.replaceAll('</p>', '')
+            tempDesc = tempDesc.split('<br>').join('')
+            tempDesc = tempDesc.split('</p>').join('')
 
             let listTempDesc = tempDesc.split('<p>',)
             setLisDescription(listTempDesc)
@@ -142,16 +160,42 @@ const CultureMeasurementRatingQuestionnaire: FC<StackScreenProps<NavigatorParamL
 
         useEffect(() => {
             if (listSectionData?.length > 0) {
-                setCurrSectionNo(3)
-                extractSection(3)
+                if (isToCreate && cmoId) {
+                    setCurrSectionNo(3)
+                    extractSection(3)
+                } else if (!isToCreate && cmTakerId) {
+                    let tempGoToPage = 3
+
+                    if (isGoToLastModifiedPage) {
+                        // console.log(`go to last modified page`)
+                        for (let i = 0; i < listSectionData.length; i++) {
+                            if (listSectionData[i].type === 'questionnaire') {
+                                let tempQues = listSectionData[i].questionnaire.filter(item => item.point === undefined)
+                                if (tempQues.length > 0) {
+                                    tempGoToPage = i
+                                    i = listSectionData.length
+                                }
+                            }
+                        }
+
+                    } else {
+                        // console.log(`go to the beginning of the questionnaire`)
+                    }
+                    extractSection(tempGoToPage)
+                    setCurrSectionNo(tempGoToPage)
+                    setCurrPage(tempGoToPage)
+                    setCurrSectionNo(tempGoToPage)
+                }
             }
         }, [listSectionData])
 
         useEffect(() => {
+            // console.log(`QUES cultureMeasurementStore.cmSections ${JSON.stringify(cultureMeasurementStore.cmSections)}`)
             if (isToCreate && cmoId) {
                 setListSectionData(cultureMeasurementStore.cmSections)
             } else if (!isToCreate && cmTakerId) {
-                setListSectionData(cultureMeasurementStore.cmAnswerData.temp_data)
+                firstLoadGetAnswerData()
+                // setListSectionData(cultureMeasurementStore.cmAnswerData.temp_data)
             }
 
             setIsNextClicked(false)
@@ -240,7 +284,6 @@ const CultureMeasurementRatingQuestionnaire: FC<StackScreenProps<NavigatorParamL
 
         const onClickNextOrSubmit = () => {
             console.log(`click next or submit `)
-
             setIsNextClicked(true)
 
             let temptErrorList = new Array(listQuestionnaire.length).fill(0)
@@ -264,8 +307,6 @@ const CultureMeasurementRatingQuestionnaire: FC<StackScreenProps<NavigatorParamL
             } else {
                 scrollUp()
             }
-
-
         }
 
         const submitData = () => {
@@ -281,16 +322,15 @@ const CultureMeasurementRatingQuestionnaire: FC<StackScreenProps<NavigatorParamL
 
         const saveOrSubmitData = useCallback(async (type: string) => {
             cultureMeasurementStore.formReset()
-            // let tempParam = {}
             if (isToCreate) {
                 console.log(`will create CM answer`)
                 //prepare param
                 let tempParam = {
                     cmo_id: cmoId,
-                    rated_user_id: isToCreate ? mainStore.userProfile.user_id : cultureMeasurementStore.cmAnswerData.rated_user_id,
+                    rated_user_id: cultureMeasurementStore.cmRatedUserId,
                     status: type,
-                    sn: "", //null
-                    structural_position: "", //null
+                    sn: cultureMeasurementStore.cmSN, //null
+                    structural_position: cultureMeasurementStore.cmStructurelPosition, //null
                     temp_data: listSectionData
                 }
                 await createCMAnswer(tempParam)
@@ -301,12 +341,13 @@ const CultureMeasurementRatingQuestionnaire: FC<StackScreenProps<NavigatorParamL
                 let tempParam = {
                     rated_user_id: cultureMeasurementStore.cmAnswerData.rated_user_id,
                     status: type,
+                    sn: cultureMeasurementStore.cmAnswerData.sn,
+                    structural_position: cultureMeasurementStore.cmAnswerData.structural_position,
                     temp_data: listSectionData
                 }
                 await updateCMAnswer(tempParam)
                 // console.log(`let tempParam =  ${JSON.stringify(tempParam)}`)
             }
-
 
             if (cultureMeasurementStore.message === 'Culture Measurement updated' || cultureMeasurementStore.message === 'Culture Measurement Created') {
                 renderSuccessModal('disimpan')
@@ -344,7 +385,6 @@ const CultureMeasurementRatingQuestionnaire: FC<StackScreenProps<NavigatorParamL
             setIsIconFromMood(true)
 
         }
-        
 
         const renderCancelModal = () => {
             setModalVisible(true)
@@ -374,11 +414,11 @@ const CultureMeasurementRatingQuestionnaire: FC<StackScreenProps<NavigatorParamL
                         // />
                         // }
                         >
-                            <VStack style={{ backgroundColor: Colors.WHITE, paddingTop: Spacing[12]}}>
+                            <VStack style={{ backgroundColor: Colors.WHITE, paddingTop: Spacing[12] }}>
                                 {/* <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} /> */}
                                 <VStack top={Spacing[12]} horizontal={Spacing[24]} bottom={Spacing[12]}>
                                     <HStack>
-                                        <Text type={"left-header"} text={`Penilaian Pelaksanaan\nProyek Budaya Juara`} style={{ fontSize: Spacing[16], textAlign: 'left' }} />
+                                        <Text type={"left-header"} text={`Penilaian Budaya Juara`} style={{ fontSize: Spacing[16], textAlign: 'left' }} />
                                         <Spacer />
                                         <Button type={"dark-yellow"} text="Simpan Data" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[12] }} onPress={() => onClickSave()} />
                                         <Spacer />
@@ -405,14 +445,18 @@ const CultureMeasurementRatingQuestionnaire: FC<StackScreenProps<NavigatorParamL
                                     <View style={[{ height: Spacing[6], backgroundColor: Colors.ABM_YELLOW }, Layout.widthFull]}></View>
                                     <Spacer height={Spacing[8]} />
 
-                                    {isError && <Text
-                                        type={"warning-not-bold"}
-                                        style={{
-                                            textAlign: 'center',
-                                            marginTop: Spacing[4],
-                                            color: Colors.MAIN_RED
-                                        }}
-                                    >Ups! Sepertinya ada kolom yang belum diisi! Silahkan dicek kembali dan isi semua kolom yang tersedia!</Text>
+                                    {isError &&
+                                        <>
+                                            <Text
+                                                type={"warning-not-bold"}
+                                                style={{
+                                                    textAlign: 'center',
+                                                    marginTop: Spacing[4],
+                                                    color: Colors.MAIN_RED
+                                                }}
+                                            >Ups! Sepertinya ada kolom yang belum diisi! Silahkan dicek kembali dan isi semua kolom yang tersedia!</Text>
+                                            <Spacer height={Spacing[12]} />
+                                        </>
                                     }
 
                                     {/* start questionaire */}
@@ -432,14 +476,14 @@ const CultureMeasurementRatingQuestionnaire: FC<StackScreenProps<NavigatorParamL
 
                                     <Spacer height={Spacing[24]} />
                                     <ProgressBar
-                                        progress={(currPage + 3) / totalPage}
+                                        progress={(currPage + 1) / totalPage}
                                         color={Colors.ABM_YELLOW}
                                         style={{ height: Spacing[8], backgroundColor: Colors.GRAY74 }}
                                     // displayName={`1/3`}
                                     />
                                     <HStack>
                                         <Spacer />
-                                        <Text>{currPage + 3}/{totalPage}</Text>
+                                        <Text>{currPage + 1}/{totalPage}</Text>
                                         <Spacer />
                                     </HStack>
                                     <Spacer height={Spacing[6]} />
@@ -462,7 +506,6 @@ const CultureMeasurementRatingQuestionnaire: FC<StackScreenProps<NavigatorParamL
                             modalDesc={modalDesc}
                             modalBtnText={modalBtnText}
                         />
-
                     }
                 </VStack >
             </KeyboardAvoidingView>

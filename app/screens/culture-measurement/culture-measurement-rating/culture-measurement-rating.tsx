@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useReducer, useState, useRef } from "react"
-import { SafeAreaView, ScrollView, StyleSheet, View, TouchableOpacity } from "react-native"
+import { KeyboardAvoidingView, SafeAreaView, ScrollView, StyleSheet, View, TouchableOpacity } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Text, Button, TextField, DropDownPicker, DropDownItem } from "@components"
@@ -20,8 +20,8 @@ import { IOption } from "react-native-modal-selector"
 
 import { ProgressBar } from "react-native-paper"
 import moment from "moment"
-import { CMSectionModel, QuestionnaireModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
-import { QUESTIONNAIRE_EXAMPLE, QUESTIONNAIRE_OPTION } from "../culture-measurement.type"
+import { CMCreateAnswerModel, CMSectionModel, CMUpdateAnswerModel, QuestionnaireModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
+import { CM_TEAM_MEMBER_VALUE_MOCK_DATA, QUESTIONNAIRE_EXAMPLE, QUESTIONNAIRE_OPTION } from "../culture-measurement.type"
 import { debounce } from "lodash"
 import { USER_POSITION } from "@screens/settings/change-user-position"
 import { ProfileUpdateForm } from "@screens/settings/my-account"
@@ -31,7 +31,7 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
     observer(({ navigation, route }) => {
 
         const [, forceUpdate] = useReducer((x) => x + 1, 0)
-        const { cmoId, isToCreate, cmTakerId } = route.params
+        const { cmoId, isToCreate, cmTakerId, isFromQuestionnaire } = route.params
         const { mainStore, cultureMeasurementStore } = useStores()
         const scrollRef = useRef();
 
@@ -56,7 +56,7 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
 
         const [editFullName, setEditFullname] = useState<boolean>(false)
         const [myTeamValue, setMyTeamValue] = useState(mainStore.userProfile.team1_id ? { "id": mainStore.userProfile.team1_id, "item": mainStore.userProfile.team1_name } : {})
-        const [teamMemberValue, setTeamMemberValue] = useState<string>()
+        const [teamMemberValue, setTeamMemberValue] = useState({ id: '', item: '' })
         const [cmMemberPagination, setCmMemberPagination] = useState<number>(1)
         const [cmMemberLimit, setCmMemberLimit] = useState<number>(10)
 
@@ -102,12 +102,15 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
             navigation.goBack()
         }
 
-        const goToQuestionnaire = () => {
+        const goToCultureMeasurement = () => navigation.navigate("cultureMeasurementMain")
+
+        const goToQuestionnaire = (isGoToLastModifiedPage: boolean) => {
             navigation.navigate("cultureMeasurementRatingQuestionnaire", {
                 cmoId: cmoId,
                 isToCreate: isToCreate,
                 totalPage: totalPage,
-                cmTakerId: cmTakerId
+                cmTakerId: cmTakerId,
+                isGoToLastModifiedPage: isGoToLastModifiedPage
             })
         }
 
@@ -129,6 +132,38 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
             await cultureMeasurementStore.getCmMemberList(cmMemberPagination, cmMemberLimit)
         }, [])
 
+        const loadCMAllSectionData = async (cmoId: string) => {
+            console.log('loadCMPublishData ')
+            await cultureMeasurementStore.getAllSection(cmoId)
+            setListSectionData(cultureMeasurementStore.cmSections)
+        }
+
+        const firstLoadCMAllSectionData = debounce(async () => {
+            console.log(`firstLoadCMAllSectionData`)
+            await loadCMAllSectionData(cmoId)
+            forceUpdate()
+        }, 500)
+
+        const loadGetAnswerData = async (cmTakerId: string) => {
+            await cultureMeasurementStore.getCMAnswerById(cmTakerId)
+            setListSectionData(cultureMeasurementStore.cmAnswerData.temp_data)
+        }
+
+        const firstLoadGetAnswerData = debounce(async () => {
+            console.log(`firstLoadGetAnswerData`)
+            await loadGetAnswerData(cmTakerId)
+            forceUpdate()
+        }, 500)
+
+
+        const createCMAnswer = useCallback(async (data: CMCreateAnswerModel) => {
+            await cultureMeasurementStore.createCMAnswer(data)
+        }, [])
+
+        const updateCMAnswer = useCallback(async (data: CMUpdateAnswerModel) => {
+            await cultureMeasurementStore.updateCMAnswer(cmTakerId, data)
+        }, [])
+
         const handleBackButton = () => {
             if (currPage !== 1) {
                 setCurrPage((page) => page - 1)
@@ -138,57 +173,53 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
         }
 
         const handleNextButton = (async () => {
-            if (currPage === 3) {
-                goToQuestionnaire()
-            } else {
-                if (currPage === 1) {
-                    validateAppraiserForm()
-                }
+            if (currPage === 1) {
+                validateAppraiserForm()
+            } else if (currPage === 2) {
+                validateRatePerson()
+            } else if (currPage === 3) {
+                goToQuestionnaire(false)
             }
         })
 
-
         const validateAppraiserForm = async () => {
             setIsError(false)
-            // if (currPage === 1) {
-            setListError(new Array(3).fill(0))
+            setListError(new Array(5).fill(0))
 
             let tempListError = new Array(5).fill(0)
             let tempIsError = false
-            if (fullName === '') {
+            if (fullName === '' || fullName === null) {
                 tempListError[0] = 1
                 tempIsError = true
             }
 
-            if (userPosition === '') {
+            if (userPosition === '' || userPosition === null) {
                 tempListError[1] = 1
                 tempIsError = true
             }
 
-            if (sn === '') {
+            if (sn === '' || sn === null) {
                 tempListError[2] = 1
                 tempIsError = true
             }
 
-            if (structurePos === '') {
+            console.log(`structurePos ${structurePos}`)
+            if (structurePos === '' || structurePos === null) {
                 tempListError[3] = 1
                 tempIsError = true
             }
 
-            if (myTeamValue.id == null) {
+            if (myTeamValue.id === null || myTeamValue.id === '') {
                 tempListError[4] = 1
                 tempIsError = true
             }
 
-
             setListError(tempListError)
             setIsError(tempIsError)
-
 
             if (tempIsError) {
                 return false
             }
-
 
             cultureMeasurementStore.cmSN = sn
             cultureMeasurementStore.cmStructurelPosition = structurePos
@@ -197,13 +228,32 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
             userProfile.team1Id = myTeamValue.id
 
             await updateProfile()
+        }
 
+        const validateRatePerson = async () => {
+            setIsError(false)
+            setListError(new Array(1).fill(0))
 
+            let tempListError = new Array(5).fill(0)
+            let tempIsError = false
+            if (teamMemberValue.id === '' || teamMemberValue.id === undefined) {
+                tempListError[0] = 1
+                tempIsError = true
+            }
+
+            setListError(tempListError)
+            setIsError(tempIsError)
+
+            if (tempIsError) {
+                return false
+            }
+            cultureMeasurementStore.cmRatedUserId = teamMemberValue.id
+            setCurrPage((page) => page + 1)
         }
 
         const updateProfile = async () => {
             console.log('on updateProfile')
-            console.log("Data to be submitted", userProfile)
+            // console.log("Data to be submitted", userProfile)
             await mainStore.updateProfile(mainStore.userProfile.user_id, userProfile)
             if (mainStore.errorCode === null) {
                 await mainStore.getProfile()
@@ -211,32 +261,11 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
                 cultureMeasurementStore.clearCMListUsersData()
                 await loadGetMemberList()
                 forceUpdate()
+                setModalBtnText('Kembali ke Kuesioner')
                 renderSuccessModal()
             } else {
                 renderFailModal()
                 console.log('error code ', mainStore.errorCode)
-            }
-        }
-
-        const renderSuccessModal = () => {
-            setModalVisible(true)
-            setModalContent("Sukses!", `Data telah berhasil disimpan!`, "senang")
-            setModalBtnText('Kembali ke Kuesioner')
-            setIsIconFromMood(true)
-        }
-
-        const renderFailModal = () => {
-            setModalVisible(true)
-            setModalContent("Ada Kesalahan!", "Ups! Sepertinya ada kesalahan!\nSilahkan coba lagi!", "sedih")
-            setModalBtnText('Kembali ke\nMenu Sebelumnya')
-            setIsIconFromMood(true)
-
-        }
-
-        const onClikModalBtn = () => {
-            if (modalTitle.includes('Sukses')) {
-                toggleModal(false)
-                setCurrPage((page) => page + 1)
             }
         }
 
@@ -256,6 +285,7 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
         // Fetch culturemeasurement people to-rate
         useEffect(() => {
             if (cultureMeasurementStore.cmListUsersData !== null) {
+                // const itemsData: DropDownItem[] = CM_TEAM_MEMBER_VALUE_MOCK_DATA.map((item, index) => {
                 const itemsData: DropDownItem[] = cultureMeasurementStore.cmListUsersData.map((item, index) => {
                     return {
                         item: item.fullname,
@@ -265,30 +295,6 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
                 setMemberList(itemsData)
             }
         }, [cultureMeasurementStore.getCmMemberListSucceed, cultureMeasurementStore.cmListUsersData, cultureMeasurementStore.isLoading])
-
-        const loadCMAllSectionData = async (cmoId: string) => {
-            console.log('loadCMPublishData ')
-            await cultureMeasurementStore.getAllSection(cmoId)
-            setListSectionData(cultureMeasurementStore.cmSections)
-        }
-
-        const firstLoadCMAllSectionData = debounce(async () => {
-            console.log(`firstLoadCMAllSectionData`)
-            await loadCMAllSectionData(cmoId)
-            forceUpdate()
-        }, 500)
-
-
-        const loadGetAnswerData = async (cmTakerId: string) => {
-            await cultureMeasurementStore.getCMAnswerById(cmTakerId)
-            setListSectionData(cultureMeasurementStore.cmAnswerData.temp_data)
-        }
-
-        const firstLoadGetAnswerData = debounce(async () => {
-            console.log(`firstLoadGetAnswerData`)
-            await loadGetAnswerData(cmTakerId)
-            forceUpdate()
-        }, 500)
 
         const extractDesc = (page: number) => {
             // page 1 for appraiser
@@ -312,36 +318,139 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
             }
         }
 
+        const setInitValue = () => {
+            console.log(`setInitValue`)
+            let tempCurrPage = 1
+            // Set SN
+            setSn(cultureMeasurementStore.cmAnswerData.sn)
+            // Set position
+            setStructurePos(cultureMeasurementStore.cmAnswerData.structural_position)
+
+            console.log(`cultureMeasurementStore.cmAnswerData.rated_user_id ${cultureMeasurementStore.cmAnswerData.rated_user_id}`)
+            if (cultureMeasurementStore.cmAnswerData.rated_user_id !== '') {
+                let tempRatedPersonID = cultureMeasurementStore.cmAnswerData.rated_user_id
+                let tempMatchRatedPerson = memberList.filter(item => item.id === tempRatedPersonID)
+                let tempRatedPersonName = tempMatchRatedPerson.length > 0 ? tempMatchRatedPerson[0].item : ''
+                // Set rate person
+                setTeamMemberValue({ id: tempRatedPersonID, item: tempRatedPersonName })
+            }
+            if (isFromQuestionnaire) {
+                tempCurrPage = 3
+                console.log('its from questionnaire')
+            } else {
+
+                if (!cultureMeasurementStore.cmIsExistSubmttedRating) {
+                    if (cultureMeasurementStore.cmAnswerData.sn === '' || cultureMeasurementStore.cmAnswerData.sn === null || cultureMeasurementStore.cmAnswerData.structural_position === '' || cultureMeasurementStore.cmAnswerData.structural_position === null) {
+                        tempCurrPage = 1
+                    }
+                } else if (cultureMeasurementStore.cmAnswerData.rated_user_id === '') {
+                    tempCurrPage = 2
+                } else {
+                    let tempGoToPage = 1
+                    for (let i = 0; i < listSectionData.length; i++) {
+                        if (listSectionData[i].type === 'questionnaire') {
+                            let tempQues = listSectionData[i].questionnaire.filter(item => item.point === undefined)
+                            if (tempQues.length > 0) {
+                                tempGoToPage = i
+                                i = listSectionData.length
+                            }
+                        }
+                    }
+
+                    if (tempGoToPage >= 3) {
+                        goToQuestionnaire(true)
+                    }
+                }
+            }
+            extractDesc(tempCurrPage)
+            setCurrPage(tempCurrPage)
+        }
+
         useEffect(() => {
             if (listSectionData?.length > 0) {
                 setTotalPage(listSectionData.length)
-                extractDesc(currPage)
-            }
 
-            // console.log(`list section data: ${listSectionData.length}`)
-        }, [listSectionData, currPage])
+                if (isToCreate) {
+                    let tempPage = 1;
+                    if (cultureMeasurementStore.cmIsExistSubmttedRating) {
+                        tempPage = 2
+                    }
+                    extractDesc(tempPage)
+                    setCurrPage(tempPage)
+                } else {
+                    setInitValue()
+                }
+            }
+        }, [listSectionData, cultureMeasurementStore.cmAnswerData, totalPage])
+
 
         useEffect(() => {
-            if (isToCreate && cmoId) {
-                firstLoadCMAllSectionData()
+            // Initial render hook
+            // Fetch area / fungsi dropdown
+            firstLoadGetTeam()
+            // Set initial Date
+            setDate(moment().format('DD MMMM YYYY'))
+            // Set fullname
+            setFullName(mainStore.userProfile.user_fullname)
+            // Set position
+            setUserPosition(mainStore.userProfile.user_position ? USER_POSITION.filter((position) => position.id === mainStore.userProfile.user_position).length > 0 ? USER_POSITION.filter((position) => position.id === mainStore.userProfile.user_position)[0].item : '' : '')
 
-                // Initial render hook
-                // Fetch area / fungsi dropdown
-                firstLoadGetTeam()
-                // Set initial Date
-                setDate(moment().format('DD MMMM YYYY'))
-                // Set position
-                setUserPosition(mainStore.userProfile.user_position ? USER_POSITION.filter((position) => position.id === mainStore.userProfile.user_position).length > 0 ? USER_POSITION.filter((position) => position.id === mainStore.userProfile.user_position)[0].item : '' : '')
-                // Set fullname
-                setFullName(mainStore.userProfile.user_fullname)
 
-                setIsError(false)
-                setListError(new Array(5).fill(0))
-                forceUpdate()
-            } else if (!isToCreate && cmTakerId) {
-                firstLoadGetAnswerData()
+            console.log(`cultureMeasurementStore.cmIsExistSubmttedRating ${cultureMeasurementStore.cmIsExistSubmttedRating}`)
+            if (!isFromQuestionnaire) {
+                if (isToCreate && cmoId) {
+                    firstLoadCMAllSectionData()
+
+                    setIsError(false)
+                    setListError(new Array(5).fill(0))
+                    forceUpdate()
+                } else if (!isToCreate && cmTakerId) {
+                    // console.log(`isFromQuestionnaire ${isFromQuestionnaire}`)
+                    firstLoadGetAnswerData()
+                }
             }
         }, [cmoId, isToCreate, cmTakerId])
+
+        const onClickCancel = () => {
+            renderCancelModal()
+        }
+
+        const onClickSave = async () => {
+            console.log(`click save`)
+            await saveData()
+        }
+
+        const saveData = useCallback(async () => {
+            console.log('simpan data')
+            cultureMeasurementStore.formReset()
+
+            //prepare param
+            let tempParam = {
+                cmo_id: cmoId,
+                rated_user_id: teamMemberValue.id,
+                status: 'draft',
+                sn: sn ? sn : '', //null
+                structural_position: structurePos ? structurePos : '', //null
+                temp_data: listSectionData
+            }
+
+            // console.log(`let tempParam =  ${JSON.stringify(tempParam)}`)
+            if (isToCreate) {
+                console.log(`will create CM answer`)
+                await createCMAnswer(tempParam)
+            } else {
+                console.log(`will update CM answer`)
+                await updateCMAnswer(tempParam)
+            }
+
+            if (cultureMeasurementStore.message === 'Culture Measurement updated' || cultureMeasurementStore.message === 'Culture Measurement Created') {
+                setModalBtnText('Kembali ke Main Menu\nKuesioner')
+                renderSuccessModal()
+            } else {
+                renderFailModal()
+            }
+            forceUpdate()
+        }, [listSectionData, sn, teamMemberValue, structurePos])
 
         const renderAppraiserForm = () => {
             return (
@@ -453,9 +562,12 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
                         items={memberList}
                         isRequired={true}
                         label="Nama individu yang dinilai:"
-                        isError={isError}
+                        isError={listError[0] === 1}
                         onValueChange={(value: IOption) => {
-                            setTeamMemberValue(value?.id)
+                            setTeamMemberValue({
+                                id: value?.id,
+                                item: value?.item
+                            })
                         }}
                         placeholder={""}
                         containerStyle={{ marginTop: Spacing[4] }}
@@ -463,6 +575,7 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
                         zIndexInverse={1000}
                         dropDownDirection={"BOTTOM"}
                         isRemovable={false}
+                        initialValue={teamMemberValue}
                     />
                 </>
             )
@@ -574,93 +687,136 @@ const cultureMeasurementRating: FC<StackScreenProps<NavigatorParamList, "culture
             )
         }
 
+        const renderSuccessModal = () => {
+            setModalVisible(true)
+            setModalContent("Sukses!", `Data telah berhasil disimpan!`, "senang")
+            setIsIconFromMood(true)
+        }
+
+        const renderFailModal = () => {
+            setModalVisible(true)
+            setModalContent("Ada Kesalahan!", "Ups! Sepertinya ada kesalahan!\nSilahkan coba lagi!", "sedih")
+            setModalBtnText('Kembali ke\nMenu Sebelumnya')
+            setIsIconFromMood(true)
+        }
+
+        const renderCancelModal = () => {
+            setModalVisible(true)
+            setModalContent("Kamu akan membatalkan pengisian kuesioner.", "Pengisian kuesioner akan dibatalkan. Apakah kamu yakin ingin membatalkannya?", "")
+            setModalBtnText('Kembali ke Main Menu\nKuesioner')
+            setIsIconFromMood(false)
+
+        }
+
+        const onClickModalBtn = () => {
+            // if click next
+            if (modalTitle.includes('Sukses') && modalBtnText.includes('Kembali ke Kuesioner')) {
+                toggleModal(false)
+                setCurrPage((page) => page + 1)
+                setListError(new Array(1).fill(0))
+            } else if (modalTitle.includes('Sukses') && modalBtnText.includes('Kembali ke Main Menu')) {
+                // if click simpan data, back to culture measurement main
+                goToCultureMeasurement()
+            } else {
+                // on fail to save/submit
+                toggleModal(false)
+            }
+        }
 
         return (
-            <VStack
-                testID="cultureMeasurementRating"
-                style={styles.bg}
+            <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={Layout.flex}
             >
-                <SafeAreaView style={Layout.flex}>
-                    <ScrollView>
-                        <VStack style={{ backgroundColor: Colors.WHITE, paddingTop: Spacing[12] }}>
-                            <VStack top={Spacing[12]} horizontal={Spacing[24]} bottom={Spacing[12]}>
-                                <HStack>
-                                    <Text type={"left-header"} text={`Penilaian Budaya Juara`} style={{ fontSize: Spacing[16], textAlign: 'left' }} />
-                                    <Spacer />
-                                    {/* <Button type={"dark-yellow"} text="Simpan Data" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[12] }} />
-                                    <Spacer />
-                                    <Button type={"warning"} text="Cancel" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[12] }} onPress={() => goBack()} /> */}
-                                </HStack>
-                                <Spacer height={Spacing[24]} />
-                                {listDescription.map((item, index) => {
-                                    if (item !== descSeparator) {
-                                        return (
-                                            <>
-                                                <Text type={"body"} style={{ textAlign: "center", fontSize: Spacing[12] }}>
-                                                    {item}
-                                                </Text>
-                                            </>
-                                        )
-                                    } else {
-                                        return renderQuestionnaireType()
-                                    }
-                                })}
-                                <Spacer height={Spacing[8]} />
-                                <View style={[{ height: Spacing[6], backgroundColor: Colors.ABM_YELLOW }, Layout.widthFull]}></View>
-                                <Spacer height={Spacing[8]} />
-                                {/* render appraiser form  on page 1 */}
+                <VStack
+                    testID="cultureMeasurementRating"
+                    style={styles.bg}
+                >
+                    <SafeAreaView style={Layout.flex}>
+                        <ScrollView>
+                            <VStack style={{ backgroundColor: Colors.WHITE, paddingTop: Spacing[12] }}>
+                                <VStack top={Spacing[12]} horizontal={Spacing[24]} bottom={Spacing[12]}>
+                                    <HStack>
+                                        <Text type={"left-header"} text={`Penilaian Budaya Juara`} style={{ fontSize: Spacing[16], textAlign: 'left' }} />
+                                        <Spacer />
+                                        <Button type={"dark-yellow"} text="Simpan Data" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[12] }} onPress={() => onClickSave()} />
+                                        <Spacer />
+                                        <Button type={"warning"} text="Cancel" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[12] }} onPress={() => onClickCancel()} />
+                                    </HStack>
+                                    <Spacer height={Spacing[24]} />
+                                    {listDescription.map((item, index) => {
+                                        if (item !== descSeparator) {
+                                            return (
+                                                <>
+                                                    <Text type={"body"} style={{ textAlign: "center", fontSize: Spacing[12] }}>
+                                                        {item}
+                                                    </Text>
+                                                </>
+                                            )
+                                        } else {
+                                            return renderQuestionnaireType()
+                                        }
+                                    })}
+                                    <Spacer height={Spacing[8]} />
+                                    <View style={[{ height: Spacing[6], backgroundColor: Colors.ABM_YELLOW }, Layout.widthFull]}></View>
+                                    <Spacer height={Spacing[8]} />
 
-                                {currPage === 1 && renderAppraiserForm()}
+                                    {/* render appraiser form  on page 1 */}
+                                    {currPage === 1 && renderAppraiserForm()}
 
-                                {/* render rate person form  on page 2 */}
+                                    {/* render rate person form  on page 2 */}
+                                    {currPage === 2 && renderRatePerson()}
 
-                                {currPage === 2 && renderRatePerson()}
+                                    {/* render example questionaire on page 3*/}
+                                    {currPage === 3 && renderQuestionExample()}
 
-                                {/* render example questionaire on page 3*/}
+                                    <Spacer height={Spacing[24]} />
+                                    <HStack>
+                                        {/* Back button should be hidden on below condition:
+                                        cultureMeasurementStore.cmIsExistSubmttedRating = true and on second page
+                                    */}
+                                        {((cultureMeasurementStore.cmIsExistSubmttedRating && currPage > 2) || !cultureMeasurementStore.cmIsExistSubmttedRating) &&
+                                            < Button type={"primary-dark"} text="Sebelumnya" style={{ paddingHorizontal: Spacing[14], borderRadius: Spacing[12] }} onPress={() => handleBackButton()} />
+                                        }
+                                        <Spacer />
+                                        <Button type={"primary"} text="Selanjutnya" style={{ paddingHorizontal: Spacing[14], borderRadius: Spacing[12] }} onPress={() => handleNextButton()} />
+                                    </HStack>
 
-                                {currPage === 3 && renderQuestionExample()}
+                                    <Spacer height={Spacing[24]} />
+                                    <ProgressBar
+                                        progress={1 / totalPage}
+                                        color={Colors.ABM_YELLOW}
+                                        style={{ height: Spacing[8], backgroundColor: Colors.GRAY74 }}
+                                    />
+                                    <HStack>
+                                        <Spacer />
+                                        <Text>{currPage}/{totalPage}</Text>
+                                        <Spacer />
+                                    </HStack>
+                                    <Spacer height={Spacing[6]} />
+                                </VStack>
 
-                                <Spacer height={Spacing[24]} />
-                                <HStack>
-                                    <Button type={"primary-dark"} text="Sebelumnya" style={{ paddingHorizontal: Spacing[14], borderRadius: Spacing[12] }} onPress={() => handleBackButton()} />
-                                    <Spacer />
-                                    <Button type={"primary"} text="Selanjutnya" style={{ paddingHorizontal: Spacing[14], borderRadius: Spacing[12] }} onPress={() => handleNextButton()} />
-                                </HStack>
-
-                                <Spacer height={Spacing[24]} />
-                                <ProgressBar
-                                    progress={1 / totalPage}
-                                    color={Colors.ABM_YELLOW}
-                                    style={{ height: Spacing[8], backgroundColor: Colors.GRAY74 }}
-                                />
-                                <HStack>
-                                    <Spacer />
-                                    <Text>{currPage}/{totalPage}</Text>
-                                    <Spacer />
-                                </HStack>
-                                <Spacer height={Spacing[6]} />
                             </VStack>
+                        </ScrollView >
+                    </SafeAreaView >
+                    <Spinner visible={mainStore.isLoading || cultureMeasurementStore.isLoading || (currPage > 1 ? listDescription.length === 0 : false)} textContent={"Memuat..."} />
 
-                        </VStack>
-                    </ScrollView >
-                </SafeAreaView >
-                <Spinner visible={mainStore.isLoading || cultureMeasurementStore.isLoading || (currPage > 1 ? listDescription.length === 0 : false)} textContent={"Memuat..."} />
+                    {isModalVisible &&
+                        <ModalComponent
+                            isModalVisible={isModalVisible}
+                            isIconFromMood={isIconFromMood}
+                            toggleModal={() => toggleModal(false)}
+                            onClickModalBtn={() => onClickModalBtn()}
+                            onClickCancelModalBtn={() => goToCultureMeasurement()}
+                            modalTitle={modalTitle}
+                            modalIcon={modalIcon}
+                            modalDesc={modalDesc}
+                            modalBtnText={modalBtnText}
+                        />
 
-                {isModalVisible &&
-                    <ModalComponent
-                        isModalVisible={isModalVisible}
-                        isIconFromMood={isIconFromMood}
-                        toggleModal={() => toggleModal(false)}
-                        onClickModalBtn={() => onClikModalBtn()}
-                        // onClickCancelModalBtn={() => goToCultureMeasurement()}
-                        modalTitle={modalTitle}
-                        modalIcon={modalIcon}
-                        modalDesc={modalDesc}
-                        modalBtnText={modalBtnText}
-                    />
-
-                }
-            </VStack >
+                    }
+                </VStack >
+            </KeyboardAvoidingView>
         )
     })
 

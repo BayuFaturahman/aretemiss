@@ -20,7 +20,7 @@ export class CultureMeasurementApi {
     try {
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.get(`/culture-measurement`)
-      console.log('response detail', response)
+      // console.log('response detail', response)
       if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }

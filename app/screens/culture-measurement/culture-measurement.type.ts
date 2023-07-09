@@ -750,3 +750,5 @@ export const CM_GET_ANSWER_EMPTY_DATA: CMGetAnswerModel = {
     status: '',
     temp_data: []
 }
+
+export const CM_TEAM_MEMBER_VALUE_MOCK_DATA: CMUserModel[] = [{ "id": "61d8bf7f-777c-4227-9050-82ef768611d7", "fullname": "Dicki Maulana Yusuf", "position": "cl" }]

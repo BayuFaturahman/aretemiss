@@ -77,12 +77,16 @@ export type CMGetAnswerModel = {
   status: string
   rated_user_id: string
   last_filled: number
+  sn?: string
+  structural_position?: string
   temp_data: CMSectionModel[]
 }
 
 export type CMUpdateAnswerModel = {
   rated_user_id: string
   status: string
+  sn: string
+  structural_position: string
   temp_data: CMSectionModel[]
 }
 
