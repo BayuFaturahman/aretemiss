@@ -49,7 +49,7 @@ import {
   sendEmail,
 } from "@screens/brainstorm"
 import { feedbackCommitment, feedbackDetail, feedbackMain } from "@screens/feedback"
-import { cultureMeasurementImplementation, cultureMeasurementImplementationQuestionnaire, cultureMeasurementInfrastructure, cultureMeasurementInfrastructureQuestionnaire, cultureMeasurementIntroduction, cultureMeasurementMain } from "@screens/culture-measurement"
+import { cultureMeasurementImplementation, cultureMeasurementImplementationQuestionnaire, cultureMeasurementInfrastructure, cultureMeasurementInfrastructureQuestionnaire, cultureMeasurementIntroduction, cultureMeasurementRating, cultureMeasurementRatingQuestionnaire, cultureMeasurementMain } from "@screens/culture-measurement"
 
 const screens: AppRoute[] = [
   {
@@ -225,6 +225,14 @@ const screens: AppRoute[] = [
     component: cultureMeasurementImplementation,
   },
   {
+    name: "cultureMeasurementRating",
+    component: cultureMeasurementRating
+  },
+  {
+    name: "cultureMeasurementRatingQuestionnaire",
+    component: cultureMeasurementRatingQuestionnaire
+  },
+  {
     name: "cultureMeasurementImplementationQuestionnaire",
     component: cultureMeasurementImplementationQuestionnaire,
   },
@@ -235,7 +243,7 @@ const screens: AppRoute[] = [
   {
     name: "cultureMeasurementInfrastructureQuestionnaire",
     component: cultureMeasurementInfrastructureQuestionnaire,
-  },
+  }
 ]
 
 export type NavigatorParamList = {
@@ -261,7 +269,9 @@ export type NavigatorParamList = {
   changePhone: undefined
   changePassword: undefined
   changeDivision: undefined
-  changeUserPosition: undefined
+  changeUserPosition: {
+    isFromSetting: boolean
+  }
   newJournalEntry: {
     isDetail: boolean
   }
@@ -335,6 +345,7 @@ export type NavigatorParamList = {
   feedbackCommitment: {
     feedbackUserId: string
   }
+
   cultureMeasurementMain: undefined,
   cultureMeasurementIntroduction: undefined,
   cultureMeasurementImplementation: {
@@ -358,6 +369,19 @@ export type NavigatorParamList = {
     isToCreate: boolean,
     totalPage: number,
     cmTakerId: string
+  }
+  cultureMeasurementRating: {
+    cmoId: string,
+    isToCreate: boolean,
+    cmTakerId: string,
+    isFromQuestionnaire: boolean
+  }
+  cultureMeasurementRatingQuestionnaire: {
+      cmoId: string,
+      isToCreate: boolean,
+      totalPage: number,
+      cmTakerId: string
+      isGoToLastModifiedPage: boolean
   }
 }
 

@@ -95,7 +95,9 @@ const MyAccount: FC<StackScreenProps<NavigatorParamList, "myAccount">> = observe
 
     const goToChangeDivision = () => navigation.navigate("changeDivision")
     
-    const goToChangePosition = () => navigation.navigate("changeUserPosition")
+    const goToChangePosition = () => navigation.navigate("changeUserPosition", {
+      isFromSetting: true
+    })
 
     const goToVerifyOTP = (email, nickname, profile) => navigation.navigate("myAccountVerifyOTP", {
       newEmail: email,

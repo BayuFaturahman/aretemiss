@@ -84,22 +84,11 @@ const CultureMeasurementImplementation: FC<StackScreenProps<NavigatorParamList, 
             if (tempData.length > 0) {
                 tempCopyWriting = tempData[0]
                 let tempDesc = tempCopyWriting.description
-                // tempDesc = tempDesc.replaceAll('<br>', '')
-                // tempDesc = tempDesc.replaceAll('</p>', '')
-                // tempDesc = tempDesc.replaceAll(descSeparator, `<p>${descSeparator}`)
-   
-                let tempSplittedDesc = tempDesc.split('<br>')
-                let tempJoinedDesc = tempSplittedDesc.join('')
-                // console.log(`tempJoinedDesc: ${JSON.stringify(tempJoinedDesc)}`)
-    
-                tempSplittedDesc = tempJoinedDesc.split('</p>')
-                tempJoinedDesc = tempSplittedDesc.join('')
-                // console.log(`tempJoinedDesc: ${JSON.stringify(tempJoinedDesc)}`)
-    
-                tempSplittedDesc = tempJoinedDesc.split(`${descSeparator}`)
-                tempJoinedDesc = tempSplittedDesc.join(`<p>${descSeparator}`)
-
-                let listTempDesc = tempJoinedDesc.split('<p>',)
+                tempDesc = tempDesc.split('<br>').join('')
+                tempDesc = tempDesc.split('</p>').join('')
+                tempDesc = tempDesc.split(`${descSeparator}`).join(`<p>${descSeparator}`)
+                
+                let listTempDesc = tempDesc.split('<p>',)
                 setLisDescription(listTempDesc)
             }
         }

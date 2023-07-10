@@ -5,8 +5,8 @@ import ServiceStore from "./store.service"
 import { Api } from "@services/api"
 import { ErrorFormResponse } from "@services/api/feed/feed-api.types"
 import { CultureMeasurementApi } from "@services/api/cultureMeasurement/culture-measurement-api"
-import { CMCreateAnswerModel, CMGetAnswerModel, CMPublishDataModel, CMSectionModel, CMUpdateAnswerModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
-import { CM_GET_ANSWER_EMPTY_DATA, CM_PUBLISH_EMPTY, CM_SECTION_EMPTY } from "@screens/culture-measurement/culture-measurement.type"
+import { CMCreateAnswerModel, CMGetAnswerModel, CMListUserModel, CMPublishDataModel, CMSectionModel, CMUpdateAnswerModel, CMUserModel } from "@services/api/cultureMeasurement/culture-measurement-api.types"
+import { CM_GET_ANSWER_EMPTY_DATA, CM_LIST_USER_EMPTY, CM_PUBLISH_EMPTY, CM_SECTION_EMPTY } from "@screens/culture-measurement/culture-measurement.type"
 
 export default class CultureMeasurementStore {
     // #region PROPERTIES
@@ -26,6 +26,12 @@ export default class CultureMeasurementStore {
     cmPublishData: CMPublishDataModel
     cmSections: CMSectionModel[]
     cmAnswerData: CMGetAnswerModel
+    cmListUsersData: CMUserModel[]
+    cmIsExistSubmttedRating: boolean
+
+    cmRatedUserId: string
+    cmSN: string
+    cmStructurelPosition: string
 
 
     constructor(api: Api) {
@@ -43,6 +49,13 @@ export default class CultureMeasurementStore {
         this.cmPublishData = CM_PUBLISH_EMPTY
         this.cmSections = [CM_SECTION_EMPTY]
         this.cmAnswerData = CM_GET_ANSWER_EMPTY_DATA
+        this.cmListUsersData = []
+        this.cmIsExistSubmttedRating = false
+
+        this.cmRatedUserId = ''
+        this.cmSN = ''
+        this.cmStructurelPosition = ''
+
     }
 
     async getListPublish() {
@@ -84,6 +97,7 @@ export default class CultureMeasurementStore {
 
     async getAllSection(id: string) {
         this.isLoading = true
+        console.log(id);
 
         try {
             const result = await this.cmApi.getAllSection(id)
@@ -119,13 +133,53 @@ export default class CultureMeasurementStore {
         this.refreshData = true
     }
 
+    async getCmMemberList(page = 1, limit = 10) {
+        this.isLoading = true
+
+        try {
+            const result = await this.cmApi.getCmMemberList(page, limit)
+            console.log('in store getCmMemberList')
+            // console.log(`result ${result}`)
+            // console.log('result.response  ', JSON.stringify(result.response))
+            if (result.kind === "ok") {
+                // console.log('result.response x ', JSON.stringify(result.response))
+                await this.getCmMemberListSucceed(result.response)
+            } else if (result.kind === 'form-error') {
+                console.log('getCmMemberList failed')
+                // console.log(result.response.errorCode)
+                this.cMFailed(result?.response?.errorCode)
+            } else if (result.kind === 'unauthorized') {
+                console.log('token expired getCmMemberList')
+                // console.log(result)
+                this.cMFailed(9)
+            } else {
+                // below code is used during development
+                // await this.getListPublishSucceed(GET_PUBLISH_MOCK_DATA.data)
+                __DEV__ && console.tron.log(result.kind)
+            }
+        } catch (e) {
+            console.log(e)
+        } finally {
+            this.isLoading = false
+        }
+    }
+
+
+    getCmMemberListSucceed(data: CMUserModel[]) {
+        console.log('getCmMemberListSucceed')
+        this.cmListUsersData = [...this.cmListUsersData, ...(data ?? [])]
+        this.isLoading = false
+        this.refreshData = true
+    }
+
     async createCMAnswer(data: CMCreateAnswerModel) {
         this.isLoading = true
 
         try {
             const result = await this.cmApi.createAnswer(data)
             console.log('in store createCMAnswer')
-            // console.log(`result ${result}`)
+            console.log(`data ${JSON.stringify(data)}`)
+            console.log(`result ${JSON.stringify(result)}`)
             if (result.kind === "ok") {
                 // console.log('result.response  ', JSON.stringify(result.response))
                 await this.createCMAnswerSucceed(result.response.message, result.response)
@@ -165,7 +219,7 @@ export default class CultureMeasurementStore {
             console.log('in store getCMAnswerById')
             // console.log(`result ${result}`)
             if (result.kind === "ok") {
-                // console.log('result.response  ', JSON.stringify(result.response))
+                console.log('result.response  ', JSON.stringify(result.response))
                 await this.getCMAnswerByIdSucceed(result.response)
             } else if (result.kind === 'form-error') {
                 console.log('getAllSection failed')
@@ -200,14 +254,14 @@ export default class CultureMeasurementStore {
         try {
             const result = await this.cmApi.updateAnswer(id, data)
             console.log('in store updateCMAnswer')
-            // console.log(`id: ${id} ;; data: ${data}`)
+            console.log(`id: ${id} ;; data: ${JSON.stringify(data)}`)
             // console.log(`result ${JSON.stringify(result)}`)
             if (result.kind === "ok") {
                 // console.log('result.response  ', JSON.stringify(result.response))
                 await this.updateCMAnswerSucceed(result.response.message, result.response.data)
             } else if (result.kind === 'form-error') {
                 console.log('updateCMAnswer failed')
-                // console.log(result.response.errorCode)
+                // console.log(`result ${JSON.stringify(result)}`)
                 this.cMFailed(result?.response?.errorCode)
             } else if (result.kind === 'unauthorized') {
                 console.log('token expired updateCMAnswer')
@@ -244,7 +298,14 @@ export default class CultureMeasurementStore {
         this.cmPublishData = CM_PUBLISH_EMPTY
         this.cmSections = [CM_SECTION_EMPTY]
         this.cmAnswerData = CM_GET_ANSWER_EMPTY_DATA
+        this.cmListUsersData = []
+        this.cmStructurelPosition = ''
+        this.cmSN = ''
+        this.cmRatedUserId = ''
+        this.cmIsExistSubmttedRating = false
     }
+
+    clearCMListUsersData() { }
 
     formReset() {
         this.errorCode = null

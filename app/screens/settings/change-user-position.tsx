@@ -17,11 +17,12 @@ import { IOption } from "react-native-modal-selector"
 import { dimensions } from "@config/platform.config"
 
 import { MoodComponent } from "@screens/homepage/components/mood-component"
+import { UserPositionModel } from "./setting.type"
 
 
-export const USER_POSITION = [
+export const USER_POSITION: UserPositionModel[] = [
   {
-    id:"cp",
+    id: "cp",
     item: "Counter Part (CP)",
   },
   {
@@ -35,7 +36,8 @@ export const USER_POSITION = [
 ]
 
 const ChangeUserPosition: FC<StackScreenProps<NavigatorParamList, "changeUserPosition">> =
-  observer(({ navigation }) => {
+  observer(({ navigation, route }) => {
+    const { isFromSetting } = route.params
     const { authStore, mainStore } = useStores()
     const [isSubmitWinCultureChange, setIsSubmitWinCultureChange] = useState<boolean>(false)
     const [errorMessage, setErrorMessage] = useState<string>("")
@@ -47,7 +49,7 @@ const ChangeUserPosition: FC<StackScreenProps<NavigatorParamList, "changeUserPos
 
     const [winCultureOptionData, setWinCultureOptionData] = useState(USER_POSITION)
 
-    const [userPositionData, setUserPositionData] = useState(mainStore.userProfile.user_position? USER_POSITION.filter((position) => position.id === mainStore.userProfile.user_position)[0] : {})
+    const [userPositionData, setUserPositionData] = useState(mainStore.userProfile.user_position ? USER_POSITION.filter((position) => position.id === mainStore.userProfile.user_position)[0] : {})
 
     const goBack = () => navigation.goBack()
 
@@ -90,6 +92,13 @@ const ChangeUserPosition: FC<StackScreenProps<NavigatorParamList, "changeUserPos
       }
     }, [])
 
+    const onCloseModal = () => {
+      if (isFromSetting) {
+        goToMyAccount()
+      } else {
+        goBack()
+      }
+    }
     return (
       <>
         <KeyboardAvoidingView
@@ -259,7 +268,7 @@ const ChangeUserPosition: FC<StackScreenProps<NavigatorParamList, "changeUserPos
                         text={"Kembali"}
                         style={{ height: Spacing[32], paddingHorizontal: Spacing[8] }}
                         textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
-                        onPress={goToMyAccount}
+                        onPress={onCloseModal}
                       />
                     </VStack>
                     <Spacer />

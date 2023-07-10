@@ -31,6 +31,9 @@ local.properties
 Android/.project
 Android/.settings
 
+android/app/build/
+android/app/main/res/
+
 # node.js
 #
 node_modules/

@@ -66,6 +66,8 @@ export interface TextFieldProps extends TextInputProps {
 
   changeButton?: boolean
 
+  changeButtonText?: string
+
   onPressChangeButton?(): void
 
   isTextArea?: boolean
@@ -96,6 +98,7 @@ export function TextField(props: TextFieldProps) {
     isError,
     isRequired = true,
     changeButton = false,
+    changeButtonText = "Ganti",
     onPressChangeButton = () => null,
     isTextArea = false,
     charCounter = false,
@@ -136,10 +139,10 @@ export function TextField(props: TextFieldProps) {
 
   const renderChangeButton = () => {
     // eslint-disable-next-line react-native/no-inline-styles
-    return (changeButton === true ? <VStack style={{width: Spacing[72], position: 'absolute', right: 0, top: Spacing[12]}}>
+    return (changeButton === true ? <VStack style={{width: Spacing[72], position: 'absolute', right: 0, top: Spacing[32]}}>
         <Button
           type={"primary"}
-          text={"Ganti"}
+          text={changeButtonText}
           onPress={onPressChangeButton}
         />
       </VStack> : null
