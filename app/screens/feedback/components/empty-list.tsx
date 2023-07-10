@@ -12,11 +12,12 @@ export const EmptyList = ({
   navigateTo = () => null,
   imageSource = () => <IconSurprisedColor height={Spacing[60]} width={Spacing[60]} />,
   isExistingCoache = true,
-  description = isExistingCoache ? 'Belum ada Coachees sebelumnya!\nKembali lagi saat sudah ada Existing Coachees ya!' : 'Belum ada request feedback!\nKembali lagi saat sudah ada Feedback Request ya!',
+  isListFeedbackUser = false,
+  description = isExistingCoache ? 'Belum ada Coachees sebelumnya!\nKembali lagi saat sudah ada Existing Coachees ya!' : (isListFeedbackUser ? 'Belum ada feedback user!\nKembali lagi saat sudah ada Feedback Request ya!' : 'Belum ada request feedback!\nKembali lagi saat sudah ada Feedback Request ya!'),
   buttonLabel = 'Kembali'
 }) => {
   return (
-    <VStack horizontal={Spacing[8]} style={[Layout.widthFull, { height: Spacing[160] + Spacing[12] }]} >
+    <VStack horizontal={Spacing[8]} style={[Layout.widthFull, { height: isListFeedbackUser ? Spacing[112] : Spacing[160] + Spacing[12] }]} >
       <Spacer />
       <HStack bottom={Spacing[12]}>
         <Spacer />
