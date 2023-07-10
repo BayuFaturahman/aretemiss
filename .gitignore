@@ -30,7 +30,9 @@ local.properties
 *.iml
 Android/.project
 Android/.settings
+
 android/app/build/
+android/app/main/res/
 
 # node.js
 #
