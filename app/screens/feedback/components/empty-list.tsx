@@ -13,7 +13,7 @@ export const EmptyList = ({
   imageSource = () => <IconSurprisedColor height={Spacing[60]} width={Spacing[60]} />,
   isExistingCoache = true,
   isListFeedbackUser = false,
-  description = isExistingCoache ? 'Belum ada Coachees sebelumnya!\nKembali lagi saat sudah ada Existing Coachees ya!' : (isListFeedbackUser ? 'Belum ada feedback user!\nKembali lagi saat sudah ada Feedback Request ya!' : 'Belum ada request feedback!\nKembali lagi saat sudah ada Feedback Request ya!'),
+  description = isExistingCoache ? 'Belum ada Coachees sebelumnya!\nKembali lagi saat sudah ada Existing Coachees ya!' : (isListFeedbackUser ? 'Belum ada feedback user!\nKembali lagi saat sudah ada Feedback User ya!' : 'Belum ada request feedback!\nKembali lagi saat sudah ada Feedback Request ya!'),
   buttonLabel = 'Kembali'
 }) => {
   return (
