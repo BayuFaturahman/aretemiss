@@ -170,6 +170,31 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
       })
     }
 
+    const goToJournalByCoachee = async (jl_id: string) => {
+      coachingStore.isDetailJournal(true)
+      coachingStore.setDetailCoaching(false)
+      coachingStore.setFormCoach(false)
+
+      navigation.navigate("overviewJournalEntry", {
+        journalId: '',
+        isCoachee: true,
+        jlId: jl_id
+      })
+    }
+
+    const goToJournalByCoach = async (journal_id: string) => {
+      coachingStore.isDetailJournal(true)
+      coachingStore.setDetailCoaching(true)
+      coachingStore.setDetailID(journal_id)
+      coachingStore.setFormCoach(true)
+
+      navigation.navigate("overviewJournalEntry", {
+        journalId: '',
+        isCoachee: false,
+        jlId: ''
+      })
+    }
+
     return (
       <VStack testID="CoachingJournalMain" style={{ backgroundColor: Colors.ABM_MAIN_BLUE, flex: 1, justifyContent: 'center' }}>
         <View style={Layout.flex}>
@@ -331,6 +356,44 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
                           />
                         </VStack>
                       </VStack> : null}
+                    {item.type === 'request_response_journal' ?
+                    <VStack>
+                      <Text type={'body'}>
+                        <Text type={'body-bold'} text={`${item.content} `} />
+                      </Text>
+                      <Spacer height={Spacing[4]} />
+                      <VStack right={Spacing[48]}>
+                        <Button
+                          type={"primary"}
+                          text={"Lihat postingan terkait."}
+                          style={{ height: Spacing[32] }}
+                          textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
+                          onPress={() => {
+                            goToJournalByCoachee(item.data.jl_id)
+                          }
+                          }
+                        />
+                      </VStack>
+                    </VStack> : null}
+                    {item.type === 'submitted_response_journal' ?
+                    <VStack>
+                      <Text type={'body'}>
+                        <Text type={'body-bold'} text={`${item.content} `} />
+                      </Text>
+                      <Spacer height={Spacing[4]} />
+                      <VStack right={Spacing[48]}>
+                        <Button
+                          type={"primary"}
+                          text={"Lihat postingan terkait."}
+                          style={{ height: Spacing[32] }}
+                          textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
+                          onPress={() => {
+                            goToJournalByCoach(item.data.journalId)
+                          }
+                          }
+                        />
+                      </VStack>
+                    </VStack> : null}
                     {/* {item.type === 'liked' ? */}
                     {/*  <VStack> */}
                     {/*    <Text type={'body-bold'}> */}
