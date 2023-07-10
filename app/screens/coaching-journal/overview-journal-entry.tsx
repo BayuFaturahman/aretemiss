@@ -168,8 +168,8 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
           journalEntryInitialValue.jlLessonLearned = coachingStore.learnerJournalDetail.jl_lesson_learned
           journalEntryInitialValue.jlCommitment = coachingStore.learnerJournalDetail.jl_commitment
 
-          journalEntryInitialValue.type = coachingStore.type
-          journalEntryInitialValue.label = coachingStore.label
+          journalEntryInitialValue.type = coachingStore.learnerJournalDetail.journal.type
+          journalEntryInitialValue.label = coachingStore.learnerJournalDetail.journal.label
 
           setJlLessonLearned(coachingStore.learnerJournalDetail.jl_lesson_learned)
           setJlCommitment(coachingStore.learnerJournalDetail.jl_commitment)
@@ -651,7 +651,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                                 isError === "strength" ? styles.textError : null,
                               ]}
                             >
-                              {`Sebagai coach, apa yang sudah saya lakukan dengan `}
+                              {`Dari sesi coaching, apa yang sudah coachee lakukan dengan `}
                               <Text type={"body-bold"} style={{ color: Colors.ABM_LIGHT_BLUE }}>
                                 {"efektif?"}
                               </Text>
@@ -682,7 +682,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                                 isError == "improvement" ? styles.textError : null,
                               ]}
                             >
-                              {`Sebagai coach, kualitas apa yang dapat saya `}
+                              {`Dari sesi coaching, kualitas apa yang dapat coachee `}
                               <Text
                                 type={"body-bold"}
                                 style={[
@@ -690,8 +690,9 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                                   fieldError ? styles.textError : null,
                                 ]}
                               >
-                                {"tingkatkan?"}
+                                {"tingkatkan "}
                               </Text>
+                              {`lagi?`}
                             </Text>
                             <TextField
                               style={{ paddingTop: 0 }}
@@ -721,7 +722,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                                   isError == "recommendationForCoachee" ? styles.textError : null,
                                 ]}
                               >
-                                Dari sesi coaching, apa
+                                {`Dari sesi coaching, apa`}
                                 <Text type={"body-bold"} style={{ color: Colors.ABM_LIGHT_BLUE }}>
                                   {" rekomendasi saya untuk coachee?"}
                                 </Text>

@@ -12,6 +12,7 @@ export type NotificationItemModel = {
     "fu_id": string
     "rfu_id": string
     "coach_id": string
+    "jl_id": string
   },
   "notification_created_at": string;
   "notification_updated_at": string;

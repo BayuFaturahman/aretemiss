@@ -170,6 +170,31 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
       })
     }
 
+    const goToJournalByCoachee = async (jl_id: string) => {
+      coachingStore.isDetailJournal(true)
+      coachingStore.setDetailCoaching(false)
+      coachingStore.setFormCoach(false)
+
+      navigation.navigate("overviewJournalEntry", {
+        journalId: '',
+        isCoachee: true,
+        jlId: jl_id
+      })
+    }
+
+    const goToJournalByCoach = async (journal_id: string) => {
+      coachingStore.isDetailJournal(true)
+      coachingStore.setDetailCoaching(true)
+      coachingStore.setDetailID(journal_id)
+      coachingStore.setFormCoach(true)
+
+      navigation.navigate("overviewJournalEntry", {
+        journalId: '',
+        isCoachee: false,
+        jlId: ''
+      })
+    }
+
     return (
       <VStack testID="CoachingJournalMain" style={{ backgroundColor: Colors.ABM_MAIN_BLUE, flex: 1, justifyContent: 'center' }}>
         <View style={Layout.flex}>
@@ -344,13 +369,13 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
                           style={{ height: Spacing[32] }}
                           textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
                           onPress={() => {
-                            goToPostDetail(item.data.feedId)
+                            goToJournalByCoachee(item.data.jl_id)
                           }
                           }
                         />
                       </VStack>
                     </VStack> : null}
-                    {item.type === 'request_response_journal' ?
+                    {item.type === 'submitted_response_journal' ?
                     <VStack>
                       <Text type={'body'}>
                         <Text type={'body-bold'} text={`${item.content} `} />
@@ -363,7 +388,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "notificationList">> = o
                           style={{ height: Spacing[32] }}
                           textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
                           onPress={() => {
-                            goToPostDetail(item.data.feedId)
+                            goToJournalByCoach(item.data.journalId)
                           }
                           }
                         />
