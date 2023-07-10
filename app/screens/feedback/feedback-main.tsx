@@ -197,7 +197,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
 
     const loadFeedbackUserByCoachee = useCallback(async (coacheeId: string, page: number) => {
       console.log('loadFeedbackUserByCoachee ')
-      // console.log('coacheeId: ', coacheeId)
+      console.log('coacheeId: ', coacheeId)
       if (coacheeId !== '') {
         await feedbackStore.getListFeedbackUserByCoachee(coacheeId, page)
         setListFeedbackUser(feedbackStore.listFeedbackUserByCoachee)

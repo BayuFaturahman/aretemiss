@@ -26,7 +26,7 @@ import {AuthBottomLogo} from "@components/auth-bottom-logo";
 const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
   ({ navigation }) => {
 
-    const [phoneNumber, setPhoneNumber] = useState<string>(__DEV__ ? 'pik@gmail.com' : '')
+    const [phoneNumber, setPhoneNumber] = useState<string>(__DEV__ ? 'pok@gmail.com' : '')
     const [password, setPassword] = useState<string>(__DEV__ ? 'R4hasia!' : '')
     const [isError, setIsError] = useState<boolean>(false)
 

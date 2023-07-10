@@ -433,7 +433,7 @@ export default class FeedbackStore {
 
     try {
       const result = await this.feedbackApi.createFeedbackUser(data)
-      // console.log('createFeedbackUser result', result)
+      console.log('createFeedbackUser result', JSON.stringify(result))
 
       if (result.kind === "ok") {
         this.createFeedbackUserSucceed(result.response.message)
