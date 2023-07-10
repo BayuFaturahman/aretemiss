@@ -28,6 +28,8 @@ const MOCK_FEEDBACK_USER_DETAIL: FeedbackUserDetail = {
     "q2": 1,
     "q3": 4,
     "q4": 5,
+    "q5": 1,
+    "q6": 1,
     "from": "coachee",
     "coachId": "61d8bf7f-777c-4227-9050-82ef768611d7",
     "coacheeId": "61d8bf7f-777c-4227-9050-82ef768611d7",
@@ -43,6 +45,8 @@ const EMPTY_FEEDBACK_USER_DETAIL = {
     q2: 0,
     q3: 0,
     q4: 0,
+    q5: 0,
+    q6: 0,
     from: '',
     coachId: '',
     coacheeId: '',
@@ -130,7 +134,7 @@ const FeedbackDetail: FC<StackScreenProps<NavigatorParamList, "feedbackDetail">>
                 setSubmitButtonText('Submit Feedback')
                 setSubjectFeedback('coach-mu')
                 // let tempChoice = new Array(4).fill(0)
-                setFeedbackQuestionChoice(new Array(5).fill(0))
+                setFeedbackQuestionChoice(new Array(6).fill(0))
 
             } else {
                 setTitle('Feedback results.')
@@ -445,7 +449,7 @@ const FeedbackDetail: FC<StackScreenProps<NavigatorParamList, "feedbackDetail">>
                                                 {Array(5).fill(0).map((value, i) => {
                                                     return (
                                                         <HStack>
-                                                            <TouchableOpacity onPress={() => selectFeedbackItem(2, i + 1)} disabled={!isFeedbackRequest}>
+                                                            <TouchableOpacity onPress={() => selectFeedbackItem(4, i + 1)} disabled={!isFeedbackRequest}>
                                                                 <VStack>
                                                                     <View style={{
                                                                         position: 'absolute',
@@ -480,7 +484,7 @@ const FeedbackDetail: FC<StackScreenProps<NavigatorParamList, "feedbackDetail">>
                                                 {Array(5).fill(0).map((value, i) => {
                                                     return (
                                                         <HStack>
-                                                            <TouchableOpacity onPress={() => selectFeedbackItem(3, i + 1)} disabled={!isFeedbackRequest}>
+                                                            <TouchableOpacity onPress={() => selectFeedbackItem(5, i + 1)} disabled={!isFeedbackRequest}>
                                                                 <VStack>
                                                                     <View style={{
                                                                         position: 'absolute',
