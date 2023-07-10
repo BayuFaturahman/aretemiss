@@ -260,7 +260,7 @@ const FeedbackDetail: FC<StackScreenProps<NavigatorParamList, "feedbackDetail">>
                                 />
                             }
                         >
-                            <VStack style={{ backgroundColor: Colors.WHITE, paddingTop: Spacing[12] }}>
+                            <VStack style={{ backgroundColor: Colors.WHITE, paddingTop: Spacing[24] }}>
                                 <VStack top={Spacing[0]} horizontal={Spacing[24]} bottom={Spacing[12]}>
                                     <HStack style={{ justifyContent: 'space-around' }}>
                                         {/* <Spacer /> */}
