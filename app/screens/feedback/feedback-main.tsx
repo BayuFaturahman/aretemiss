@@ -197,7 +197,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
 
     const loadFeedbackUserByCoachee = useCallback(async (coacheeId: string, page: number) => {
       console.log('loadFeedbackUserByCoachee ')
-      // console.log('coacheeId: ', coacheeId)
+      console.log('coacheeId: ', coacheeId)
       if (coacheeId !== '') {
         await feedbackStore.getListFeedbackUserByCoachee(coacheeId, page)
         setListFeedbackUser(feedbackStore.listFeedbackUserByCoachee)
@@ -563,7 +563,7 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
                 data={listFeedbackUser}
                 keyExtractor={(item, index) => item.fu_id + index}
                 showsVerticalScrollIndicator={true}
-                ListEmptyComponent={() => <EmptyList navigateTo={goBack} />}
+                ListEmptyComponent={() => <EmptyList isListFeedbackUser={true} isExistingCoache={false} navigateTo={goBack} />}
                 renderItem={({ item, index }) => (
                   <TouchableOpacity key={item.fu_id} onPress={() => { holdPreviousFeedbackDate(item.fu_id, index) }} style={{
                     height: Spacing[42], borderTopWidth: index === 0 ? Spacing[0] : Spacing[1], flex: 1,

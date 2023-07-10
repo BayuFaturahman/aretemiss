@@ -72,17 +72,6 @@ export interface RequestFeedbackUserListResponse {
 }
 
 
-
-
-export interface CreateJournalResponse {
-  errorCode: number
-  message: string
-}
-
-export interface UpdateJournalResponse {
-  journal: JournalModel
-}
-
 export type ExistingCoacheeListResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: ExistingCoacheeListResponse } | GeneralApiProblem
 
 export type ListFeedbackUserByCoacheeResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: ListFeedbackUserByCoacheeResponse } | GeneralApiProblem
@@ -97,10 +86,4 @@ export type CreateFeedbackCommitmentResult = { kind: "form-error"; response: Err
 
 export type RequestFeedbackUserListResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: FeedbackCommitmentResponse } | GeneralApiProblem
 
-export type CreateJournalResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreateJournalResponse } | GeneralApiProblem
-
-export type JournalDetailResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: JournalDetail } | GeneralApiProblem
-
 export type FeedbackDetailResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: FeedbackDetail } | GeneralApiProblem
-
-export type UpdateJournalResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: UpdateJournalResponse } | GeneralApiProblem

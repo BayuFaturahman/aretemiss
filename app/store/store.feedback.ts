@@ -71,6 +71,8 @@ export type CreateFeedbackUserModel = {
   q2: string
   q3: string
   q4: string
+  q5: string
+  q6: string
   coach_id: string
   rfu_id: string
 }
@@ -86,6 +88,8 @@ const EMPTY_FEEDBACK_USER_DETAIL = {
   q2: 0,
   q3: 0,
   q4: 0,
+  q5: 0,
+  q6: 0,
   from: '',
   coachId: '',
   coacheeId: '',
@@ -429,7 +433,7 @@ export default class FeedbackStore {
 
     try {
       const result = await this.feedbackApi.createFeedbackUser(data)
-      // console.log('createFeedbackUser result', result)
+      console.log('createFeedbackUser result', JSON.stringify(result))
 
       if (result.kind === "ok") {
         this.createFeedbackUserSucceed(result.response.message)

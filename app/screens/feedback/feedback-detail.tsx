@@ -28,6 +28,8 @@ const MOCK_FEEDBACK_USER_DETAIL: FeedbackUserDetail = {
     "q2": 1,
     "q3": 4,
     "q4": 5,
+    "q5": 1,
+    "q6": 1,
     "from": "coachee",
     "coachId": "61d8bf7f-777c-4227-9050-82ef768611d7",
     "coacheeId": "61d8bf7f-777c-4227-9050-82ef768611d7",
@@ -43,6 +45,8 @@ const EMPTY_FEEDBACK_USER_DETAIL = {
     q2: 0,
     q3: 0,
     q4: 0,
+    q5: 0,
+    q6: 0,
     from: '',
     coachId: '',
     coacheeId: '',
@@ -62,13 +66,14 @@ const FeedbackDetail: FC<StackScreenProps<NavigatorParamList, "feedbackDetail">>
 
         const [isSubmitClicked, setIsSubmitClicked] = useState(false)
         const [isError, setIsError] = useState(false)
-        const [errorList, setErrorList] = useState(new Array(4).fill(0))
+        const [errorList, setErrorList] = useState(new Array(6).fill(0))
         const [isSubmitSuccess, setIsSubmitSuccess] = useState(false)
         const [isLoading, setIsLoading] = useState(false)
 
-        const [feedbackQuestionChoice, setFeedbackQuestionChoice] = useState(new Array(4).fill(0))
+        const [feedbackQuestionChoice, setFeedbackQuestionChoice] = useState(new Array(6).fill(0))
 
         const [title, setTitle] = useState<string>('')
+        const [subjectFeedback, setSubjectFeedback] = useState<string>('')
         const [submitButtonText, setSubmitButtonText] = useState<string>('')
 
 
@@ -127,12 +132,14 @@ const FeedbackDetail: FC<StackScreenProps<NavigatorParamList, "feedbackDetail">>
             if (isFeedbackRequest) {
                 setTitle('Feedback untuk Coach.')
                 setSubmitButtonText('Submit Feedback')
+                setSubjectFeedback('coach-mu')
                 // let tempChoice = new Array(4).fill(0)
-                setFeedbackQuestionChoice(new Array(4).fill(0))
+                setFeedbackQuestionChoice(new Array(6).fill(0))
 
             } else {
                 setTitle('Feedback results.')
                 setSubmitButtonText('Komitmen Saya')
+                setSubjectFeedback('saya')
                 loadFeedbackUserDetail()
             }
 
@@ -150,6 +157,8 @@ const FeedbackDetail: FC<StackScreenProps<NavigatorParamList, "feedbackDetail">>
                 tempChoice[1] = feedbackStore.feedbackUserDetail.q2
                 tempChoice[2] = feedbackStore.feedbackUserDetail.q3
                 tempChoice[3] = feedbackStore.feedbackUserDetail.q4
+                tempChoice[4] = feedbackStore.feedbackUserDetail.q5
+                tempChoice[5] = feedbackStore.feedbackUserDetail.q6
                 setFeedbackQuestionChoice(tempChoice)
             }
             // console.log(`feedbackStore.feedbackUserDetail , ${feedbackStore.feedbackUserDetail}`)
@@ -194,7 +203,7 @@ const FeedbackDetail: FC<StackScreenProps<NavigatorParamList, "feedbackDetail">>
             // setErrorList()
             console.log('submit feedback ')
 
-            let temptErrorList = new Array(4).fill(0)
+            let temptErrorList = new Array(6).fill(0)
             let tempIsError = false
             temptErrorList.map((item, index) => {
                 if (feedbackQuestionChoice[index] === 0) {
@@ -212,6 +221,8 @@ const FeedbackDetail: FC<StackScreenProps<NavigatorParamList, "feedbackDetail">>
                     "q2": feedbackQuestionChoice[1],
                     "q3": feedbackQuestionChoice[2],
                     "q4": feedbackQuestionChoice[3],
+                    "q5": feedbackQuestionChoice[4],
+                    "q6": feedbackQuestionChoice[5],
                     "coach_id": coachId,
                     "rfu_id": id
                 }
@@ -249,7 +260,7 @@ const FeedbackDetail: FC<StackScreenProps<NavigatorParamList, "feedbackDetail">>
                                 />
                             }
                         >
-                            <VStack style={{ backgroundColor: Colors.WHITE, paddingTop: Spacing[12] }}>
+                            <VStack style={{ backgroundColor: Colors.WHITE, paddingTop: Spacing[24] }}>
                                 <VStack top={Spacing[0]} horizontal={Spacing[24]} bottom={Spacing[12]}>
                                     <HStack style={{ justifyContent: 'space-around' }}>
                                         {/* <Spacer /> */}
@@ -287,7 +298,7 @@ const FeedbackDetail: FC<StackScreenProps<NavigatorParamList, "feedbackDetail">>
                                         {/*  Statement1 */}
                                         <VStack vertical={Spacing[8]}>
                                             <Text type={errorList[0] === 1 ? 'warning-not-bold' : 'body'} style={{ textAlign: 'center', fontSize: Spacing[12] }}>
-                                                “Dalam skala 1 - 5, seberapa baik saya sudah membangun
+                                                “Dalam skala 1 - 5, seberapa baik {subjectFeedback} sudah membangun
                                                 <Text type={errorList[0] === 1 ? 'warning-not-bold' : 'body-bold'} style={{ fontSize: Spacing[12] }}> rapport </Text>atau
                                                 <Text type={errorList[0] === 1 ? 'warning-not-bold' : 'body-bold'} style={{ fontSize: Spacing[12] }}>  kedekatan di awal sesi</Text>?”
                                             </Text>
@@ -323,7 +334,7 @@ const FeedbackDetail: FC<StackScreenProps<NavigatorParamList, "feedbackDetail">>
                                         {/*  Statement2 */}
                                         <VStack vertical={Spacing[8]}>
                                             <Text type={errorList[1] === 1 ? 'warning-not-bold' : 'body'} style={{ textAlign: 'center', fontSize: Spacing[12] }}>
-                                                “Dalam skala 1 - 5, seberapa baik saya sudah membantu coachee menentukan
+                                                “Dalam skala 1 - 5, seberapa baik {subjectFeedback} membantu {isFeedbackRequest ? 'saya sebagai ' : ''}coachee menentukan
                                                 <Text type={errorList[1] === 1 ? 'warning-not-bold' : 'body-bold'} style={{ fontSize: Spacing[12] }}> outcome </Text>?”
                                             </Text>
                                             <HStack top={Spacing[12]} style={{ justifyContent: 'space-around' }}>
@@ -358,7 +369,7 @@ const FeedbackDetail: FC<StackScreenProps<NavigatorParamList, "feedbackDetail">>
                                         {/*  Statement3 */}
                                         <VStack vertical={Spacing[8]}>
                                             <Text type={errorList[2] === 1 ? 'warning-not-bold' : 'body'} style={{ textAlign: 'center', fontSize: Spacing[12] }}>
-                                                “Dalam skala 1 - 5, seberapa baik saya sudah mempraktekan
+                                                “Dalam skala 1 - 5, seberapa baik {subjectFeedback} sudah mempraktekan
                                                 <Text type={errorList[2] === 1 ? 'warning-not-bold' : 'body-bold'} style={{ fontSize: Spacing[12] }}> active listening </Text>atau
                                                 <Text type={errorList[2] === 1 ? 'warning-not-bold' : 'body-bold'} style={{ fontSize: Spacing[12] }}> mendengar aktif </Text>saat sesi berlangsung?”
                                             </Text>
@@ -394,7 +405,7 @@ const FeedbackDetail: FC<StackScreenProps<NavigatorParamList, "feedbackDetail">>
                                         {/*  Statement4 */}
                                         <VStack vertical={Spacing[8]}>
                                             <Text type={errorList[3] === 1 ? 'warning-not-bold' : 'body'} style={{ textAlign: 'center', fontSize: Spacing[12] }}>
-                                                “Dalam skala 1 - 5, seberapa baik saya sudah mengajukan
+                                                “Dalam skala 1 - 5, seberapa baik {subjectFeedback} sudah mengajukan
                                                 <Text type={errorList[3] === 1 ? 'warning-not-bold' : 'body-bold'} style={{ fontSize: Spacing[12] }}> powerful questions </Text>atau
                                                 <Text type={errorList[3] === 1 ? 'warning-not-bold' : 'body-bold'} style={{ fontSize: Spacing[12] }}> pertanyaan yang menggugah </Text>pada saat sesi berlangsung?”
                                             </Text>
@@ -411,6 +422,77 @@ const FeedbackDetail: FC<StackScreenProps<NavigatorParamList, "feedbackDetail">>
                                                                         backgroundColor: feedbackQuestionChoice[3] === i + 1 ? Colors.ABM_LIGHT_BLUE : Colors.ABM_BG_BLUE,
                                                                         borderRadius: Spacing[128], borderWidth: Spacing[2],
                                                                         borderColor: feedbackQuestionChoice[3] === i + 1 ? Colors.ABM_LIGHT_BLUE : Colors.ABM_BG_BLUE
+                                                                    }} />
+
+                                                                    <VStack style={{ width: Spacing[24] }} top={Spacing[28]}>
+                                                                        <Text type={'body'} style={{ textAlign: 'center' }}>
+                                                                            {i + 1}
+                                                                        </Text>
+                                                                    </VStack>
+                                                                </VStack>
+                                                            </TouchableOpacity>
+                                                        </HStack>
+                                                    )
+                                                })}
+                                            </HStack>
+                                        </VStack>
+
+
+                                        {/*  Statement5 */}
+                                        <VStack vertical={Spacing[8]}>
+                                            <Text type={errorList[2] === 1 ? 'warning-not-bold' : 'body'} style={{ textAlign: 'center', fontSize: Spacing[12] }}>
+                                                “Dalam skala 1 - 5, seberapa baik {subjectFeedback} sudah menggali
+                                                <Text type={errorList[2] === 1 ? 'warning-not-bold' : 'body-bold'} style={{ fontSize: Spacing[12] }}> insights </Text>atau
+                                                <Text type={errorList[2] === 1 ? 'warning-not-bold' : 'body-bold'} style={{ fontSize: Spacing[12] }}> pembelajaran </Text>yang saya dapatkan selama sesi berlangsung?”
+                                            </Text>
+                                            <HStack top={Spacing[12]} style={{ justifyContent: 'space-around' }}>
+                                                {Array(5).fill(0).map((value, i) => {
+                                                    return (
+                                                        <HStack>
+                                                            <TouchableOpacity onPress={() => selectFeedbackItem(4, i + 1)} disabled={!isFeedbackRequest}>
+                                                                <VStack>
+                                                                    <View style={{
+                                                                        position: 'absolute',
+                                                                        height: Spacing[24],
+                                                                        width: Spacing[24],
+                                                                        backgroundColor: feedbackQuestionChoice[4] === i + 1 ? Colors.ABM_LIGHT_BLUE : Colors.ABM_BG_BLUE,
+                                                                        borderRadius: Spacing[128], borderWidth: Spacing[2],
+                                                                        borderColor: feedbackQuestionChoice[4] === i + 1 ? Colors.ABM_LIGHT_BLUE : Colors.ABM_BG_BLUE
+                                                                    }} />
+
+                                                                    <VStack style={{ width: Spacing[24] }} top={Spacing[28]}>
+                                                                        <Text type={'body'} style={{ textAlign: 'center' }}>
+                                                                            {i + 1}
+                                                                        </Text>
+                                                                    </VStack>
+                                                                </VStack>
+                                                            </TouchableOpacity>
+                                                        </HStack>
+                                                    )
+                                                })}
+                                            </HStack>
+                                        </VStack>
+
+
+                                        {/*  Statement6 */}
+                                        <VStack vertical={Spacing[8]}>
+                                            <Text type={errorList[3] === 1 ? 'warning-not-bold' : 'body'} style={{ textAlign: 'center', fontSize: Spacing[12] }}>
+                                                “Dalam skala 1 - 5, seberapa baik {subjectFeedback} sudah membantu {isFeedbackRequest ? 'saya sebagai ' : ''}coachee untuk menyampaikan
+                                                <Text type={errorList[3] === 1 ? 'warning-not-bold' : 'body-bold'} style={{ fontSize: Spacing[12] }}> komitmen </Text>di akhir sesi?”
+                                            </Text>
+                                            <HStack top={Spacing[12]} style={{ justifyContent: 'space-around' }}>
+                                                {Array(5).fill(0).map((value, i) => {
+                                                    return (
+                                                        <HStack>
+                                                            <TouchableOpacity onPress={() => selectFeedbackItem(5, i + 1)} disabled={!isFeedbackRequest}>
+                                                                <VStack>
+                                                                    <View style={{
+                                                                        position: 'absolute',
+                                                                        height: Spacing[24],
+                                                                        width: Spacing[24],
+                                                                        backgroundColor: feedbackQuestionChoice[5] === i + 1 ? Colors.ABM_LIGHT_BLUE : Colors.ABM_BG_BLUE,
+                                                                        borderRadius: Spacing[128], borderWidth: Spacing[2],
+                                                                        borderColor: feedbackQuestionChoice[5] === i + 1 ? Colors.ABM_LIGHT_BLUE : Colors.ABM_BG_BLUE
                                                                     }} />
 
                                                                     <VStack style={{ width: Spacing[24] }} top={Spacing[28]}>

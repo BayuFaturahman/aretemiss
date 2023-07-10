@@ -12,6 +12,8 @@ export type FeedbackUserDetail = {
   q2: number
   q3: number
   q4: number
+  q5: number
+  q6: number
   from: string
   coachId: string
   coacheeId: string
