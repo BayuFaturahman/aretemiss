@@ -104,7 +104,11 @@ export type JournalInLearnerJournalModel = {
   date: string,
   documents_url: string[],
   recommendation_for_coachee: string
+  improvement: string
+  strength: string
   coach_fullname?: string
+  label: string
+  type: string
 }
 
 export default class CoachingStore {

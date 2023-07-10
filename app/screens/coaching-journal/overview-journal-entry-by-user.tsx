@@ -30,13 +30,17 @@ const OverviewJournalEntryByUser: FC<StackScreenProps<NavigatorParamList, "overv
     const [coachFullName, setCoachFullName] = useState<string>("")
     const [commitment, setCommitment] = useState<string>("")
     const [lessonLearned, setLessonLearned] = useState<string>("")
+    const [improvement, setImprovement] = useState<string>("")
+    const [strength, setStrength] = useState<string>("")
     const [learnerFullname, setLearnerFullname] = useState<string>("")
 
     const formInitialValue = coachJournal ? {
       content: '',
       recommendationForCoachee: '',
+      improvement: '',
       title: title,
-      coachFullName: ''
+      coachFullName: '',
+      strength: ''
     } : {
       content: '',
       commitment: '',
@@ -57,12 +61,16 @@ const OverviewJournalEntryByUser: FC<StackScreenProps<NavigatorParamList, "overv
 
       if (coachJournal) {
         formInitialValue.content = coachJournal.content
+        formInitialValue.improvement = coachJournal.improvement
         formInitialValue.recommendationForCoachee = coachJournal.recommendation_for_coachee
         formInitialValue.coachFullName = coachJournal.coach_fullname
+        formInitialValue.strength = coachJournal.strength
 
         setContent(coachJournal.content)
         setRecommendation(coachJournal.recommendation_for_coachee)
         setCoachFullName(coachJournal.coach_fullname)
+        setImprovement(coachJournal.improvement)
+        setStrength(coachJournal.strength)
       }
 
       if (learnerJournals) {
@@ -195,24 +203,72 @@ const OverviewJournalEntryByUser: FC<StackScreenProps<NavigatorParamList, "overv
 
                       {
                         coachJournal && 
-                        <VStack top={Spacing[12]}>
-                        <Text type={"body-bold"} style={{ textAlign: "center", top: Spacing[4] }}>
-                          {`Dari sesi coaching, apa `}
-                            <Text type={"body-bold"} style={{ color: Colors.ABM_LIGHT_BLUE }}>
-                              {"rekomendasi coach untuk untuk coachee"}
+                        <>
+                          <VStack top={Spacing[12]}>
+                            <Text
+                              type={"body-bold"}
+                              style={[{ textAlign: "center", top: Spacing[4] }]}
+                            >
+                              {`Dari sesi coaching, apa yang sudah coachee lakukan dengan `}
+                              <Text type={"body-bold"} style={{ color: Colors.ABM_LIGHT_BLUE }}>
+                                {"efektif?"}
+                              </Text>
                             </Text>
-                          {``}
-                        </Text>
-                        <TextField
-                          style={{ paddingTop: 0 }}
-                          inputStyle={{ minHeight: Spacing[128] }}
-                          editable={false}
-                          isRequired={false}
-                          value={recommendation}
-                          secureTextEntry={false}
-                          isTextArea={true}
-                        />
-                      </VStack>
+                            <TextField
+                              style={{ paddingTop: 0 }}
+                              inputStyle={{ minHeight: Spacing[48] }}
+                              editable={false}
+                              isRequired={false}
+                              value={strength}
+                              secureTextEntry={false}
+                              isTextArea={true}
+                            />
+                          </VStack>
+
+                          <VStack top={Spacing[12]}>
+                            <Text
+                              type={"body-bold"}
+                              style={[{ textAlign: "center", top: Spacing[4] }]}
+                            >
+                              {`Dari sesi coaching, kualitas apa yang dapat coachee `}
+                              <Text
+                                type={"body-bold"}
+                                style={[{ color: Colors.ABM_LIGHT_BLUE }]}
+                              >
+                                {"tingkatkan "}
+                              </Text>
+                              {`lagi?`}
+                            </Text>
+                            <TextField
+                              style={{ paddingTop: 0 }}
+                              inputStyle={{ minHeight: Spacing[48] }}
+                              editable={false}
+                              isRequired={false}
+                              secureTextEntry={false}
+                              isTextArea={true}
+                              value={improvement}
+                            />
+                          </VStack>
+
+                          <VStack top={Spacing[12]}>
+                            <Text type={"body-bold"} style={{ textAlign: "center", top: Spacing[4] }}>
+                              {`Dari sesi coaching, apa `}
+                                <Text type={"body-bold"} style={{ color: Colors.ABM_LIGHT_BLUE }}>
+                                  {"rekomendasi saya untuk coachee"}
+                                </Text>
+                              {``}
+                            </Text>
+                            <TextField
+                              style={{ paddingTop: 0 }}
+                              inputStyle={{ minHeight: Spacing[48] }}
+                              editable={false}
+                              isRequired={false}
+                              secureTextEntry={false}
+                              isTextArea={true}
+                              value={recommendation}
+                            />
+                          </VStack>
+                        </>
                       }
 
                       {

@@ -377,7 +377,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                           <Button
                               type={"yellow-bg"}
                               text={"Lampirkan Dokumen"}
-                              onPress={() => {console.log('kemek')}}
+                              onPress={() => {console.log('')}}
                             />
                           </VStack>
                         </HStack> */}
@@ -390,7 +390,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                                 isError && !values.strength ? styles.textError : null,
                               ]}
                             >
-                              {`Sebagai coach, apa yang sudah saya lakukan dengan `}
+                              {`Dari sesi chacing, apa yang sudah coachee lakukan dengan `}
                               <Text type={"body-bold"} style={{ color: Colors.ABM_LIGHT_BLUE }}>
                                 {"efektif?"}
                               </Text>
@@ -418,7 +418,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                                 isError && !values.improvement ? styles.textError : null,
                               ]}
                             >
-                              {`Sebagai coach, kualitas apa yang dapat saya `}
+                              {`Dari sesi coaching, kualitas apa yang dapat coachee `}
                               <Text
                                 type={"body-bold"}
                                 style={[
@@ -426,8 +426,9 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                                   fieldError ? styles.textError : null,
                                 ]}
                               >
-                                {"tingkatkan?"}
+                                {"tingkatkan "}
                               </Text>
+                              {`lagi?`}
                             </Text>
                             <TextField
                               style={{ paddingTop: 0 }}
@@ -451,7 +452,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                               isError && !values.recommendationForCoachee ? styles.textError : null,
                             ]}
                           >
-                            Dari sesi coaching, apa
+                            {`Dari sesi coaching, apa`}
                             <Text type={"body-bold"} style={{ color: Colors.ABM_LIGHT_BLUE }}>
                               {" rekomendasi saya untuk coachee?"}
                             </Text>
