@@ -157,31 +157,31 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
 
     const getListDetail = useCallback(async () => {
       if (isCoachee) {
-          // if coachee, use JournalLearnerDetailApi
-          await coachingStore.getJournalLearnerDetail(jlId)
+        // if coachee, use JournalLearnerDetailApi
+        await coachingStore.getJournalLearnerDetail(jlId)
 
-          console.log("is coachee true")
-          console.log(coachingStore.learnerJournalDetail)
+        console.log("is coachee true")
+        console.log(coachingStore.learnerJournalDetail)
 
-          journalEntryInitialValue.jlId = jlId
-          journalEntryInitialValue.jlContent = coachingStore.learnerJournalDetail.jl_content
-          journalEntryInitialValue.jlLessonLearned = coachingStore.learnerJournalDetail.jl_lesson_learned
-          journalEntryInitialValue.jlCommitment = coachingStore.learnerJournalDetail.jl_commitment
+        journalEntryInitialValue.jlId = jlId
+        journalEntryInitialValue.jlContent = coachingStore.learnerJournalDetail.jl_content
+        journalEntryInitialValue.jlLessonLearned = coachingStore.learnerJournalDetail.jl_lesson_learned
+        journalEntryInitialValue.jlCommitment = coachingStore.learnerJournalDetail.jl_commitment
 
-          journalEntryInitialValue.type = coachingStore.learnerJournalDetail.journal.type
-          journalEntryInitialValue.label = coachingStore.learnerJournalDetail.journal.label
+        journalEntryInitialValue.type = coachingStore.learnerJournalDetail.journal.type
+        journalEntryInitialValue.label = coachingStore.learnerJournalDetail.journal.label
 
-          setJlLessonLearned(coachingStore.learnerJournalDetail.jl_lesson_learned)
-          setJlCommitment(coachingStore.learnerJournalDetail.jl_commitment)
-          setJlContent(coachingStore.learnerJournalDetail.jl_content)
-          setTitle(`${coachingStore.learnerJournalDetail.journal.title}`)
-          setSelectedDate(coachingStore.learnerJournalDetail.journal.date)
-          setSelectedActivities(coachingStore.journalDetail.journal_type)
-          setCoach(coachingStore.learnerJournalDetail.coach_fullname)
-          if (coachingStore.learnerJournalDetail.is_filled) {
-            setIsOnEditMode(false)
-            setIsJlFilled(true)
-          }
+        setJlLessonLearned(coachingStore.learnerJournalDetail.jl_lesson_learned)
+        setJlCommitment(coachingStore.learnerJournalDetail.jl_commitment)
+        setJlContent(coachingStore.learnerJournalDetail.jl_content)
+        setTitle(`${coachingStore.learnerJournalDetail.journal.title}`)
+        setSelectedDate(coachingStore.learnerJournalDetail.journal.date)
+        setSelectedActivities(coachingStore.journalDetail.journal_type)
+        setCoach(coachingStore.learnerJournalDetail.coach_fullname)
+        if (coachingStore.learnerJournalDetail.is_filled) {
+          setIsOnEditMode(false)
+          setIsJlFilled(true)
+        }
       } else {
         // if coach, use journalDetail API
         await coachingStore.getJournalDetail()
@@ -208,7 +208,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
         setJlCommitment(coachingStore.journalDetail.jl_learner.jl_commitment)
         setJlContent(coachingStore.journalDetail.jl_learner.journal_content)
         setTitle(`${coachingStore.journalDetail.journal_title}`)
-        
+
         setSelectedDate(coachingStore.journalDetail.journal_date)
         setSelectedActivities(coachingStore.journalDetail.journal_type)
         forceUpdate()
@@ -329,13 +329,13 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
       setModalIcon(icon)
       setModalButtonText(buttonText)
     }
-    
+
     // Handle redirect to home or close modal
     const handleModalResponse = () => {
       if (coachingStore.messageUpdatedJournal === "Success" && !isJlFilled && isCoachee) {
         coachingStore.resetCoachingStore()
         coachingStore.setRefreshData(true)
-        coachingStore.clearJournal().then(()=>{
+        coachingStore.clearJournal().then(() => {
           navigation.reset({
             routes: [{ name: 'coachingJournalMain' }]
           })
@@ -348,11 +348,11 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
     // Set modal content based on API success / fail
     useEffect(() => {
       if (coachingStore.messageUpdatedJournal) {
-        if(coachingStore.messageUpdatedJournal === "Success"){
+        if (coachingStore.messageUpdatedJournal === "Success") {
           if (isJlFilled && isCoachee) {
             // case coachee edit
             setModalContent("Sukses!", "Catatan telah sukses diedit!", "senang", "Kembali ke Catatan")
-          } else if (!isJlFilled && isCoachee){
+          } else if (!isJlFilled && isCoachee) {
             // case coachee initial input
             setModalContent("Sukses!", "Catatan telah sukses disimpan!", "senang", "Kembali ke Menu utama Coaching Journal")
           } else {
@@ -364,7 +364,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
         }
         toggleResponseModal()
       }
-    },[coachingStore.messageUpdatedJournal])
+    }, [coachingStore.messageUpdatedJournal])
 
     useEffect(() => {
       if (!isOnEditMode) {
@@ -454,7 +454,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                   }
                 }
 
-                return(
+                return (
                   <>
                     <VStack top={Spacing[32]} horizontal={Spacing[24]}>
                       <HStack>
@@ -491,23 +491,38 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                             }}
                             horizontal={true}
                           > */}
-                            <TextField
-                              value={title}
-                              isRequired={false}
-                              editable={false}
-                              inputStyle={{
-                                backgroundColor: Colors.ABM_DARK_BLUE,
-                                color: Colors.WHITE,
-                                textAlign: "left",
-                                paddingHorizontal: 10,
-                                fontWeight: "bold",
-                                borderWidth: 0,
-                                borderRadius: Spacing[10]
-                              }}
-                              style={{ paddingVertical: 0 }}
-                              secureTextEntry={false}
-                            />
-                          {/* </ScrollView> */}
+                        {(isOnEditMode && isCoachee) &&
+                          <>
+                            <VStack horizontal={Spacing[72]} vertical={Spacing[12]}>
+                              <Spacer />
+                              <Button
+                                type={"dark-yellow"}
+                                text={isCoachee ? "Lihat Catatan Coach" : "Lihat catatan coachee"}
+                                onPress={isCoachee ? goToOverviewJournalByCoach : goToOverviewJournalByCoachee}
+                                style={{ borderRadius: Spacing[10], height: Spacing[36] }}
+                              />
+                              <Spacer />
+                            </VStack>
+                            <Spacer height={Spacing[8]} />
+                          </>
+                        }
+                        <TextField
+                          value={title}
+                          isRequired={false}
+                          editable={false}
+                          inputStyle={{
+                            backgroundColor: Colors.ABM_DARK_BLUE,
+                            color: Colors.WHITE,
+                            textAlign: "left",
+                            paddingHorizontal: 10,
+                            fontWeight: "bold",
+                            borderWidth: 0,
+                            borderRadius: Spacing[10]
+                          }}
+                          style={{ paddingVertical: 0 }}
+                          secureTextEntry={false}
+                        />
+                        {/* </ScrollView> */}
                         {/* </View> */}
 
                         {isCoachee ? (
@@ -632,7 +647,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                               }
                               inputStyle={
                                 isOnEditMode
-                                  ? { minHeight: Spacing[72], borderRadius: Spacing[10]}
+                                  ? { minHeight: Spacing[72], borderRadius: Spacing[10] }
                                   : { minHeight: Spacing[72], backgroundColor: Colors.ABM_BG_BLUE, borderRadius: Spacing[10] }
                               }
                               editable={isOnEditMode}
@@ -698,7 +713,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                               style={{ paddingTop: 0 }}
                               inputStyle={
                                 isOnEditMode
-                                  ? { minHeight: Spacing[48] , borderRadius: Spacing[10]}
+                                  ? { minHeight: Spacing[48], borderRadius: Spacing[10] }
                                   : { minHeight: Spacing[48], backgroundColor: Colors.ABM_BG_BLUE, borderRadius: Spacing[10] }
                               }
                               editable={isOnEditMode}
@@ -820,7 +835,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                         >
                           {`Kategori coaching:`}
                         </Text>
-                        {isCoachee?
+                        {isCoachee ?
                           <TextField
                             style={{ paddingTop: 0 }}
                             value={`${values.type}${(values.label !== '' && values.type === 'other') ? ` (${values.label})` : ''}`}
@@ -857,7 +872,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                               {values.type === "other" && (
                                 <TextField
                                   style={{ paddingTop: 0 }}
-                                  inputStyle={{ minHeight: Spacing[48], marginTop: Spacing[8], borderRadius: Spacing[10]}}
+                                  inputStyle={{ minHeight: Spacing[48], marginTop: Spacing[8], borderRadius: Spacing[10] }}
                                   placeholder="Tulis kategori coaching di sini."
                                   isRequired={false}
                                   secureTextEntry={false}
@@ -903,8 +918,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                           onPress={isCoachee ? goToOverviewJournalByCoach : goToOverviewJournalByCoachee}
                         />
                       ) : isCoachee ? (
-                        <Button type={"primary-form"} text={"Simpan Catatan"} onPress={() => verifyData(values)}
-                        />
+                        <Button type={"primary-form"} text={"Simpan Catatan"} onPress={() => verifyData(values)} />
                       ) : (
                         <Button type={"primary-form"} text={"Simpan Edit"} onPress={() => verifyData(values)} />
                       )}
@@ -965,65 +979,65 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
         </Modal>
 
         <Modal
-            isOpen={isResponseModalVisible}
-            style={{
-              position: "absolute",
-              width: dimensions.screenWidth - Spacing[24],
-              backgroundColor: "rgba(52, 52, 52, 0)",
-            }}
-          >
-            <View style={{ flex: 1, justifyContent: "center" }}>
-              <VStack
-                style={{
-                  backgroundColor: Colors.WHITE,
-                  borderRadius: Spacing[48],
-                  minHeight: Spacing[256],
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-                horizontal={Spacing[24]}
-                vertical={Spacing[24]}
-              >
-                <VStack horizontal={Spacing[24]} top={Spacing[24]} style={Layout.widthFull}>
-                  <VStack>
-                    <VStack style={{
-                        alignItems: "flex-end"
-                      }}>
-                        <TouchableOpacity onPress={toggleResponseModal}>
-                          <IconClose height={Spacing[32]} width={Spacing[32]} />
-                        </TouchableOpacity>
-                    </VStack>
-                    <HStack bottom={Spacing[32]}>
-                      <Spacer />
-                      <MoodComponent data={modalIcon} width={Spacing[96]} height={Spacing[96]} />
-                      <Spacer />
-                    </HStack>
-                    <Text
-                      type={"body-bold"}
-                      style={{ fontSize: Spacing[32], textAlign: "center", color: ABM_GREEN }}
-                      text={modalTitle}
-                    />
-                    <Spacer height={Spacing[24]} />
-                    <Text type={"body"} style={{ textAlign: "center" }} text={modalDesc} />
-                    <Spacer height={Spacing[20]} />
-                    <HStack bottom={Spacing[24]}>
-                      <Spacer />
-                      <VStack style={{ maxWidth: Spacing[256], minWidth: Spacing[128] }}>
-                        <Button
-                          type={"primary-form"}
-                          text={modalButtonText}
-                          style={{ height: Spacing[32], paddingHorizontal: Spacing[8] }}
-                          textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
-                          onPress={handleModalResponse}
-                        />
-                      </VStack>
-                      <Spacer />
-                    </HStack>
+          isOpen={isResponseModalVisible}
+          style={{
+            position: "absolute",
+            width: dimensions.screenWidth - Spacing[24],
+            backgroundColor: "rgba(52, 52, 52, 0)",
+          }}
+        >
+          <View style={{ flex: 1, justifyContent: "center" }}>
+            <VStack
+              style={{
+                backgroundColor: Colors.WHITE,
+                borderRadius: Spacing[48],
+                minHeight: Spacing[256],
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              horizontal={Spacing[24]}
+              vertical={Spacing[24]}
+            >
+              <VStack horizontal={Spacing[24]} top={Spacing[24]} style={Layout.widthFull}>
+                <VStack>
+                  <VStack style={{
+                    alignItems: "flex-end"
+                  }}>
+                    <TouchableOpacity onPress={toggleResponseModal}>
+                      <IconClose height={Spacing[32]} width={Spacing[32]} />
+                    </TouchableOpacity>
                   </VStack>
+                  <HStack bottom={Spacing[32]}>
+                    <Spacer />
+                    <MoodComponent data={modalIcon} width={Spacing[96]} height={Spacing[96]} />
+                    <Spacer />
+                  </HStack>
+                  <Text
+                    type={"body-bold"}
+                    style={{ fontSize: Spacing[32], textAlign: "center", color: ABM_GREEN }}
+                    text={modalTitle}
+                  />
+                  <Spacer height={Spacing[24]} />
+                  <Text type={"body"} style={{ textAlign: "center" }} text={modalDesc} />
+                  <Spacer height={Spacing[20]} />
+                  <HStack bottom={Spacing[24]}>
+                    <Spacer />
+                    <VStack style={{ maxWidth: Spacing[256], minWidth: Spacing[128] }}>
+                      <Button
+                        type={"primary-form"}
+                        text={modalButtonText}
+                        style={{ height: Spacing[32], paddingHorizontal: Spacing[8] }}
+                        textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
+                        onPress={handleModalResponse}
+                      />
+                    </VStack>
+                    <Spacer />
+                  </HStack>
                 </VStack>
               </VStack>
-            </View>
-          </Modal>
+            </VStack>
+          </View>
+        </Modal>
         <Spinner
           visible={coachingStore.isLoading || mainStore.isLoading}
           textContent={"Memuat..."}
