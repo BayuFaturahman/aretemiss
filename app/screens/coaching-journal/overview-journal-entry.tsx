@@ -224,7 +224,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
         setSelectedActivities(coachingStore.journalDetail.journal_type)
         forceUpdate()
         setIsOnEditMode(false)
-        
+
         let tempDocUrl = ''
         if (journalEntryInitialValue.documentsUrl.length > 0) {
           tempDocUrl = journalEntryInitialValue.documentsUrl[0]
@@ -506,6 +506,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                   // console.log(coachingStore.isFormCoach)
                   // console.log(coachingStore.isDetail)
                   console.log("verify1 data: ", data)
+                  console.log("selectedPicture: ", selectedPicture)
 
                   if (coachingStore.isFormCoach) {
                     if (data.content === "") {
@@ -525,6 +526,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                     } else {
                       if (coachingStore.isDetail) {
                         setError("")
+                        setErrorFile(false)
                         await coachingStore.updateJournal(
                           data.content,
                           data.recommendationForCoachee,
@@ -552,13 +554,17 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                       setError("jlLessonLearned")
                     } else if (data.jlCommitment === "" || data.jlCommitment === null) {
                       setError("jlCommitment")
+                    } else if (selectedPicture.length === 0) {
+                      setErrorFile(true)
                     } else {
                       setError("")
+                      setErrorFile(false)
                       await coachingStore.updateJournalCoachee(
                         data.jlContent,
                         data.jlLessonLearned,
                         data.jlCommitment,
                         data.jlId,
+                        selectedPicture[0]
                       )
 
                       // toggleModalEditEntry()
@@ -810,6 +816,11 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                             <Spacer />
                             <Spacer />
                             {selectedPicture.map((pic, id) => {
+
+                              if (pic === undefined) {
+                                return
+                              }
+
                               let splittedText = pic.split(".")
                               let fileFormat
                               let fileNameOnly
@@ -840,7 +851,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                               )
                             })}
 
-                            {isOnEditMode && !isCoachee?
+                            {isOnEditMode ?
                               <Button type={"dark-yellow"} text="Lampirkan Dokumen" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[20], left: Spacing[10] }} textStyle={{ fontSize: Spacing[12] }} onPress={() => openGallery()} />
                               :
                               <Button type={"dark-yellow"} text="Unduh Lampiran" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[20], left: Spacing[10] }} textStyle={{ fontSize: Spacing[12] }} onPress={() => { }} />

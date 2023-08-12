@@ -179,7 +179,8 @@ export class CoachingApi {
     content: string,
     commitment: string,
     lessonsLearned: string,
-    journalId: string
+    journalId: string,
+    documentsUrl: []
   ): Promise<CreateJournalResult> {
     try {
       console.log('updateJournalLearner ', journalId)
@@ -190,6 +191,7 @@ export class CoachingApi {
           content,
           lessonsLearned,
           commitment,
+          documentsUrl
         },
         { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` }
       )

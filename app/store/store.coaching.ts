@@ -659,7 +659,8 @@ export default class CoachingStore {
     content: string,
     lessonsLearned: string,
     commitment: string,
-    journalId: string
+    journalId: string,
+    documentsUrl: []
   ) {
     this.isLoading = true
     console.log('updateJournal coachee')
@@ -668,7 +669,8 @@ export default class CoachingStore {
       content,
       lessonsLearned,
       commitment,
-      journalId
+      journalId,
+      documentsUrl
     )
 
     console.log('updateJournal result', result)
