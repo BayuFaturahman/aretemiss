@@ -15,6 +15,7 @@ import { NavigatorParamList } from "@navigators/main-navigator"
 import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
 import { Colors, Layout, Spacing } from "@styles"
+import { launchImageLibrary, ImagePickerResponse, } from "react-native-image-picker"
 
 import { dimensions } from "@config/platform.config"
 
@@ -33,8 +34,7 @@ import Spinner from "react-native-loading-spinner-overlay"
 import { Formik } from "formik"
 
 import { IconClose } from "@assets/svgs"
-import { HorizontalAlignment } from "@components/view-stack/Types.ViewStack"
-import { ABM_GREEN } from "@styles/Color"
+
 
 export type JournalEntryType = {
   coachId: string
@@ -106,10 +106,14 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
     const [modalIcon, setModalIcon] = useState("senang")
 
     // Upload attachment states
-    // const [selectedPicture, setSelectedPicture] = useState([])
-    // const [uploadedPicture, setUploadedPicture] = useState([])
-    // const actionSheetRef = createRef();
-    
+    const [isAttachmentClicked, setIsAttachmentClicked] = useState<boolean>(false)
+    const [selectedPicture, setSelectedPicture] = useState([])
+    const [uploadedPicture, setUploadedPicture] = useState([])
+    const qualityImage = Platform.OS === "ios" ? 0.4 : 0.5
+    const maxWidthImage = 1024
+    const maxHeightImage = 1024
+
+
     const [journalEntryForm, setJournalEntryForm] =
       useState<JournalEntryType>(JournalEntryInitialValue)
 
@@ -167,10 +171,10 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
 
     // Handle redirect to home or close modal
     const handleModalResponse = () => {
-      if(coachingStore.messageCreateJournal === "Success") {
+      if (coachingStore.messageCreateJournal === "Success") {
         coachingStore.resetCoachingStore()
         coachingStore.setRefreshData(true)
-        coachingStore.clearJournal().then(()=>{
+        coachingStore.clearJournal().then(() => {
           navigation.reset({
             routes: [{ name: 'coachingJournalMain' }]
           })
@@ -182,37 +186,47 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
     // Set modal content based on API success / fail
     useEffect(() => {
       if (coachingStore.messageCreateJournal) {
-        if(coachingStore.messageCreateJournal === "Success"){
+        if (coachingStore.messageCreateJournal === "Success") {
           setModalContent("Sukses!", "Catatan telah sukses disimpan!", "senang")
         } else {
           setModalContent("Ada Kesalahan!", "Ups! Sepertinya ada kesalahan!\nSilahkan coba lagi!", "terkejut")
         }
         toggleResponseModal()
       }
-    },[coachingStore.messageCreateJournal])
+    }, [coachingStore.messageCreateJournal])
 
     const onSubmit = useCallback(
       async (data: JournalEntryType) => {
+        if (selectedPicture.length === 0) {
+          setErrorFile(true)
+        }
         if (data.title === "" || !data.learnerIds[0] || data.content === "" || data.strength === "" || data.improvement === ""
-        || data.recommendationForCoachee === "" || !data.type || data.type === "" || data.type === "Others" && data.label === ""
-        || data.date === "") {
+          || data.recommendationForCoachee === "" || !data.type || data.type === "" || data.type === "Others" && data.label === ""
+          || data.date === "") {
           setError(true)
-        } else {
+        }
+
+
+        if (!isError && !isErrorFile) {
+          console.log(`selectedPicture ${JSON.stringify(selectedPicture)}`)
+
+          data['documentsUrl'] = selectedPicture[0]
+
           setError(false)
           setErrorFile(false)
           setJournalEntryForm(data)
           console.log("journal entry to be passed ", data)
           console.log("journalEntryForm submitted", journalEntryForm)
           let temp = processLearnerIds(data)
-          if (!isError && !isErrorFile) {
-            await coachingStore.createJournal(temp)
-          }
+
+          await coachingStore.createJournal(temp)
         }
+
       },
-      [setJournalEntryForm, journalEntryForm],
+      [setJournalEntryForm, journalEntryForm, selectedPicture],
     )
 
-    const processLearnerIds = (journalEntry) : JournalEntryType => {
+    const processLearnerIds = (journalEntry): JournalEntryType => {
       console.log("journalEntryForm ", journalEntryForm)
       const tempLearnerIds = [];
       for (let i = 0; i < journalEntry.learnerIds.length; i++) {
@@ -229,6 +243,77 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
       setModalIcon(icon)
     }
 
+    const cameraHandler = useCallback(async (response: ImagePickerResponse) => {
+      console.log(response)
+      if (!response.didCancel) {
+        const formData = new FormData()
+        for (const asset of response.assets) {
+          const id = response.assets.indexOf(asset);
+
+          const format = "jpeg"
+
+          formData.append("files", {
+            ...response.assets[id],
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            uri:
+              Platform.OS === "android"
+                ? response.assets[id].uri
+                : response.assets[id].uri.replace("file://", ""),
+            name: `feed-image-${response.assets[id].fileName.toLowerCase().split(" ")[0]}-${new Date().getTime()}.${format}`,
+            type: response.assets[id].type ?? "image/jpeg",
+            size: response.assets[id].fileSize,
+          })
+          console.log(`imgName = coaching-image-${response.assets[id].fileName.toLowerCase().split(" ")[0]}-${new Date().getTime()}.${format}`)
+        }
+
+        coachingStore.formReset()
+        console.log('formData ', formData)
+        const responseUpload = await coachingStore.uploadImage(formData)
+        console.log('responseUpload ', responseUpload)
+        const listResponseUpload = responseUpload.data.urls.split(';')
+        console.log('listResponseUpload ', listResponseUpload)
+
+        if (coachingStore.errorCode === null && responseUpload !== undefined) {
+          console.log('upload photo OK.')
+          setSelectedPicture(listResponseUpload)
+          setUploadedPicture(listResponseUpload)
+        }
+
+      } else {
+        console.log("cancel")
+      }
+    }, [selectedPicture, setSelectedPicture, uploadedPicture, setUploadedPicture, coachingStore.isLoading])
+
+    const removeSelectedPict = (id) => {
+      const tempSelected = [...selectedPicture];
+      tempSelected.splice(id, 1);
+      setSelectedPicture(tempSelected)
+
+
+      const tempUploaded = [...uploadedPicture];
+      tempUploaded.splice(id, 1);
+      setUploadedPicture(tempUploaded)
+    }
+
+
+    const openGallery = useCallback(() => {
+      launchImageLibrary(
+        {
+          mediaType: "photo",
+          quality: qualityImage,
+          maxWidth: maxWidthImage,
+          maxHeight: maxHeightImage,
+          includeBase64: false,
+          selectionLimit: 1,
+        },
+        async (response) => {
+          await cameraHandler(response)
+        },
+      ).then(r => {
+      })
+    }, [isAttachmentClicked])
+
     return (
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -242,7 +327,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
             initialValues={journalEntryForm}
             // validationSchema={JournalEntryTypeSchema}
             onSubmit={onSubmit}
-            // validate={validate}
+          // validate={validate}
           >
             {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => (
               <>
@@ -258,7 +343,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                       </HStack>
 
                       <VStack>
-                      { isError && <Text
+                        {isError && <Text
                           type={"label"}
                           style={{
                             textAlign: 'center',
@@ -266,8 +351,8 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                             color: Colors.MAIN_RED
                           }}
                         >Ups! Sepertinya ada kolom yang belum diisi! Silahkan dicek kembali dan isi semua kolom yang tersedia!</Text>
-                      }
-                      { isErrorFile && <Text
+                        }
+                        {isErrorFile && <Text
                           type={"label"}
                           style={{
                             textAlign: 'center',
@@ -275,7 +360,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                             color: Colors.MAIN_RED
                           }}
                         >Ups! Sepertinya file dokumen tidak sesuai dengan syarat yang telah disediakan! Silahkan dicek kembali!</Text>
-                      }
+                        }
                         <TextField
                           value={values.title}
                           onChangeText={handleChange("title")}
@@ -284,8 +369,8 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                           isError={isError && !values.title}
                           secureTextEntry={false}
                           placeholder={"Tulis nama judul sesi coaching di sini."}
-                          inputStyle={{borderRadius: Spacing[12]}}
-                          
+                          inputStyle={{ borderRadius: Spacing[12] }}
+
                         />
                         <HStack style={{ zIndex: 100 }}>
                           <VStack style={{ width: Spacing[64] }}>
@@ -361,7 +446,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                             <TextField
                               style={{ paddingTop: 0 }}
                               value={values.content}
-                              isError={isError && !values.content }
+                              isError={isError && !values.content}
                               onChangeText={handleChange("content")}
                               inputStyle={{ minHeight: Spacing[72] }}
                               isRequired={false}
@@ -381,6 +466,46 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                             />
                           </VStack>
                         </HStack> */}
+
+                        <VStack top={Spacing[8]} style={{ alignItems: 'flex-end' }}>
+                          <HStack bottom={Spacing[6]}>
+                            <Spacer />
+                            <Spacer />
+                            {selectedPicture.map((pic, id) => {
+                              let splittedText = pic.split(".")
+                              let fileFormat
+                              let fileNameOnly
+                              let fileNameToDisplay = pic
+
+                              if (splittedText.length > 1) {
+                                fileNameOnly = splittedText[0]
+                                fileFormat = splittedText[splittedText.length - 1]
+                              }
+
+                              // console.log(`fileNameOnly = ${fileNameOnly}`)
+                              // console.log(`fileFormat = ${fileFormat}`)
+
+
+                              if (pic.length > 18) {
+                                fileNameToDisplay = `${fileNameOnly.slice(0, 15)}...${fileFormat}`
+                              }
+
+                              return (
+                                <HStack key={id}>
+                                  <TouchableOpacity onPress={() => { removeSelectedPict(id) }}>
+                                    <IconClose height={Spacing[20]} width={Spacing[20]} />
+                                  </TouchableOpacity>
+                                  <Text type={"body"} text={`${fileNameToDisplay}`} style={{ fontSize: Spacing[10], left: Spacing[2] }} numberOfLines={1} />
+                                </HStack>
+                              )
+                            })}
+                            <Button type={"dark-yellow"} text="Lampirkan Dokumen" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[20], left: Spacing[10] }} textStyle={{ fontSize: Spacing[12] }} onPress={() => openGallery()} />
+                          </HStack>
+
+                          <Text type={(isErrorFile) ? "warning-not-bold" : "body"} style={{ fontSize: Spacing[10] }}>
+                            {`Lampiran maksimal berukuran 2 MB dan dapat berupa .jpeg`}
+                          </Text>
+                        </VStack>
                         {coachingStore.isFormCoach && (
                           <VStack top={Spacing[12]}>
                             <Text
@@ -390,7 +515,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                                 isError && !values.strength ? styles.textError : null,
                               ]}
                             >
-                              {`Dari sesi chacing, apa yang sudah coachee lakukan dengan `}
+                              {`Dari sesi coaching, apa yang sudah coachee lakukan dengan `}
                               <Text type={"body-bold"} style={{ color: Colors.ABM_LIGHT_BLUE }}>
                                 {"efektif?"}
                               </Text>
@@ -465,7 +590,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                             isTextArea={true}
                             editable={true}
                             value={values.recommendationForCoachee}
-                            isError={isError && !values.recommendationForCoachee }
+                            isError={isError && !values.recommendationForCoachee}
                             onChangeText={handleChange("recommendationForCoachee")}
                             charCounter={true}
                           />
@@ -495,7 +620,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                           {values.type === "other" && (
                             <TextField
                               style={{ paddingTop: 0 }}
-                              inputStyle={{ minHeight: Spacing[48], marginTop: Spacing[8]}}
+                              inputStyle={{ minHeight: Spacing[48], marginTop: Spacing[8] }}
                               placeholder="Tulis kategori coaching di sini."
                               isRequired={false}
                               secureTextEntry={false}
@@ -575,7 +700,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
           <Spinner
             visible={coachingStore.isLoading || mainStore.isLoading}
             textContent={"Memuat..."}
-            // textStyle={styles.spinnerTextStyle}
+          // textStyle={styles.spinnerTextStyle}
           />
 
           {/* <ActionSheet ref={actionSheetRef}>
@@ -654,7 +779,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
                     </HStack>
                     <Text
                       type={"body-bold"}
-                      style={{ fontSize: Spacing[32], textAlign: "center", color: ABM_GREEN}}
+                      style={{ fontSize: Spacing[32], textAlign: "center", color: Colors.ABM_GREEN }}
                       text={modalTitle}
                     />
                     <Spacer height={Spacing[24]} />

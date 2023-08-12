@@ -23,6 +23,14 @@ export interface UpdateJournalResponse {
   journal: JournalModel
 }
 
+export interface PostUploadCoachingImagesResponse {
+  message: string
+  token: string
+  data: {
+    urls: string
+  }
+}
+
 export type JournalListResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: JournalResponse }  | GeneralApiProblem
 
 export type CreateJournalResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: CreateJournalResponse }  | GeneralApiProblem
@@ -34,3 +42,5 @@ export type LearnerJournalDetailResult = { kind: "form-error"; response: ErrorFo
 export type FeedbackDetailResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: FeedbackDetail }  | GeneralApiProblem
 
 export type UpdateJournalResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: UpdateJournalResponse }  | GeneralApiProblem
+
+export type PostUploadFeedImagesResult = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: PostUploadCoachingImagesResponse }  | GeneralApiProblem
