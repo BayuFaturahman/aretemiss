@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useReducer, useState, useEffect, useRef } from "react"
-import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native"
+import { Platform, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Text, Button, TextField, BackNavigation, DropDownPicker, DropDownItem } from "@components"
@@ -18,6 +18,7 @@ import { useStores } from "../../bootstrap/context.boostrap"
 import Modal from "react-native-modalbox"
 import { MoodComponent } from "@screens/homepage/components/mood-component"
 
+import { launchImageLibrary, ImagePickerResponse, } from "react-native-image-picker"
 import moment from "moment"
 
 import Spinner from "react-native-loading-spinner-overlay"
@@ -91,6 +92,15 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
     const [modalIcon, setModalIcon] = useState("senang")
     const [modalButtonText, setModalButtonText] = useState("Kembali ke catatan")
 
+    // Upload attachment states
+    const [isErrorFile, setErrorFile] = useState<boolean>(false)
+    const [isAttachmentClicked, setIsAttachmentClicked] = useState<boolean>(false)
+    const [selectedPicture, setSelectedPicture] = useState([])
+    // const [uploadedPicture, setUploadedPicture] = useState([])
+    const qualityImage = Platform.OS === "ios" ? 0.4 : 0.5
+    const maxWidthImage = 1024
+    const maxHeightImage = 1024
+
     const journalEntryInitialValue = {
       // coachId: '',
       date: moment(new Date()).format("LLLL"),
@@ -130,15 +140,15 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
     const onDateChange = (selectedId) => {
       const dateTime = moment(selectedId).format("LLLL")
       setSelectedDate(dateTime)
-      console.log(dateTime)
+      // console.log(dateTime)
     }
 
     const getListUser = useCallback(async (id: string) => {
       await mainStore.getListUser(id)
-      console.log("useEffect mainStore.listUserProfile", mainStore.listUserProfile)
+      // console.log("useEffect mainStore.listUserProfile", mainStore.listUserProfile)
 
       if (mainStore.listUserProfile) {
-        console.log("mainStore.listUserProfile", mainStore.listUserProfile)
+        // console.log("mainStore.listUserProfile", mainStore.listUserProfile)
         const itemsData: IOption[] = mainStore.listUserProfile.map((item, index) => {
           return {
             key: index,
@@ -161,7 +171,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
         await coachingStore.getJournalLearnerDetail(jlId)
 
         console.log("is coachee true")
-        console.log(coachingStore.learnerJournalDetail)
+        // console.log(coachingStore.learnerJournalDetail)
 
         journalEntryInitialValue.jlId = jlId
         journalEntryInitialValue.jlContent = coachingStore.learnerJournalDetail.jl_content
@@ -186,7 +196,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
         // if coach, use journalDetail API
         await coachingStore.getJournalDetail()
 
-        console.log(JSON.stringify(coachingStore.journalDetail, null, 4), 'line 154')
+        // console.log(JSON.stringify(coachingStore.journalDetail, null, 4), 'line 154')
         journalEntryInitialValue.title = coachingStore.journalDetail.journal_title
         journalEntryInitialValue.content = coachingStore.journalDetail.journal_content
         journalEntryInitialValue.strength = coachingStore.journalDetail.journal_strength
@@ -202,6 +212,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
         })
         journalEntryInitialValue.type = coachingStore.journalDetail.journal_type;
         journalEntryInitialValue.label = coachingStore.journalDetail.journal_label;
+        journalEntryInitialValue.documentsUrl = coachingStore.journalDetail.journal_documents_url
 
         setInitValueJournalType(dataJournalTags.find(data => data.key === coachingStore.journalDetail.journal_type))
         setJlLessonLearned(coachingStore.journalDetail.jl_learner.jl_lesson_learned)
@@ -213,11 +224,27 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
         setSelectedActivities(coachingStore.journalDetail.journal_type)
         forceUpdate()
         setIsOnEditMode(false)
+        
+        let tempDocUrl = ''
+        if (journalEntryInitialValue.documentsUrl.length > 0) {
+          tempDocUrl = journalEntryInitialValue.documentsUrl[0]
+        }
+
+        let splitTempDocUrl
+        let tempFileName
+        if (tempDocUrl !== '' && tempDocUrl !== undefined && tempDocUrl.includes('http')) {
+          splitTempDocUrl = tempDocUrl.split('/')
+          tempFileName = splitTempDocUrl[splitTempDocUrl.length - 1]
+        }
+
+        // console.log(`tempFileName: ${tempFileName}`)
+
+        setSelectedPicture([tempFileName])
       }
     }, [coachingStore.journalDetail, coachingStore.journalDetailSucced])
 
     useEffect(() => {
-      console.log("coachingStore.isDetail", coachingStore.isDetail)
+      // console.log("coachingStore.isDetail", coachingStore.isDetail)
       if (coachingStore.isDetail) {
         setTimeout(() => {
           getListDetail()
@@ -245,7 +272,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
     }
 
     const goToOverviewJournalByCoach = () => {
-      console.log("journalEntryInitialValue : ", journalEntryInitialValue)
+      // console.log("journalEntryInitialValue : ", journalEntryInitialValue)
       navigation.navigate("overviewJournalEntryByUser", {
         title: title,
         coachJournal: coachingStore.learnerJournalDetail.journal
@@ -253,13 +280,13 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
     }
 
     const verifyData = async (data) => {
-      console.log('');
+      // console.log('');
 
-      console.log(coachingStore.journalDetail.is_coachee)
-      console.log(coachingStore.journalDetail.is_edited)
-      console.log(coachingStore.isFormCoach)
-      console.log(coachingStore.isDetail)
-      console.log("verify data: ", data)
+      // console.log(coachingStore.journalDetail.is_coachee)
+      // console.log(coachingStore.journalDetail.is_edited)
+      // console.log(coachingStore.isFormCoach)
+      // console.log(coachingStore.isDetail)
+      console.log("verify2 data: ", data)
 
       if (coachingStore.isFormCoach) {
         if (data.content === "") {
@@ -274,6 +301,8 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
           setError("type")
         } else if (data.type === "Others" && data.label === "") {
           setError("label")
+        } else if (selectedPicture.length === 0) {
+          setErrorFile(true)
         } else {
           if (coachingStore.isDetail) {
             setError("")
@@ -372,6 +401,79 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
       }
     }, [isOnEditMode])
 
+
+
+    const cameraHandler = useCallback(async (response: ImagePickerResponse) => {
+      // console.log(response)
+      if (!response.didCancel) {
+        const formData = new FormData()
+        for (const asset of response.assets) {
+          const id = response.assets.indexOf(asset);
+
+          const format = "jpeg"
+
+          formData.append("files", {
+            ...response.assets[id],
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            uri:
+              Platform.OS === "android"
+                ? response.assets[id].uri
+                : response.assets[id].uri.replace("file://", ""),
+            name: `feed-image-${response.assets[id].fileName.toLowerCase().split(" ")[0]}-${new Date().getTime()}.${format}`,
+            type: response.assets[id].type ?? "image/jpeg",
+            size: response.assets[id].fileSize,
+          })
+          console.log(`imgName = coaching-image-${response.assets[id].fileName.toLowerCase().split(" ")[0]}-${new Date().getTime()}.${format}`)
+        }
+
+        coachingStore.formReset()
+        console.log('formData ', formData)
+        const responseUpload = await coachingStore.uploadImage(formData)
+        console.log('responseUpload ', responseUpload)
+        const listResponseUpload = responseUpload.data.urls.split(';')
+        console.log('listResponseUpload ', listResponseUpload)
+
+        if (coachingStore.errorCode === null && responseUpload !== undefined) {
+          console.log('upload photo OK.')
+          setSelectedPicture(listResponseUpload)
+          // setUploadedPicture(listResponseUpload)
+        }
+
+      } else {
+        console.log("cancel")
+      }
+    }, [selectedPicture, setSelectedPicture, coachingStore.isLoading])
+
+    const removeSelectedPict = (id) => {
+      const tempSelected = [...selectedPicture];
+      tempSelected.splice(id, 1);
+      setSelectedPicture(tempSelected)
+
+
+      // const tempUploaded = [...uploadedPicture];
+      // tempUploaded.splice(id, 1);
+      // setUploadedPicture(tempUploaded)
+    }
+
+
+    const openGallery = useCallback(() => {
+      launchImageLibrary(
+        {
+          mediaType: "photo",
+          quality: qualityImage,
+          maxWidth: maxWidthImage,
+          maxHeight: maxHeightImage,
+          includeBase64: false,
+          selectionLimit: 1,
+        },
+        async (response) => {
+          await cameraHandler(response)
+        },
+      ).then(r => {
+      })
+    }, [isAttachmentClicked])
+
     return (
       <VStack
         testID="CoachingJournalMain"
@@ -380,6 +482,15 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
         <SafeAreaView style={Layout.flex}>
           <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
           <ScrollView>
+            {isErrorFile && <Text
+              type={"label"}
+              style={{
+                textAlign: 'center',
+                marginTop: Spacing[4],
+                color: Colors.MAIN_RED
+              }}
+            >Ups! Sepertinya file dokumen tidak sesuai dengan syarat yang telah disediakan! Silahkan dicek kembali!</Text>
+            }
             <Formik
               innerRef={formikRef}
               initialValues={journalEntryInitialValue}
@@ -390,11 +501,11 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
               {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => {
 
                 const verifyData = async (data) => {
-                  console.log(coachingStore.journalDetail.is_coachee)
-                  console.log(coachingStore.journalDetail.is_edited)
-                  console.log(coachingStore.isFormCoach)
-                  console.log(coachingStore.isDetail)
-                  console.log("verify data: ", data)
+                  // console.log(coachingStore.journalDetail.is_coachee)
+                  // console.log(coachingStore.journalDetail.is_edited)
+                  // console.log(coachingStore.isFormCoach)
+                  // console.log(coachingStore.isDetail)
+                  console.log("verify1 data: ", data)
 
                   if (coachingStore.isFormCoach) {
                     if (data.content === "") {
@@ -409,6 +520,8 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                       setError("type")
                     } else if (data.type === "Others" && data.label === "") {
                       setError("label")
+                    } else if (selectedPicture.length === 0) {
+                      setErrorFile(true)
                     } else {
                       if (coachingStore.isDetail) {
                         setError("")
@@ -419,6 +532,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                           data.type,
                           data.improvement,
                           data.label,
+                          selectedPicture[0]
                         ).then(_ => {
                           setFieldValue('content', data.content)
                           setFieldValue('recommendationForCoachee', data.recommendationForCoachee)
@@ -688,6 +802,58 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                             />
                           </VStack>
                         )}
+
+
+                        {/* Attachment */}
+                        <VStack top={Spacing[8]} style={{ alignItems: 'flex-end' }}>
+                          <HStack bottom={Spacing[6]}>
+                            <Spacer />
+                            <Spacer />
+                            {selectedPicture.map((pic, id) => {
+                              let splittedText = pic.split(".")
+                              let fileFormat
+                              let fileNameOnly
+                              let fileNameToDisplay = pic
+
+                              if (splittedText.length > 1) {
+                                fileNameOnly = splittedText[0]
+                                fileFormat = splittedText[splittedText.length - 1]
+                              }
+
+                              // console.log(`fileNameOnly = ${fileNameOnly}`)
+                              // console.log(`fileFormat = ${fileFormat}`)
+
+
+                              if (pic.length > 18) {
+                                fileNameToDisplay = `${fileNameOnly.slice(0, 15)}...${fileFormat}`
+                              }
+
+                              return (
+                                <HStack key={'id'}>
+                                  {isOnEditMode &&
+                                    <TouchableOpacity onPress={() => removeSelectedPict(id)} >
+                                      <IconClose height={Spacing[20]} width={Spacing[20]} />
+                                    </TouchableOpacity>
+                                  }
+                                  <Text type={"body"} text={fileNameToDisplay} style={{ fontSize: Spacing[10], left: Spacing[2] }} numberOfLines={1} />
+                                </HStack>
+                              )
+                            })}
+
+                            {isOnEditMode && !isCoachee?
+                              <Button type={"dark-yellow"} text="Lampirkan Dokumen" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[20], left: Spacing[10] }} textStyle={{ fontSize: Spacing[12] }} onPress={() => openGallery()} />
+                              :
+                              <Button type={"dark-yellow"} text="Unduh Lampiran" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[20], left: Spacing[10] }} textStyle={{ fontSize: Spacing[12] }} onPress={() => { }} />
+                            }
+                          </HStack>
+
+                          {isOnEditMode &&
+                            <Text type={(isErrorFile) ? "warning-not-bold" : "body"} style={{ fontSize: Spacing[10] }}>
+                              {`Lampiran maksimal berukuran 2 MB dan dapat berupa .jpeg`}
+                            </Text>
+                          }
+                        </VStack>
+
                         {coachingStore.isFormCoach && (
                           <VStack top={Spacing[12]}>
                             <Text
