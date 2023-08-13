@@ -197,26 +197,34 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
 
     const onSubmit = useCallback(
       async (data: JournalEntryType) => {
-        if (selectedPicture.length === 0) {
-          setErrorFile(true)
-        }
+
         if (data.title === "" || !data.learnerIds[0] || data.content === "" || data.strength === "" || data.improvement === ""
           || data.recommendationForCoachee === "" || !data.type || data.type === "" || data.type === "Others" && data.label === ""
-          || data.date === "") {
-          setError(true)
-        }
+          || data.date === "" || selectedPicture.length === 0) {
 
+          if (selectedPicture.length === 0) {
+            setErrorFile(true)
+          } else {
+            setErrorFile(false)
+          }
 
-        if (!isError && !isErrorFile) {
-          console.log(`selectedPicture ${JSON.stringify(selectedPicture)}`)
+          if (data.title === "" || !data.learnerIds[0] || data.content === "" || data.strength === "" || data.improvement === ""
+            || data.recommendationForCoachee === "" || !data.type || data.type === "" || data.type === "Others" && data.label === ""
+            || data.date === "") {
+            setError(true)
+          } else {
+            setError(false)
+          }
+        } else {
+          // console.log(`selectedPicture ${JSON.stringify(selectedPicture)}`)
 
           data['documentsUrl'] = selectedPicture[0]
 
           setError(false)
           setErrorFile(false)
           setJournalEntryForm(data)
-          console.log("journal entry to be passed ", data)
-          console.log("journalEntryForm submitted", journalEntryForm)
+          // console.log("journal entry to be passed ", data)
+          // console.log("journalEntryForm submitted", journalEntryForm)
           let temp = processLearnerIds(data)
 
           await coachingStore.createJournal(temp)

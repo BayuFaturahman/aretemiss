@@ -738,6 +738,8 @@ export default class CoachingStore {
 
   async uploadImage(formData: FormData) {
     console.log("Upload Photo")
+    this.formReset()
+
 
     try {
       const result = await this.coachingApi.PostUploadFeedImages(formData)
