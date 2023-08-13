@@ -24,8 +24,6 @@ import moment from "moment"
 import Spinner from "react-native-loading-spinner-overlay"
 import { Formik } from "formik"
 import { IconClose } from "@assets/svgs"
-import FastImage from "react-native-fast-image"
-import smileYellow from "@assets/icons/coachingJournal/empty/smile-yellow.png"
 import { ABM_GREEN } from "@styles/Color"
 
 const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalEntry">> = observer(
@@ -96,7 +94,6 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
     const [isErrorFile, setErrorFile] = useState<boolean>(false)
     const [isAttachmentClicked, setIsAttachmentClicked] = useState<boolean>(false)
     const [selectedPicture, setSelectedPicture] = useState([])
-    // const [uploadedPicture, setUploadedPicture] = useState([])
     const qualityImage = Platform.OS === "ios" ? 0.4 : 0.5
     const maxWidthImage = 1024
     const maxHeightImage = 1024
@@ -225,6 +222,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
         forceUpdate()
         setIsOnEditMode(false)
 
+        // handle attachment
         let tempDocUrl = ''
         if (journalEntryInitialValue.documentsUrl.length > 0) {
           tempDocUrl = journalEntryInitialValue.documentsUrl[0]
@@ -235,11 +233,8 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
         if (tempDocUrl !== '' && tempDocUrl !== undefined && tempDocUrl.includes('http')) {
           splitTempDocUrl = tempDocUrl.split('/')
           tempFileName = splitTempDocUrl[splitTempDocUrl.length - 1]
+          setSelectedPicture([tempFileName])
         }
-
-        // console.log(`tempFileName: ${tempFileName}`)
-
-        setSelectedPicture([tempFileName])
       }
     }, [coachingStore.journalDetail, coachingStore.journalDetailSucced])
 
@@ -449,13 +444,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
       const tempSelected = [...selectedPicture];
       tempSelected.splice(id, 1);
       setSelectedPicture(tempSelected)
-
-
-      // const tempUploaded = [...uploadedPicture];
-      // tempUploaded.splice(id, 1);
-      // setUploadedPicture(tempUploaded)
     }
-
 
     const openGallery = useCallback(() => {
       launchImageLibrary(
@@ -854,7 +843,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                             {isOnEditMode ?
                               <Button type={"dark-yellow"} text="Lampirkan Dokumen" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[20], left: Spacing[10] }} textStyle={{ fontSize: Spacing[12] }} onPress={() => openGallery()} />
                               :
-                              <Button type={"dark-yellow"} text="Unduh Lampiran" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[20], left: Spacing[10] }} textStyle={{ fontSize: Spacing[12] }} onPress={() => { }} />
+                              <Button type={selectedPicture.length > 0 ? "dark-yellow" : "negative"} text="Unduh Lampiran" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[20], left: Spacing[10] }} textStyle={{ fontSize: Spacing[12] }} onPress={() => { }} disabled={selectedPicture.length <= 0} />
                             }
                           </HStack>
 
