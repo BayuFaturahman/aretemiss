@@ -1,10 +1,10 @@
 import { JournalUser } from "@models/coaching/journal-model";
 import { ApiResponse } from "apisauce"
-import {FeedbackDetail, FeedbackJLSixth} from "app/store/store.coaching";
+import { FeedbackDetail, FeedbackJLSixth } from "app/store/store.coaching";
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../api-problem"
-import { CreateJournalResult, FeedbackDetailResult, JournalDetailResult, JournalListResult, LearnerJournalDetailResult} from "./coaching-api.types";
-import {DEFAULT_API_CONFIG} from "@services/api/api-config";
+import { CreateJournalResult, FeedbackDetailResult, JournalDetailResult, JournalListResult, LearnerJournalDetailResult, PostUploadFeedImagesResult } from "./coaching-api.types";
+import { DEFAULT_API_CONFIG } from "@services/api/api-config";
 
 export class CoachingApi {
   private api: Api
@@ -21,12 +21,12 @@ export class CoachingApi {
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.get(
         "/journal", {
-          limit: limit,
-          page: page
-        }, { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` })
-        console.log('getJournalList response', response.data)
+        limit: limit,
+        page: page
+      }, { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` })
+      console.log('getJournalList response', response.data)
 
-      if(response.status === 400){
+      if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
       }
@@ -34,7 +34,7 @@ export class CoachingApi {
       if (!response.ok) {
         const res = response.data
         const problem = getGeneralApiProblem(response)
-        if (problem) return {...problem, response: res}
+        if (problem) return { ...problem, response: res }
       }
       const res = response.data.data
       console.log('getJournalList res', res)
@@ -42,19 +42,19 @@ export class CoachingApi {
       return { kind: "ok", response: res }
     } catch (e) {
       // __DEV__ && console.tron.log(e.message)
-      return { kind: "bad-data"}
+      return { kind: "bad-data" }
     }
   }
 
   async getJournalDetail(id: string): Promise<JournalDetailResult> {
     console.log('request getJournal Detail', id)
     try {
-          // make the api call
+      // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.get(
-      `/journal/${id}`, {}, { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` })
-      
+        `/journal/${id}`, {}, { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` })
+
       console.log('response detail', response.data)
-      if(response.status === 400){
+      if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
       }
@@ -68,19 +68,19 @@ export class CoachingApi {
       return { kind: "ok", response: res }
     } catch (e) {
       // __DEV__ && console.tron.log(e.message)
-      return { kind: "bad-data"}
+      return { kind: "bad-data" }
     }
   }
 
   async getJournalLearnerDetail(id: string): Promise<LearnerJournalDetailResult> {
     console.log('request getJournal Detail', id)
     try {
-          // make the api call
+      // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.get(
-      `/journal-learner/${id}`, {}, { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` })
-      
+        `/journal-learner/${id}`, {}, { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` })
+
       console.log('response detail', response.data)
-      if(response.status === 400){
+      if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
       }
@@ -94,7 +94,7 @@ export class CoachingApi {
       return { kind: "ok", response: res }
     } catch (e) {
       // __DEV__ && console.tron.log(e.message)
-      return { kind: "bad-data"}
+      return { kind: "bad-data" }
     }
   }
 
@@ -103,7 +103,7 @@ export class CoachingApi {
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.get(
         `/journal/${id}/feedback`)
-      if(response.status === 400){
+      if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
       }
@@ -117,7 +117,7 @@ export class CoachingApi {
       return { kind: "ok", response: res }
     } catch (e) {
       // __DEV__ && console.tron.log(e.message)
-      return { kind: "bad-data"}
+      return { kind: "bad-data" }
     }
   }
 
@@ -154,7 +154,7 @@ export class CoachingApi {
         { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` }
       )
       console.log('createJournal response', response.data)
-      if(response.status === 400){
+      if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
       }
@@ -171,7 +171,7 @@ export class CoachingApi {
     } catch (e) {
       console.log(e, 'line 150');
       // __DEV__ && console.tron.log(e.message)
-      return { kind: "bad-data"}
+      return { kind: "bad-data" }
     }
   }
 
@@ -179,7 +179,8 @@ export class CoachingApi {
     content: string,
     commitment: string,
     lessonsLearned: string,
-    journalId: string
+    journalId: string,
+    documentsUrl: []
   ): Promise<CreateJournalResult> {
     try {
       console.log('updateJournalLearner ', journalId)
@@ -190,12 +191,13 @@ export class CoachingApi {
           content,
           lessonsLearned,
           commitment,
+          documentsUrl
         },
         { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` }
       )
       console.log('updateJournalLearner response', response)
       console.log(response)
-      if(response.status === 400){
+      if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
       }
@@ -211,7 +213,7 @@ export class CoachingApi {
       return { kind: "ok", response: res }
     } catch (e) {
       // __DEV__ && console.tron.log(e.message)
-      return { kind: "bad-data"}
+      return { kind: "bad-data" }
     }
   }
 
@@ -223,18 +225,22 @@ export class CoachingApi {
     type: string,
     id: string,
     label: string,
+    documentsUrl: string
   ): Promise<CreateJournalResult> {
     try {
       console.log('updateJournalCoach api', id)
       // make the api call
-      const bodyRequest = {
-          content,
-          recommendationForCoachee,
-          strength,
-          improvement,
-          type,
-          label,
+
+      let bodyRequest = {
+        content,
+        recommendationForCoachee,
+        strength,
+        improvement,
+        type,
+        label,
+        documentsUrl
       }
+
       console.log("REQUEST ", bodyRequest)
       const response: ApiResponse<any> = await this.api.apisauce.patch(
         `/journal/${id}`,
@@ -243,7 +249,7 @@ export class CoachingApi {
       )
       console.log('updateJournalCoach response', response)
       console.log(response)
-      if(response.status === 400){
+      if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
       }
@@ -259,18 +265,18 @@ export class CoachingApi {
       return { kind: "ok", response: res }
     } catch (e) {
       // __DEV__ && console.tron.log(e.message)
-      return { kind: "bad-data"}
+      return { kind: "bad-data" }
     }
   }
 
   async createFeedback(
     journalId: string,
-    q1:number,
-    q2:number,
-    q3:number,
-    q4:number,
-    q5:number,
-    q6:number
+    q1: number,
+    q2: number,
+    q3: number,
+    q4: number,
+    q5: number,
+    q6: number
   ): Promise<CreateJournalResult> {
     try {
       console.log('createFeedback ap', journalId)
@@ -291,7 +297,7 @@ export class CoachingApi {
       )
       console.log('createFeedback response', response)
       console.log(response)
-      if(response.status === 400){
+      if (response.status === 400) {
         const res = response.data
         return { kind: "form-error", response: res }
       }
@@ -307,9 +313,41 @@ export class CoachingApi {
       return { kind: "ok", response: res }
     } catch (e) {
       // __DEV__ && console.tron.log(e.message)
-      return { kind: "bad-data"}
+      return { kind: "bad-data" }
     }
   }
 
+  async PostUploadFeedImages(formData: FormData): Promise<PostUploadFeedImagesResult> {
+    try {
+      // console.log('postUploadFiles data', formData)
+      console.log('PostUploadFeedPhoto data api call')
+      // make the api call
+      const response: ApiResponse<any> = await this.api.apisauce.post(
+        `/upload`,
+        formData,
+        { baseURL: `${DEFAULT_API_CONFIG.url.slice(0, -3)}v2/` }
+      )
+
+      if (response.status === 400) {
+        const res = response.data
+        return { kind: "form-error", response: res }
+      }
+
+      // the typical ways to die when calling an api
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const res = response.data
+      console.log('response PostUploadFeedImages', res)
+
+      return { kind: "ok", response: res }
+    } catch (e) {
+      console.log('error', e)
+      // __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data" }
+    }
+  }
 
 }
