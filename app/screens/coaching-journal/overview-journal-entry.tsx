@@ -98,6 +98,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
     const qualityImage = Platform.OS === "ios" ? 0.4 : 0.5
     const maxWidthImage = 1024
     const maxHeightImage = 1024
+    const { config, fs } = RNFetchBlob;
 
     const journalEntryInitialValue = {
       // coachId: '',
@@ -234,7 +235,10 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
         if (tempDocUrl !== '' && tempDocUrl !== undefined && tempDocUrl.includes('http')) {
           splitTempDocUrl = tempDocUrl.split('/')
           tempFileName = splitTempDocUrl[splitTempDocUrl.length - 1]
-          setSelectedPicture([tempFileName])
+          setSelectedPicture([{
+            fileName: tempFileName,
+            url: tempDocUrl
+          }])
         }
       }
     }, [coachingStore.journalDetail, coachingStore.journalDetailSucced])
@@ -432,7 +436,10 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
 
         if (coachingStore.errorCode === null && responseUpload !== undefined) {
           console.log('upload photo OK.')
-          setSelectedPicture(listResponseUpload)
+          setSelectedPicture([{
+            fileName: listResponseUpload[0],
+            url: ''
+          }])
           // setUploadedPicture(listResponseUpload)
         }
 
@@ -464,22 +471,31 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
       })
     }, [isAttachmentClicked])
 
-    const downloadFile = () => {
+    const downloadFile = (fileUrl: string) => {
 
       // Get today's date to add the time suffix in filename
       let date = new Date();
       // File URL which we want to download
-      let FILE_URL = 'https://ilead.id/storage/development/file/document/image-19128628453577.jpeg';
+      let FILE_URL = fileUrl;
+      // let FILE_URL = 'https://ilead.id/storage/development/file/image/image-17525700499984.jpg';
+
       // Function to get extention of the file url
       let file_ext = getFileExtention(FILE_URL);
+      // console.log(`file ext: ${file_ext}`)
 
-      file_ext = '.' + file_ext[0];
+      // file_ext = '.' + file_ext;
 
       // config: To get response by passing the downloading related options
       // fs: Root directory path to download
-      const { config, fs } = RNFetchBlob;
+
       let RootDir = fs.dirs.DownloadDir;
-      console.log(`RootDir`)
+
+
+      // console.log(`fs.dirss: ${JSON.stringify(fs.dirs)}`)
+      // console.log(`fs.dirs.DocumentDir: ${fs.dirs.DocumentDir}`)
+      // console.log(`fs.dirs.DownloadDir: ${fs.dirs.DownloadDir}`)
+      // console.log(`RootDir: ${RootDir}`)
+
       let options = {
         fileCache: true,
         addAndroidDownloads: {
@@ -514,12 +530,13 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
       return `.${fileExt}`
 
     };
+   
     // Function to check the platform
     // If Platform is Android then check for permissions.
-    const checkPermission = async () => {
+    const checkPermission = async (fileUrl: string) => {
 
       if (Platform.OS === 'ios') {
-        downloadFile();
+        downloadFile(fileUrl);
       } else {
         try {
           const granted = await PermissionsAndroid.request(
@@ -527,12 +544,12 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
             {
               title: 'Storage Permission Required',
               message: 'Application needs access to your storage to download File',
-              buttonPositive: ""
+              buttonPositive: "Allow"
             }
           );
           if (granted === PermissionsAndroid.RESULTS.GRANTED) {
             // Start downloading
-            downloadFile();
+            downloadFile(fileUrl);
             console.log('Storage Permission Granted.');
           } else {
             // If permission denied then show alert
@@ -606,7 +623,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                           data.type,
                           data.improvement,
                           data.label,
-                          selectedPicture[0]
+                          selectedPicture[0].fileName
                         ).then(_ => {
                           setFieldValue('content', data.content)
                           setFieldValue('recommendationForCoachee', data.recommendationForCoachee)
@@ -636,7 +653,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                         data.jlLessonLearned,
                         data.jlCommitment,
                         data.jlId,
-                        selectedPicture[0]
+                        selectedPicture[0].fileName
                       )
 
                       // toggleModalEditEntry()
@@ -893,10 +910,10 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                                 return
                               }
 
-                              let splittedText = pic.split(".")
+                              let splittedText = pic.fileName.split(".")
                               let fileFormat
                               let fileNameOnly
-                              let fileNameToDisplay = pic
+                              let fileNameToDisplay = pic.fileName
 
                               if (splittedText.length > 1) {
                                 fileNameOnly = splittedText[0]
@@ -907,7 +924,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                               // console.log(`fileFormat = ${fileFormat}`)
 
 
-                              if (pic.length > 18) {
+                              if (pic.fileName.length > 18) {
                                 fileNameToDisplay = `${fileNameOnly.slice(0, 15)}...${fileFormat}`
                               }
 
@@ -926,7 +943,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                             {isOnEditMode ?
                               <Button type={"dark-yellow"} text="Lampirkan Dokumen" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[20], left: Spacing[10] }} textStyle={{ fontSize: Spacing[12] }} onPress={() => openGallery()} />
                               :
-                              <Button type={selectedPicture.length > 0 ? "dark-yellow" : "negative"} text="Unduh Lampiran" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[20], left: Spacing[10] }} textStyle={{ fontSize: Spacing[12] }} onPress={() => checkPermission()} disabled={selectedPicture.length <= 0} />
+                              <Button type={selectedPicture.length > 0 ? "dark-yellow" : "negative"} text="Unduh Lampiran" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[20], left: Spacing[10] }} textStyle={{ fontSize: Spacing[12] }} onPress={() => checkPermission(selectedPicture[0].url)} disabled={selectedPicture.length <= 0} />
                             }
                           </HStack>
 
