@@ -1,5 +1,5 @@
 import React, { FC, useReducer, useState, useEffect, useCallback } from "react"
-import { SafeAreaView, ScrollView, Platform } from "react-native"
+import { SafeAreaView, ScrollView, Platform, PermissionsAndroid } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Text, Button, TextField, BackNavigation } from "@components"
@@ -11,6 +11,7 @@ import { Colors, Layout, Spacing } from "@styles"
 import { Formik } from "formik"
 import { launchImageLibrary, ImagePickerResponse, } from "react-native-image-picker"
 import { useStores } from "../../bootstrap/context.boostrap"
+import RNFetchBlob from 'rn-fetch-blob';
 
 type CoacheeListItem = {
   index: number
@@ -44,6 +45,7 @@ const OverviewJournalEntryByUser: FC<StackScreenProps<NavigatorParamList, "overv
     const qualityImage = Platform.OS === "ios" ? 0.4 : 0.5
     const maxWidthImage = 1024
     const maxHeightImage = 1024
+    const { config, fs } = RNFetchBlob;
 
     const formInitialValue = coachJournal ? {
       content: '',
@@ -94,7 +96,10 @@ const OverviewJournalEntryByUser: FC<StackScreenProps<NavigatorParamList, "overv
         if (tempDocUrl !== '' && tempDocUrl !== undefined && tempDocUrl.includes('http')) {
           splitTempDocUrl = tempDocUrl.split('/')
           tempFileName = splitTempDocUrl[splitTempDocUrl.length - 1]
-          setSelectedPicture([tempFileName])
+          setSelectedPicture([{
+            fileName: tempFileName,
+            url: tempDocUrl
+          }])
         }
 
 
@@ -164,7 +169,10 @@ const OverviewJournalEntryByUser: FC<StackScreenProps<NavigatorParamList, "overv
 
         if (coachingStore.errorCode === null && responseUpload !== undefined) {
           console.log('upload photo OK.')
-          setSelectedPicture(listResponseUpload)
+          setSelectedPicture([{
+            fileName: listResponseUpload[0],
+            url: ''
+          }])
           // setUploadedPicture(listResponseUpload)
         }
 
@@ -196,7 +204,97 @@ const OverviewJournalEntryByUser: FC<StackScreenProps<NavigatorParamList, "overv
       })
     }, [isAttachmentClicked])
 
+ const downloadFile = (fileUrl: string) => {
 
+      // Get today's date to add the time suffix in filename
+      let date = new Date();
+      // File URL which we want to download
+      let FILE_URL = fileUrl;
+      // let FILE_URL = 'https://ilead.id/storage/development/file/image/image-17525700499984.jpg';
+
+      // Function to get extention of the file url
+      let file_ext = getFileExtention(FILE_URL);
+      // console.log(`file ext: ${file_ext}`)
+
+      // file_ext = '.' + file_ext;
+
+      // config: To get response by passing the downloading related options
+      // fs: Root directory path to download
+
+      let RootDir = fs.dirs.DownloadDir;
+
+
+      // console.log(`fs.dirss: ${JSON.stringify(fs.dirs)}`)
+      // console.log(`fs.dirs.DocumentDir: ${fs.dirs.DocumentDir}`)
+      // console.log(`fs.dirs.DownloadDir: ${fs.dirs.DownloadDir}`)
+      // console.log(`RootDir: ${RootDir}`)
+
+      let options = {
+        fileCache: true,
+        addAndroidDownloads: {
+          path:
+            RootDir +
+            '/file_' +
+            Math.floor(date.getTime() + date.getSeconds() / 2) +
+            file_ext,
+          description: 'downloading file...',
+          notification: true,
+          // useDownloadManager works with Android only
+          useDownloadManager: true,
+        },
+      };
+      config(options)
+        .fetch('GET', FILE_URL)
+        .then(res => {
+          // Alert after successful downloading
+          console.log('res -> ', JSON.stringify(res));
+          alert('File Downloaded Successfully.');
+          console.log(`RootDir: RootDir ${RootDir}`)
+        });
+    };
+
+    const getFileExtention = fileUrl => {
+      // // To get the file extension
+      // return /[.]/.exec(fileUrl) ?
+      //          /[^.]+$/.exec(fileUrl) : undefined;
+
+      let split = fileUrl.split(".")
+      let fileExt = split[split.length - 1]
+      return `.${fileExt}`
+
+    };
+   
+    // Function to check the platform
+    // If Platform is Android then check for permissions.
+    const checkPermission = async (fileUrl: string) => {
+
+      if (Platform.OS === 'ios') {
+        downloadFile(fileUrl);
+      } else {
+        try {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+            {
+              title: 'Storage Permission Required',
+              message: 'Application needs access to your storage to download File',
+              buttonPositive: "Allow"
+            }
+          );
+          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            // Start downloading
+            downloadFile(fileUrl);
+            console.log('Storage Permission Granted.');
+          } else {
+            // If permission denied then show alert
+            // Alert.alert('Error', 'Storage Permission Not Granted');
+            console.log('Error', 'Storage Permission Not Granted');
+          }
+        } catch (err) {
+          // To handle permission related exception
+          console.log("++++" + err);
+        }
+      }
+    };
 
     return (
       <VStack
@@ -306,10 +404,10 @@ const OverviewJournalEntryByUser: FC<StackScreenProps<NavigatorParamList, "overv
                               return
                             }
 
-                            let splittedText = pic.split(".")
+                            let splittedText = pic.fileName.split(".")
                             let fileFormat
                             let fileNameOnly
-                            let fileNameToDisplay = pic
+                            let fileNameToDisplay = pic.fileName
 
                             if (splittedText.length > 1) {
                               fileNameOnly = splittedText[0]
@@ -320,7 +418,7 @@ const OverviewJournalEntryByUser: FC<StackScreenProps<NavigatorParamList, "overv
                             // console.log(`fileFormat = ${fileFormat}`)
 
 
-                            if (pic.length > 18) {
+                            if (pic.fileName.length > 18) {
                               fileNameToDisplay = `${fileNameOnly.slice(0, 15)}...${fileFormat}`
                             }
 
@@ -331,7 +429,7 @@ const OverviewJournalEntryByUser: FC<StackScreenProps<NavigatorParamList, "overv
                             )
                           })}
 
-                          <Button type={selectedPicture.length > 0 ? "dark-yellow" : "negative"} text="Unduh Lampiran" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[20], left: Spacing[10] }} textStyle={{ fontSize: Spacing[12] }} onPress={() => { }} disabled={selectedPicture.length === 0} />
+                          <Button type={selectedPicture.length > 0 ? "dark-yellow" : "negative"} text="Unduh Lampiran" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[20], left: Spacing[10] }} textStyle={{ fontSize: Spacing[12] }} onPress={() => checkPermission(selectedPicture[0].url)} disabled={selectedPicture.length === 0} />
                         </HStack>
                       </VStack>
 
