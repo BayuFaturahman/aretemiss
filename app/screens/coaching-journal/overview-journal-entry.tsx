@@ -345,10 +345,14 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
     }
 
     const onClickCancel = () => {
-      setIsOnEditMode(false)
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      formikRef?.current?.resetForm()
+      if (!coachingStore.learnerJournalDetail.is_filled && isCoachee) {
+        goBack()
+      } else {
+        setIsOnEditMode(false)
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        formikRef?.current?.resetForm()
+      }
     }
 
     const setModalContent = (title: string, desc: string, icon: string, buttonText: string) => {
@@ -419,7 +423,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
               Platform.OS === "android"
                 ? response.assets[id].uri
                 : response.assets[id].uri.replace("file://", ""),
-            name: `feed-image-${response.assets[id].fileName.toLowerCase().split(" ")[0]}-${new Date().getTime()}.${format}`,
+            name: `journal-image-${response.assets[id].fileName.toLowerCase().split(" ")[0]}-${new Date().getTime()}.${format}`,
             type: response.assets[id].type ?? "image/jpeg",
             size: response.assets[id].fileSize,
           })
@@ -517,6 +521,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                       setError("type")
                     } else if (data.type === "Others" && data.label === "") {
                       setError("label")
+                      //TODO
                     } else if (selectedPicture.length === 0) {
                       setErrorFile(true)
                     } else {

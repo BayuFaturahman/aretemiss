@@ -1,5 +1,5 @@
 import React, { FC, useReducer, useState, useEffect, useCallback } from "react"
-import { SafeAreaView, ScrollView, Platform, PermissionsAndroid } from "react-native"
+import { SafeAreaView, ScrollView, Platform } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Text, Button, TextField, BackNavigation } from "@components"
@@ -9,7 +9,6 @@ import Spacer from "@components/spacer"
 import { Colors, Layout, Spacing } from "@styles"
 
 import { Formik } from "formik"
-import { launchImageLibrary, ImagePickerResponse, } from "react-native-image-picker"
 import { useStores } from "../../bootstrap/context.boostrap"
 import { checkDownloadPerPlatform } from "@utils/download-utilities"
 
@@ -39,12 +38,7 @@ const OverviewJournalEntryByUser: FC<StackScreenProps<NavigatorParamList, "overv
     const [learnerFullname, setLearnerFullname] = useState<string>("")
 
     // Upload attachment states
-    const [isErrorFile, setErrorFile] = useState<boolean>(false)
-    const [isAttachmentClicked, setIsAttachmentClicked] = useState<boolean>(false)
     const [selectedPicture, setSelectedPicture] = useState([])
-    const qualityImage = Platform.OS === "ios" ? 0.4 : 0.5
-    const maxWidthImage = 1024
-    const maxHeightImage = 1024
 
     const formInitialValue = coachJournal ? {
       content: '',
@@ -134,74 +128,6 @@ const OverviewJournalEntryByUser: FC<StackScreenProps<NavigatorParamList, "overv
     const setActiveCoachee = (index) => {
       setActiveCoacheeIndex(index)
     }
-
-    const cameraHandler = useCallback(async (response: ImagePickerResponse) => {
-      // console.log(response)
-      if (!response.didCancel) {
-        const formData = new FormData()
-        for (const asset of response.assets) {
-          const id = response.assets.indexOf(asset);
-
-          const format = "jpeg"
-
-          formData.append("files", {
-            ...response.assets[id],
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            uri:
-              Platform.OS === "android"
-                ? response.assets[id].uri
-                : response.assets[id].uri.replace("file://", ""),
-            name: `feed-image-${response.assets[id].fileName.toLowerCase().split(" ")[0]}-${new Date().getTime()}.${format}`,
-            type: response.assets[id].type ?? "image/jpeg",
-            size: response.assets[id].fileSize,
-          })
-          console.log(`imgName = coaching-image-${response.assets[id].fileName.toLowerCase().split(" ")[0]}-${new Date().getTime()}.${format}`)
-        }
-
-        coachingStore.formReset()
-        console.log('formData ', formData)
-        const responseUpload = await coachingStore.uploadImage(formData)
-        console.log('responseUpload ', responseUpload)
-        const listResponseUpload = responseUpload.data.urls.split(';')
-        console.log('listResponseUpload ', listResponseUpload)
-
-        if (coachingStore.errorCode === null && responseUpload !== undefined) {
-          console.log('upload photo OK.')
-          setSelectedPicture([{
-            fileName: listResponseUpload[0],
-            url: ''
-          }])
-          // setUploadedPicture(listResponseUpload)
-        }
-
-      } else {
-        console.log("cancel")
-      }
-    }, [selectedPicture, setSelectedPicture])
-
-    const removeSelectedPict = (id) => {
-      const tempSelected = [...selectedPicture];
-      tempSelected.splice(id, 1);
-      setSelectedPicture(tempSelected)
-    }
-
-    const openGallery = useCallback(() => {
-      launchImageLibrary(
-        {
-          mediaType: "photo",
-          quality: qualityImage,
-          maxWidth: maxWidthImage,
-          maxHeight: maxHeightImage,
-          includeBase64: false,
-          selectionLimit: 1,
-        },
-        async (response) => {
-          await cameraHandler(response)
-        },
-      ).then(r => {
-      })
-    }, [isAttachmentClicked])
 
     return (
       <VStack
@@ -370,7 +296,7 @@ const OverviewJournalEntryByUser: FC<StackScreenProps<NavigatorParamList, "overv
                               type={"body-bold"}
                               style={[{ textAlign: "center", top: Spacing[4] }]}
                             >
-                              {`Dari sesi coaching11, kualitas apa yang dapat coachee `}
+                              {`Dari sesi coaching, kualitas apa yang dapat coachee `}
                               <Text
                                 type={"body-bold"}
                                 style={[{ color: Colors.ABM_LIGHT_BLUE }]}

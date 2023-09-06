@@ -1,5 +1,6 @@
 import RNFetchBlob from 'rn-fetch-blob';
-const { config, fs } = RNFetchBlob;
+
+const { config, fs, ios } = RNFetchBlob;
 
 import { Platform, PermissionsAndroid } from "react-native"
 
@@ -42,6 +43,7 @@ const downloadFile = (fileUrl: string) => {
     // Alert after successful downloading
     console.log('res -> ', JSON.stringify(res));
     alert('File Downloaded Successfully.');
+    ios.openDocument(res.data);
     // console.log(`RootDir: RootDir ${RootDir}`)
   });
 };
@@ -60,9 +62,12 @@ const getFileExtention = fileUrl => {
 // Function to check the platform
 // If Platform is Android then check for permissions.
 export const checkDownloadPerPlatform = async (fileUrl: string) => {
-
   if (Platform.OS === 'ios') {
-    downloadFile(fileUrl);
+    try {
+      downloadFile(fileUrl);
+    } catch (err) {
+      console.log("++++" + err);
+    }
   } else {
     try {
       const granted = await PermissionsAndroid.request(

@@ -200,23 +200,10 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
 
         if (data.title === "" || !data.learnerIds[0] || data.content === "" || data.strength === "" || data.improvement === ""
           || data.recommendationForCoachee === "" || !data.type || data.type === "" || data.type === "Others" && data.label === ""
-          || data.date === "" || selectedPicture.length === 0) {
-
-          if (selectedPicture.length === 0) {
-            setErrorFile(true)
-          } else {
-            setErrorFile(false)
-          }
-
-          if (data.title === "" || !data.learnerIds[0] || data.content === "" || data.strength === "" || data.improvement === ""
-            || data.recommendationForCoachee === "" || !data.type || data.type === "" || data.type === "Others" && data.label === ""
-            || data.date === "") {
+          || data.date === "") {
             setError(true)
-          } else {
-            setError(false)
-          }
         } else {
-          // console.log(`selectedPicture ${JSON.stringify(selectedPicture)}`)
+          //TODO: add image validation 2 mb and type pic.
 
           data['documentsUrl'] = selectedPicture[0]
 
@@ -268,7 +255,7 @@ const NewJournalEntry: FC<StackScreenProps<NavigatorParamList, "newJournalEntry"
               Platform.OS === "android"
                 ? response.assets[id].uri
                 : response.assets[id].uri.replace("file://", ""),
-            name: `feed-image-${response.assets[id].fileName.toLowerCase().split(" ")[0]}-${new Date().getTime()}.${format}`,
+            name: `journal-image-${response.assets[id].fileName.toLowerCase().split(" ")[0]}-${new Date().getTime()}.${format}`,
             type: response.assets[id].type ?? "image/jpeg",
             size: response.assets[id].fileSize,
           })
