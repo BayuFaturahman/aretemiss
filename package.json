@@ -37,7 +37,7 @@
     "storybook": "start-storybook -p 9001 -c ./storybook",
     "test": "jest",
     "adb": "adb reverse tcp:9090 tcp:9090 && adb reverse tcp:3000 tcp:3000 && adb reverse tcp:9001 tcp:9001 && adb reverse tcp:8081 tcp:8081",
-    "postinstall": "node ./bin/postInstall",
+    "postinstall": "node ./bin/postInstall && react-native setup-ios-permissions && pod-install",
     "build-ios": "react-native bundle --entry-file index.js --platform ios --dev false --bundle-output ios/main.jsbundle --assets-dest ios",
     "build-android": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res",
     "clean": "react-native-clean-project",
@@ -114,6 +114,7 @@
     "reactotron-mst": "3.1.3",
     "reactotron-react-js": "^3.3.7",
     "reactotron-react-native": "5.0.0",
+    "rn-fetch-blob": "^0.12.0",
     "validate.js": "0.13.1",
     "yup": "^0.32.11"
   },

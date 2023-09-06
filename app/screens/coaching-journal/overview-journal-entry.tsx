@@ -25,6 +25,7 @@ import Spinner from "react-native-loading-spinner-overlay"
 import { Formik } from "formik"
 import { IconClose } from "@assets/svgs"
 import { ABM_GREEN } from "@styles/Color"
+import { checkDownloadPerPlatform } from "@utils/download-utilities"
 
 const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJournalEntry">> = observer(
   ({ navigation, route }) => {
@@ -233,7 +234,10 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
         if (tempDocUrl !== '' && tempDocUrl !== undefined && tempDocUrl.includes('http')) {
           splitTempDocUrl = tempDocUrl.split('/')
           tempFileName = splitTempDocUrl[splitTempDocUrl.length - 1]
-          setSelectedPicture([tempFileName])
+          setSelectedPicture([{
+            fileName: tempFileName,
+            url: tempDocUrl
+          }])
         }
       }
     }, [coachingStore.journalDetail, coachingStore.journalDetailSucced])
@@ -341,10 +345,14 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
     }
 
     const onClickCancel = () => {
-      setIsOnEditMode(false)
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      formikRef?.current?.resetForm()
+      if (!coachingStore.learnerJournalDetail.is_filled && isCoachee) {
+        goBack()
+      } else {
+        setIsOnEditMode(false)
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        formikRef?.current?.resetForm()
+      }
     }
 
     const setModalContent = (title: string, desc: string, icon: string, buttonText: string) => {
@@ -415,7 +423,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
               Platform.OS === "android"
                 ? response.assets[id].uri
                 : response.assets[id].uri.replace("file://", ""),
-            name: `feed-image-${response.assets[id].fileName.toLowerCase().split(" ")[0]}-${new Date().getTime()}.${format}`,
+            name: `journal-image-${response.assets[id].fileName.toLowerCase().split(" ")[0]}-${new Date().getTime()}.${format}`,
             type: response.assets[id].type ?? "image/jpeg",
             size: response.assets[id].fileSize,
           })
@@ -431,7 +439,10 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
 
         if (coachingStore.errorCode === null && responseUpload !== undefined) {
           console.log('upload photo OK.')
-          setSelectedPicture(listResponseUpload)
+          setSelectedPicture([{
+            fileName: listResponseUpload[0],
+            url: ''
+          }])
           // setUploadedPicture(listResponseUpload)
         }
 
@@ -510,6 +521,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                       setError("type")
                     } else if (data.type === "Others" && data.label === "") {
                       setError("label")
+                      //TODO
                     } else if (selectedPicture.length === 0) {
                       setErrorFile(true)
                     } else {
@@ -523,7 +535,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                           data.type,
                           data.improvement,
                           data.label,
-                          selectedPicture[0]
+                          selectedPicture[0].fileName
                         ).then(_ => {
                           setFieldValue('content', data.content)
                           setFieldValue('recommendationForCoachee', data.recommendationForCoachee)
@@ -553,7 +565,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                         data.jlLessonLearned,
                         data.jlCommitment,
                         data.jlId,
-                        selectedPicture[0]
+                        selectedPicture[0].fileName
                       )
 
                       // toggleModalEditEntry()
@@ -810,10 +822,10 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                                 return
                               }
 
-                              let splittedText = pic.split(".")
+                              let splittedText = pic.fileName.split(".")
                               let fileFormat
                               let fileNameOnly
-                              let fileNameToDisplay = pic
+                              let fileNameToDisplay = pic.fileName
 
                               if (splittedText.length > 1) {
                                 fileNameOnly = splittedText[0]
@@ -824,7 +836,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                               // console.log(`fileFormat = ${fileFormat}`)
 
 
-                              if (pic.length > 18) {
+                              if (pic.fileName.length > 18) {
                                 fileNameToDisplay = `${fileNameOnly.slice(0, 15)}...${fileFormat}`
                               }
 
@@ -843,7 +855,7 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
                             {isOnEditMode ?
                               <Button type={"dark-yellow"} text="Lampirkan Dokumen" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[20], left: Spacing[10] }} textStyle={{ fontSize: Spacing[12] }} onPress={() => openGallery()} />
                               :
-                              <Button type={selectedPicture.length > 0 ? "dark-yellow" : "negative"} text="Unduh Lampiran" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[20], left: Spacing[10] }} textStyle={{ fontSize: Spacing[12] }} onPress={() => { }} disabled={selectedPicture.length <= 0} />
+                              <Button type={selectedPicture.length > 0 ? "dark-yellow" : "negative"} text="Unduh Lampiran" style={{ paddingHorizontal: Spacing[12], borderRadius: Spacing[20], left: Spacing[10] }} textStyle={{ fontSize: Spacing[12] }} onPress={() => checkDownloadPerPlatform(selectedPicture[0].url)} disabled={selectedPicture.length <= 0} />
                             }
                           </HStack>
 
