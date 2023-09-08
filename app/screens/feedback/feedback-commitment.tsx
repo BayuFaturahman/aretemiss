@@ -1,5 +1,5 @@
 import React, { FC, useReducer, useState, useEffect, useCallback } from "react"
-import { KeyboardAvoidingView, SafeAreaView, StyleSheet, View } from "react-native"
+import { KeyboardAvoidingView, SafeAreaView, StyleSheet, View, ScrollView } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Text, BackNavigation, Button, TextField } from "@components"
@@ -193,15 +193,12 @@ const FeedbackCommitment: FC<StackScreenProps<NavigatorParamList, "feedbackCommi
         }, [feedbackStore.errorCode])
 
         return (
-            <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
-                style={Layout.flex}
+            <VStack
+                testID="feedbackCommitment"
+                style={styles.bg}
             >
-                <VStack
-                    testID="feedbackCommitment"
-                    style={styles.bg}
-                >
-                    <SafeAreaView style={Layout.flex}>
+                <SafeAreaView style={Layout.flex}>
+                    <ScrollView>
                         <VStack style={{ backgroundColor: Colors.WHITE }}>
                             <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
                             <VStack top={Spacing[0]} horizontal={Spacing[24]} bottom={Spacing[12]}>
@@ -252,8 +249,7 @@ const FeedbackCommitment: FC<StackScreenProps<NavigatorParamList, "feedbackCommi
                                                         maxChar={2500}
                                                         editable={isCommitmentEmpty}
                                                     />
-                                                </VStack>
-                                                {isCommitmentEmpty &&
+                                                    {isCommitmentEmpty &&
                                                     <HStack>
                                                         <Spacer />
                                                         <Button
@@ -265,7 +261,8 @@ const FeedbackCommitment: FC<StackScreenProps<NavigatorParamList, "feedbackCommi
                                                         />
                                                         <Spacer />
                                                     </HStack>
-                                                }
+                                                    }
+                                                </VStack>
                                                 <Spacer height={Spacing[32]} />
                                             </VStack>
                                         )}
@@ -278,43 +275,42 @@ const FeedbackCommitment: FC<StackScreenProps<NavigatorParamList, "feedbackCommi
                             <Spacer height={Spacing[24]} />
 
                         </VStack>
+                    </ScrollView>
+                </SafeAreaView>
+                <Spinner visible={initialLoading || feedbackStore.isLoading} textContent={"Memuat..."} />
 
-                    </SafeAreaView>
-                    <Spinner visible={initialLoading || feedbackStore.isLoading} textContent={"Memuat..."} />
+                <Modal
+                    onClosed={() => toggleModal(false)}
+                    isOpen={isModalVisible}
+                    style={{
+                        height: "50%",
+                        width: dimensions.screenWidth - Spacing[24],
+                        backgroundColor: "rgba(52, 52, 52, 0)",
+                    }}
 
-                    <Modal
-                        onClosed={() => toggleModal(false)}
-                        isOpen={isModalVisible}
-                        style={{
-                            height: "50%",
-                            width: dimensions.screenWidth - Spacing[24],
-                            backgroundColor: "rgba(52, 52, 52, 0)",
-                        }}
+                    onRequestClose={() => toggleModal(false)}
+                >
+                    <View style={{ flex: 1, justifyContent: "center" }}>
+                        <VStack
+                            style={{
+                                backgroundColor: Colors.WHITE,
+                                borderRadius: Spacing[48],
+                                minHeight: Spacing[256],
+                                alignItems: "center",
+                                justifyContent: "center",
 
-                        onRequestClose={() => toggleModal(false)}
-                    >
-                        <View style={{ flex: 1, justifyContent: "center" }}>
-                            <VStack
-                                style={{
-                                    backgroundColor: Colors.WHITE,
-                                    borderRadius: Spacing[48],
-                                    minHeight: Spacing[256],
-                                    alignItems: "center",
-                                    justifyContent: "center",
-
-                                }}
-                                horizontal={Spacing[24]}
-                                vertical={Spacing[24]}
-                            >
-                                <VStack horizontal={Spacing[24]} top={Spacing[12]} style={[Layout.widthFull, { justifyContent: "center" }]}>
-                                    {renderNotificationModal()}
-                                </VStack>
+                            }}
+                            horizontal={Spacing[24]}
+                            vertical={Spacing[24]}
+                        >
+                            <VStack horizontal={Spacing[24]} top={Spacing[12]} style={[Layout.widthFull, { justifyContent: "center" }]}>
+                                {renderNotificationModal()}
                             </VStack>
-                        </View>
-                    </Modal>
+                        </VStack>
+                    </View>
+                </Modal>
 
-                </VStack>
-            </KeyboardAvoidingView>
+            </VStack>
         )
     })
 

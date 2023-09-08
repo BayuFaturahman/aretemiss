@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useReducer, useState, useEffect } from "react"
-import { ActivityIndicator, FlatList, ImageBackground, KeyboardAvoidingView, RefreshControl, SafeAreaView, StyleSheet, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, FlatList, ImageBackground, KeyboardAvoidingView, RefreshControl, SafeAreaView, StyleSheet, TouchableOpacity, View, ScrollView } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Text, BackNavigation, Button } from "@components"
@@ -617,15 +617,12 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
     }
 
     return (
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={Layout.flex}
+      <VStack
+        testID="feedback"
+        style={styles.bg}
       >
-        <VStack
-          testID="feedback"
-          style={styles.bg}
-        >
-          <SafeAreaView style={Layout.flex}>
+        <SafeAreaView style={Layout.flex}>
+          <ScrollView>
             <VStack style={{ backgroundColor: Colors.ABM_BG_BLUE }}>
               <ImageBackground source={images.feedbackBgPattern} style={{ height: '100%' }} resizeMode={"cover"}>
                 <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
@@ -652,44 +649,44 @@ const FeedbackMain: FC<StackScreenProps<NavigatorParamList, "feedbackMain">> =
               </ImageBackground>
               <Spacer height={Spacing[24]} />
             </VStack>
-          </SafeAreaView>
+          </ScrollView>
+        </SafeAreaView>
 
 
-          <Modal
-            onClosed={() => toggleModal(false)}
-            isOpen={isModalVisible}
+        <Modal
+          onClosed={() => toggleModal(false)}
+          isOpen={isModalVisible}
+          style={{
+            height: "50%",
+            width: dimensions.screenWidth - Spacing[24],
+            backgroundColor: "rgba(52, 52, 52, 0)",
+          }}
+
+          onRequestClose={() => toggleModal(false)}
+        >
+          <View style={{ flex: 1, justifyContent: "center" }}>
+            {/* <VStack
             style={{
-              height: "50%",
-              width: dimensions.screenWidth - Spacing[24],
-              backgroundColor: "rgba(52, 52, 52, 0)",
+              backgroundColor: Colors.ORANGE100,
+              borderRadius: Spacing[48],
+              minHeight: Spacing[256],
+              alignItems: "center",
+              justifyContent: "center",
+
             }}
-
-            onRequestClose={() => toggleModal(false)}
+            horizontal={Spacing[24]}
+            vertical={Spacing[24]}
           >
-            <View style={{ flex: 1, justifyContent: "center" }}>
-              {/* <VStack
-              style={{
-                backgroundColor: Colors.ORANGE100,
-                borderRadius: Spacing[48],
-                minHeight: Spacing[256],
-                alignItems: "center",
-                justifyContent: "center",
+            <VStack horizontal={Spacing[24]} top={Spacing[12]} style={[Layout.widthFull, { justifyContent: "center", backgroundColor: Colors.ABM_GREEN }]}>
+              
+            </VStack>
+            {modalType === 'notification' ? null : renderPreviousFeedbackDatesModal()}
+          </VStack> */}
+            {modalType === 'notification' ? renderNotificationModal() : renderFeedbackDatesModal()}
+          </View>
+        </Modal>
 
-              }}
-              horizontal={Spacing[24]}
-              vertical={Spacing[24]}
-            >
-              <VStack horizontal={Spacing[24]} top={Spacing[12]} style={[Layout.widthFull, { justifyContent: "center", backgroundColor: Colors.ABM_GREEN }]}>
-                
-              </VStack>
-              {modalType === 'notification' ? null : renderPreviousFeedbackDatesModal()}
-            </VStack> */}
-              {modalType === 'notification' ? renderNotificationModal() : renderFeedbackDatesModal()}
-            </View>
-          </Modal>
-
-        </VStack>
-      </KeyboardAvoidingView>
+      </VStack>
     )
   })
 
