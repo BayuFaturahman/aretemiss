@@ -179,6 +179,8 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
         journalEntryInitialValue.type = coachingStore.learnerJournalDetail.journal.type
         journalEntryInitialValue.label = coachingStore.learnerJournalDetail.journal.label
 
+        journalEntryInitialValue.documentsUrl = coachingStore.learnerJournalDetail.jl_documents_url
+
         setJlLessonLearned(coachingStore.learnerJournalDetail.jl_lesson_learned)
         setJlCommitment(coachingStore.learnerJournalDetail.jl_commitment)
         setJlContent(coachingStore.learnerJournalDetail.jl_content)
@@ -189,6 +191,23 @@ const OverviewJournalEntry: FC<StackScreenProps<NavigatorParamList, "overviewJou
         if (coachingStore.learnerJournalDetail.is_filled) {
           setIsOnEditMode(false)
           setIsJlFilled(true)
+        }
+
+        // handle attachment
+        let tempDocUrl = ''
+        if (journalEntryInitialValue.documentsUrl.length > 0) {
+          tempDocUrl = journalEntryInitialValue.documentsUrl[0]
+        }
+
+        let splitTempDocUrl
+        let tempFileName
+        if (tempDocUrl !== '' && tempDocUrl !== undefined && tempDocUrl.includes('http')) {
+          splitTempDocUrl = tempDocUrl.split('/')
+          tempFileName = splitTempDocUrl[splitTempDocUrl.length - 1]
+          setSelectedPicture([{
+            fileName: tempFileName,
+            url: tempDocUrl
+          }])
         }
       } else {
         // if coach, use journalDetail API

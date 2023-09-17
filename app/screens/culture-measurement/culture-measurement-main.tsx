@@ -19,6 +19,8 @@ import moment from "moment"
 import { CMPublishDataModel, cultureMeasurementTakers } from "@services/api/cultureMeasurement/culture-measurement-api.types"
 import { CMObjectiveModel, CMObjectiveType, CM_PUBLISH_EMPTY, DaysType, QUESTIONNAIRE_TYPE } from "./culture-measurement.type"
 import { useIsFocused } from "@react-navigation/native";
+import {Man1} from "@assets/svgs";
+
 // import { EmptyList } from "./components/empty-list"
 
 const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMeasurementMain">> =
@@ -254,91 +256,106 @@ const CultureMeasurementMain: FC<StackScreenProps<NavigatorParamList, "cultureMe
             >
                 <SafeAreaView style={Layout.flex}>
                     <ScrollView
-                    // refreshControl={
-                    // <RefreshControl
-                    // refreshing={}
-                    // onRefresh={onRefresh}
-                    //     tintColor={Colors.MAIN_RED}
-                    // />
-                    // }
                     >
                         <VStack style={{ backgroundColor: Colors.ABM_BG_BLUE }}>
                             <ImageBackground source={images.feedbackBgPattern} style={{ height: '100%' }} resizeMode={"cover"}>
                                 <BackNavigation color={Colors.UNDERTONE_BLUE} goBack={goBack} />
                                 <VStack top={Spacing[0]} horizontal={Spacing[24]} bottom={Spacing[12]}>
-                                    <Text type={"header"} text={publishData.title} underlineWidth={Spacing[160] + Spacing[84]} />
-                                    <Spacer height={Spacing[24]} />
-
-                                    {listDescription.map((item, index) => {
-                                        if (item !== descSeparator) {
-                                            return (
-                                                <>
-                                                    <Text type={"body"} style={{ textAlign: "center", fontSize: Spacing[12] }}>
-                                                        {item}
-                                                    </Text>
-                                                    {/* <Spacer height={Spacing[12]} /> */}
-                                                </>
-                                            )
-                                        } else {
-                                            return renderQuestionnaireType()
-                                        }
-                                    })}
-
-                                    {/* start periode pengisian segment */}
-                                    <VStack top={Spacing[24]} horizontal={Spacing[12]} bottom={Spacing[12]}>
-                                        <Text type="left-header" text="Periode Pengisian:" style={{ fontSize: Spacing[16] }} />
-                                        <Spacer height={Spacing[12]} />
-                                        <VStack horizontal={Spacing[8]} vertical={Spacing[8]}
-                                            style={{ backgroundColor: Colors.WHITE, width: Spacing[160] + Spacing[84], maxWidth: Spacing[160] + Spacing[112], borderRadius: Spacing[20], borderWidth: Spacing[2], borderColor: Colors.ABM_DARK_BLUE }}>
-                                            <Text type="body" style={{ fontSize: Spacing[12] }}> {startDate} - {endDate}</Text>
+                                    {/* Render if no questionare available */}
+                                    {
+                                        publishData === null &&
+                                        <VStack horizontal={Spacing[24]} top={Spacing[24]} style={Layout.widthFull}>
+                                            <VStack>
+                                                <HStack bottom={Spacing[12]}>
+                                                <Spacer />
+                                                <Man1 height={Spacing[256]} width={Spacing[256]} />
+                                                <Spacer />
+                                                </HStack>
+                                                <Text type={"body"} style={{ textAlign: "center" }}>
+                                                Belum ada kuesioner yang diterbitkan!
+                                                </Text>
+                                                <Spacer height={Spacing[12]} />
+                                            </VStack>
                                         </VStack>
-                                        <Spacer height={Spacing[12]} />
-                                        <VStack horizontal={Spacing[24]} top={Spacing[12]}
-                                            style={[Layout.widthFull, { backgroundColor: Colors.WHITE, borderRadius: Spacing[20], borderWidth: Spacing[2], borderColor: Colors.ABM_DARK_BLUE }]}>
-                                            {listCMObjectives.map((data, index) => {
+                                    }
+                                    {/* Render if questionare available */}
+                                    {
+                                        publishData != null && 
+                                        <>
+                                        <Text type={"header"} text={publishData.title} underlineWidth={Spacing[160] + Spacing[84]} />
+                                        <Spacer height={Spacing[24]} />
+
+                                        {listDescription.map((item, index) => {
+                                            if (item !== descSeparator) {
                                                 return (
-                                                    <VStack style={{ borderBottomColor: Colors.ABM_DARK_BLUE, borderBottomWidth: index < 2 ? Spacing[1] : Spacing[0], paddingVertical: Spacing[12] }} key={`quiz${index}`}>
-                                                        <HStack style={{ bottom: Spacing[6] }}>
-                                                            <View style={{
-                                                                height: Spacing[18],
-                                                                width: Spacing[18],
-                                                                right: Spacing[12],
-                                                                backgroundColor: data.cmoMaxAnswerred ? Colors.GRAY74 : Colors[data.color],
-                                                                borderRadius: Spacing[128], borderWidth: Spacing[1],
-                                                                borderColor: Colors.ABM_DARK_BLUE,
-                                                                alignContent: 'center',
-                                                                justifyContent: 'center'
-                                                            }} />
-                                                            <Text type="body-bold" style={{ fontSize: Spacing[12], width: Spacing[128] }} >{data.cmoTitle}</Text>
-                                                            <Spacer />
-                                                            <Button type={data.isEnable ? "primary" : "negative"} text="Isi Kuisioner" style={{ paddingHorizontal: Spacing[8] }} textStyle={{ fontSize: Spacing[12] }}
-                                                                disabled={!data.isEnable} onPress={() => goToQuestionnaire(data.cmoId, index)} />
-                                                            {/* disabled={false} onPress={() => goToQuestionnaire(data.cmoId, index)} /> */}
-                                                        </HStack>
-                                                        {data.cmoLastModified !== null &&
-                                                            <Text type="body" style={{ fontSize: Spacing[12], fontWeight: '100' }}>{`Terakhir diisi  pada tanggal ${data.cmoLastModified}`}</Text>
-                                                        }
-                                                        <Spacer height={data.cmoLastModified !== null ? Spacing[2] : Spacing[6]} />
-                                                        <ProgressBar
-                                                            progress={(data && data['cmTakersLastDraft'] && data['cmTakersLastDraft']['cm_taker_last_filled'] ?
-                                                                data['cmTakersLastDraft']['cm_taker_last_filled'] : 0) / (data && data['cmTakersLastDraft'] && data['cmTakersLastDraft']['cm_taker_total_section'] ?
-                                                                    data['cmTakersLastDraft']['cm_taker_total_section'] : 1)}
-                                                            color={Colors.ABM_YELLOW}
-                                                            style={{ height: Spacing[8], backgroundColor: Colors.GRAY74 }}
-                                                        />
-                                                        {/* <Spacer height={Spacing[6]} /> */}
-                                                    </VStack>
+                                                    <>
+                                                        <Text type={"body"} style={{ textAlign: "center", fontSize: Spacing[12] }}>
+                                                            {item}
+                                                        </Text>
+                                                    </>
                                                 )
-                                            })}
+                                            } else {
+                                                return renderQuestionnaireType()
+                                            }
+                                        })}
+
+                                        {/* start periode pengisian segment */}
+                                        <VStack top={Spacing[24]} horizontal={Spacing[12]} bottom={Spacing[12]}>
+                                            <Text type="left-header" text="Periode Pengisian:" style={{ fontSize: Spacing[16] }} />
+                                            <Spacer height={Spacing[12]} />
+                                            <VStack horizontal={Spacing[8]} vertical={Spacing[8]}
+                                                style={{ backgroundColor: Colors.WHITE, width: Spacing[160] + Spacing[84], maxWidth: Spacing[160] + Spacing[112], borderRadius: Spacing[20], borderWidth: Spacing[2], borderColor: Colors.ABM_DARK_BLUE }}>
+                                                <Text type="body" style={{ fontSize: Spacing[12] }}> {startDate} - {endDate}</Text>
+                                            </VStack>
+                                            <Spacer height={Spacing[12]} />
+                                            <VStack horizontal={Spacing[24]} top={Spacing[12]}
+                                                style={[Layout.widthFull, { backgroundColor: Colors.WHITE, borderRadius: Spacing[20], borderWidth: Spacing[2], borderColor: Colors.ABM_DARK_BLUE }]}>
+                                                {listCMObjectives.map((data, index) => {
+                                                    return (
+                                                        <VStack style={{ borderBottomColor: Colors.ABM_DARK_BLUE, borderBottomWidth: index < 2 ? Spacing[1] : Spacing[0], paddingVertical: Spacing[12] }} key={`quiz${index}`}>
+                                                            <HStack style={{ bottom: Spacing[6] }}>
+                                                                <View style={{
+                                                                    height: Spacing[18],
+                                                                    width: Spacing[18],
+                                                                    right: Spacing[12],
+                                                                    backgroundColor: data.cmoMaxAnswerred ? Colors.GRAY74 : Colors[data.color],
+                                                                    borderRadius: Spacing[128], borderWidth: Spacing[1],
+                                                                    borderColor: Colors.ABM_DARK_BLUE,
+                                                                    alignContent: 'center',
+                                                                    justifyContent: 'center'
+                                                                }} />
+                                                                <Text type="body-bold" style={{ fontSize: Spacing[12], width: Spacing[128] }} >{data.cmoTitle}</Text>
+                                                                <Spacer />
+                                                                <Button type={data.isEnable ? "primary" : "negative"} text="Isi Kuisioner" style={{ paddingHorizontal: Spacing[8] }} textStyle={{ fontSize: Spacing[12] }}
+                                                                    disabled={!data.isEnable} onPress={() => goToQuestionnaire(data.cmoId, index)} />
+                                                                {/* disabled={false} onPress={() => goToQuestionnaire(data.cmoId, index)} /> */}
+                                                            </HStack>
+                                                            {data.cmoLastModified !== null &&
+                                                                <Text type="body" style={{ fontSize: Spacing[12], fontWeight: '100' }}>{`Terakhir diisi  pada tanggal ${data.cmoLastModified}`}</Text>
+                                                            }
+                                                            <Spacer height={data.cmoLastModified !== null ? Spacing[2] : Spacing[6]} />
+                                                            <ProgressBar
+                                                                progress={(data && data['cmTakersLastDraft'] && data['cmTakersLastDraft']['cm_taker_last_filled'] ?
+                                                                    data['cmTakersLastDraft']['cm_taker_last_filled'] : 0) / (data && data['cmTakersLastDraft'] && data['cmTakersLastDraft']['cm_taker_total_section'] ?
+                                                                        data['cmTakersLastDraft']['cm_taker_total_section'] : 1)}
+                                                                color={Colors.ABM_YELLOW}
+                                                                style={{ height: Spacing[8], backgroundColor: Colors.GRAY74 }}
+                                                            />
+                                                            {/* <Spacer height={Spacing[6]} /> */}
+                                                        </VStack>
+                                                    )
+                                                })}
+                                            </VStack>
                                         </VStack>
-                                    </VStack>
+                                        </>
+                                    }
                                 </VStack>
                             </ImageBackground>
                             <Spacer height={Spacing[12]} />
                         </VStack>
                     </ScrollView >
                 </SafeAreaView >
-                <Spinner visible={cultureMeasurementStore.isLoading || listDescription.length === 0} textContent={"Memuat..."} />
+                <Spinner visible={cultureMeasurementStore.isLoading} textContent={"Memuat..."} />
             </VStack >
         )
     })
