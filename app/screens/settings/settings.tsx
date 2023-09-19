@@ -1,5 +1,5 @@
 import React, {FC, useCallback, } from "react"
-import { SafeAreaView } from "react-native"
+import { SafeAreaView, Linking } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import {
@@ -12,6 +12,7 @@ import Spacer from "@components/spacer";
 import {Colors, Layout, Spacing} from "@styles";
 import {useStores} from "../../bootstrap/context.boostrap";
 import RNAnimated from "react-native-animated-component";
+import Config from 'react-native-config';
 
 const Settings: FC<StackScreenProps<NavigatorParamList, "settingsPage">> = observer(
   ({ navigation }) => {
@@ -31,6 +32,19 @@ const Settings: FC<StackScreenProps<NavigatorParamList, "settingsPage">> = obser
     const logout = useCallback( ()=>{
       authStore.resetAuthStore()
     }, [])
+
+    const deleteAccountForm = async() => {
+      try {
+        const url = Config.DELETE_ACCOUNT_URL
+
+        if (await Linking.canOpenURL(url)) {
+          await Linking.openURL(url)
+        }
+      } catch (e) {
+        console.log(e)
+        throw new Error('Error deleteAccountForm button');
+      }
+    }
 
     return (
       <VStack testID="CoachingJournalMain" style={{backgroundColor: Colors.ABM_BG_BLUE, flex: 1, justifyContent: 'center'}}>
@@ -64,6 +78,17 @@ const Settings: FC<StackScreenProps<NavigatorParamList, "settingsPage">> = obser
                   onPress={goToNotification}
                 />
               </RNAnimated> */}
+              <Spacer height={Spacing[16]} />
+              <RNAnimated
+                appearFrom={'left'}
+                animationDuration={700}
+              >
+                <Button
+                  type={"warning"}
+                  text={"Delete Account"}
+                  onPress={deleteAccountForm}
+                />
+              </RNAnimated>
               <Spacer height={Spacing[16]} />
               <RNAnimated
                 appearFrom={'left'}
