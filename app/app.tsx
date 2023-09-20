@@ -17,17 +17,17 @@ import { initFonts } from "./theme/fonts" // expo
 import * as storage from "./utils/storage"
 import {useBackButtonHandler, AppNavigator, canExit, useNavigationPersistence, navigate} from "./navigators"
 // import { RootStore, RootStoreProvider, setupRootStore } from "./models"
-import { ToggleStorybook } from "../storybook/toggle-storybook"
+// import { ToggleStorybook } from "../storybook/toggle-storybook"
 import { ErrorBoundary } from "./screens/error/error-boundary"
-import {useNavigation} from "@react-navigation/native";
+// import {useNavigation} from "@react-navigation/native";
 
 import {StoreProvider} from "./bootstrap/context.boostrap";
 import RootStore from "./bootstrap/store.bootstrap";
 import {setupRootStore} from "./store/setup-store";
 import {requestUserPermissionForNotification} from "@utils";
 
-import PushNotificationIOS from "@react-native-community/push-notification-ios";
-import PushNotification, {Importance} from "react-native-push-notification";
+// import PushNotificationIOS from "@react-native-community/push-notification-ios";
+// import PushNotification, {Importance} from "react-native-push-notification";
 
 import messaging from '@react-native-firebase/messaging';
 import {Alert} from "react-native";
@@ -38,11 +38,20 @@ import {Alert} from "react-native";
 
 export const NAVIGATION_PERSISTENCE_KEY = "NAVIGATION_STATE"
 
+import {
+  getTrackingStatus,
+  requestTrackingPermission,
+  TrackingStatus,
+} from 'react-native-tracking-transparency';
+
 /**
  * This is the root component of our app.
  */
 function App() {
   const [rootStore, setRootStore] = useState<RootStore | undefined>(undefined)
+
+  //NsTracking
+  const [trackingStatus, setTrackingStatus] = React.useState<TrackingStatus | '(loading)'>('(loading)');
 
   useBackButtonHandler(canExit)
   const {
@@ -57,6 +66,16 @@ function App() {
       await initFonts() // expo
       setupRootStore().then(setRootStore)
     })()
+
+    getTrackingStatus()
+      .then((status) => {
+        setTrackingStatus(status);
+      })
+      .catch((e) => Alert.alert('Error', e?.toString?.() ?? e))
+    
+    requestTrackingPermission()
+      .then((res) => setTrackingStatus(res))
+      .catch((e) => Alert.alert('Error', e?.toString?.() ?? e));
 
     requestUserPermissionForNotification();;
 

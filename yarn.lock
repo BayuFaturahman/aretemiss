@@ -14681,6 +14681,11 @@
   "resolved" "https://registry.npmjs.org/react-native-swipe-gestures/-/react-native-swipe-gestures-1.0.5.tgz"
   "version" "1.0.5"
 
+"react-native-tracking-transparency@^0.1.2":
+  "integrity" "sha512-oe+BFutdq+fnTgyC9pAm/NEz6nuYkEHpFQUU8swj+E5oOOPqGmrNXmseNatKob521Zh7w0ovxXkoQNTV+PKTFA=="
+  "resolved" "https://registry.npmjs.org/react-native-tracking-transparency/-/react-native-tracking-transparency-0.1.2.tgz"
+  "version" "0.1.2"
+
 "react-native-vector-icons@^9.2.0":
   "integrity" "sha512-wKYLaFuQST/chH3AJRjmOLoLy3JEs1JR6zMNgTaemFpNoXs0ztRnTxcxFD9xhX7cJe1/zoN5BpQYe7kL0m5yyA=="
   "resolved" "https://registry.npmjs.org/react-native-vector-icons/-/react-native-vector-icons-9.2.0.tgz"
