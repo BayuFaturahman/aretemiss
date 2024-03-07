@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "857921354383",
+    "project_id": "ilead-2021-dev",
+    "storage_bucket": "ilead-2021-dev.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:857921354383:android:bfeb21cfa15aa9541d0efa",
+        "android_client_info": {
+          "package_name": "com.abminvestama.ilead"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "857921354383-nr99sqkov626q7es9i7bfbhnmdpimklv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHFm1j8-Ynz6_9E5T3XJAV8Bwjd6k0xDE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "857921354383-nr99sqkov626q7es9i7bfbhnmdpimklv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
