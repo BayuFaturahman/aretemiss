@@ -4,6 +4,7 @@ import {Colors, Spacing} from "@styles";
 
 import RNAnimated from "react-native-animated-component";
 import {AppearFrom} from "react-native-animated-component/lib/RNAnimated";
+import LayoutStyles from "@styles/Layout";
 
 type HomepageCardWrappperProps = {
   animationDuration?: number
@@ -22,7 +23,11 @@ export const HomepageCardWrapper = ({children, appearFrom = 'bottom', animationD
         width: width
       }}
     >
-      <VStack horizontal={horizontal} vertical={Spacing[12]} style={{backgroundColor: Colors.WHITE, width: "100%", borderRadius: Spacing[20]}}>
+      <VStack
+        horizontal={horizontal}
+        vertical={Spacing[12]}
+        style={{backgroundColor: Colors.WHITE, width: "100%", borderRadius: Spacing[20], ...LayoutStyles.shadow}}
+      >
         {children}
       </VStack>
     </RNAnimated>
