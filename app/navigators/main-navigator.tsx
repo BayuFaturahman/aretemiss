@@ -50,6 +50,7 @@ import {
 } from "@screens/brainstorm"
 import { feedbackCommitment, feedbackDetail, feedbackMain } from "@screens/feedback"
 import { cultureMeasurementImplementation, cultureMeasurementImplementationQuestionnaire, cultureMeasurementInfrastructure, cultureMeasurementInfrastructureQuestionnaire, cultureMeasurementIntroduction, cultureMeasurementRating, cultureMeasurementRatingQuestionnaire, cultureMeasurementMain } from "@screens/culture-measurement"
+import { createEvent, previewEvent } from "@screens/event"
 
 const screens: AppRoute[] = [
   {
@@ -243,7 +244,15 @@ const screens: AppRoute[] = [
   {
     name: "cultureMeasurementInfrastructureQuestionnaire",
     component: cultureMeasurementInfrastructureQuestionnaire,
-  }
+  },
+  {
+    name: "createEvent",
+    component: createEvent,
+  },
+  {
+    name: "previewEvent",
+    component: previewEvent,
+  },
 ]
 
 export type NavigatorParamList = {

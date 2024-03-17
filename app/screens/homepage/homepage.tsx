@@ -45,6 +45,7 @@ import { MoodComponent } from "./components/mood-component"
 import { BrainstormsComponent } from "@screens/homepage/components/brainstorms-component"
 import { FeeedbackComponent } from "./components/feedback-component"
 import { CultureMeasurementComponent } from "./components/culture-measurement-component"
+import { AcaraCeriaItemComponent } from "./components/acara-ceria-homepage-component"
 
 const FEED_EXAMPLE_DATA_ITEM: FeedItemType[] = [
   {
@@ -460,6 +461,14 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
                 goToNewPost={goToNewPost}
               />
             </HomepageCardWrapper>
+            <Spacer height={Spacing[12]} />
+              <HomepageCardWrapper animationDuration={700}>
+                <AcaraCeriaItemComponent
+                  data={null}
+                  // goToFeed={goToFeed}
+                  // goToNewPost={goToNewPost}
+                />
+              </HomepageCardWrapper>
             <Spacer height={Spacing[12]} />
             <HomepageCardWrapper animationDuration={700}>
               <VStack>

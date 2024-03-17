@@ -18,6 +18,7 @@ import CultureMeasurementStore from "../store/store.cultureMeasurement";
 import { Api } from "@services/api";
 import { FeedApi } from "@services/api/feed/feed-api";
 import { QuizApi } from "@services/api/quiz/quiz-api";
+import { EventApi } from "@services/api/event/event-api";
 
 export default class RootStore {
   authStore: AuthStore;
@@ -31,9 +32,11 @@ export default class RootStore {
   notificationStore: NotificationStore;
   leaderboardStore: LeaderboardStore;
   cultureMeasurementStore: CultureMeasurementStore;
+  // eventStore: EventStore
 
   feedApi: FeedApi
   quizApi: QuizApi
+  eventApi: EventApi
 
   constructor(api: Api) {
 
@@ -52,5 +55,6 @@ export default class RootStore {
 
     this.feedApi = new FeedApi(api)
     this.quizApi = new QuizApi(api)
+    this.eventApi = new EventApi(api)
   }
 }

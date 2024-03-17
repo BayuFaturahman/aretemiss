@@ -3,6 +3,7 @@ import { TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
 import { Text } from "../text/text"
 import { color, spacing } from "../../theme"
 import { CheckboxProps } from "./checkbox.props"
+import { Colors } from "@styles/index"
 
 const ROOT: ViewStyle = {
   flexDirection: "row",
@@ -17,8 +18,8 @@ const OUTLINE: ViewStyle = {
   marginTop: 2, // finicky and will depend on font/line-height/baseline/weather
   justifyContent: "center",
   alignItems: "center",
-  borderWidth: 1,
-  borderColor: color.primaryDarker,
+  borderWidth: 2,
+  borderColor: Colors.ABM_MAIN_BLUE,
   borderRadius: 1,
 }
 

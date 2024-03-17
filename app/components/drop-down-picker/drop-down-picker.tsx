@@ -38,6 +38,7 @@ export interface DropDownProps {
   isRemovable: boolean
   multiple?: boolean
   maxSelected?: number
+  customLabel?
 }
 
 /**
@@ -57,6 +58,7 @@ export function DropDownPicker(props: DropDownProps) {
     multiple = false,
     initialValue = {},
     maxSelected,
+    customLabel,
     ...rest
   } = props
 
@@ -140,7 +142,7 @@ export function DropDownPicker(props: DropDownProps) {
     >
       <HStack>
         {renderRequired()}
-        <Text type={"label"} style={[{ fontSize: Spacing[14] }, LABEL_STYLE]} text={label} />
+        {customLabel ?? <Text type={"label"} style={[{ fontSize: Spacing[14] }, LABEL_STYLE]} text={label} />}
       </HStack>
       <Spacer height={Spacing[4]} />
       {isRemovable ? (

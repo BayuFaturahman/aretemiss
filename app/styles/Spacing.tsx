@@ -1,4 +1,5 @@
 import {ms} from 'react-native-size-matters';
+import { Dimensions } from 'react-native';
 
 const Spacing = {
   '1': ms(1),
@@ -40,5 +41,18 @@ const Spacing = {
 };
 
 export const CustomSpacing = ms;
+
+export const deviceHeight = Dimensions.get('window').height;
+export const deviceWidth = Dimensions.get('window').width;
+export const deviceHeightScreen = Dimensions.get('screen').height;
+export const deviceWidthScreen = Dimensions.get('screen').width;
+
+// responsive
+export const rHeight = (h: number) => {
+  return deviceHeight * (h / 100);
+};
+export const rWidth = (w: number) => {
+  return deviceWidth * (w / 100);
+};
 
 export default Spacing;
