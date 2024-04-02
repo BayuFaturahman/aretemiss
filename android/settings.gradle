@@ -7,5 +7,8 @@ project(':react-native-config').projectDir = new File(rootProject.projectDir, '.
 include ':react-native-push-notification'
 project(':react-native-push-notification').projectDir = file('../node_modules/react-native-push-notification/android')
 
+include ':react-native-share'
+project(':react-native-share').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-share/android')
+
 apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
 include ':app'

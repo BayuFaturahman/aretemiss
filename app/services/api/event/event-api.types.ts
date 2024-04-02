@@ -1,49 +1,15 @@
 import { GeneralApiProblem } from "../api-problem";
 import { ErrorFormResponse } from "../profile/profile-api.types";
+import { GetListCategoryEventResponse } from "./response/get-category";
+import { GetEventResponse } from "./response/get-event";
+import { GetEventDetailResponse } from "./response/get-event-detail";
+import { GetListUserResponse } from "./response/get-list-user";
+import { JoinEventResponse } from "./response/join-event";
+import { PostCreateEventResponse } from "./response/post-event";
 
-export interface GetListFeedCategoryResponse {
-    message:    string;
-    data:       Category[];
-    pagination: Pagination;
-}
-
-export interface Category {
-    id:   string;
-    name: string;
-}
-
-export interface PostCreateEventResponse {
-    message: string;
-    data:    Data;
-    token:   string;
-}
-
-export interface Data {
-    id:               string;
-    isActive:         boolean;
-    name:             string;
-    startTime:        Date;
-    endTime:          Date;
-    timezone:         string;
-    implementation:   string;
-    location:         string;
-    locationDetail:   string;
-    posterUrl:        string;
-    hashtag:          string;
-    description:      string;
-    typeId:           string;
-    startTimestamp:   Date;
-    endTimestamp:     Date;
-    userId:           string;
-    event_updated_at: Date;
-    event_created_at: Date;
-}
-
-export interface Pagination {
-    total:      number;
-    total_page: number;
-    page:       number;
-}
-
-export type GetListCategoryEventTypes = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListFeedCategoryResponse }  | GeneralApiProblem
+export type GetListCategoryEventTypes = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListCategoryEventResponse }  | GeneralApiProblem
 export type PostCreateEventyTypes = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: PostCreateEventResponse }  | GeneralApiProblem
+export type GetEventTypes = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetEventResponse }  | GeneralApiProblem
+export type GetEventDetailTypes = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetEventDetailResponse }  | GeneralApiProblem
+export type JoinEventTypes = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: JoinEventResponse }  | GeneralApiProblem
+export type GetListUserTypes = { kind: "form-error"; response: ErrorFormResponse } | { kind: "ok"; response: GetListUserResponse }  | GeneralApiProblem

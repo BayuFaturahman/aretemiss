@@ -340,6 +340,8 @@ PODS:
     - React-Core
   - react-native-netinfo (5.9.10):
     - React-Core
+  - react-native-pager-view (6.2.3):
+    - React-Core
   - react-native-safe-area-context (3.1.8):
     - React-Core
   - react-native-tracking-transparency (0.1.2):
@@ -417,7 +419,7 @@ PODS:
     - React-Core
   - RNCAsyncStorage (1.15.16):
     - React-Core
-  - RNCClipboard (1.8.5):
+  - RNCClipboard (1.13.2):
     - React-Core
   - RNCMaskedView (0.1.11):
     - React
@@ -452,11 +454,13 @@ PODS:
     - React-Core
   - RNKeychain (6.2.0):
     - React
-  - RNReanimated (1.13.3):
+  - RNReanimated (1.13.4):
     - React-Core
   - RNScreens (3.4.0):
     - React-Core
     - React-RCTImage
+  - RNShare (7.0.1):
+    - React-Core
   - RNSVG (12.1.1):
     - React
   - RNVectorIcons (9.2.0):
@@ -494,6 +498,7 @@ DEPENDENCIES:
   - react-native-create-thumbnail (from `../node_modules/react-native-create-thumbnail`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
+  - react-native-pager-view (from `../node_modules/react-native-pager-view`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-tracking-transparency (from `../node_modules/react-native-tracking-transparency`)
   - react-native-video (from `../node_modules/react-native-video`)
@@ -526,6 +531,7 @@ DEPENDENCIES:
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
+  - RNShare (from `../node_modules/react-native-share`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -595,6 +601,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-image-picker"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
+  react-native-pager-view:
+    :path: "../node_modules/react-native-pager-view"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-tracking-transparency:
@@ -659,6 +667,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  RNShare:
+    :path: "../node_modules/react-native-share"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   RNVectorIcons:
@@ -704,6 +714,7 @@ SPEC CHECKSUMS:
   react-native-create-thumbnail: e022bcdcba8a0b4529a50d3fa1a832ec921be39d
   react-native-image-picker: 60f4246eb5bb7187fc15638a8c1f13abd3820695
   react-native-netinfo: 30fb89fa913c342be82a887b56e96be6d71201dd
+  react-native-pager-view: c29d484f19c49ff19525a94105e4ab2c4d4ae273
   react-native-safe-area-context: 79fea126c6830c85f65947c223a5e3058a666937
   react-native-tracking-transparency: 25ff1ff866e338c137c818bdec20526bb05ffcc1
   react-native-video: c26780b224543c62d5e1b2a7244a5cd1b50e8253
@@ -721,7 +732,7 @@ SPEC CHECKSUMS:
   ReactCommon: b4a65d2d6e9eeffd4b32dde1245962b3f43907d0
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
   RNCAsyncStorage: 6ed7eefcf176fee8cd7039a44ca56f0247a650bb
-  RNCClipboard: cc054ad1e8a33d2a74cd13e565588b4ca928d8fd
+  RNCClipboard: 60fed4b71560d7bfe40e9d35dea9762b024da86d
   RNCMaskedView: 0e1bc4bfa8365eba5fbbb71e07fbdc0555249489
   RNCPicker: cb57c823d5ce8d2d0b5dfb45ad97b737260dc59e
   RNCPushNotificationIOS: 87b8d16d3ede4532745e05b03c42cff33a36cc45
@@ -734,14 +745,15 @@ SPEC CHECKSUMS:
   RNFBMessaging: eb8d1b08795c8718706007ed0743732d00e1acc4
   RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
   RNKeychain: b8e0711b959a19c5b057d1e970d3c83d159b6da5
-  RNReanimated: 514a11da3a2bcc6c3dfd9de32b38e2b9bf101926
+  RNReanimated: c1b56d030d1616239861534d9adb531f8cffab68
   RNScreens: 21b73c94c9117e1110a79ee0ee80c93ccefed8ce
+  RNShare: 2dc2fcac3f7321cfd6b60a23ed4bf4d549f86f5f
   RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
   RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
   Yoga: d1fc3575b8b68891ff5ef3c276daa855e841eb32
 
-PODFILE CHECKSUM: 8fb8ae9cac6c0919bc9f552b3b75ccdb3c9bad6a
+PODFILE CHECKSUM: 52252c3734775fa5012251953e255e0eccd53e73
 
 COCOAPODS: 1.14.3

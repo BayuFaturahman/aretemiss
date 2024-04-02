@@ -14,6 +14,8 @@ target 'iLead' do
 
   pod 'react-native-config', :path => '../node_modules/react-native-config'
 
+  pod 'RNShare', :path => '../node_modules/react-native-share'
+
   target 'iLeadTests' do
     inherit! :complete
     # Pods for testing

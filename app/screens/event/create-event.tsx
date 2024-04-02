@@ -13,7 +13,7 @@ import {
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Text, Button, TextField, } from "@components"
-import { NavigatorParamList } from "@navigators/acara-ceria-navigator"
+import { NavigatorParamList } from "@navigators/event-navigator"
 import { HStack, VStack } from "@components/view-stack"
 import Spacer from "@components/spacer"
 import { Colors, Layout, Spacing } from "@styles"
@@ -30,6 +30,7 @@ import { rHeight, rWidth } from "@styles/Spacing"
 import CheckBoxComponent from "@components/checkbox/multiple_checkbox"
 
 export type createEventForm = {
+    id?: string,
     errDesc?: string,
     name: string,
     startTime: string,
@@ -44,8 +45,6 @@ export type createEventForm = {
     typeId: string,
     posterUrl: string,
     posterImg?: Asset,
-    kategory?: any[],
-    tipeKegiatan?: any[]
 }
 
 const createEventInitialForm: createEventForm = {
@@ -67,7 +66,7 @@ const createEventInitialForm: createEventForm = {
 const CreateEvent: FC<StackScreenProps<NavigatorParamList, "createEvent">> = observer(({ navigation }) => {
 
     const goBack = () => navigation.goBack()
-    const { eventApi } = useStores()
+    const { eventApi, eventStore } = useStores()
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const [showTimePicker, setShowTimePicker] = useState(false)
@@ -94,6 +93,7 @@ const CreateEvent: FC<StackScreenProps<NavigatorParamList, "createEvent">> = obs
 
     const [posterImg, setPosterImg] = useState<Asset>(null);
     const [posterErr, setPosterErr] = useState(false);
+    const [hashtagTaken, setHashtagTaken] = useState(false);
 
     const timeZoneitems : ItemType[] = [
         { label: 'WIB', value: 'wib' },
@@ -111,9 +111,7 @@ const CreateEvent: FC<StackScreenProps<NavigatorParamList, "createEvent">> = obs
         if(onTriggerChecked){
             console.log('aa', items)
             let ids = items.map((e) => e.id)
-            setFieldValue('categoryIds', ids)        
-            setFieldValue('kategory', items,false)
-            
+            setFieldValue('categoryIds', ids)
         }
     };
 
@@ -123,17 +121,19 @@ const CreateEvent: FC<StackScreenProps<NavigatorParamList, "createEvent">> = obs
     }, [])
     const getCategory = async () => {
         setLoadingCategory(true)
-        let response = await eventApi.getListEventCategory('category-event')
-        let data = response['response']['data']
-        setCategoryList(data)
+        let response = await eventStore.getListCategory('category-event')
+        // console.log('ress', response)
+        // let data = response['response']['data']
+        setCategoryList(eventStore.listCategory)
         setLoadingCategory(false)
     }
     const getType = async () => {
         setLoadingType(true)
-        let response = await eventApi.getListEventCategory('type-event')
-        let data = response['response']['data']
+        let response = await eventStore.getListCategory('type-event')
+        // console.log('ress', response)
+        // let data = response['response']['data']
         let dataList : ItemType[] = [];
-        data.map((e)=>{
+        eventStore.listType.map((e)=>{
             let item : ItemType = {
                 label: e.name,
                 value: e.id
@@ -147,15 +147,11 @@ const CreateEvent: FC<StackScreenProps<NavigatorParamList, "createEvent">> = obs
 
     const submitPreviewEvent = useCallback(async (dataForm: createEventForm) => {
         console.log('data', dataForm)
-        navigation.navigate(
-            'previewEvent',
-            {
-                data: {
-                    ...dataForm,
-                    locationDetail: dataForm.implementation == 'online' ? '' : dataForm.locationDetail
-                }
-            }
-        )
+        eventStore.setEventData({
+            ...dataForm,
+            locationDetail: dataForm.implementation == 'online' ? '' : dataForm.locationDetail
+        })
+        navigation.navigate('eventPreview')
     }, [])
 
     const onDateChange = (selectedDate, setFieldValue, type) => {
@@ -204,6 +200,21 @@ const CreateEvent: FC<StackScreenProps<NavigatorParamList, "createEvent">> = obs
             text={`${t2}`}
         />
     </Text>}
+
+
+    const hashtagCheck = async (str, setFieldValue) => {
+        let v = str.replace(/\s+/g, ' ')
+        .replace(/\b\w/g, (e) => e.toUpperCase())
+        .replace(/^\w/, (e) => e.toUpperCase())
+        .replace(/\s+/g, '')
+        console.log(v)
+        setFieldValue('hashtag', `#${v}`)
+        let res = await eventApi.getEventDetail('hashtag', v)
+        if(res.kind != 'not-found'){
+            return true
+        }
+        return false
+    }
 
     return (
         <KeyboardAvoidingView
@@ -282,7 +293,10 @@ const CreateEvent: FC<StackScreenProps<NavigatorParamList, "createEvent">> = obs
                                             isTextArea={true}
                                             placeholder={"Nama Acara Ceria"}
                                             onChangeText={handleChange("name")}
-                                            onBlur={handleBlur('name')}
+                                            onBlur={ async () => {
+                                                let check = await hashtagCheck(values.name, setFieldValue)
+                                                setHashtagTaken(check)
+                                            }}
                                             style={{paddingVertical:0}}
                                             charCounter={true}
                                             multiline={false}
@@ -471,7 +485,7 @@ const CreateEvent: FC<StackScreenProps<NavigatorParamList, "createEvent">> = obs
                                         {renderTitle('Hashtag', 'untuk Feed', true)}
                                         <TextField
                                             value={values.hashtag}
-                                            inputStyle={{ textAlign: 'left', paddingLeft: Spacing[12], borderColor: submitPressed && errors.hashtag == '' ? Colors.MAIN_RED : Colors.ABM_DARK_BLUE}}
+                                            inputStyle={{ textAlign: 'left', paddingLeft: Spacing[12], borderColor: (submitPressed && errors.hashtag == '') || hashtagTaken ? Colors.MAIN_RED : Colors.ABM_DARK_BLUE}}
                                             maxChar={100}
                                             isRequired={true}
                                             secureTextEntry={false}
@@ -482,8 +496,15 @@ const CreateEvent: FC<StackScreenProps<NavigatorParamList, "createEvent">> = obs
                                             style={{paddingVertical:0}}
                                             charCounter={true}
                                             multiline={false}
+                                            editable={false}
                                         />
                                     </VStack>
+                                    {hashtagTaken && (
+                                        <Text style={{...styles.errorText,textAlign:'center',marginHorizontal:Spacing[24],marginBottom:Spacing[4],fontSize:13}}
+                                            type="body-bold"
+                                            text="Hashtag ini telah dipakai, coba ubah judul untuk membuat hashtag lain yaa!"
+                                        />
+                                    )}
 
                                     <VStack>
                                         {renderTitle('Deskripsi', 'Acara Ceria', true)}
@@ -530,7 +551,6 @@ const CreateEvent: FC<StackScreenProps<NavigatorParamList, "createEvent">> = obs
                                             setOpen={setShowTypeList}
                                             onSelectItem={(v) => {
                                                 setFieldValue('typeId', v['value'])
-                                                setFieldValue('tipeKegiatan', v, false)
                                             }}
                                             setValue={setTipeAcara}
                                             placeholder={'Pilih Tipe Pelaksanaan'}
@@ -555,7 +575,9 @@ const CreateEvent: FC<StackScreenProps<NavigatorParamList, "createEvent">> = obs
                                             textStyle={{ fontSize: Spacing[14], lineHeight: Spacing[18] }}
                                             onPress={() => {
                                                 setSubmitPressed(true);
-                                                handleSubmit();
+                                                if(!hashtagTaken){
+                                                    handleSubmit();
+                                                }
                                                 // navigation.navigate(
                                                 //     'previewEvent',
                                                 //     {

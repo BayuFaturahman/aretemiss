@@ -7,6 +7,12 @@ import android.content.Context;
 import com.facebook.react.*;
 import com.facebook.soloader.SoLoader;
 
+import com.facebook.react.ReactPackage;
+import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.uimanager.ViewManager;
+import cl.json.RNSharePackage;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
@@ -26,7 +32,6 @@ public class MainApplication extends Application implements ReactApplication {
           List<ReactPackage> packages = new PackageList(this).getPackages();
           // Packages that cannot be autolinked yet can be added manually here, for example:
 //           packages.add(new ReactNativePushNotificationPackage());
-
           return packages;
         }
 

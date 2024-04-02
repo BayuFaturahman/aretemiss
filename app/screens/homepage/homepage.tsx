@@ -45,7 +45,7 @@ import { MoodComponent } from "./components/mood-component"
 import { BrainstormsComponent } from "@screens/homepage/components/brainstorms-component"
 import { FeeedbackComponent } from "./components/feedback-component"
 import { CultureMeasurementComponent } from "./components/culture-measurement-component"
-import { AcaraCeriaItemComponent } from "./components/acara-ceria-homepage-component"
+import { EventItemComponent } from "./components/event-homepage-component"
 
 const FEED_EXAMPLE_DATA_ITEM: FeedItemType[] = [
   {
@@ -165,7 +165,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
     // const [feedData, setFeedDAta] = useState<FeedItemType>(FEED_EXAMPLE_DATA_ITEM);
     const [feedData, setFeedData] = useState<FeedItemType>(null)
     const [coachingJournalData, setCoachingJournalData] = useState<CoachingJournalItem>(null)
-    const { mainStore, coachingStore, authStore, feedStore, feedbackStore, leaderboardStore } = useStores()
+    const { mainStore, coachingStore, authStore, feedStore, feedbackStore, leaderboardStore, eventStore } = useStores()
 
     const userProfile: ProfileUpdateForm = {
       fullname: mainStore.userProfile.user_fullname,
@@ -242,6 +242,10 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       await feedStore.getListFeeds()
     }, [])
 
+    const getListEvent = useCallback(async () => {
+      await eventStore.getEvent()
+    }, [])
+
     useEffect(() => {
       loadData()
     }, [])
@@ -295,6 +299,7 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
       await getJournalList()
       await getLeaderboardPosition()
       await getListFeed()
+      await getListEvent()
       if (feedStore.listFeeds) {
         setFeedData(feedStore.listFeeds[0])
       }
@@ -444,16 +449,19 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
               />
             </HomepageCardWrapper>
             <Spacer height={Spacing[12]} />
+            
             <HomepageCardWrapper animationDuration={700}>
               <VStack>
                 <FeeedbackComponent goToFeedback={goToFeedbackUser} />
               </VStack>
             </HomepageCardWrapper>
             <Spacer height={Spacing[12]} />
+
             <HomepageCardWrapper animationDuration={700}>
               <CultureMeasurementComponent goToCultureMeasurement={goToCultureMeasurement} />
             </HomepageCardWrapper>
             <Spacer height={Spacing[12]} />
+
             <HomepageCardWrapper animationDuration={700}>
               <FeedItemComponent
                 data={feedData ?? null}
@@ -462,20 +470,19 @@ const Homepage: FC<StackScreenProps<NavigatorParamList, "homepage">> = observer(
               />
             </HomepageCardWrapper>
             <Spacer height={Spacing[12]} />
+            
               <HomepageCardWrapper animationDuration={700}>
-                <AcaraCeriaItemComponent
-                  data={null}
-                  // goToFeed={goToFeed}
-                  // goToNewPost={goToNewPost}
-                />
+                <EventItemComponent/>
               </HomepageCardWrapper>
             <Spacer height={Spacing[12]} />
+
             <HomepageCardWrapper animationDuration={700}>
               <VStack>
                 <BrainstormsComponent goToBrainstorms={goToBrainstormsGroup} />
               </VStack>
             </HomepageCardWrapper>
             <Spacer height={Spacing[12]} />
+
             <HomepageCardWrapper animationDuration={700}>
               <AssessmentComponent data={profileData} goToAssessment={goToJuaraAssessment} />
             </HomepageCardWrapper>
